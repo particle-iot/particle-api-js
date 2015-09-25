@@ -17,6 +17,12 @@
     "url": "https://github.com/spark/particle-api-js"
   },
   "author": "Emily Rose <nexxy@particle.io>",
+  "keywords": [
+    "particle",
+    "library",
+    "spark",
+    "api"
+  ],
   "license": "LGPL-3.0",
   "devDependencies": {
     "babel": "^5.8.23",
