@@ -1,0 +1,7 @@
+{
+	"extends": "airbnb",
+	"rules": {
+		"indent": [2, "tab"],
+		"brace-style": [2, "stroustrup", { "allowSingleLine": true }]
+	}
+}
