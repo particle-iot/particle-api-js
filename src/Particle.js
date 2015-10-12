@@ -140,8 +140,31 @@ class Particle {
 		return Particle.get(this.url('v1/webhooks'), auth);
 	}
 
+
+	getUserInfo({ auth }) {
+		return Particle.get(this.url('v1/user'), auth);
+	}
+
+	setUserInfo({ stripeToken, auth }) {
+		return Particle.put(this.url('v1/user'), {
+			stripe_token: stripeToken,
+		}, auth);
+	}
+
+	checkSIM({ iccid, auth }) {
+		return Particle.head(this.url('v1/sims', iccid), auth);
+	}
+
+	activateSIM({ iccid, auth }) {
+		return Particle.put(this.url('v1/sims', iccid), auth);
+	}
+
 	static get(uri, auth) {
 		return Particle.request({ uri, auth, method: 'get' });
+	}
+
+	static head(uri, auth) {
+		return Particle.request({ uri, auth, method: 'head' });
 	}
 
 	static post(uri, form, auth) {
