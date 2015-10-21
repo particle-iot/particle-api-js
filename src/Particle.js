@@ -28,8 +28,7 @@ class Particle {
 
 	createUser({ username, password }) {
 		return Particle.post(this.url('v1/users'), {
-			username: username,
-			password: password,
+			username, password,
 		});
 	}
 
