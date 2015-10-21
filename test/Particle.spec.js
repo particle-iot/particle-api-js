@@ -339,7 +339,7 @@ describe('ParticleAPI', () => {
 				should.fail('Server returned 400 error, but request succeeded');
 				done();
 			}).catch((err) => {
-				err.should.containEql('400');
+				err.code.should.equal(400);
 				done();
 			});
 			server.on('request', (req, res) => {
