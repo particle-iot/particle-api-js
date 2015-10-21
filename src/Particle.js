@@ -159,8 +159,12 @@ class Particle {
 		return new Promise((fulfill, reject) => {
 			const opts = { uri, form, method, json: true };
 			if (auth) { opts.headers = Particle.headers(auth); }
-			request(opts, (err, res, body) => {
-				if (err) { return reject(err); }
+			request(opts, (error, res, body) => {
+				if (error) {
+					const code = error.code;
+					const errorDescription = `Network error ${ code } from ${ uri }`;
+					return reject({ code, errorDescription, error });
+				}
 				if (res.statusCode !== 200) {
 					let str = `Error ${ res.statusCode } from ${ uri }`;
 					if (body && body.error) { str += '\n' + body.error; }
