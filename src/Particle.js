@@ -189,12 +189,13 @@ class Particle {
 					return reject({ code, errorDescription, error });
 				}
 				if (res.statusCode !== 200) {
-					let str = `Error ${ res.statusCode } from ${ uri }`;
-					if (body && body.error) { str += '\n' + body.error; }
+					const code = res.statusCode;
+					let errorDescription = `HTTP error ${ code } from ${ uri }`;
+					if (body && body.error) { errorDescription += ' - ' + body.error; }
 					if (body && body.error_description) {
-						str += ': ' + body.error_description;
+						errorDescription += ': ' + body.error_description;
 					}
-					return reject(str);
+					return reject({ code, errorDescription, error: body });
 				}
 				fulfill(body);
 			});
