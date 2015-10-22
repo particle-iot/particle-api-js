@@ -38,6 +38,8 @@
     "sinon": "^1.17.0"
   },
   "dependencies": {
-    "request": "^2.63.0"
+    "path": "^0.12.7",
+    "superagent": "^1.4.0",
+    "url": "^0.11.0"
   }
 }
