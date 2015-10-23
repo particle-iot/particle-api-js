@@ -3,7 +3,6 @@
   "version": "2.0.0",
   "description": "Particle API Client",
   "main": "lib/Particle.js",
-  "browser": "lib/ParticleBundle.js",
   "scripts": {
     "prepublish": "npm run lint && npm run compile",
     "compile": "babel --optional runtime -sd lib/ src/",
