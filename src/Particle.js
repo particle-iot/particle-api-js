@@ -180,7 +180,7 @@ class Particle {
 
 	static request({ uri, method, form = undefined, auth }) {
 		return new Promise((fulfill, reject) => {
-			let req = request(method, uri);
+			const req = request(method, uri);
 			if (auth) {
 				req.set(Particle.headers(auth));
 			}
@@ -196,7 +196,8 @@ class Particle {
 					let errorDescription = `${ code ? 'HTTP error' : 'Network error' } ${ code } from ${ uri }`;
 					if (body && body.error_description) { errorDescription += ' - ' + body.error_description; }
 					reject({ code, errorDescription, error });
-				} else {
+				}
+				else {
 					fulfill(body);
 				}
 			});
