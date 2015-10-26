@@ -323,7 +323,7 @@ describe('ParticleAPI', () => {
 				req.method.should.equal('POST');
 				req.on('data', (dat) => { body += dat; });
 				req.on('end', () => {
-					body.should.equal('test=true');
+					body.should.equal(JSON.stringify({ test: true }));
 					done();
 				});
 				res.end();
