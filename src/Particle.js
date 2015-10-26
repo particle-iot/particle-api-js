@@ -184,7 +184,6 @@ class Particle {
 			if (auth) { req.set(Particle.headers(auth)); }
 			if (form) {
 				if (form.username) { req.type('form'); }
-				else { req.type('json'); }
 				req.send(form);
 			}
 			req.end((error, res) => {
