@@ -60,8 +60,8 @@ class Particle {
 		return Particle.put(this.url('v1/devices', deviceId), { name }, auth);
 	}
 
-	getClaimCode({ auth }) {
-		return Particle.post(this.url('v1/device_claims'), null, auth);
+	getClaimCode({ auth, iccid = undefined }) {
+		return Particle.post(this.url('v1/device_claims'), { iccid }, auth);
 	}
 
 	changeProduct({ deviceId, productId, shouldUpdate, auth }) {
