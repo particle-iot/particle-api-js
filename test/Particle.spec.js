@@ -340,6 +340,7 @@ describe('ParticleAPI', () => {
 				done();
 			}).catch((err) => {
 				err.code.should.equal(400);
+				err.errorDescription.should.containEql('HTTP error 400 from http://127.0.0.1');
 				done();
 			});
 			server.on('request', (req, res) => {

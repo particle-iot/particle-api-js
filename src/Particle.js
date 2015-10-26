@@ -1,4 +1,4 @@
-import request from 'request';
+import request from 'superagent';
 import Defaults from './Defaults';
 
 import path from 'path';
@@ -180,24 +180,25 @@ class Particle {
 
 	static request({ uri, method, form = undefined, auth }) {
 		return new Promise((fulfill, reject) => {
-			const opts = { uri, form, method, json: true };
-			if (auth) { opts.headers = Particle.headers(auth); }
-			request(opts, (error, res, body) => {
+			let req = request(method, uri);
+			if (auth) {
+				req.set(Particle.headers(auth));
+			}
+			if (form) {
+				req.type('form');
+				req.send(form);
+			}
+
+			req.end((error, res) => {
+				const body = res && res.body;
 				if (error) {
-					const code = error.code;
-					const errorDescription = `Network error ${ code } from ${ uri }`;
-					return reject({ code, errorDescription, error });
+					const code = error.status;
+					let errorDescription = `${ code ? 'HTTP error' : 'Network error' } ${ code } from ${ uri }`;
+					if (body && body.error_description) { errorDescription += ' - ' + body.error_description; }
+					reject({ code, errorDescription, error });
+				} else {
+					fulfill(body);
 				}
-				if (res.statusCode !== 200) {
-					const code = res.statusCode;
-					let errorDescription = `HTTP error ${ code } from ${ uri }`;
-					if (body && body.error) { errorDescription += ' - ' + body.error; }
-					if (body && body.error_description) {
-						errorDescription += ': ' + body.error_description;
-					}
-					return reject({ code, errorDescription, error: body });
-				}
-				fulfill(body);
 			});
 		});
 	}
