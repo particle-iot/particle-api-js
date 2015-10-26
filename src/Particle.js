@@ -181,9 +181,7 @@ class Particle {
 	static request({ uri, method, form = undefined, auth }) {
 		return new Promise((fulfill, reject) => {
 			const req = request(method, uri);
-			if (auth) {
-				req.set(Particle.headers(auth));
-			}
+			if (auth) { req.set(Particle.headers(auth)); }
 			if (form) {
 				req.type('form');
 				req.send(form);
