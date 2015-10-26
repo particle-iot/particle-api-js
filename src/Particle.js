@@ -187,7 +187,6 @@ class Particle {
 				else { req.type('json'); }
 				req.send(form);
 			}
-
 			req.end((error, res) => {
 				const body = res && res.body;
 				if (error) {
