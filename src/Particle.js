@@ -183,7 +183,8 @@ class Particle {
 			const req = request(method, uri);
 			if (auth) { req.set(Particle.headers(auth)); }
 			if (form) {
-				req.type('form');
+				if (form.username) { req.type('form'); }
+				else { req.type('json'); }
 				req.send(form);
 			}
 
