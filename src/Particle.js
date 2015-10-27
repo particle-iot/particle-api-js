@@ -155,7 +155,7 @@ class Particle {
 	}
 
 	activateSIM({ iccid, auth }) {
-		return Particle.put(this.url('v1/sims', iccid), auth);
+		return Particle.put(this.url('v1/sims', iccid), null, auth);
 	}
 
 	static get(uri, auth) {
