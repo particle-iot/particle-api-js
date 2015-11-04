@@ -8,6 +8,7 @@
     "compile": "babel --optional runtime -sd lib/ src/",
     "test": "mocha test/ -R spec --compilers js:babel/register",
     "cover": "istanbul cover ./node_modules/.bin/_mocha test/ -- -R spec --compilers js:babel/register",
+    "coveralls": "istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- -R spec --compilers js:babel/register test/ && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage",
     "bundle": "browserify ./src/Particle.js -t babelify -o ./lib/ParticleBundle.js",
     "lint": "eslint src/"
   },
@@ -28,10 +29,11 @@
     "babel-eslint": "^4.1.3",
     "babelify": "^6.3.0",
     "browserify": "^11.2.0",
+    "coveralls": "^2.11.4",
     "eslint": "^1.5.0",
     "eslint-config-airbnb": "0.0.8",
     "eslint-plugin-react": "^3.4.1",
-    "istanbul": "^0.3.21",
+    "istanbul": "^0.4.0",
     "mocha": "^2.3.3",
     "should": "^7.1.0",
     "sinon": "^1.17.0"
