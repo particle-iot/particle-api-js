@@ -192,7 +192,7 @@ class Particle {
 			if (auth) { req.set(Particle.headers(auth)); }
 			if (query) { req.query(query); }
 			if (form) {
-				if (form.username) { req.type('form'); }
+				req.type('form');
 				req.send(form);
 			}
 			req.end((error, res) => {
