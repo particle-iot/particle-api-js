@@ -284,6 +284,21 @@ describe('ParticleAPI', () => {
 			});
 		});
 	});
+	describe('.listBuildTargets', () => {
+		it('generates request', () => {
+			return api.listBuildTargets(props).then(({ auth, query }) => {
+				auth.should.equal(props.auth);
+				should.not.exist(query);
+			});
+		});
+		it('passes featured flag', () => {
+			const params = { auth: props.auth, onlyFeatured: true };
+			return api.listBuildTargets(params).then(({ auth, query }) => {
+				auth.should.equal(props.auth);
+				query.should.eql({ featured: true });
+			});
+		});
+	});
 	describe('#headers', () => {
 		it('returns nothing', () => {
 			const headers = Particle.headers();

@@ -158,8 +158,14 @@ class Particle {
 		return Particle.put(this.url('v1/sims', iccid), null, auth);
 	}
 
-	static get(uri, auth) {
-		return Particle.request({ uri, auth, method: 'get' });
+	listBuildTargets({ auth, onlyFeatured = undefined }) {
+		let query;
+		if (onlyFeatured) { query = { featured: onlyFeatured }; }
+		return Particle.get(this.url('v1/build_targets'), auth, query);
+	}
+
+	static get(uri, auth, query = undefined) {
+		return Particle.request({ uri, auth, method: 'get', query: query });
 	}
 
 	static head(uri, auth) {
@@ -178,10 +184,11 @@ class Particle {
 		return Particle.request({ uri, form, auth, method: 'delete' });
 	}
 
-	static request({ uri, method, form = undefined, auth }) {
+	static request({ uri, method, form = undefined, auth, query = undefined}) {
 		return new Promise((fulfill, reject) => {
 			const req = request(method, uri);
 			if (auth) { req.set(Particle.headers(auth)); }
+			if (query) { req.query(query); }
 			if (form) {
 				if (form.username) { req.type('form'); }
 				req.send(form);
