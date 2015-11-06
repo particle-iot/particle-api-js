@@ -154,8 +154,10 @@ class Particle {
 		return Particle.head(this.url('v1/sims', iccid), auth);
 	}
 
-	activateSIM({ iccid, auth }) {
-		return Particle.put(this.url('v1/sims', iccid), null, auth);
+	activateSIM({ iccid, countryCode, auth }) {
+		return Particle.put(this.url('v1/sims', iccid), {
+			country: countryCode,
+		}, auth);
 	}
 
 	listBuildTargets({ auth, onlyFeatured = undefined }) {
