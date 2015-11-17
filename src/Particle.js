@@ -199,7 +199,7 @@ class Particle {
 				const body = res && res.body;
 				if (error) {
 					const statusCode = error.status;
-					let errorDescription = `${ code ? 'HTTP error' : 'Network error' } ${ code } from ${ uri }`;
+					let errorDescription = `${ statusCode ? 'HTTP error' : 'Network error' } ${ statusCode } from ${ uri }`;
 					if (body && body.error_description) { errorDescription += ' - ' + body.error_description; }
 					reject({ statusCode, errorDescription, error });
 				}
