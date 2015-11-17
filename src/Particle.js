@@ -196,12 +196,12 @@ class Particle {
 				req.send(form);
 			}
 			req.end((error, res) => {
-				let body = res && res.body;
+				const body = res && res.body;
 				if (error) {
-					const code = error.status;
+					const statusCode = error.status;
 					let errorDescription = `${ code ? 'HTTP error' : 'Network error' } ${ code } from ${ uri }`;
 					if (body && body.error_description) { errorDescription += ' - ' + body.error_description; }
-					reject({ code, errorDescription, error });
+					reject({ statusCode, errorDescription, error });
 				}
 				else {
 					fulfill({
