@@ -162,7 +162,7 @@ class Particle {
 		return Particle.put(this.url('v1/sims', iccid), {
 			country: countryCode,
 			promo_code: promoCode,
-			action: "activate",
+			action: 'activate',
 		}, auth);
 	}
 
