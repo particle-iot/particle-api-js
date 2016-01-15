@@ -154,9 +154,11 @@ class Particle {
 		return Particle.head(this.url('v1/sims', iccid), auth);
 	}
 
-	activateSIM({ iccid, countryCode, auth }) {
+	activateSIM({ iccid, countryCode, promoCode, auth }) {
 		return Particle.put(this.url('v1/sims', iccid), {
 			country: countryCode,
+			promo_code: promoCode,
+			action: "activate",
 		}, auth);
 	}
 
