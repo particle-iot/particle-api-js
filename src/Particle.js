@@ -64,6 +64,10 @@ class Particle {
 		return Particle.post(this.url('v1/device_claims'), { iccid }, auth);
 	}
 
+	validatePromoCode({auth, promoCode}) {
+		return Particle.get(this.url('v1/promo_code', promoCode), auth);
+	}
+
 	changeProduct({ deviceId, productId, shouldUpdate, auth }) {
 		return Particle.put(this.url('v1/devices', deviceId), {
 			product_id: productId,
