@@ -17,6 +17,9 @@
     "url": "https://github.com/spark/particle-api-js"
   },
   "author": "Emily Rose <nexxy@particle.io>",
+  "contributors": [
+    "Justin Debbink"
+  ],
   "keywords": [
     "particle",
     "library",
