@@ -1,6 +1,6 @@
 {
   "name": "@particle/api",
-  "version": "4.2.0",
+  "version": "4.2.1",
   "description": "Particle API Client",
   "main": "lib/Particle.js",
   "scripts": {
@@ -18,6 +18,8 @@
   },
   "author": "Emily Rose <nexxy@particle.io>",
   "contributors": [
+    "Ido Kleinman",
+    "Bryce Kahle",
     "Justin Debbink"
   ],
   "keywords": [
