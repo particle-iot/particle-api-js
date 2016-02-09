@@ -331,6 +331,14 @@ describe('ParticleAPI', () => {
 			});
 		});
 	});
+	describe('.downloadFirmwareBinary', () => {
+		it('generates request', () => {
+			return api.downloadFirmwareBinary({ auth: 'X', data: "1234567890123456789" }).then((results) => {
+				results.uri.should.be.instanceOf(String);
+				results.auth.should.equal('X');
+			});
+		});
+	});
 	describe('#headers', () => {
 		it('returns nothing', () => {
 			const headers = Particle.headers();

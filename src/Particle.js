@@ -166,6 +166,10 @@ class Particle {
 		}, auth);
 	}
 
+	downloadFirmwareBinary({data, auth}) {
+		return Particle.post(this.url('v1/binaries'), { data }, auth);
+	}
+
 	listBuildTargets({ auth, onlyFeatured = undefined }) {
 		let query;
 		if (onlyFeatured) { query = { featured: onlyFeatured }; }
