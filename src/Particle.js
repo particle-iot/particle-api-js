@@ -1,3 +1,4 @@
+import 'babel-polyfill';
 import request from 'superagent';
 import prefix from 'superagent-prefix';
 import Defaults from './Defaults';
@@ -190,10 +191,6 @@ class Particle {
 			promo_code: promoCode,
 			action: 'activate',
 		}, auth);
-	}
-
-	downloadFirmwareBinary({data, auth}) {
-		return this.post('/v1/binaries', { data }, auth);
 	}
 
 	listBuildTargets({ auth, onlyFeatured = undefined }) {

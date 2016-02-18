@@ -361,10 +361,11 @@ describe('ParticleAPI', () => {
 					auth.should.equal(props.auth);
 					query.should.eql({ featured: true });
 				});
+			});
 		});
 		describe('.validatePromoCode', () => {
 			it('generates request', () => {
-				return api.validatePromoCode({ auth: 'X', promoCode: "123ABCD" }).then((results) => {
+				return api.validatePromoCode({ auth: 'X', promoCode: '123ABCD' }).then((results) => {
 					results.uri.should.be.instanceOf(String);
 					results.auth.should.equal('X');
 				});
@@ -372,7 +373,7 @@ describe('ParticleAPI', () => {
 		});
 		describe('.setUserInfo', () => {
 			it('generates request', () => {
-				return api.setUserInfo({ auth: 'X', stripeToken: "123ABCD" }).then((results) => {
+				return api.setUserInfo({ auth: 'X', stripeToken: '123ABCD' }).then((results) => {
 					results.uri.should.be.instanceOf(String);
 					results.auth.should.equal('X');
 				});
@@ -380,7 +381,7 @@ describe('ParticleAPI', () => {
 		});
 		describe('.activateSIM', () => {
 			it('generates request', () => {
-				return api.activateSIM({ auth: 'X', countryCode: "XX", promoCode: "123ABCD", iccid: "1234567890123456789" }).then((results) => {
+				return api.activateSIM({ auth: 'X', countryCode: 'XX', promoCode: '123ABCD', iccid: '1234567890123456789' }).then((results) => {
 					results.uri.should.be.instanceOf(String);
 					results.auth.should.equal('X');
 				});
@@ -388,39 +389,14 @@ describe('ParticleAPI', () => {
 		});
 		describe('.checkSIM', () => {
 			it('generates request', () => {
-				return api.checkSIM({ auth: 'X', iccid: "1234567890123456789" }).then((results) => {
-					results.uri.should.be.instanceOf(String);
-					results.auth.should.equal('X');
-				});
-			});
-		});
-		describe('.downloadFirmwareBinary', () => {
-			it('generates request', () => {
-				return api.downloadFirmwareBinary({ auth: 'X', data: "1234567890123456789" }).then((results) => {
+				return api.checkSIM({ auth: 'X', iccid: '1234567890123456789' }).then((results) => {
 					results.uri.should.be.instanceOf(String);
 					results.auth.should.equal('X');
 				});
 			});
 		});
 	});
-	// describe('#headers', () => {
-	// 	it('returns nothing', () => {
-	// 		const headers = Particle.headers();
-	// 		should.not.exist(headers);
-	// 	});
-	// 	it('returns Bearer token', () => {
-	// 		const headers = Particle.headers(props.auth);
-	// 		headers.should.be.eql({ Authorization: `Bearer ${ props.auth }`});
-	// 	});
-	// 	it('returns Basic auth', () => {
-	// 		const auth = { username: props.username, password: props.password };
-	// 		const str = new Buffer(`${ auth.username }:${ auth.password }`, 'utf8');
-	// 		const headers = Particle.headers(auth);
-	// 		headers.should.be.eql({
-	// 			Authorization: `Basic ${ str.toString('base64') }`,
-	// 		});
-	// 	});
-	// });
+
 	describe('#request', () => {
 		beforeEach(() => {
 			server = createServer();

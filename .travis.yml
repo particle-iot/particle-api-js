@@ -1,8 +1,13 @@
 language: node_js
 node_js:
-- '0.10'
-- '0.12'
-- '4'
+  - '0.10'
+  - '0.12'
+  - '4'
+  - '5'
 sudo: false
+install:
+  - npm -g install npm@latest
+  - npm install
+  - npm prune
 after_success:
   - npm run coveralls

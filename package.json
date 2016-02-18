@@ -42,6 +42,7 @@
     "sinon": "^1.17.0"
   },
   "dependencies": {
+    "babel-polyfill": "^6.5.0",
     "superagent": "^1.4.0",
     "superagent-prefix": "0.0.2"
   }
