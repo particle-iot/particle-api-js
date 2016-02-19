@@ -1,5 +1,9 @@
 # changelog
 
+## 5.0.1 - 18 Feb 2016
+
+* Remove need for `require('particle-api-js').default` in CommonJS usage. It is now just `require('particle-api-js')`.
+
 ## 5.0.0 - 18 Feb 2016
 
 * Removed need for `babel-runtime`.
