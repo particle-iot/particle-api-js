@@ -9,7 +9,8 @@
     "test": "mocha test/ -R spec --compilers js:babel-register",
     "cover": "istanbul cover ./node_modules/.bin/_mocha test/ -- -R spec --compilers js:babel-register",
     "coveralls": "istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- -R spec --compilers js:babel-register test/ && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage",
-    "lint": "eslint src/"
+    "lint": "eslint src/",
+    "docs": "documentation build src/Particle.js --shallow -g -f md -o docs/api.md"
   },
   "repository": {
     "type": "git",
@@ -35,6 +36,7 @@
     "babel-preset-es2015": "^6.5.0",
     "babel-register": "^6.5.2",
     "coveralls": "^2.11.4",
+    "documentation": "^4.0.0-beta",
     "eslint": "^2.1.0",
     "eslint-config-particle": "^1.0.2",
     "istanbul": "^0.4.0",
