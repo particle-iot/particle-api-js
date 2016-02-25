@@ -1,5 +1,9 @@
 # changelog
 
+## 5.0.2 - 24 Feb 2016
+
+* Remove trailing slash from `baseUrl`. [#7](https://github.com/spark/particle-api-js/issues/7)
+
 ## 5.0.1 - 18 Feb 2016
 
 * Remove need for `require('particle-api-js').default` in CommonJS usage. It is now just `require('particle-api-js')`.
