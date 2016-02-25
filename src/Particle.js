@@ -420,7 +420,7 @@ class Particle {
 					if (body && body.error_description) {
 						errorDescription += ' - ' + body.error_description;
 					}
-					reject({ statusCode, errorDescription, error });
+					reject({ statusCode, errorDescription, error, body });
 				} else {
 					fulfill({
 						body: body,
