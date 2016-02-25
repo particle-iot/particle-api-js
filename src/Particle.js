@@ -88,9 +88,10 @@ class Particle {
 	 * @param  {String} $0.auth     Access Token
 	 * @return {Promise}
 	 */
-	claimDevice({ deviceId, auth }) {
+	claimDevice({ deviceId, requestTransfer, auth }) {
 		return this.post('/v1/devices', {
 			id: deviceId,
+			request_transfer: !!requestTransfer
 		}, auth);
 	}
 
