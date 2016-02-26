@@ -205,7 +205,7 @@ class Particle {
 		if (targetVersion) {
 			form.build_target_version = targetVersion;
 		} else {
-			form.latest = true;
+			form.latest = 'true';
 		}
 		return this.request({ uri: '/v1/binaries',
 			files, auth, form, method: 'post' });
