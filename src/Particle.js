@@ -89,10 +89,10 @@ class Particle {
 	 * @return {Promise}
 	 */
 	claimDevice({ deviceId, requestTransfer, auth }) {
-		return this.post('/v1/devices', {
+		return this.request({ uri: '/v1/devices', form: {
 			id: deviceId,
 			request_transfer: !!requestTransfer
-		}, auth);
+		}, auth, method: 'post' });
 	}
 
 	/**
