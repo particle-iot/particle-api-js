@@ -1,5 +1,15 @@
 # changelog
 
+## 5.1.0 - 26 Feb 2016
+
+* Fix event stream. [#8](https://github.com/spark/particle-api-js/issues/8)
+* Add `downloadFirmwareBinary`
+* Add ability to intercept requests for debugging
+* Use library version for User-Agent
+* Allow request transfer for `claimDevice`
+* `signalDevice` needs to use strings, not numbers.
+* `compileCode` `latest` should be a string, not a boolean.
+
 ## 5.0.2 - 24 Feb 2016
 
 * Remove trailing slash from `baseUrl`. [#7](https://github.com/spark/particle-api-js/issues/7)
