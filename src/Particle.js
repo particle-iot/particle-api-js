@@ -392,6 +392,7 @@ class Particle {
 		return new Promise((fulfill, reject) => {
 			const req = request(method, uri);
 			req.use(this.prefix);
+			req.set('User-Agent', 'particle-api-js/' + Particle.VERSION);
 			this.headers(req, auth);
 			if (query) {
 				req.query(query);
@@ -443,5 +444,7 @@ class Particle {
 		}
 	}
 }
+
+Particle.VERSION = '5.0.2';
 
 export default Particle;
