@@ -157,7 +157,7 @@ class Particle {
 	 */
 	signalDevice({ deviceId, signal, auth }) {
 		return this.put(`/v1/devices/${deviceId}`, {
-			signal: ( !!signal ? 1 : 0 ),
+			signal: ( !!signal ? '1' : '0' ),
 		}, auth);
 	}
 
