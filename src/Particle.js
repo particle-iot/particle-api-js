@@ -2,6 +2,7 @@ import 'babel-polyfill';
 import request from 'superagent';
 import prefix from 'superagent-prefix';
 import Defaults from './Defaults';
+import EventStream from './EventStream';
 
 class Particle {
 
@@ -282,7 +283,7 @@ class Particle {
 			uri += `/${name}`;
 		}
 		// TODO: Add tests for event stream?
-		return this.get(uri, auth);
+		return new EventStream(`${this.baseUrl}${uri}`, auth, { debug: this.debug }).connect();
 	}
 
 	/**
