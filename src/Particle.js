@@ -413,6 +413,10 @@ class Particle {
 				req.send(data);
 			}
 
+			if (this.debug) {
+				this.debug(req);
+			}
+
 			req.end((error, res) => {
 				const body = res && res.body;
 				if (error) {
