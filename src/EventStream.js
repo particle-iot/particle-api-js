@@ -1,3 +1,4 @@
+/* eslint max-depth: 0 */
 import http from 'http';
 import https from 'https';
 import url from 'url';
