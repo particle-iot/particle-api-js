@@ -212,6 +212,24 @@ class Particle {
 	}
 
 	/**
+	 * Download a firmware binary
+	 * @param  {String} $0.binaryId Binary ID received from a successful compile call
+	 * @param  {String} $0.auth     Access Token
+	 * @return {Request}
+	 */
+	downloadFirmwareBinary({ binaryId, auth }) {
+		const uri = `/v1/binaries/${binaryId}`;
+		const req = request('get', uri);
+		req.use(this.prefix);
+		req.set('User-Agent', 'particle-api-js/' + Particle.VERSION);
+		this.headers(req, auth);
+		if (this.debug) {
+			this.debug(req);
+		}
+		return req;
+	}
+
+	/**
 	 * Send a new device public key to the Particle Cloud
 	 * @param  {String} $0.deviceId  Device ID or Name
 	 * @param  {(String|Buffer)} $0.key       Public key contents
