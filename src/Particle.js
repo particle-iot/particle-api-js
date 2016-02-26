@@ -267,7 +267,8 @@ class Particle {
 	 * @param  {String} [$0.deviceId] Device ID or Name, or `mine` to indicate only your devices.
 	 * @param  {String} [$0.name]     Event Name
 	 * @param  {String} $0.auth     Access Token
-	 * @return {Promise}
+	 * @return {Promise} If the promise resolves, the resolution value will be an EventStream object that will
+	 * emit 'event' events, as well as the specific named event.
 	 */
 	getEventStream({ deviceId, name, auth }) {
 		let uri;
