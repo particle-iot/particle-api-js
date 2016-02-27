@@ -1,5 +1,9 @@
 # changelog
 
+## 5.1.1 - 26 Feb 2016
+
+* `JSON.parse` HTTP response body for `getEventStream` error case.
+
 ## 5.1.0 - 26 Feb 2016
 
 * Fix event stream. [#8](https://github.com/spark/particle-api-js/issues/8)
