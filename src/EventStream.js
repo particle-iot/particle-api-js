@@ -49,6 +49,9 @@ class EventStream extends EventEmitter {
 					let body = '';
 					res.on('data', chunk => body += chunk);
 					res.on('end', () => {
+						try {
+							body = JSON.parse(body);
+						} catch (e) {}
 						this.emit('response', {
 							statusCode,
 							body
