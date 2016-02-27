@@ -283,7 +283,6 @@ class Particle {
 		if (name) {
 			uri += `/${name}`;
 		}
-		// TODO: Add tests for event stream?
 		return new EventStream(`${this.baseUrl}${uri}`, auth, { debug: this.debug }).connect();
 	}
 

@@ -4,6 +4,7 @@ import Particle from '../src/Particle';
 import Defaults from '../src/Defaults';
 import { createServer } from 'http';
 import sinon from 'sinon';
+import EventStream from '../src/EventStream';
 
 let api;
 let server;
@@ -21,7 +22,7 @@ const props = {
 	key: 'c1a55e5',
 	event: 'main',
 	token: 'Y',
-	signal: 1,
+	signal: '1',
 	auth: 'X',
 	files: {
 		'app.ino': new Buffer('void() {}\nsetup() {}\n')
@@ -134,8 +135,8 @@ describe('ParticleAPI', () => {
 		describe('.claimDevice', () => {
 			it('sends credentials', () => {
 				return api.claimDevice(props).then((results) => {
-					results.data.should.be.instanceOf(Object);
-					results.data.id.should.equal(props.deviceId);
+					results.form.should.be.instanceOf(Object);
+					results.form.id.should.equal(props.deviceId);
 					results.auth.should.equal(props.auth);
 				});
 			});
@@ -268,6 +269,14 @@ describe('ParticleAPI', () => {
 			});
 		});
 		describe('.getEventStream', () => {
+			before(() => {
+				sinon.stub(EventStream.prototype, 'connect', function connect() {
+					return new Promise((resolve) => {
+						resolve({ uri: this.uri });
+					});
+				});
+			});
+
 			it('requests public events', () => {
 				return api.getEventStream({ }).then(({ uri }) => {
 					uri.should.endWith('events');
