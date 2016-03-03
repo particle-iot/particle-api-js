@@ -33,10 +33,9 @@ class EventStream extends EventEmitter {
 				}
 			});
 
+			this.req = req;
 			if (this.debug) {
-				this.req = req;
 				this.debug(this);
-				this.req = null;
 			}
 
 			req.on('error', e => {
@@ -61,6 +60,7 @@ class EventStream extends EventEmitter {
 							errorDescription += ' - ' + body.error_description;
 						}
 						reject({ statusCode, errorDescription, body });
+						this.req = undefined;
 					});
 					return;
 				}
@@ -69,7 +69,6 @@ class EventStream extends EventEmitter {
 				this.buf = '';
 				this.eventName;
 				this.lastEventId;
-				this.req = req;
 
 				res.on('data', this.parse.bind(this));
 				res.once('end', this.end.bind(this));
@@ -80,13 +79,19 @@ class EventStream extends EventEmitter {
 	}
 
 	abort() {
-		this.req.abort();
+		if (this.req) {
+			this.req.abort();
+			this.req = undefined;
+		}
+		this.removeAllListeners();
 	}
 
 	end() {
+		this.req = undefined;
 		setTimeout(() => {
 			this.connect().catch(err => {
 				this.emit('error', err);
+				this.removeAllListeners();
 			});
 		}, this.reconnectInterval);
 	}
