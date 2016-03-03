@@ -1,5 +1,9 @@
 # changelog
 
+## 5.2.0 - 3 Mar 2016
+
+* Add support for organization and product slugs to `getEventStream`.
+
 ## 5.1.1 - 26 Feb 2016
 
 * `JSON.parse` HTTP response body for `getEventStream` error case.
