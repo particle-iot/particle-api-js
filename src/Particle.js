@@ -480,6 +480,6 @@ class Particle {
 	}
 }
 
-Particle.VERSION = '5.2.0';
+Particle.VERSION = '5.2.1';
 
 export default Particle;

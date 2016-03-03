@@ -1,5 +1,9 @@
 # changelog
 
+## 5.2.1 - 3 Mar 2016
+
+* Improve cleanup on `abort`.
+
 ## 5.2.0 - 3 Mar 2016
 
 * Add support for organization and product slugs to `getEventStream`.
