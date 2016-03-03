@@ -310,6 +310,31 @@ describe('ParticleAPI', () => {
 					uri.should.endWith(`${ props.deviceId }/events/${ props.name }`);
 				});
 			});
+			it('requests org\'s events', () => {
+				return api.getEventStream({ org: 'test-org' }).then(({ uri }) => {
+					uri.should.endWith('v1/orgs/test-org/events');
+				});
+			});
+			it('requests org\'s device events', () => {
+				return api.getEventStream({ org: 'test-org', deviceId: props.deviceId }).then(({ uri }) => {
+					uri.should.endWith(`v1/orgs/test-org/devices/${props.deviceId}/events`);
+				});
+			});
+			it('requests org\'s device named events', () => {
+				return api.getEventStream({ org: 'test-org', deviceId: props.deviceId, name: 'test' }).then(({ uri }) => {
+					uri.should.endWith(`v1/orgs/test-org/devices/${props.deviceId}/events/test`);
+				});
+			});
+			it('requests product\'s events', () => {
+				return api.getEventStream({ org: 'test-org', product: 'test-product' }).then(({ uri }) => {
+					uri.should.endWith('v1/orgs/test-org/products/test-product/events');
+				});
+			});
+			it('requests product\'s named events', () => {
+				return api.getEventStream({ org: 'test-org', product: 'test-product', name: 'test' }).then(({ uri }) => {
+					uri.should.endWith('v1/orgs/test-org/products/test-product/events/test');
+				});
+			});
 		});
 		describe('.publishEvent', () => {
 			it('sends proper data', () => {
