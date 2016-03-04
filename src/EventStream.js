@@ -26,6 +26,7 @@ class EventStream extends EventEmitter {
 				path: `${path}?history_limit=30&access_token=${this.token}`,
 				method: 'get',
 				port: port || (isSecure ? 443 : 80),
+				avoidFetch: true
 			});
 
 			this.req = req;
