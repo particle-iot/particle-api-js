@@ -293,7 +293,7 @@ class Particle {
 		}
 
 		if (name) {
-			uri += `/${name}`;
+			uri += `/${encodeURIComponent(name)}`;
 		}
 		return new EventStream(`${this.baseUrl}${uri}`, auth, { debug: this.debug }).connect();
 	}
