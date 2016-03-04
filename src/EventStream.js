@@ -23,14 +23,9 @@ class EventStream extends EventEmitter {
 			const req = requestor.request({
 				hostname,
 				protocol,
-				path,
+				path: `${path}?history_limit=30&access_token=${this.token}`,
 				method: 'get',
 				port: port || (isSecure ? 443 : 80),
-				headers: {
-					'Cache-Control': 'no-cache',
-					'Accept': 'text/event-stream',
-					'Authorization': `Bearer ${this.token}`
-				}
 			});
 
 			this.req = req;
