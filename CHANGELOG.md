@@ -1,5 +1,12 @@
 # changelog
 
+## 5.2.2 - 3 Mar 2016
+
+* Fix named event streams by encoding event name.
+* Move access token to query string to eliminate preflight CORS request.
+* Use fork of `stream-http` that prevents usage of `fetch` because it does not abort.
+* Use correct streaming mode of `stream-http`.
+
 ## 5.2.1 - 3 Mar 2016
 
 * Improve cleanup on `abort`.
