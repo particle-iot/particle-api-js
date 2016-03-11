@@ -1,5 +1,9 @@
 # changelog
 
+## 5.2.3 - 11 Mar 2016
+
+* Remove setting of `User-Agent` header because that is not allowed in browsers. [#10](https://github.com/spark/particle-api-js/issues/10)
+
 ## 5.2.2 - 3 Mar 2016
 
 * Fix named event streams by encoding event name.
