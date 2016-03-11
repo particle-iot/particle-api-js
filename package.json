@@ -39,7 +39,7 @@
     "browserify": "^13.0.0",
     "coveralls": "^2.11.4",
     "documentation": "^4.0.0-beta",
-    "eslint": "^2.1.0",
+    "eslint": "~2.2.0",
     "eslint-config-particle": "^1.0.2",
     "istanbul": "^0.4.0",
     "minifyify": "^7.3.1",
