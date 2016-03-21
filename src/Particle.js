@@ -175,7 +175,7 @@ class Particle {
 		if (targetVersion) {
 			form.build_target_version = targetVersion;
 		} else {
-			form.latest = true;
+			form.latest = 'true';
 		}
 		return this.request({ uri: `/v1/devices/${deviceId}`,
 			files, auth, form, method: 'put' });
