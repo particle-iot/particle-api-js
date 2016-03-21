@@ -1,6 +1,6 @@
 # callFunction
 
-[src/Particle.js:258-262](https://github.com/spark/particle-api-js/blob/48ac90b862b5a7d072a72e7da3176320b6ffa797/src/Particle.js#L258-L262 "Source code on GitHub")
+[src/Particle.js:258-262](https://github.com/spark/particle-api-js/blob/262e1d97643255054f39834d337ff9580c250e4e/src/Particle.js#L258-L262 "Source code on GitHub")
 
 Call a device function
 
@@ -16,7 +16,7 @@ Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Refe
 
 # claimDevice
 
-[src/Particle.js:92-97](https://github.com/spark/particle-api-js/blob/48ac90b862b5a7d072a72e7da3176320b6ffa797/src/Particle.js#L92-L97 "Source code on GitHub")
+[src/Particle.js:92-97](https://github.com/spark/particle-api-js/blob/262e1d97643255054f39834d337ff9580c250e4e/src/Particle.js#L92-L97 "Source code on GitHub")
 
 Claim a device to the account. The device must be online and unclaimed.
 
@@ -31,7 +31,7 @@ Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Refe
 
 # compileCode
 
-[src/Particle.js:204-213](https://github.com/spark/particle-api-js/blob/48ac90b862b5a7d072a72e7da3176320b6ffa797/src/Particle.js#L204-L213 "Source code on GitHub")
+[src/Particle.js:204-213](https://github.com/spark/particle-api-js/blob/262e1d97643255054f39834d337ff9580c250e4e/src/Particle.js#L204-L213 "Source code on GitHub")
 
 Compile firmware using the Particle Cloud
 
@@ -47,7 +47,7 @@ Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Refe
 
 # createUser
 
-[src/Particle.js:38-42](https://github.com/spark/particle-api-js/blob/48ac90b862b5a7d072a72e7da3176320b6ffa797/src/Particle.js#L38-L42 "Source code on GitHub")
+[src/Particle.js:38-42](https://github.com/spark/particle-api-js/blob/262e1d97643255054f39834d337ff9580c250e4e/src/Particle.js#L38-L42 "Source code on GitHub")
 
 Create a user account for the Particle Cloud
 
@@ -61,7 +61,7 @@ Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Refe
 
 # createWebhook
 
-[src/Particle.js:331-339](https://github.com/spark/particle-api-js/blob/48ac90b862b5a7d072a72e7da3176320b6ffa797/src/Particle.js#L331-L339 "Source code on GitHub")
+[src/Particle.js:331-339](https://github.com/spark/particle-api-js/blob/262e1d97643255054f39834d337ff9580c250e4e/src/Particle.js#L331-L339 "Source code on GitHub")
 
 Create a webhook
 
@@ -84,7 +84,7 @@ Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Refe
 
 # deleteWebhook
 
-[src/Particle.js:347-349](https://github.com/spark/particle-api-js/blob/48ac90b862b5a7d072a72e7da3176320b6ffa797/src/Particle.js#L347-L349 "Source code on GitHub")
+[src/Particle.js:347-349](https://github.com/spark/particle-api-js/blob/262e1d97643255054f39834d337ff9580c250e4e/src/Particle.js#L347-L349 "Source code on GitHub")
 
 Delete a webhook
 
@@ -98,7 +98,7 @@ Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Refe
 
 # downloadFirmwareBinary
 
-[src/Particle.js:221-230](https://github.com/spark/particle-api-js/blob/48ac90b862b5a7d072a72e7da3176320b6ffa797/src/Particle.js#L221-L230 "Source code on GitHub")
+[src/Particle.js:221-230](https://github.com/spark/particle-api-js/blob/262e1d97643255054f39834d337ff9580c250e4e/src/Particle.js#L221-L230 "Source code on GitHub")
 
 Download a firmware binary
 
@@ -112,7 +112,7 @@ Returns **[Request](https://developer.mozilla.org/en-US/Add-ons/SDK/High-Level_A
 
 # flashDevice
 
-[src/Particle.js:173-182](https://github.com/spark/particle-api-js/blob/48ac90b862b5a7d072a72e7da3176320b6ffa797/src/Particle.js#L173-L182 "Source code on GitHub")
+[src/Particle.js:173-182](https://github.com/spark/particle-api-js/blob/262e1d97643255054f39834d337ff9580c250e4e/src/Particle.js#L173-L182 "Source code on GitHub")
 
 Compile and flash application firmware to a device
 
@@ -128,7 +128,7 @@ Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Refe
 
 # flashTinker
 
-[src/Particle.js:190-194](https://github.com/spark/particle-api-js/blob/48ac90b862b5a7d072a72e7da3176320b6ffa797/src/Particle.js#L190-L194 "Source code on GitHub")
+[src/Particle.js:190-194](https://github.com/spark/particle-api-js/blob/262e1d97643255054f39834d337ff9580c250e4e/src/Particle.js#L190-L194 "Source code on GitHub")
 
 Flash the Tinker application to a device
 
@@ -142,7 +142,7 @@ Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Refe
 
 # getClaimCode
 
-[src/Particle.js:126-128](https://github.com/spark/particle-api-js/blob/48ac90b862b5a7d072a72e7da3176320b6ffa797/src/Particle.js#L126-L128 "Source code on GitHub")
+[src/Particle.js:126-128](https://github.com/spark/particle-api-js/blob/262e1d97643255054f39834d337ff9580c250e4e/src/Particle.js#L126-L128 "Source code on GitHub")
 
 Generate a claim code to use in the device claiming process.
 
@@ -156,7 +156,7 @@ Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Refe
 
 # getDevice
 
-[src/Particle.js:82-84](https://github.com/spark/particle-api-js/blob/48ac90b862b5a7d072a72e7da3176320b6ffa797/src/Particle.js#L82-L84 "Source code on GitHub")
+[src/Particle.js:82-84](https://github.com/spark/particle-api-js/blob/262e1d97643255054f39834d337ff9580c250e4e/src/Particle.js#L82-L84 "Source code on GitHub")
 
 Get detailed informationa about a device
 
@@ -170,7 +170,7 @@ Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Refe
 
 # getEventStream
 
-[src/Particle.js:274-298](https://github.com/spark/particle-api-js/blob/48ac90b862b5a7d072a72e7da3176320b6ffa797/src/Particle.js#L274-L298 "Source code on GitHub")
+[src/Particle.js:274-298](https://github.com/spark/particle-api-js/blob/262e1d97643255054f39834d337ff9580c250e4e/src/Particle.js#L274-L298 "Source code on GitHub")
 
 Get a stream of events
 
@@ -188,7 +188,7 @@ emit 'event' events, as well as the specific named event.
 
 # getUserInfo
 
-[src/Particle.js:365-367](https://github.com/spark/particle-api-js/blob/48ac90b862b5a7d072a72e7da3176320b6ffa797/src/Particle.js#L365-L367 "Source code on GitHub")
+[src/Particle.js:365-367](https://github.com/spark/particle-api-js/blob/262e1d97643255054f39834d337ff9580c250e4e/src/Particle.js#L365-L367 "Source code on GitHub")
 
 Get details about the current user
 
@@ -201,7 +201,7 @@ Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Refe
 
 # getVariable
 
-[src/Particle.js:148-150](https://github.com/spark/particle-api-js/blob/48ac90b862b5a7d072a72e7da3176320b6ffa797/src/Particle.js#L148-L150 "Source code on GitHub")
+[src/Particle.js:148-150](https://github.com/spark/particle-api-js/blob/262e1d97643255054f39834d337ff9580c250e4e/src/Particle.js#L148-L150 "Source code on GitHub")
 
 Get the value of a device variable
 
@@ -216,7 +216,7 @@ Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Refe
 
 # listAccessTokens
 
-[src/Particle.js:63-65](https://github.com/spark/particle-api-js/blob/48ac90b862b5a7d072a72e7da3176320b6ffa797/src/Particle.js#L63-L65 "Source code on GitHub")
+[src/Particle.js:63-65](https://github.com/spark/particle-api-js/blob/262e1d97643255054f39834d337ff9580c250e4e/src/Particle.js#L63-L65 "Source code on GitHub")
 
 List all valid access tokens for a Particle Cloud account
 
@@ -230,7 +230,7 @@ Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Refe
 
 # listBuildTargets
 
-[src/Particle.js:393-399](https://github.com/spark/particle-api-js/blob/48ac90b862b5a7d072a72e7da3176320b6ffa797/src/Particle.js#L393-L399 "Source code on GitHub")
+[src/Particle.js:393-399](https://github.com/spark/particle-api-js/blob/262e1d97643255054f39834d337ff9580c250e4e/src/Particle.js#L393-L399 "Source code on GitHub")
 
 List valid build targets to be used for compiling
 
@@ -244,7 +244,7 @@ Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Refe
 
 # listDevices
 
-[src/Particle.js:72-74](https://github.com/spark/particle-api-js/blob/48ac90b862b5a7d072a72e7da3176320b6ffa797/src/Particle.js#L72-L74 "Source code on GitHub")
+[src/Particle.js:72-74](https://github.com/spark/particle-api-js/blob/262e1d97643255054f39834d337ff9580c250e4e/src/Particle.js#L72-L74 "Source code on GitHub")
 
 List devices claimed to the account
 
@@ -257,7 +257,7 @@ Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Refe
 
 # listWebhooks
 
-[src/Particle.js:356-358](https://github.com/spark/particle-api-js/blob/48ac90b862b5a7d072a72e7da3176320b6ffa797/src/Particle.js#L356-L358 "Source code on GitHub")
+[src/Particle.js:356-358](https://github.com/spark/particle-api-js/blob/262e1d97643255054f39834d337ff9580c250e4e/src/Particle.js#L356-L358 "Source code on GitHub")
 
 List all webhooks owned by the account
 
@@ -270,7 +270,7 @@ Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Refe
 
 # login
 
-[src/Particle.js:21-30](https://github.com/spark/particle-api-js/blob/48ac90b862b5a7d072a72e7da3176320b6ffa797/src/Particle.js#L21-L30 "Source code on GitHub")
+[src/Particle.js:21-30](https://github.com/spark/particle-api-js/blob/262e1d97643255054f39834d337ff9580c250e4e/src/Particle.js#L21-L30 "Source code on GitHub")
 
 Login to Particle Cloud using an existing Particle acccount.
 
@@ -285,7 +285,7 @@ Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Refe
 
 # publishEvent
 
-[src/Particle.js:308-314](https://github.com/spark/particle-api-js/blob/48ac90b862b5a7d072a72e7da3176320b6ffa797/src/Particle.js#L308-L314 "Source code on GitHub")
+[src/Particle.js:308-314](https://github.com/spark/particle-api-js/blob/262e1d97643255054f39834d337ff9580c250e4e/src/Particle.js#L308-L314 "Source code on GitHub")
 
 Publish a event to the Particle Cloud
 
@@ -301,7 +301,7 @@ Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Refe
 
 # removeAccessToken
 
-[src/Particle.js:51-55](https://github.com/spark/particle-api-js/blob/48ac90b862b5a7d072a72e7da3176320b6ffa797/src/Particle.js#L51-L55 "Source code on GitHub")
+[src/Particle.js:51-55](https://github.com/spark/particle-api-js/blob/262e1d97643255054f39834d337ff9580c250e4e/src/Particle.js#L51-L55 "Source code on GitHub")
 
 Revoke an access token
 
@@ -316,7 +316,7 @@ Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Refe
 
 # removeDevice
 
-[src/Particle.js:105-107](https://github.com/spark/particle-api-js/blob/48ac90b862b5a7d072a72e7da3176320b6ffa797/src/Particle.js#L105-L107 "Source code on GitHub")
+[src/Particle.js:105-107](https://github.com/spark/particle-api-js/blob/262e1d97643255054f39834d337ff9580c250e4e/src/Particle.js#L105-L107 "Source code on GitHub")
 
 Unclaim / Remove a device from your account
 
@@ -330,7 +330,7 @@ Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Refe
 
 # renameDevice
 
-[src/Particle.js:116-118](https://github.com/spark/particle-api-js/blob/48ac90b862b5a7d072a72e7da3176320b6ffa797/src/Particle.js#L116-L118 "Source code on GitHub")
+[src/Particle.js:116-118](https://github.com/spark/particle-api-js/blob/262e1d97643255054f39834d337ff9580c250e4e/src/Particle.js#L116-L118 "Source code on GitHub")
 
 Rename a device
 
@@ -345,7 +345,7 @@ Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Refe
 
 # sendPublicKey
 
-[src/Particle.js:240-248](https://github.com/spark/particle-api-js/blob/48ac90b862b5a7d072a72e7da3176320b6ffa797/src/Particle.js#L240-L248 "Source code on GitHub")
+[src/Particle.js:240-248](https://github.com/spark/particle-api-js/blob/262e1d97643255054f39834d337ff9580c250e4e/src/Particle.js#L240-L248 "Source code on GitHub")
 
 Send a new device public key to the Particle Cloud
 
@@ -361,7 +361,7 @@ Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Refe
 
 # signalDevice
 
-[src/Particle.js:159-163](https://github.com/spark/particle-api-js/blob/48ac90b862b5a7d072a72e7da3176320b6ffa797/src/Particle.js#L159-L163 "Source code on GitHub")
+[src/Particle.js:159-163](https://github.com/spark/particle-api-js/blob/262e1d97643255054f39834d337ff9580c250e4e/src/Particle.js#L159-L163 "Source code on GitHub")
 
 Instruct the device to turn on/off the LED in a rainbow pattern
 
