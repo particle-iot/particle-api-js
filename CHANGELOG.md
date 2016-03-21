@@ -1,5 +1,9 @@
 # changelog
 
+## 5.2.5 - 21 Mar 2016
+
+* Handle `JSON.parse` exceptions when parsing event stream
+
 ## 5.2.4 - 21 Mar 2016
 
 * `flashDevice` `latest` also needs to be a string, not a boolean. [#12](https://github.com/spark/particle-api-js/issues/12)
