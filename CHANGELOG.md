@@ -1,5 +1,9 @@
 # changelog
 
+## 5.2.6 - 25 Mar 2016
+
+* Don't double publish event stream events if the event is named `event`.
+
 ## 5.2.5 - 21 Mar 2016
 
 * Handle `JSON.parse` exceptions when parsing event stream
