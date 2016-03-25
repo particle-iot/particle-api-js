@@ -146,7 +146,9 @@ class EventStream extends EventEmitter {
 				if (this.data.length > 0 && this.eventName) {
 					const event = JSON.parse(this.data);
 					event.name = this.eventName;
-					this.emit(this.eventName, event);
+					if (this.eventName !== 'event') {
+						this.emit(this.eventName, event);
+					}
 					this.emit('event', event);
 					this.data = '';
 				}
