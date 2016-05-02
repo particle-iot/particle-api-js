@@ -73,7 +73,7 @@ describe('ParticleAPI', () => {
 			 * allowing us to directly inspect the request as it would be sent.
 			 * tl;dr ~ takes HTTP out of the picture and pretends we're the server.
 			 */
-			sinon.stub(api, 'request', (opts) => {
+			sinon.stub(api, '_request', (opts) => {
 				return new Promise((resolve) => resolve(opts));
 			});
 		});
@@ -216,6 +216,7 @@ describe('ParticleAPI', () => {
 				return api.flashDevice(props).then(({ files, form }) => {
 					form.should.be.instanceOf(Object);
 					files.should.be.instanceOf(Object);
+					files.should.have.property('file').and.be.ok;
 					form.build_target_version.should.equal(props.targetVersion);
 				});
 			});
@@ -230,6 +231,7 @@ describe('ParticleAPI', () => {
 				return api.compileCode(props).then(({ files, form }) => {
 					form.should.be.instanceOf(Object);
 					files.should.be.instanceOf(Object);
+					files.should.have.property('file').and.be.ok;
 					form.build_target_version.should.equal(props.targetVersion);
 				});
 			});

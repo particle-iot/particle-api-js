@@ -419,6 +419,22 @@ class Particle {
 	}
 
 	request({ uri, method, data = undefined, auth, query = undefined, form = undefined, files = undefined }) {
+		let requestFiles;
+		if (files) {
+			requestFiles = {};
+			Object.keys(files).forEach((k, i) => {
+				const name = i ? `file${i + 1}` : 'file';
+				requestFiles[name] = {
+					data: files[k],
+					path: k
+				};
+			});
+		}
+
+		return this._request({ uri, method, data, auth, query, form, files: requestFiles });
+	}
+
+	_request({ uri, method, data, auth, query, form, files }) {
 		return new Promise((fulfill, reject) => {
 			const req = request(method, uri);
 			req.use(this.prefix);
@@ -427,8 +443,8 @@ class Particle {
 				req.query(query);
 			}
 			if (files) {
-				Object.keys(files).forEach((k, i) => {
-					req.attach(`file${i + 1}`, files[k], k);
+				Object.keys(files).forEach(k => {
+					req.attach(k, files[k].data, files[k].path);
 				});
 				if (form) {
 					Object.keys(form).forEach(k => {
