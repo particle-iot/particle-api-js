@@ -1,5 +1,9 @@
 # changelog
 
+## 5.2.7 - 2 May 2016
+
+* Fix files parameter default name to be `file` and not `file1`.
+
 ## 5.2.6 - 25 Mar 2016
 
 * Don't double publish event stream events if the event is named `event`.
