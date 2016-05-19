@@ -322,14 +322,16 @@ class Particle {
 	 * @param  {Object} [$0.headers]            Additional headers to add to the webhook
 	 * @param  {Object} [$0.json]               JSON data
 	 * @param  {Object} [$0.query]              Query string data
+	 * @param  {Object} [$0.responseTemplate]   Webhook response template
+	 * @param  {Object} [$0.responseTopic]      Webhook response topic
 	 * @param  {Boolean} [$0.rejectUnauthorized] Reject invalid HTTPS certificates
 	 * @param  {Object} [$0.webhookAuth]        HTTP Basic Auth information
 	 * @param  {Object} [$0.form]               Form data
 	 * @param  {String} $0.auth               Access Token
 	 * @return {Promise}
 	 */
-	createWebhook({ deviceId, name, url, requestType, headers, json, query, rejectUnauthorized, webhookAuth, form, auth }) {
-		const data = { event: name, url, requestType, headers, json, query, rejectUnauthorized, auth: webhookAuth, form };
+	createWebhook({ deviceId, name, url, requestType, headers, json, query, responseTemplate, responseTopic, rejectUnauthorized, webhookAuth, form, auth }) {
+		const data = { event: name, url, requestType, headers, json, query, responseTemplate, responseTopic, rejectUnauthorized, auth: webhookAuth, form };
 		if (deviceId === 'mine') {
 			data.mydevices = true;
 		} else {
