@@ -41,6 +41,8 @@ const props = {
 	json: {
 		j: 'd'
 	},
+	responseTopic: 'topic',
+	responseTemplate: 'template',
 	webhookAuth: {
 		username: 'u',
 		password: 'p'
@@ -354,6 +356,8 @@ describe('ParticleAPI', () => {
 					data.event.should.equal(props.name);
 					data.url.should.equal(props.url);
 					data.deviceid.should.equal(props.deviceId);
+					data.responseTemplate.should.equal(props.responseTemplate);
+					data.responseTopic.should.equal(props.responseTopic);
 					data.query.should.equal(props.query);
 					data.form.should.equal(props.form);
 					data.json.should.equal(props.json);
