@@ -1,9 +1,28 @@
 # particle-api-js
-JS Library for the Particle API
+JS Library for the Particle Cloud API for Node.js and the browser
 
-## Install
+[![Build Status](https://travis-ci.org/spark/particle-api-js.svg?branch=master)](https://travis-ci.org/spark/particle-api-js)
+
+## Installation
+
+`particle-api-js` is available from `npm` to use in Node.js, `bower` or jsDelivr CDN for use in the browser.
 
 `npm install particle-api-js`
+
+`bower install particle-api-js`
+
+`<script type="text/javascript" src="//cdn.jsdelivr.net/particle-api-js/5/particle.min.js">
+</script>`
+
+## Documentation
+
+First, read the [documentation for Particle API JS on the Documentation website.][docs-website] It contains examples to get started.
+
+For more details, read the [API docs on GitHub.](docs/api.md)
+
+## Examples
+
+There [are many snippets of using Particle API JS on the Documentation website][docs-website] and some complete examples in the [GitHub examples directory.](/examples)
 
 ## Building
 
@@ -13,6 +32,17 @@ Make your changes to the files in the `src` directory, then from the project dir
 
 The `dist` directory will contain the compiled and minified files that can be included in your project.
 
-## Documentation
+Run tests to make sure your changes are good:
 
-[API Docs](docs/api.md)
+`npm test`
+
+Update the API docs with your changes:
+
+`npm run docs`
+
+
+## License
+
+Copyright &copy; 2016 Particle Industries, Inc. Released under the Apache 2.0 license. See [LICENSE](/LICENSE) for details.
+
+[docs-website]: https://docs.particle.io/reference/javascript/
