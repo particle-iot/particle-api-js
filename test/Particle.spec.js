@@ -100,6 +100,13 @@ describe('ParticleAPI', () => {
 				});
 			});
 		});
+		describe('.resetPassword', () => {
+			it('sends request', () => {
+				return api.resetPassword(props).then(({ data }) => {
+					data.username.should.equal(props.username);
+				});
+			});
+		});
 		describe('.removeAccessToken', () => {
 			it('sends credentials', () => {
 				return api.removeAccessToken(props).then(({ auth }) => {

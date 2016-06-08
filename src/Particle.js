@@ -46,7 +46,7 @@ class Particle {
 
 	/**
 	 * Create a user account for the Particle Cloud
-	 * @param  {String} $0.username Desired username
+	 * @param  {String} $0.username Email of the new user
 	 * @param  {String} $0.password Password
 	 * @return {Promise}
 	 */
@@ -54,6 +54,15 @@ class Particle {
 		return this.post('/v1/users', {
 			username, password,
 		});
+	}
+
+	/**
+	 * Send reset password email for a Particle Cloud user account
+	 * @param  {String} $0.username Email of the user
+	 * @return {Promise}
+	 */
+	resetPassword({ username }) {
+		return this.post('/v1/user/password-reset', { username });
 	}
 
 	/**
