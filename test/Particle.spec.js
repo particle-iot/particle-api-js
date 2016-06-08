@@ -346,6 +346,27 @@ describe('ParticleAPI', () => {
 					uri.should.endWith('v1/orgs/test-org/products/test-product/events/test');
 				});
 			});
+			it('requests a product\'s event without an org provided', () => {
+				return api.getEventStream({ product: 'test-product'}).then(({ uri }) => {
+					uri.should.endWith('v1/products/test-product/events');
+				});
+			});
+			it('requests a product\'s named event without an org provided', () => {
+				return api.getEventStream({ product: 'test-product', name: 'foo'}).then(({ uri }) => {
+					uri.should.endWith('v1/products/test-product/events/foo');
+				});
+			});
+			it('requests product\'s device events', () => {
+				return api.getEventStream({ product: 'test-product', deviceId: props.deviceId }).then(({ uri }) => {
+					uri.should.endWith(`v1/products/test-product/devices/${props.deviceId}/events`);
+				});
+			});
+			it('requests product\'s device named events', () => {
+				return api.getEventStream({ product: 'test-product', deviceId: props.deviceId, name: 'foo' }).then(({ uri }) => {
+					uri.should.endWith(`v1/products/test-product/devices/${props.deviceId}/events/foo`);
+				});
+			});
+
 		});
 		describe('.publishEvent', () => {
 			it('sends proper data', () => {
