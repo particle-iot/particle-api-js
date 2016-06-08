@@ -4,8 +4,23 @@ import prefix from 'superagent-prefix';
 import Defaults from './Defaults';
 import EventStream from './EventStream';
 
+/**
+ * Particle Cloud API wrapper.
+ *
+ * See <https://docs.particle.io/reference/javascript/> for examples
+ * of using the `Particle` class.
+ *
+ * Most Particle methods take a single unnamed argument object documented as
+ * `$0` with key/value pairs for each option.
+ */
 class Particle {
-
+	/**
+	 * Contructor for the Cloud API wrapper.
+	 *
+	 * Create a new Particle object and call methods below on it.
+	 *
+	 * @param  {Object} options Options to be used for all requests (see [Defaults](../src/Defaults.js))
+	 */
 	constructor(options = Defaults) {
 		Object.assign(this, options);
 		this.prefix = prefix(this.baseUrl);
