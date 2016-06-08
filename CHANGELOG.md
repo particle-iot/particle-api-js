@@ -1,5 +1,12 @@
 # changelog
 
+## 5.3.0 - 8 June 2016
+
+* Add details to README
+* Adding responseTemplate and responseTopic to webhook creation. Thanks @acasas! [#20](https://github.com/spark/particle-api-js/pull/20)
+* Add password reset route [#27](https://github.com/spark/particle-api-js/pull/27)
+* Make event stream compatible with new product routes [#28](https://github.com/spark/particle-api-js/pull/28)
+
 ## 5.2.7 - 2 May 2016
 
 * Fix files parameter default name to be `file` and not `file1`.
