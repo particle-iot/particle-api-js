@@ -281,7 +281,7 @@ class Particle {
 	 * @param  {String} [$0.deviceId] Device ID or Name, or `mine` to indicate only your devices.
 	 * @param  {String} [$0.name]     Event Name
 	 * @param  {String} [$0.org]     Organization Slug
-	 * @param  {String} [$0.product]     Product Slug
+	 * @param  {String} [$0.product]     Product Slug or Product ID
 	 * @param  {String} $0.auth     Access Token
 	 * @return {Promise} If the promise resolves, the resolution value will be an EventStream object that will
 	 * emit 'event' events, as well as the specific named event.
@@ -290,25 +290,25 @@ class Particle {
 		let uri = '/v1/';
 		if (org) {
 			uri += `orgs/${org}/`;
-			if (product) {
-				uri += `products/${product}/`;
-			} else if (deviceId && deviceId.toLowerCase() !== 'mine') {
-				uri += `devices/${deviceId}/`;
-			}
-			uri += 'events';
-		} else {
-			if (!deviceId) {
-				uri += 'events';
-			} else if (deviceId.toLowerCase() === 'mine') {
-				uri += 'devices/events';
-			} else {
-				uri += `devices/${deviceId}/events`;
+		}
+
+		if (product) {
+			uri += `products/${product}/`;
+		}
+
+		if (deviceId) {
+			uri += 'devices/';
+			if (!(deviceId.toLowerCase() === 'mine')) {
+				uri += `${deviceId}/`;
 			}
 		}
+
+		uri += 'events';
 
 		if (name) {
 			uri += `/${encodeURIComponent(name)}`;
 		}
+
 		return new EventStream(`${this.baseUrl}${uri}`, auth, { debug: this.debug }).connect();
 	}
 
