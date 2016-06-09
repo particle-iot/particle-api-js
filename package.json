@@ -30,7 +30,7 @@
     "spark",
     "api"
   ],
-  "license": "LGPL-3.0",
+  "license": "Apache-2.0",
   "devDependencies": {
     "babel-cli": "^6.5.1",
     "babel-eslint": "^5.0.0",
