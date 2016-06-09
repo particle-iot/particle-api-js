@@ -424,6 +424,65 @@ class Particle {
 		return this.get('/v1/build_targets', auth, query);
 	}
 
+	/**
+	 * List firmware libraries
+	 * @param  {String} $0.auth Access Token
+	 * @param  {Number} $0.page Page index (default, first page)
+	 * @param  {Number} $0.limit Number of items per page
+	 * @param  {String} $0.query Search term for the libraries
+	 * @param  {String} $0.order Ordering key for the library list
+	 * @param  {Array<String>}  $0.architectures List of architectures to filter
+	 * @param  {String} $0.category Category to filter
+	 * @return {Promise}
+	 */
+	listLibraries({ auth, page, limit, query, order, architectures, category }) {
+		return this.get('/v1/libraries', auth, {
+			page,
+			query,
+			limit,
+			order,
+			architectures: (Array.isArray(architectures) ? architectures.join(',') : architectures),
+			category
+		});
+	}
+
+	/**
+	 * Get firmware library details
+	 * @param  {String} $0.auth Access Token
+	 * @param  {String} $0.name Name of the library to fetch
+	 * @param  {String} $0.version Version of the library to fetch (default: latest)
+	 * @return {Promise}
+	 */
+	getLibrary({ auth, name, version }) {
+		return this.get(`/v1/libraries/${name}`, auth, { version });
+	}
+
+	/**
+	 * Firmware library details for each version
+	 * @param  {String} $0.auth Access Token
+	 * @param  {String} $0.name Name of the library to fetch
+	 * @param  {Number} $0.page Page index (default, first page)
+	 * @param  {Number} $0.limit Number of items per page
+	 * @return {Promise}
+	 */
+	getLibraryVersions({ auth, name, page, limit }) {
+		return this.get(`/v1/libraries/${name}/versions`, auth, {
+			page,
+			limit
+		});
+	}
+
+	/**
+	 * Publish a new version of a firmware library
+	 * @param  {String} $0.auth Access Token
+	 * @param  {String} $0.name Name of the library to publish
+	 * @param  {String} $0.repo Public git URL of the library
+	 * @return {Promise}
+	 */
+	createLibrary({ auth, name, repo }) {
+		return this.post(`/v1/libraries/${name}`, { repo }, auth);
+	}
+
 	get(uri, auth, query = undefined) {
 		return this.request({ uri, auth, method: 'get', query: query });
 	}

@@ -463,9 +463,90 @@ describe('ParticleAPI', () => {
 				});
 			});
 		});
+		describe('.listLibraries', () => {
+			it('generates request', () => {
+				return api.listLibraries({ auth: 'X' }).then((results) => {
+					results.uri.should.equal('/v1/libraries');
+					results.auth.should.equal('X');
+				});
+			});
+			it('forwards query parameters', () => {
+				return api.listLibraries({
+					auth: 'X',
+					page: 3,
+					query: 'abc',
+					order: 'name',
+					architectures:[ 'spark-core', 'particle-photon' ],
+					category: 'Other'
+				}).then((results) => {
+					results.query.should.eql({
+						page: 3,
+						limit: undefined,
+						query: 'abc',
+						order: 'name',
+						architectures: 'spark-core,particle-photon',
+						category: 'Other'
+					});
+				});
+			});
+		});
+		describe('.getLibrary', () => {
+			it('generates request', () => {
+				return api.getLibrary({ name: 'mylib', auth: 'X' }).
+				should.eventually.match({
+					uri: '/v1/libraries/mylib',
+					auth: 'X'
+				});
+			});
+			it('forwards query parameters', () => {
+				return api.getLibrary({
+					name: 'mylib',
+					auth: 'X',
+					version: '1.2.0'
+				}).then((results) => {
+					results.query.should.eql({
+						version: '1.2.0'
+					});
+				});
+			});
+		});
+		describe('.getLibraryVersions', () => {
+			it('generates request', () => {
+				return api.getLibraryVersions({ name: 'mylib', auth: 'X' }).
+				should.eventually.match({
+					uri: '/v1/libraries/mylib/versions',
+					auth: 'X'
+				});
+			});
+			it('forwards query parameters', () => {
+				return api.getLibraryVersions({
+					name: 'mylib',
+					auth: 'X',
+					page: 3
+				}).then((results) => {
+					results.query.should.eql({
+						page: 3,
+						limit: undefined
+					});
+				});
+			});
+		});
+		describe('.createLibrary', () => {
+			it('generates request', () => {
+				return api.createLibrary({
+					name: 'mylib',
+					repo: 'myrepo',
+					auth: 'X'
+				}).should.eventually.match({
+					method: 'post',
+					uri: '/v1/libraries/mylib',
+					auth: 'X'
+				});
+			});
+		});
 	});
 
-	describe('#request', () => {
+	describe('.request', () => {
 		beforeEach(() => {
 			server = createServer();
 			server.listen(0);
