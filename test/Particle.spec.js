@@ -5,6 +5,7 @@ import Defaults from '../src/Defaults';
 import { createServer } from 'http';
 import sinon from 'sinon';
 import EventStream from '../src/EventStream';
+import FakeAgent from './FakeAgent';
 
 let api;
 let server;
@@ -69,15 +70,7 @@ describe('ParticleAPI', () => {
 
 	describe('operations', () => {
 		beforeEach(() => {
-			/**
-			 * This replaces the underlying Particle#request method with one that
-			 * resolves to the object given as the argument to the method called,
-			 * allowing us to directly inspect the request as it would be sent.
-			 * tl;dr ~ takes HTTP out of the picture and pretends we're the server.
-			 */
-			sinon.stub(api, '_request', (opts) => {
-				return new Promise((resolve) => resolve(opts));
-			});
+			api.agent = new FakeAgent();
 		});
 
 		describe('constructor', () => {
@@ -144,8 +137,8 @@ describe('ParticleAPI', () => {
 		describe('.claimDevice', () => {
 			it('sends credentials', () => {
 				return api.claimDevice(props).then((results) => {
-					results.form.should.be.instanceOf(Object);
-					results.form.id.should.equal(props.deviceId);
+					results.data.should.be.instanceOf(Object);
+					results.data.id.should.equal(props.deviceId);
 					results.auth.should.equal(props.auth);
 				});
 			});
@@ -225,7 +218,7 @@ describe('ParticleAPI', () => {
 				return api.flashDevice(props).then(({ files, form }) => {
 					form.should.be.instanceOf(Object);
 					files.should.be.instanceOf(Object);
-					files.should.have.property('file').and.be.ok;
+					files.should.have.property('app.ino').and.be.ok;
 					form.build_target_version.should.equal(props.targetVersion);
 				});
 			});
@@ -240,7 +233,7 @@ describe('ParticleAPI', () => {
 				return api.compileCode(props).then(({ files, form }) => {
 					form.should.be.instanceOf(Object);
 					files.should.be.instanceOf(Object);
-					files.should.have.property('file').and.be.ok;
+					files.should.have.property('app.ino').and.be.ok;
 					form.build_target_version.should.equal(props.targetVersion);
 				});
 			});
@@ -492,10 +485,11 @@ describe('ParticleAPI', () => {
 		});
 		describe('.getLibrary', () => {
 			it('generates request', () => {
-				return api.getLibrary({ name: 'mylib', auth: 'X' }).
-				should.eventually.match({
-					uri: '/v1/libraries/mylib',
-					auth: 'X'
+				return api.getLibrary({ name: 'mylib', auth: 'X' }).then((results) => {
+					results.should.match({
+						uri: '/v1/libraries/mylib',
+						auth: 'X'
+					});
 				});
 			});
 			it('forwards query parameters', () => {
@@ -512,10 +506,11 @@ describe('ParticleAPI', () => {
 		});
 		describe('.getLibraryVersions', () => {
 			it('generates request', () => {
-				return api.getLibraryVersions({ name: 'mylib', auth: 'X' }).
-				should.eventually.match({
-					uri: '/v1/libraries/mylib/versions',
-					auth: 'X'
+				return api.getLibraryVersions({ name: 'mylib', auth: 'X' }).then((results) => {
+					results.should.match({
+						uri: '/v1/libraries/mylib/versions',
+						auth: 'X'
+					});
 				});
 			});
 			it('forwards query parameters', () => {
@@ -537,75 +532,13 @@ describe('ParticleAPI', () => {
 					name: 'mylib',
 					repo: 'myrepo',
 					auth: 'X'
-				}).should.eventually.match({
-					method: 'post',
-					uri: '/v1/libraries/mylib',
-					auth: 'X'
+				}).then((results) => {
+					results.should.match({
+						method: 'post',
+						uri: '/v1/libraries/mylib',
+						auth: 'X'
+					});
 				});
-			});
-		});
-	});
-
-	describe('.request', () => {
-		beforeEach(() => {
-			server = createServer();
-			server.listen(0);
-		});
-		it('generates request', (done) => {
-			api.request({
-				uri: `http://127.0.0.1:${ server.address().port }`,
-				auth: 'X',
-				data: { test: true },
-				method: 'post',
-			});
-			server.once('request', (req, res) => {
-				let body = '';
-				req.headers.authorization.should.equal('Bearer X');
-				req.method.should.equal('POST');
-				req.on('data', (dat) => {
-					body += dat;
-				});
-				req.on('end', () => {
-					body.should.equal(JSON.stringify({ test: true }));
-					done();
-				});
-				res.end();
-			});
-		});
-		it('reports HTTP error', (done) => {
-			api.request({
-				uri: `http://127.0.0.1:${ server.address().port }`,
-				auth: 'X',
-				data: { test: true },
-				method: 'post',
-			}).then(() => {
-				done(new Error('Server returned 400 error, but request succeeded'));
-			}).catch((err) => {
-				err.statusCode.should.equal(400);
-				err.errorDescription.should.containEql('HTTP error 400 from http://127.0.0.1');
-				done();
-			}).catch(done);
-			server.once('request', (req, res) => {
-				res.writeHead(400);
-				res.write(JSON.stringify({
-					error: 'wat_error', error_description: 'WAT',
-				}));
-				res.end();
-			});
-		});
-		it('reports network error', (done) => {
-			api.request({
-				uri: `http://127.0.0.1:${ server.address().port }`,
-				auth: 'X',
-				data: { test: true },
-				method: 'post',
-			}).then(() => {
-				done(new Error('Network error occurred, but request succeeded'));
-			}).catch(() => {
-				done();
-			});
-			server.once('request', (req, res) => {
-				res.socket.destroy();
 			});
 		});
 	});

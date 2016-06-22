@@ -1,8 +1,8 @@
 import 'babel-polyfill';
 import request from 'superagent';
-import prefix from 'superagent-prefix';
 import Defaults from './Defaults';
 import EventStream from './EventStream';
+import Agent from './Agent';
 
 /**
  * Particle Cloud API wrapper.
@@ -23,7 +23,7 @@ class Particle {
 	 */
 	constructor(options = Defaults) {
 		Object.assign(this, options);
-		this.prefix = prefix(this.baseUrl);
+		this.agent = new Agent(this.baseUrl);
 	}
 
 	/**
@@ -41,7 +41,7 @@ class Particle {
 			client_id: this.clientId,
 			client_secret: this.clientSecret,
 			expires_in: tokenDuration,
-		}, method: 'post' });
+		}});
 	}
 
 	/**
@@ -114,10 +114,10 @@ class Particle {
 	 * @return {Promise}
 	 */
 	claimDevice({ deviceId, requestTransfer, auth }) {
-		return this.request({ uri: '/v1/devices', form: {
+		return this.post('/v1/devices', {
 			id: deviceId,
 			request_transfer: !!requestTransfer
-		}, auth, method: 'post' });
+		}, auth);
 	}
 
 	/**
@@ -484,98 +484,27 @@ class Particle {
 	}
 
 	get(uri, auth, query = undefined) {
-		return this.request({ uri, auth, method: 'get', query: query });
+		return this.agent.get(uri, auth, query);
 	}
 
 	head(uri, auth) {
-		return this.request({ uri, auth, method: 'head' });
+		return this.agent.head(uri, auth);
 	}
 
 	post(uri, data, auth) {
-		return this.request({ uri, data, auth, method: 'post' });
+		return this.agent.post(uri, data, auth);
 	}
 
 	put(uri, data, auth) {
-		return this.request({ uri, data, auth, method: 'put' });
+		return this.agent.put(uri, data, auth);
 	}
 
 	delete(uri, data, auth) {
-		return this.request({ uri, data, auth, method: 'delete' });
+		return this.agent.delete(uri, data, auth);
 	}
 
-	request({ uri, method, data = undefined, auth, query = undefined, form = undefined, files = undefined }) {
-		let requestFiles;
-		if (files) {
-			requestFiles = {};
-			Object.keys(files).forEach((k, i) => {
-				const name = i ? `file${i + 1}` : 'file';
-				requestFiles[name] = {
-					data: files[k],
-					path: k
-				};
-			});
-		}
-
-		return this._request({ uri, method, data, auth, query, form, files: requestFiles });
-	}
-
-	_request({ uri, method, data, auth, query, form, files }) {
-		return new Promise((fulfill, reject) => {
-			const req = request(method, uri);
-			req.use(this.prefix);
-			this.headers(req, auth);
-			if (query) {
-				req.query(query);
-			}
-			if (files) {
-				Object.keys(files).forEach(k => {
-					req.attach(k, files[k].data, files[k].path);
-				});
-				if (form) {
-					Object.keys(form).forEach(k => {
-						req.field(k, form[k]);
-					});
-				}
-			} else if (form) {
-				req.type('form');
-				req.send(form);
-			} else if (data) {
-				req.send(data);
-			}
-
-			if (this.debug) {
-				this.debug(req);
-			}
-
-			req.end((error, res) => {
-				const body = res && res.body;
-				if (error) {
-					const statusCode = error.status;
-					let errorDescription = `${statusCode ? 'HTTP error' : 'Network error'} ${statusCode} from ${uri}`;
-					if (body && body.error_description) {
-						errorDescription += ' - ' + body.error_description;
-					}
-					reject({ statusCode, errorDescription, error, body });
-				} else {
-					fulfill({
-						body: body,
-						statusCode: res.statusCode,
-					});
-				}
-			});
-		});
-	}
-
-	headers(req, auth) {
-		if (!auth) {
-			return;
-		}
-
-		if (typeof auth === 'object') {
-			req.auth(auth.username, auth.password);
-		} else {
-			req.set({ Authorization: `Bearer ${auth}` });
-		}
+	request(args) {
+		return this.agent.request(args);
 	}
 }
 
