@@ -527,6 +527,7 @@ class Particle {
 			if (query) {
 				req.query(query);
 			}
+			req.timeout(this.timeout);
 			if (files) {
 				Object.keys(files).forEach(k => {
 					req.attach(k, files[k].data, files[k].path);
