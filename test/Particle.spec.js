@@ -2,6 +2,7 @@ const should = require('should'); // monkeypatch the world~!1
 
 import Particle from '../src/Particle';
 import Defaults from '../src/Defaults';
+import Client from '../src/Client';
 import { createServer } from 'http';
 import sinon from 'sinon';
 import EventStream from '../src/EventStream';
@@ -540,6 +541,17 @@ describe('ParticleAPI', () => {
 					});
 				});
 			});
+		});
+	});
+
+	describe('.client', () => {
+		it('creates a client', (done) => {
+			api.client().should.be.instanceOf(Client);
+			done();
+		});
+		it('passes the api', (done) => {
+			api.client().api.should.equal(api);
+			done();
 		});
 	});
 });

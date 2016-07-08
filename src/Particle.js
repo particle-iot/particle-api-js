@@ -3,6 +3,7 @@ import request from 'superagent';
 import Defaults from './Defaults';
 import EventStream from './EventStream';
 import Agent from './Agent';
+import Client from './Client';
 
 /**
  * Particle Cloud API wrapper.
@@ -505,6 +506,10 @@ class Particle {
 
 	request(args) {
 		return this.agent.request(args);
+	}
+
+	client(options = {}) {
+		return new Client(Object.assign({ api: this}, options));
 	}
 }
 
