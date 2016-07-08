@@ -1,7 +1,7 @@
 import {expect} from './test-setup';
 
 import Client from '../src/Client';
-import readFixture from './support/fixtures';
+import {readJSON} from './support/fixtures';
 
 let api = {};
 let token = "tok";
@@ -23,7 +23,7 @@ describe('Client', () => {
 	describe('libraries', () => {
 		it('resolves to a list of Library objects', () => {
 			api.listLibraries = () => {
-				return Promise.resolve({ body: readFixture('libraries.json') });
+				return Promise.resolve({ body: readJSON('libraries.json') });
 			};
 			return client.libraries().then((libraries) => {
 				expect(libraries.length).to.equal(1);
@@ -31,4 +31,11 @@ describe('Client', () => {
 			});
 		});
 	});
+
+	describe('downloadFile', () => {
+		it('delegates to api', () => {
+			api.downloadFile = () => { return Promise.resolve('delegated'); };
+			return client.downloadFile('url').should.eventually.equal('delegated');
+		})
+	})
 });

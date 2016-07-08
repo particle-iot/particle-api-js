@@ -55,6 +55,7 @@
     "babel-polyfill": "^6.5.0",
     "stream-http": "spark/stream-http#v2.2.1",
     "superagent": "^1.4.0",
+    "superagent-binary-parser": "^1.0.0",
     "superagent-prefix": "0.0.2"
   },
   "browser": {

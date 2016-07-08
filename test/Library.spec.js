@@ -15,4 +15,23 @@ describe('Library', () => {
 			expect(library.version).to.equal('1.0.0');
 		});
 	});
+
+	describe('download', () => {
+		it('return the file contents', () => {
+			client.downloadFile = (url) => {
+				return Promise.resolve(`${url}-content`);
+			}
+
+			const library = new Library(client, {
+				attributes: {
+					name: 'testlib',
+					version: '1.0.0'
+				},
+				links: {
+					download: 'url'
+				}
+			});
+			expect(library.download()).to.eventually.equal('url-content');
+		});
+	})
 });

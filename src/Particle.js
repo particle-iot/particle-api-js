@@ -1,5 +1,6 @@
 import 'babel-polyfill';
 import request from 'superagent';
+import binaryParser from './superagent-binary-parser';
 import Defaults from './Defaults';
 import EventStream from './EventStream';
 import Agent from './Agent';
@@ -482,6 +483,24 @@ class Particle {
 	 */
 	createLibrary({ auth, name, repo }) {
 		return this.post(`/v1/libraries/${name}`, { repo }, auth);
+	}
+
+	/**
+	 * Download an external file that may not be on the API
+	 * @param  {String} $0.url URL of the file.
+	 * @return {Promise} Resolves to a buffer with the file data
+	 */
+	downloadFile({ url }) {
+		return new Promise((fulfill, reject) => {
+			request.get(url).buffer(true)
+			.parse(binaryParser)
+			.end(function (err, res) {
+				if (err) {
+					reject(err);
+				}
+				fulfill(res.body);
+			});
+		});
 	}
 
 	get(uri, auth, query = undefined) {

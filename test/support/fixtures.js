@@ -1,11 +1,21 @@
 import fs from 'fs';
 import path from 'path';
 
-const fixtureDir = "test/fixtures";
+const fixtureDir = "../fixtures";
 
-function readFixture(filename) {
-	const lines = fs.readFileSync(path.join(fixtureDir, filename));
-	return JSON.parse(lines);
+function fixturePath(filename) {
+	return path.join(__dirname, fixtureDir, filename);
 }
 
-export default readFixture;
+function read(filename) {
+	return fs.readFileSync(fixturePath(filename));
+}
+
+function readJSON(filename) {
+	return JSON.parse(read(filename));
+}
+
+export {
+	readJSON,
+	read
+};
