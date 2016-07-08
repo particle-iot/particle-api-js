@@ -494,7 +494,7 @@ class Particle {
 		return new Promise((fulfill, reject) => {
 			request.get(url).buffer(true)
 			.parse(binaryParser)
-			.end(function (err, res) {
+			.end((err, res) => {
 				if (err) {
 					reject(err);
 				}
