@@ -8,20 +8,29 @@ export default class Client {
 
 	/**
 	 * Get firmware library objects
-	 * @param  {Number} $0.page Page index (default, first page)
-	 * @param  {Number} $0.limit Number of items per page
-	 * @param  {String} $0.query Search term for the libraries
-	 * @param  {String} $0.order Ordering key for the library list
-	 * @param  {Array<String>}  $0.architectures List of architectures to filter
-	 * @param  {String} $0.category Category to filter
+	 * @param  {Object} query The query parameters for libraries. See Particle.listLibraries
 	 * @return {Promise}
 	 */
 	libraries(query = {}) {
 		return this.api.listLibraries(Object.assign({}, query, { auth: this.auth }))
-		.then((payload) => {
+		.then(payload => {
 			const libraries = payload.body.data || [];
 			return libraries.map(l => new Library(this, l));
 		});
+	}
+
+	/**
+	 * Get one firmware library object
+	 * @param  {String} name Name of the library to fetch
+	 * @param  {Object} query The query parameters for libraries. See Particle.getLibrary
+	 * @return {Promise}
+	 */
+	library(name, query = {}) {
+		return this.api.getLibrary(Object.assign({}, query, { name, auth: this.auth }))
+			.then(payload => {
+				const library = payload.body.data || {};
+				return new Library(this, library);
+			});
 	}
 
 	downloadFile(url) {

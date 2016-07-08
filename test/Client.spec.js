@@ -25,9 +25,20 @@ describe('Client', () => {
 			api.listLibraries = () => {
 				return Promise.resolve({ body: readJSON('libraries.json') });
 			};
-			return client.libraries().then((libraries) => {
+			return client.libraries().then(libraries => {
 				expect(libraries.length).to.equal(1);
 				expect(libraries[0].name).to.equal('neopixel');
+			});
+		});
+	})
+
+	describe('library', () => {
+		it('resolves to a Library objects', () => {
+			api.getLibrary = () => {
+				return Promise.resolve({ body: readJSON('library.json') });
+			};
+			return client.library('neopixel').then(library => {
+				expect(library.name).to.equal('neopixel');
 			});
 		});
 	});

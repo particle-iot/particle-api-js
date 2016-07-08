@@ -431,18 +431,18 @@ class Particle {
 	 * @param  {String} $0.auth Access Token
 	 * @param  {Number} $0.page Page index (default, first page)
 	 * @param  {Number} $0.limit Number of items per page
-	 * @param  {String} $0.query Search term for the libraries
-	 * @param  {String} $0.order Ordering key for the library list
+	 * @param  {String} $0.filter Search term for the libraries
+	 * @param  {String} $0.sort Ordering key for the library list
 	 * @param  {Array<String>}  $0.architectures List of architectures to filter
 	 * @param  {String} $0.category Category to filter
 	 * @return {Promise}
 	 */
-	listLibraries({ auth, page, limit, query, order, architectures, category }) {
+	listLibraries({ auth, page, limit, filter, sort, architectures, category }) {
 		return this.get('/v1/libraries', auth, {
 			page,
-			query,
+			filter,
 			limit,
-			order,
+			sort,
 			architectures: (Array.isArray(architectures) ? architectures.join(',') : architectures),
 			category
 		});

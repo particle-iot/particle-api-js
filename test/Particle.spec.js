@@ -468,16 +468,16 @@ describe('ParticleAPI', () => {
 				return api.listLibraries({
 					auth: 'X',
 					page: 3,
-					query: 'abc',
-					order: 'name',
+					filter: 'abc',
+					sort: 'name',
 					architectures:[ 'spark-core', 'particle-photon' ],
 					category: 'Other'
 				}).then((results) => {
 					results.query.should.eql({
 						page: 3,
 						limit: undefined,
-						query: 'abc',
-						order: 'name',
+						filter: 'abc',
+						sort: 'name',
 						architectures: 'spark-core,particle-photon',
 						category: 'Other'
 					});

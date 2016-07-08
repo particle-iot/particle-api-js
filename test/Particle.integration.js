@@ -13,7 +13,7 @@ describe('Particle', () => {
 			const fileSize = 24684;
 			const url = `${server.url()}/${filename}`;
 			return sut.downloadFile({ url })
-			.then((contents) => {
+			.then(contents => {
 				expect(contents.length).to.equal(fileSize);
 			});
 		});
