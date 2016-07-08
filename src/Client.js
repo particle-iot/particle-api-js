@@ -1,13 +1,16 @@
 import Particle from './Particle';
+import Library from './Library';
 
-class Client {
+export default class Client {
 	constructor({ auth, api = new Particle() }) {
 		Object.assign(this, { auth, api });
 	}
 
 	libraries() {
-		return Promise.resolve([]);
+		return this.api.listLibraries()
+		.then((payload) => {
+			const libraries = payload.body.data || [];
+			return libraries.map(l => new Library(this, l));
+		});
 	}
 }
-
-export default Client;

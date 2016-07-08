@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 
-const fixtureDir = "fixtures";
+const fixtureDir = "test/fixtures";
 
 function readFixture(filename) {
 	const lines = fs.readFileSync(path.join(fixtureDir, filename));

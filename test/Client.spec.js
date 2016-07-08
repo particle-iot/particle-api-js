@@ -1,4 +1,4 @@
-const should = require('should'); // monkeypatch the world~!1
+import {expect} from './test-setup';
 
 import Client from '../src/Client';
 import readFixture from './support/fixtures';
@@ -13,19 +13,22 @@ describe('Client', () => {
 
 	describe('constructor', () => {
 		it('sets the auth token', () => {
-			client.auth.should.equal(token);
+			expect(client.auth).to.equal(token);
 		});
 		it('sets the api', () => {
-			client.api.should.equal(api);
+			expect(client.api).to.equal(api);
 		});
 	});
 
-	describe('#libraries', () => {
-		xit('resolves to a list of Library objects', () => {
+	describe('libraries', () => {
+		it('resolves to a list of Library objects', () => {
 			api.listLibraries = () => {
-				Promise.resolve(readFixture('libraries.json'));
+				return Promise.resolve({ body: readFixture('libraries.json') });
 			};
-			return client.libraries().should.finally.equal(['uber-library-example']);
+			return client.libraries().then((libraries) => {
+				expect(libraries.length).to.equal(1);
+				expect(libraries[0].name).to.equal('neopixel');
+			});
 		});
 	});
 });

@@ -1,36 +1,33 @@
-[
-  {
-    "name": "uber-library-example",
-    "version": "0.0.10",
-    "license": "MIT",
-    "author": "Joe Goggins <joe@particle.io>",
-    "maintainer": "Wojtek Siudzinski <wojtek@particle.io>",
-    "sentence": "A simple library.",
-    "paragraph": "Illustrates coding conventions of a Particle Library.",
-    "category": "Other",
-    "url": "https://github.com/spark/uber-library-example",
-    "repository": "spark/uber-library-example",
-    "architectures": [
-        "avr",
-        "spark-core",
-        "particle-photon"
-    ],
-    "dependencies": {
-        "neopixel": "^1.2.3",
-        "internet-button": "*"
-    },
-    "build": {
-        "spark-core": {
-            "environment": {
-                "CFLAGS": "-DSTM32F10X_MD"
-            }
-        },
-        "particle-photon": {
-            "buildpack": "0.4.x"
-        }
-    },
-    "versions_url": "/v1/libraries/uber-library-example/versions",
-    "published": true,
-    "stars": 6
+{
+  "data": [
+    {
+      "type": "libraries",
+      "id": "neopixel",
+      "links": {
+        "download": "https://binaries.particle.io/libraries/neopixel/neopixel-0.0.10.tar.gz"
+      },
+      "attributes": {
+        "name": "neopixel",
+        "version": "0.0.10",
+        "license": "GNU GPLv3",
+        "author": "Phil Burgess / Paint Your Dragon for Adafruit Industries",
+        "maintainer": "Brett Walach <technobly@gmail.com>",
+        "sentence": "Neopixel LED library",
+        "paragraph": "An Implementation of Adafruit's NeoPixel Library for the Spark Core, Particle Photon, P1, Electron and RedBear Duo",
+        "category": "Other",
+        "url": "https://github.com/technobly/SparkCore-NeoPixel",
+        "repository": "technobly/SparkCore-NeoPixel",
+        "architectures": [
+          "avr",
+          "spark-core",
+          "particle-photon",
+          "particle-p1",
+          "particle-electron",
+          "redbear-duo"
+        ],
+        "dependencies": {}
+      },
+      "relationships": {}
+    }
+  ]
 }
-]
