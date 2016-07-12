@@ -9,7 +9,7 @@ JS Library for the Particle Cloud API for Node.js and the browser
 
 #### Npm
 ```
-$ npm install particle-api-js`
+$ npm install particle-api-js
 ```
 
 #### Bower
