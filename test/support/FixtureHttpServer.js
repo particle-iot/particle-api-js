@@ -1,13 +1,13 @@
 // Serve files from the fixture folder
 import express from 'express';
-import {read} from './fixtures';
+import * as fixtures from '../fixtures';
 
 export default class FixtureHttpServer {
 	constructor() {
 		this.app = express();
 		this.app.get(`/:filename`, (req, res) => {
 			res.writeHead(200, {'Content-Type': 'application/octet-stream' });
-			res.end(read(req.params['filename']), 'binary');
+			res.end(fixtures.read(req.params['filename']), 'binary');
 		});
 	}
 

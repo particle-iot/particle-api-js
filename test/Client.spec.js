@@ -1,7 +1,7 @@
 import {expect} from './test-setup';
 
 import Client from '../src/Client';
-import {readJSON} from './support/fixtures';
+import * as fixtures from './fixtures';
 
 let api = {};
 let token = "tok";
@@ -22,9 +22,7 @@ describe('Client', () => {
 
 	describe('libraries', () => {
 		it('resolves to a list of Library objects', () => {
-			api.listLibraries = () => {
-				return Promise.resolve({ body: readJSON('libraries.json') });
-			};
+			api.listLibraries = () => Promise.resolve({ body: fixtures.readJSON('libraries.json') });
 			return client.libraries().then(libraries => {
 				expect(libraries.length).to.equal(1);
 				expect(libraries[0].name).to.equal('neopixel');
@@ -34,9 +32,7 @@ describe('Client', () => {
 
 	describe('library', () => {
 		it('resolves to a Library objects', () => {
-			api.getLibrary = () => {
-				return Promise.resolve({ body: readJSON('library.json') });
-			};
+			api.getLibrary = () => Promise.resolve({ body: fixtures.readJSON('library.json') });
 			return client.library('neopixel').then(library => {
 				expect(library.name).to.equal('neopixel');
 			});
@@ -45,8 +41,8 @@ describe('Client', () => {
 
 	describe('downloadFile', () => {
 		it('delegates to api', () => {
-			api.downloadFile = () => { return Promise.resolve('delegated'); };
-			return client.downloadFile('url').should.eventually.equal('delegated');
+			api.downloadFile = () => Promise.resolve('delegated');
+			return expect(client.downloadFile('url')).to.eventually.equal('delegated');
 		})
 	})
 });

@@ -1,4 +1,4 @@
-const should = require('should'); // monkeypatch the world~!1
+import should from 'should'; // monkeypatch the world~!1
 
 import Particle from '../src/Particle';
 import Defaults from '../src/Defaults';
