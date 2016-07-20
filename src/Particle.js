@@ -1,4 +1,3 @@
-import 'babel-polyfill';
 import request from 'superagent';
 import binaryParser from './superagent-binary-parser';
 import Defaults from './Defaults';
