@@ -2,8 +2,9 @@
   "name": "particle-api-js",
   "version": "5.3.0",
   "description": "Particle API Client",
-  "main": "lib",
+  "main": "lib/index.js",
   "scripts": {
+    "babel-watch": "babel src -d lib --watch --source-maps",
     "prepublish": "npm run lint && npm run compile",
     "compile": "babel src -sd lib",
     "test": "mocha test/ -R spec --compilers js:babel-register",
