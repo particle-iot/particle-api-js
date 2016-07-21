@@ -28,7 +28,7 @@ describe('Client', () => {
 				expect(libraries[0].name).to.equal('neopixel');
 			});
 		});
-	})
+	});
 
 	describe('library', () => {
 		it('resolves to a Library objects', () => {
@@ -43,6 +43,6 @@ describe('Client', () => {
 		it('delegates to api', () => {
 			api.downloadFile = () => Promise.resolve('delegated');
 			return expect(client.downloadFile('url')).to.eventually.equal('delegated');
-		})
-	})
+		});
+	});
 });

@@ -33,5 +33,5 @@ describe('Library', () => {
 			});
 			expect(library.download()).to.eventually.equal('url-content');
 		});
-	})
+	});
 });
