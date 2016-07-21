@@ -34,6 +34,6 @@ export default class Client {
 	}
 
 	downloadFile(url) {
-		return this.api.downloadFile();
+		return this.api.downloadFile({ url });
 	}
 }
