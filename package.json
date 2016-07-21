@@ -7,7 +7,7 @@
     "prepublish": "npm run lint && npm run compile",
     "compile": "babel src -sd lib",
     "test": "mocha test/ -R spec --compilers js:babel-register",
-    "test:browser": "karma start",
+    "test:browser": "karma start --single-run",
     "test:watch": "npm run test -- --watch",
     "cover": "istanbul cover ./node_modules/.bin/_mocha test/ -- -R spec --compilers js:babel-register",
     "coveralls": "istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- -R spec --compilers js:babel-register test/ && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage",

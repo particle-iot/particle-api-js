@@ -4,14 +4,19 @@ node_js:
   - '0.12'
   - '4'
   - '5'
+matrix:
+  include:
+    # This extra job will run tests in the browser
+    - node_js: 5
+      env: TEST_SUITE=browser
+cache:
+  directories:
+    - node_modules
 sudo: false
 install:
   - npm -g install npm@latest
   - npm install
   - npm prune
-before_script:
-  - "export DISPLAY=:99.0"
-  - "sh -e /etc/init.d/xvfb start" # Load display for browser tests
-  - sleep 3 # give xvfb some time to start
+script: ./travis_tests.sh
 after_success:
   - npm run coveralls

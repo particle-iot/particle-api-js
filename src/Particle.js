@@ -490,11 +490,11 @@ class Particle {
 	 * @return {Promise} Resolves to a buffer with the file data
 	 */
 	downloadFile({ url }) {
-		let req = request.get(url)
+		let req = request.get(url);
 		if (req.buffer) {
 			req = req.buffer(true).parse(binaryParser);
 		}
-		return req
+		return req;
 	}
 
 	get(uri, auth, query = undefined) {
