@@ -493,8 +493,13 @@ class Particle {
 		let req = request.get(url);
 		if (req.buffer) {
 			req = req.buffer(true).parse(binaryParser);
+		} else if (req.responseType) {
+			req = req.responseType('arraybuffer').then(res => {
+				res.body = res.xhr.response;
+				return res;
+			});
 		}
-		return req;
+		return req.then(res => res.body);
 	}
 
 	get(uri, auth, query = undefined) {
