@@ -110,7 +110,7 @@ Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Refe
 
 [src/Particle.js:106-108](https://github.com/spark/particle-api-js/blob/30d462f342a494e7aff6a57b4f1a1aca18814953/src/Particle.js#L106-L108 "Source code on GitHub")
 
-Get detailed informationa about a device
+Get detailed information about a device
 
 **Parameters**
 
