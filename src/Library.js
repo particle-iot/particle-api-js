@@ -20,7 +20,7 @@ export default class Library {
 	 */
 	download() {
 		if (!this.downloadUrl) {
-			return Promise.reject('No download URL for this library');
+			return Promise.reject(new Error('No download URL for this library'));
 		}
 		return this.client.downloadFile(this.downloadUrl);
 	}

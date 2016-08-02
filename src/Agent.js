@@ -108,7 +108,9 @@ export default class Agent {
 				if (body && body.error_description) {
 					errorDescription += ' - ' + body.error_description;
 				}
-				reject({statusCode, errorDescription, error, body});
+				const reason = new Error(errorDescription);
+				Object.assign(reason, {statusCode, errorDescription, error, body});
+				reject(reason);
 			} else {
 				fulfill({
 					body: body,
