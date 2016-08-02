@@ -143,9 +143,9 @@ class EventStream extends EventEmitter {
 	parseEventStreamLine(pos, fieldLength, lineLength) {
 		if (lineLength === 0) {
 			try {
-				if (this.data.length > 0 && this.eventName) {
+				if (this.data.length > 0 && this.event) {
 					const event = JSON.parse(this.data);
-					event.name = this.eventName;
+					event.name = this.eventName || '';
 					if (this.eventName !== 'event') {
 						this.emit(this.eventName, event);
 					}
@@ -153,6 +153,7 @@ class EventStream extends EventEmitter {
 					this.data = '';
 				}
 				this.eventName = undefined;
+				this.event = false;
 			} catch (e) {
 				// do nothing if JSON.parse fails
 			}
@@ -173,6 +174,7 @@ class EventStream extends EventEmitter {
 				this.data += value + '\n';
 			} else if (field === 'event') {
 				this.eventName = value;
+				this.event = true;
 			} else if (field === 'id') {
 				this.lastEventId = value;
 			} else if (field === 'retry') {
