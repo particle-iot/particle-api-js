@@ -1,5 +1,9 @@
 # changelog
 
+## 5.3.1 - 2 Aug 2016
+
+* Handle empty event names in the event stream.
+
 ## 5.3.0 - 8 June 2016
 
 * Add details to README
