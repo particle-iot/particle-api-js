@@ -143,7 +143,7 @@ class EventStream extends EventEmitter {
 	parseEventStreamLine(pos, fieldLength, lineLength) {
 		if (lineLength === 0) {
 			try {
-				if (this.data.length > 0 && this.eventName) {
+				if (this.data.length > 0 && this.event) {
 					const event = JSON.parse(this.data);
 					event.name = this.eventName || '';
 					if (this.eventName !== 'event') {
