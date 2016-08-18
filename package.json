@@ -2,7 +2,7 @@
   "name": "particle-api-js",
   "version": "5.3.0-develop.1",
   "description": "Particle API Client",
-  "main": "lib/index.js",
+  "main": "lib/Particle.js",
   "scripts": {
     "babel-watch": "babel src -d lib --watch --source-maps",
     "prepublish": "npm run lint && npm run compile",
