@@ -1,5 +1,11 @@
 # changelog
 
+## 6.0.0 - 17 Aug 2016
+
+* Add libraries endpoints
+* Add stateful client
+* Add object interface for libraries
+
 ## 5.3.1 - 2 Aug 2016
 
 * Handle empty event names in the event stream.
