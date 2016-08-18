@@ -339,7 +339,7 @@ describe('Agent', () => {
 				expect(result).to.be.undefined;
 				expect(end).to.be.calledOnce;
 				expect(fulfill).to.not.be.called;
-				expect(reject).to.be.calledWith({statusCode: failData.error.status, errorDescription:
+				expect(reject).to.be.calledWithMatch({statusCode: failData.error.status, errorDescription:
 					failData.errorDescription, error:failData.error, body:failData.response ? failData.response.body : undefined});
 			});
 		}
