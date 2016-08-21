@@ -171,7 +171,7 @@ export default class Agent {
 	 * @returns {object} the renamed files.
 	 */
 	_sanitizeFiles(files) {
-		let requestFiles = {};
+		let requestFiles;
 		if (files) {
 			requestFiles = {};
 			Object.keys(files).forEach((k, i) => {

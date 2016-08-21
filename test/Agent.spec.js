@@ -5,7 +5,7 @@ describe('Agent', () => {
 	describe('sanitize files', () => {
 		it('can call sanitize will falsy value', () => {
 			const sut = new Agent();
-			expect(sut._sanitizeFiles(undefined)).to.be.deep.equal({});
+			expect(sut._sanitizeFiles(undefined)).to.be.falsy;
 		});
 
 		it('sanitizes file names', () => {

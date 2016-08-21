@@ -22,8 +22,8 @@ class Particle {
 	 *
 	 * @param  {Object} options Options to be used for all requests (see [Defaults](../src/Defaults.js))
 	 */
-	constructor(options = Defaults) {
-		Object.assign(this, options);
+	constructor(options = {}) {
+		Object.assign(this, Defaults, options);
 		this.agent = new Agent(this.baseUrl);
 	}
 
@@ -42,7 +42,7 @@ class Particle {
 			client_id: this.clientId,
 			client_secret: this.clientSecret,
 			expires_in: tokenDuration,
-		}});
+		}, method: 'post' });
 	}
 
 	/**
