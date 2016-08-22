@@ -9,3 +9,5 @@ API documentation. Before the command finishes, update `CHANGELOG.md`.
 
 - `npm publish`
 
+- Create a release on GitHub with the notes from the `CHANGELOG.md`
+

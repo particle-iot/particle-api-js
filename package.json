@@ -15,7 +15,8 @@
     "lint": "eslint src/",
     "docs": "documentation build src/Particle.js --shallow -g -f md -o docs/api.md",
     "build": "browserify lib/Particle.js -s Particle -d -p [minifyify --map particle.min.js.map --output dist/particle.min.js.map] > dist/particle.min.js",
-    "version": "npm run test && npm run prepublish && npm run build && npm run docs && bash -c 'read -p \"Update CHANGELOG.md and press ENTER when done.\"' && git add dist/* docs/* CHANGELOG.md"
+    "preversion": "npm run test && npm run prepublish",
+    "version": "npm run build && npm run docs && bash -c 'read -p \"Update CHANGELOG.md and press ENTER when done.\"' && git add dist/* docs/* CHANGELOG.md"
   },
   "repository": {
     "type": "git",
