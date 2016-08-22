@@ -1,5 +1,9 @@
 # changelog
 
+## 6.0.1 - 22 Aug 2016
+
+* Fix the login method content type
+
 ## 6.0.0 - 17 Aug 2016
 
 * Add libraries endpoints
