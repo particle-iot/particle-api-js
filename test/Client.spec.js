@@ -45,4 +45,13 @@ describe('Client', () => {
 			return expect(client.downloadFile('url')).to.eventually.equal('delegated');
 		});
 	});
+
+	describe('compileCode', () => {
+		it('delegates to api', () => {
+			api.compileCode = ({files, platformId, targetVersion}) => {
+				return Promise.resolve([files, platformId, targetVersion]);
+			}
+			return expect(client.compileCode('a', 'b', 'c')).to.eventually.eql(['a', 'b', 'c']);
+		});
+	});
 });

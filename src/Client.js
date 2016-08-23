@@ -36,4 +36,8 @@ export default class Client {
 	downloadFile(url) {
 		return this.api.downloadFile({ url });
 	}
+
+	compileCode(files, platformId, targetVersion) {
+		return this.api.compileCode({ files, platformId, targetVersion });
+	}
 }
