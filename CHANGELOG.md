@@ -1,5 +1,9 @@
 # changelog
 
+## 6.0.2 - 23 Aug 2016
+
+* Add compile code to client
+
 ## 6.0.1 - 22 Aug 2016
 
 * Fix the login method content type
