@@ -48,10 +48,10 @@ describe('Client', () => {
 
 	describe('compileCode', () => {
 		it('delegates to api', () => {
-			api.compileCode = ({files, platformId, targetVersion}) => {
-				return Promise.resolve([files, platformId, targetVersion]);
+			api.compileCode = ({files, platformId, targetVersion, auth}) => {
+				return Promise.resolve([files, platformId, targetVersion, auth]);
 			}
-			return expect(client.compileCode('a', 'b', 'c')).to.eventually.eql(['a', 'b', 'c']);
+			return expect(client.compileCode('a', 'b', 'c')).to.eventually.eql(['a', 'b', 'c', client.auth]);
 		});
 	});
 });
