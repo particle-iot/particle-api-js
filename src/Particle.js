@@ -574,11 +574,11 @@ class Particle {
    * @param  {String} $0.password Password
    * @return {Promise}
    */
-  createProductUser({ productId, username, password }) {
-    return this.post(`/v1/products/${productId}/customers`, {
-      username, password,
-    });
-  }
+	createProductUser({ productId, username, password }) {
+		return this.post(`/v1/products/${productId}/customers`, {
+			username, password,
+		});
+	}
 
   /**
    * List customers for a product
@@ -586,9 +586,9 @@ class Particle {
    * @param  {String} $0.auth Access Token
    * @return {Promise}
    */
-  listProductCustomers({ productId, auth }) {
-    return this.get(`/v1/products/${productId}/customers`, auth);
-  }
+	listProductCustomers({ productId, auth }) {
+		return this.get(`/v1/products/${productId}/customers`, auth);
+	}
 
   /**
    * Creates a token scoped to a customer for your organization
@@ -597,15 +597,15 @@ class Particle {
    * @param  {String} $0.username Email of customer
    * @return {Promise}
    */
-  generateCustomerToken({ clientId, clientSecret, username }) {
-    return this.post('/oauth/token',
-      //Endpoint only accepts x-www-form-urlencoded(?), instead add request.post(...).type('form') in Agent.js?
-      `grant_type=client_credentials&scope=customer=${username}`
-    ,{
-      username: clientId,
-      password: clientSecret
-    });
-  }
+	generateCustomerToken({ clientId, clientSecret, username }) {
+		return this.post('/oauth/token',
+			//Endpoint only accepts x-www-form-urlencoded(?), instead add request.post(...).type('form') in Agent.js?
+			`grant_type=client_credentials&scope=customer=${username}`
+		,{
+			username: clientId,
+			password: clientSecret
+		});
+	}
 
 	get(uri, auth, query = undefined) {
 		return this.agent.get(uri, auth, query);
