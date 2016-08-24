@@ -502,6 +502,111 @@ class Particle {
 		return req.then(res => res.body);
 	}
 
+	/**
+	 * List products the currently authenticated user has access to
+	 * @param  {String} $0.auth Access Token
+	 * @return {Promise}
+	 */
+	listProducts({ auth }) {
+		return this.get('/v1/products', auth);
+	}
+
+	/**
+	 * Retrieve details for a product
+	 * @param  {String} $0.productId Product ID or Slug
+	 * @param  {String} $0.auth     Access token
+	 * @return {Promise}
+	 */
+	getProduct({ productId, auth }) {
+		return this.get(`/v1/products/${productId}`, auth);
+	}
+
+	/**
+	 * Generate a device claim code for a customer, scoped for a specific product
+	 * @param  {String} $0.productId Product ID or Slug
+	 * @param  {String} $0.auth  Access Token
+	 * @param  {String} [$0.activationCode] Activation Code. Only required if product is in private beta.
+	 * @return {Promise}
+	 */
+	getProductClaimCode({ productId, auth, activationCode = undefined }) {
+		return this.post(`/v1/products/${productId}/device_claims`, {
+			activation_code: activationCode,
+		}, auth);
+	}
+
+	/**
+	 * Remove a device from a product and re-assign to a generic Particle product, will unclaim device if owned by customer
+	 * @param  {String} $0.productId Product ID or Slug
+	 * @param  {String} $0.deviceId Device ID or Name
+	 * @param  {String} $0.auth     Access Token
+	 * @return {Promise}
+	 */
+	removeProductDevice({ productId, deviceId, auth }) {
+		return this.delete(`/v1/products/${productId}/devices/${deviceId}`, null, auth);
+	}
+
+	/**
+	 * Remove a current team member
+	 * @param  {String} $0.productId Product ID or Slug
+	 * @param  {String} $0.username Username of the team member to be removed
+	 * @param  {String} $0.auth     Access Token
+	 * @return {Promise}
+	 */
+	removeProductMember({ productId, username, auth }) {
+		return this.delete(`/v1/products/${productId}/team/${username}`, null, auth);
+	}
+
+	/**
+	 * Unclaim organization device tied to product, will unclaim regardless if the device is owned by a user or a customer
+	 * @param  {String} $0.productId Product ID or Slug
+	 * @param  {String} $0.deviceId Device ID or Name
+	 * @param  {String} $0.auth     Access Token
+	 * @return {Promise}
+	 */
+	removeOrgDevice({ productId, deviceId, auth }) {
+		return this.delete(`/v1/products/${productId}/devices/${deviceId}/owner`, null, auth);
+	}
+
+  /**
+   * Create a customer for a product, access token of a user that belongs to the product is required
+   * @param  {String} $0.productId Product ID or Slug
+   * @param  {String} $0.username Email of the new user
+   * @param  {String} $0.password Password
+   * @return {Promise}
+   */
+  createProductUser({ productId, username, password }) {
+    return this.post(`/v1/products/${productId}/customers`, {
+      username, password,
+    });
+  }
+
+  /**
+   * List customers for a product
+   * @param  {String} $0.productId Product ID or Slug
+   * @param  {String} $0.auth Access Token
+   * @return {Promise}
+   */
+  listProductCustomers({ productId, auth }) {
+    return this.get(`/v1/products/${productId}/customers`, auth);
+  }
+
+  /**
+   * Creates a token scoped to a customer for your organization
+   * @param  {String} $0.clientId Product client Id
+   * @param  {String} $0.clientSecret Product client secret key
+   * @param  {String} $0.username Email of customer
+   * @return {Promise}
+   */
+  generateCustomerToken({ clientId, clientSecret, username }) {
+    return this.post('/oauth/token',
+      //Endpoint only accepts x-www-form-urlencoded(?), instead add request.post(...).type('form') in Agent.js?
+      `grant_type=client_credentials&scope=customer=${username}`
+    ,{
+      username: clientId,
+      password: clientSecret
+    });
+  }
+
 	get(uri, auth, query = undefined) {
 		return this.agent.get(uri, auth, query);
 	}
