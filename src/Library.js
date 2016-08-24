@@ -4,7 +4,8 @@
 
 export default class Library {
 	constructor(client, data) {
-		this.client = client;
+		// Make client non-enumerable so it doesn't show up in Object.keys, JSON.stringify, etc
+		Object.defineProperty(this, 'client', { value: client });
 		this._assignAttributes(data);
 		this.downloadUrl = data.links && data.links.download;
 	}
