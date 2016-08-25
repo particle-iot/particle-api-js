@@ -176,15 +176,19 @@ describe('Agent', () => {
 			sut.prefix = undefined;
 			const req = sinon.stub();
 			const attach = sinon.stub();
-			req.returns({attach: attach});
+			req.returns({_getFormData: () => {
+				return {
+					append: attach
+				}
+			}});
 			const files = {
 				file: {data: 'filedata', path: 'filepath'},
 				file2: {data: 'file2data', path: 'file2path'}
 			};
 			sut._buildRequest({uri: 'uri', method: 'get', files: files, makerequest: req});
 			expect(attach.callCount).to.be.equal(2);
-			expect(attach).to.be.calledWith('file', 'filedata', 'filepath');
-			expect(attach).to.be.calledWith('file2', 'file2data', 'file2path');
+			expect(attach).to.be.calledWith('file', 'filedata', {filename: 'filepath', relativePath: '.'});
+			expect(attach).to.be.calledWith('file2', 'file2data', {filename: 'file2path', relativePath: '.'});
 		});
 
 		it('should attach files and form data', () => {
@@ -193,7 +197,11 @@ describe('Agent', () => {
 			const req = sinon.stub();
 			const attach = sinon.stub();
 			const field = sinon.stub();
-			req.returns({attach: attach, field: field});
+			req.returns({_getFormData: () => {
+				return {
+					append: attach
+				}
+			}, field: field});
 			const files = {
 				file: {data: 'filedata', path: 'filepath'},
 				file2: {data: 'file2data', path: 'file2path'}
@@ -201,8 +209,8 @@ describe('Agent', () => {
 			const form = {form1: 'value1', form2: 'value2'};
 			sut._buildRequest({uri: 'uri', method: 'get', files: files, form: form, makerequest: req});
 			expect(attach.callCount).to.be.equal(2);
-			expect(attach).to.be.calledWith('file', 'filedata', 'filepath');
-			expect(attach).to.be.calledWith('file2', 'file2data', 'file2path');
+			expect(attach).to.be.calledWith('file', 'filedata', {filename: 'filepath', relativePath: '.'});
+			expect(attach).to.be.calledWith('file2', 'file2data', {filename: 'file2path', relativePath: '.'});
 			expect(field.callCount).to.be.equal(2);
 			expect(field).to.be.calledWith('form1', 'value1');
 			expect(field).to.be.calledWith('form2', 'value2');

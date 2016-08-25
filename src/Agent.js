@@ -19,6 +19,7 @@
 
 import request from 'superagent';
 import prefix from 'superagent-prefix';
+import path from 'path';
 
 
 export default class Agent {
@@ -131,7 +132,10 @@ export default class Agent {
 		}
 		if (files) {
 			for (let [name, file] of Object.entries(files)) {
-				req.attach(name, file.data, file.path);
+				req._getFormData().append(name, file.data, {
+					filename: file.path,
+					relativePath: path.dirname(file.path)
+				});
 			}
 			if (form) {
 				for (let [name, value] of Object.entries(form)) {
