@@ -1,5 +1,9 @@
 # changelog
 
+## 6.0.3 - 25 Aug 2016
+
+* Support nested directories when compiling sources
+
 ## 6.0.2 - 23 Aug 2016
 
 * Add compile code to client
