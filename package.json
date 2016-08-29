@@ -69,7 +69,7 @@
   "dependencies": {
     "babel-runtime": "^6.9.2",
     "form-data": "https://github.com/spark/form-data/archive/v1.0.0-relative-path.tar.gz",
-    "stream-http": "spark/stream-http#v2.2.1",
+    "stream-http": "https://github.com/spark/stream-http/archive/v2.2.1.tar.gz",
     "superagent": "^2.2.0",
     "superagent-prefix": "0.0.2"
   },
