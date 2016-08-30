@@ -1,5 +1,9 @@
 # changelog
 
+## 6.0.4 - 30 Aug 2016
+
+* Use only HTTP dependencies to be able to install on computers without git
+
 ## 6.0.3 - 25 Aug 2016
 
 * Support nested directories when compiling sources
