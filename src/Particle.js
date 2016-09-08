@@ -474,14 +474,16 @@ class Particle {
 	}
 
 	/**
-	 * Publish a new version of a firmware library
+	 * Publish a new library version int the compressed archive
 	 * @param  {String} $0.auth Access Token
-	 * @param  {String} $0.name Name of the library to publish
-	 * @param  {String} $0.repo Public git URL of the library
+	 * @param  {String} $0.archive Compressed archive file containing the library sources
 	 * @return {Promise}
 	 */
-	createLibrary({ auth, name, repo }) {
-		return this.post(`/v1/libraries/${name}`, { repo }, auth);
+	publishLibrary({ auth, archive }) {
+		const files = { archive };
+
+		return this.request({ uri: '/v1/libraries',
+			files, auth, null, method: 'post' });
 	}
 
 	/**

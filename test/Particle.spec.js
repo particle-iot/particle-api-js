@@ -527,16 +527,17 @@ describe('ParticleAPI', () => {
 				});
 			});
 		});
-		describe('.createLibrary', () => {
+		describe('.publishLibrary', () => {
 			it('generates request', () => {
-				return api.createLibrary({
-					name: 'mylib',
-					repo: 'myrepo',
+				const archive = new Buffer('tarball');
+
+				return api.publishLibrary({
+					archive: archive,
 					auth: 'X'
 				}).then((results) => {
 					results.should.match({
 						method: 'post',
-						uri: '/v1/libraries/mylib',
+						uri: '/v1/libraries',
 						auth: 'X'
 					});
 				});
