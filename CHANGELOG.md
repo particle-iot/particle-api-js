@@ -1,5 +1,9 @@
 # changelog
 
+## 6.0.5 - 8 Sept 2016
+
+* Add library publish
+
 ## 6.0.4 - 30 Aug 2016
 
 * Use only HTTP dependencies to be able to install on computers without git
