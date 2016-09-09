@@ -33,6 +33,32 @@ export default class Client {
 			});
 	}
 
+
+	/**
+	 * Publish a new library version
+	 * @param  {Buffer} archive The compressed archive with the library source
+	 * @return {Promise}
+	 */
+	publishLibrary(archive) {
+		return this.api.publishLibrary({ archive, auth: this.auth })
+			.then(payload => {
+				const library = payload.body.data || {};
+				return new Library(this, library);
+			}, error => {
+				if (error.body && error.body.errors) {
+					const errorMessages = error.body.errors.map((e) => e.message).join('\n');
+					throw new Error(errorMessages);
+				}
+				throw error;
+
+			});
+		// TODO: format error
+	}
+
+
+
+
+
 	downloadFile(url) {
 		return this.api.downloadFile({ url });
 	}

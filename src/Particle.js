@@ -483,7 +483,7 @@ class Particle {
 		const files = { archive };
 
 		return this.request({ uri: '/v1/libraries',
-			files, auth, null, method: 'post' });
+			files, auth, method: 'post' });
 	}
 
 	/**
