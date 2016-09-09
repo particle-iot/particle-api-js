@@ -480,7 +480,9 @@ class Particle {
 	 * @return {Promise}
 	 */
 	publishLibrary({ auth, archive }) {
-		const files = { archive };
+		const files = {
+			'archive.tar.gz': archive
+		};
 
 		return this.request({ uri: '/v1/libraries',
 			files, auth, method: 'post' });
