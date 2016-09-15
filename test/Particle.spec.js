@@ -62,6 +62,10 @@ class Common {
 		results.uri.should.containEql(props.deviceId);
 		results.auth.should.equal(props.auth);
 	}
+	static expectProductUrlAndToken(results) {
+		results.uri.should.containEql(props.productId);
+		results.auth.should.equal(props.auth);
+	}
 }
 
 describe('ParticleAPI', () => {
@@ -543,7 +547,65 @@ describe('ParticleAPI', () => {
 				});
 			});
 		});
+		describe('.listProducts', () => {
+			it('generates request', () => {
+				return api.listDevices({ auth: 'X' }).then((results) => {
+					results.uri.should.be.instanceOf(String);
+					results.auth.should.equal('X');
+				});
+			});
+		});
+		describe('.getProduct', () => {
+			it('generates request', () => {
+				return api.getProduct(props).then(Common.expectProductUrlAndToken);
+			});
+		});
+		describe('.getProductClaimCode', () => {
+			it('generates request', () => {
+				return api.getProductClaimCode(props).then((results) => {
+					results.auth.should.equal('X');
+				});
+			});
+		});
+		describe('.removeProductMember', () => {
+			it('generates request', () => {
+				return api.removeProductMember(props).then((results) => {
+					results.auth.should.equal('X');
+				});
+			});
+		});
+		describe('.removeOrgDevice', () => {
+			it('generates request', () => {
+				return api.removeOrgDevice(props).then((results) => {
+					results.auth.should.equal('X');
+				});
+			});
+		});
+		describe('.createProductUser', () => {
+			it('sends credentials', () => {
+				return api.createProductUser(props).then(({ data }) => {
+					data.username.should.equal(props.username);
+					data.password.should.equal(props.password);
+				});
+			});
+		});
+		describe('.listProductCustomers', () => {
+			it('generates request', () => {
+				return api.listProductCustomers(props).then((results) => {
+					results.uri.should.be.instanceOf(String);
+					results.auth.should.equal('X');
+				});
+			});
+		});
+		describe('.generateCustomerToken', () => {
+			it('generates request', () => {
+				return api.generateCustomerToken(props).then((results) => {
+					results.uri.should.be.instanceOf(String);
+				});
+			});
+		});
 	});
+
 
 	describe('.client', () => {
 		it('creates a client', (done) => {
