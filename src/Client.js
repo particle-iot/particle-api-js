@@ -45,19 +45,33 @@ export default class Client {
 				const library = payload.body.data || {};
 				return new Library(this, library);
 			}, error => {
-				if (error.body && error.body.errors) {
-					const errorMessages = error.body.errors.map((e) => e.message).join('\n');
-					throw new Error(errorMessages);
-				}
-				throw error;
-
+				this._throwError(error);
 			});
-		// TODO: format error
 	}
 
 
+	/**
+	 * Delete an entire published library
+	 * @param  {String} $0.name Name of the library to delete
+	 * @param  {String} $0.force Key to force deleting a public library
+	 * @return {Promise}
+	 */
+	deleteLibrary({ name, version, force }) {
+		return this.api.deleteLibrary({ name, force, auth: this.auth })
+			.then(payload => {
+				return true;
+			}, error => {
+				this._throwError(error);
+			});
+	}
 
-
+	_throwError(error) {
+		if (error.body && error.body.errors) {
+			const errorMessages = error.body.errors.map((e) => e.message).join('\n');
+			throw new Error(errorMessages);
+		}
+		throw error;
+	}
 
 	downloadFile(url) {
 		return this.api.downloadFile({ url });

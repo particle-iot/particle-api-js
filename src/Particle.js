@@ -489,6 +489,17 @@ class Particle {
 	}
 
 	/**
+	 * Delete one version of a library or an entire published library
+	 * @param  {String} $0.auth Access Token
+	 * @param  {String} $0.name Name of the library to delete
+	 * @param  {String} $0.force Key to force deleting a public library
+	 * @return {Promise}
+	 */
+	deleteLibrary({ auth, name, force }) {
+		return this.delete(`/v1/libraries/${name}`, { force }, auth);
+	}
+
+	/**
 	 * Download an external file that may not be on the API
 	 * @param  {String} $0.url URL of the file.
 	 * @return {Promise} Resolves to a buffer with the file data
