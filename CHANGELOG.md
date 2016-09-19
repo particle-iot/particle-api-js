@@ -1,5 +1,9 @@
 # changelog
 
+## 6.0.6 - 19 Sept 2016
+
+* Add library delete
+
 ## 6.0.5 - 8 Sept 2016
 
 * Add library publish
