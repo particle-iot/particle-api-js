@@ -33,6 +33,19 @@ export default class Client {
 			});
 	}
 
+	/**
+	 * Get list of library versions
+	 * @param  {String} name Name of the library to fetch
+	 * @param  {Object} query The query parameters for versions. See Particle.getLibraryVersions
+	 * @return {Promise}
+	 */
+	libraryVersions(name, query = {}) {
+		return this.api.getLibraryVersions(Object.assign({}, query, { name, auth: this.auth }))
+			.then(payload => {
+				const libraries = payload.body.data || [];
+				return libraries.map(l => new Library(this, l));
+			});
+	}
 
 	/**
 	 * Publish a new library version
