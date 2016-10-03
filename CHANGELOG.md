@@ -1,5 +1,9 @@
 # changelog
 
+## 6.0.7 - 29 Sept 2016
+
+* Add library versions endpoint
+
 ## 6.0.6 - 19 Sept 2016
 
 * Add library delete
