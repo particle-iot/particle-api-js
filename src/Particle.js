@@ -49,11 +49,12 @@ class Particle {
 	 * Create a user account for the Particle Cloud
 	 * @param  {String} $0.username Email of the new user
 	 * @param  {String} $0.password Password
+	 * @param  {String} $0.accountInfo Object that contains account information such as user real name, company name, business account flag etc
 	 * @return {Promise}
 	 */
-	createUser({ username, password }) {
+	createUser({ username, password, accountInfo }) {
 		return this.post('/v1/users', {
-			username, password,
+			username, password, accountInfo,
 		});
 	}
 
