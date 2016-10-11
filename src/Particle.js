@@ -52,9 +52,9 @@ class Particle {
 	 * @param  {String} $0.accountInfo Object that contains account information such as user real name, company name, business account flag etc
 	 * @return {Promise}
 	 */
-	createUser({ username, password, accountInfo }) {
+	createUser({ username, password, account_info }) {
 		return this.post('/v1/users', {
-			username, password, accountInfo,
+			username, password, account_info,
 		});
 	}
 
