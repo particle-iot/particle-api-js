@@ -1,5 +1,9 @@
 # changelog
 
+## 6.0.6 - 17 Nov 2016
+
+* Rename library publish to library contribute
+
 ## 6.0.5 - 8 Sept 2016
 
 * Add library publish
