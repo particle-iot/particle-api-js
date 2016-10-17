@@ -39,6 +39,18 @@ describe('Client', () => {
 		});
 	});
 
+	describe('libraryVersions', () => {
+		it('resolves to a Library objects', () => {
+			api.getLibraryVersions = () => Promise.resolve({ body: fixtures.readJSON('libraryVersions.json') });
+			return client.libraryVersions().then(libraries => {
+				expect(libraries.length).to.equal(9);
+				expect(libraries[0].name).to.equal('neopixel');
+				expect(libraries[0].version).to.equal('0.0.10');
+				expect(libraries[1].version).to.equal('0.0.9');
+			});
+		});
+	});
+
 	describe('downloadFile', () => {
 		it('delegates to api', () => {
 			api.downloadFile = () => Promise.resolve('delegated');

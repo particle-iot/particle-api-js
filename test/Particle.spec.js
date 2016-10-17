@@ -543,6 +543,24 @@ describe('ParticleAPI', () => {
 				});
 			});
 		});
+		describe('.deleteLibrary', () => {
+			it('generates request', () => {
+				return api.deleteLibrary({
+					name: 'mylib',
+					auth: 'X',
+					force: 'xyz'
+				}).then((results) => {
+					results.should.match({
+						method: 'delete',
+						uri: '/v1/libraries/mylib',
+						auth: 'X',
+						data: {
+							force: 'xyz'
+						}
+					});
+				});
+			});
+		});
 	});
 
 	describe('.client', () => {

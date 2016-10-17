@@ -1,0 +1,211 @@
+{
+  "data": [
+    {
+      "type": "libraries",
+      "id": "neopixel",
+      "links": {
+        "download": "https://library-archives.particle.io/libraries/neopixel/neopixel-0.0.10.tar.gz"
+      },
+      "attributes": {
+        "name": "neopixel",
+        "version": "0.0.10",
+        "installs": 7385,
+        "license": "GNU GPLv3",
+        "author": "Adafruit, Technobly",
+        "maintainer": null,
+        "sentence": "An Implementation of Adafruit's NeoPixel Library for the Spark Core, Particle Photon, P1, Electron and RedBear Duo",
+        "paragraph": null,
+        "category": null,
+        "url": null,
+        "repository": null,
+        "architectures": [],
+        "dependencies": null,
+        "build": null
+      }
+    },
+    {
+      "type": "libraries",
+      "id": "neopixel",
+      "links": {
+        "download": "https://library-archives.particle.io/libraries/neopixel/neopixel-0.0.9.tar.gz"
+      },
+      "attributes": {
+        "name": "neopixel",
+        "version": "0.0.9",
+        "installs": 7385,
+        "license": "GNU GPLv3",
+        "author": "Adafruit, Technobly",
+        "maintainer": null,
+        "sentence": "An Implementation of Adafruit's NeoPixel Library for the Spark Core, Photon, P1 and Electron",
+        "paragraph": null,
+        "category": null,
+        "url": null,
+        "repository": null,
+        "architectures": [],
+        "dependencies": null,
+        "build": null
+      }
+    },
+    {
+      "type": "libraries",
+      "id": "neopixel",
+      "links": {
+        "download": "https://library-archives.particle.io/libraries/neopixel/neopixel-0.0.8.tar.gz"
+      },
+      "attributes": {
+        "name": "neopixel",
+        "version": "0.0.8",
+        "installs": 7385,
+        "license": "GNU GPLv3",
+        "author": "Adafruit, Technobly",
+        "maintainer": null,
+        "sentence": "An Implementation of Adafruit's NeoPixel Library for the Spark Core, Photon, P1 and Electron",
+        "paragraph": null,
+        "category": null,
+        "url": null,
+        "repository": null,
+        "architectures": [],
+        "dependencies": null,
+        "build": null
+      }
+    },
+    {
+      "type": "libraries",
+      "id": "neopixel",
+      "links": {
+        "download": "https://library-archives.particle.io/libraries/neopixel/neopixel-0.0.7.tar.gz"
+      },
+      "attributes": {
+        "name": "neopixel",
+        "version": "0.0.7",
+        "installs": 7385,
+        "license": "GNU GPLv3",
+        "author": "Adafruit, Technobly",
+        "maintainer": null,
+        "sentence": "An Implementation of Adafruit's NeoPixel Library for the Spark Core and Photon",
+        "paragraph": null,
+        "category": null,
+        "url": null,
+        "repository": null,
+        "architectures": [],
+        "dependencies": null,
+        "build": null
+      }
+    },
+    {
+      "type": "libraries",
+      "id": "neopixel",
+      "links": {
+        "download": "https://library-archives.particle.io/libraries/neopixel/neopixel-0.0.6.tar.gz"
+      },
+      "attributes": {
+        "name": "neopixel",
+        "version": "0.0.6",
+        "installs": 7385,
+        "license": "GNU GPLv3",
+        "author": "Adafruit, Technobly",
+        "maintainer": null,
+        "sentence": "An Implementation of Adafruit's NeoPixel Library for the Spark Core and Photon",
+        "paragraph": null,
+        "category": null,
+        "url": null,
+        "repository": null,
+        "architectures": [],
+        "dependencies": null,
+        "build": null
+      }
+    },
+    {
+      "type": "libraries",
+      "id": "neopixel",
+      "links": {
+        "download": "https://library-archives.particle.io/libraries/neopixel/neopixel-0.0.5.tar.gz"
+      },
+      "attributes": {
+        "name": "neopixel",
+        "version": "0.0.5",
+        "installs": 7385,
+        "license": "GNU GPLv3",
+        "author": "Adafruit, Technobly",
+        "maintainer": null,
+        "sentence": "An Implementation of Adafruit's NeoPixel Library for the Spark Core",
+        "paragraph": null,
+        "category": null,
+        "url": null,
+        "repository": null,
+        "architectures": [],
+        "dependencies": null,
+        "build": null
+      }
+    },
+    {
+      "type": "libraries",
+      "id": "neopixel",
+      "links": {
+        "download": "https://library-archives.particle.io/libraries/neopixel/neopixel-0.0.4.tar.gz"
+      },
+      "attributes": {
+        "name": "neopixel",
+        "version": "0.0.4",
+        "installs": 7385,
+        "license": "GNU GPLv3",
+        "author": "Adafruit, Technobly",
+        "maintainer": null,
+        "sentence": "An Implementation of Adafruit's NeoPixel Library for the Spark Core",
+        "paragraph": null,
+        "category": null,
+        "url": null,
+        "repository": null,
+        "architectures": [],
+        "dependencies": null,
+        "build": null
+      }
+    },
+    {
+      "type": "libraries",
+      "id": "neopixel",
+      "links": {
+        "download": "https://library-archives.particle.io/libraries/neopixel/neopixel-0.0.3.tar.gz"
+      },
+      "attributes": {
+        "name": "neopixel",
+        "version": "0.0.3",
+        "installs": 7385,
+        "license": "GNU GPLv3",
+        "author": "Adafruit, Technobly",
+        "maintainer": null,
+        "sentence": "An Implementation of Adafruit's NeoPixel Library for the Spark Core",
+        "paragraph": null,
+        "category": null,
+        "url": null,
+        "repository": null,
+        "architectures": [],
+        "dependencies": null,
+        "build": null
+      }
+    },
+    {
+      "type": "libraries",
+      "id": "neopixel",
+      "links": {
+        "download": "https://library-archives.particle.io/libraries/neopixel/neopixel-0.0.2.tar.gz"
+      },
+      "attributes": {
+        "name": "neopixel",
+        "version": "0.0.2",
+        "installs": 7385,
+        "license": "GNU GPLv3",
+        "author": "Adafruit, Technobly",
+        "maintainer": null,
+        "sentence": "An Implementation of Adafruit's NeoPixel Library for the Spark Core",
+        "paragraph": null,
+        "category": null,
+        "url": null,
+        "repository": null,
+        "architectures": [],
+        "dependencies": null,
+        "build": null
+      }
+    }
+  ]
+}

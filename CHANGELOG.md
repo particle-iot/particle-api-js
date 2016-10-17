@@ -1,8 +1,16 @@
 # changelog
 
-## 6.0.6 - 17 Nov 2016
+## 6.0.8 - 17 Nov 2016
 
 * Rename library publish to library contribute
+
+## 6.0.7 - 29 Sept 2016
+
+* Add library versions endpoint
+
+## 6.0.6 - 19 Sept 2016
+
+* Add library delete
 
 ## 6.0.5 - 8 Sept 2016
 
