@@ -474,12 +474,12 @@ class Particle {
 	}
 
 	/**
-	 * Publish a new library version int the compressed archive
+	 * Contribute a new library version int the compressed archive
 	 * @param  {String} $0.auth Access Token
 	 * @param  {String} $0.archive Compressed archive file containing the library sources
 	 * @return {Promise}
 	 */
-	publishLibrary({ auth, archive }) {
+	contributeLibrary({ auth, archive }) {
 		const files = {
 			'archive.tar.gz': archive
 		};

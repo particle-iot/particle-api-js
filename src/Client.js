@@ -39,8 +39,8 @@ export default class Client {
 	 * @param  {Buffer} archive The compressed archive with the library source
 	 * @return {Promise}
 	 */
-	publishLibrary(archive) {
-		return this.api.publishLibrary({ archive, auth: this.auth })
+	contributeLibrary(archive) {
+		return this.api.contributeLibrary({ archive, auth: this.auth })
 			.then(payload => {
 				const library = payload.body.data || {};
 				return new Library(this, library);

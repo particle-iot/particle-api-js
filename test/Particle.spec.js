@@ -527,11 +527,11 @@ describe('ParticleAPI', () => {
 				});
 			});
 		});
-		describe('.publishLibrary', () => {
+		describe('.contributeLibrary', () => {
 			it('generates request', () => {
 				const archive = new Buffer('tarball');
 
-				return api.publishLibrary({
+				return api.contributeLibrary({
 					archive: archive,
 					auth: 'X'
 				}).then((results) => {
