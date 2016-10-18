@@ -1,13 +1,15 @@
-import {expect} from './test-setup';
+import {expect, sinon} from './test-setup';
 
 import Client from '../src/Client';
 import * as fixtures from './fixtures';
+import Library from '../src/Library';
 
-let api = {};
-let token = "tok";
+let api;
+const token = 'tok';
 let client;
 describe('Client', () => {
 	beforeEach(() => {
+		api = {};
 		client = new Client({ api: api, auth: token });
 	});
 
@@ -66,4 +68,62 @@ describe('Client', () => {
 			return expect(client.compileCode('a', 'b', 'c')).to.eventually.eql(['a', 'b', 'c', client.auth]);
 		});
 	});
+
+	describe('publishLibrary', () => {
+		it('delegates to api and returns the library metadata on success', () => {
+			const name = 'fred';
+			const metadata = {name};
+			const library = new Library(client, metadata);
+			api.publishLibrary = sinon.stub().resolves({body: {data: metadata}});
+			return client.publishLibrary(name).
+			then(actual => {
+				expect(actual).to.eql(library);
+				expect(api.publishLibrary).to.have.been.calledWith({name, auth:token});
+			});
+		});
+
+		it('delegates to api and calls _throwError to handle the error', () => {
+			const error = {message:'I don\'t like vegetables'};
+			api.publishLibrary = sinon.stub().rejects(error);
+			const name = 'notused';
+			return client.publishLibrary(name)
+				.then(() => {
+					throw new Error('expected an exception');
+				})
+				.catch(actual => {
+					expect(actual).to.eql(error);
+					expect(api.publishLibrary).to.have.been.calledWith({name, auth:token});
+				});
+		});
+
+	});
+
+	describe('contributeLibrary', () => {
+		it('delegates to api and returns the library metadata on success', () => {
+			const archive = {};
+			const metadata = {name:''};
+			const library = new Library(client, metadata);
+			api.contributeLibrary = sinon.stub().resolves({body: { data: metadata}});
+			return client.contributeLibrary(archive).
+			then(actual => {
+				expect(actual).to.eql(library);
+				expect(api.contributeLibrary).to.have.been.calledWith({archive, auth:token});
+			});
+		});
+
+		it('delegates to api and calls _throwError to handle the error', () => {
+			const archive = {};
+			const error = {message:'I don\'t like vegetables'};
+			api.contributeLibrary = sinon.stub().rejects(error);
+			return client.contributeLibrary(archive)
+			.then(() => {
+				throw new Error('expected an exception');
+			})
+			.catch(actual => {
+				expect(actual).to.eql(error);
+				expect(api.contributeLibrary).to.have.been.calledWith({archive, auth:token});
+			});
+		});
+	});
+
 });

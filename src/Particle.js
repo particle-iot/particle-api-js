@@ -488,6 +488,10 @@ class Particle {
 			files, auth, method: 'post' });
 	}
 
+	publishLibrary({auth, name}) {
+		return this.request({ uri: `/v1/libraries/${name}`, auth, method: 'patch', data: {visibility:'public'}});
+	}
+
 	/**
 	 * Delete one version of a library or an entire published library
 	 * @param  {String} $0.auth Access Token

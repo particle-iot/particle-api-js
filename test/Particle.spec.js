@@ -543,6 +543,24 @@ describe('ParticleAPI', () => {
 				});
 			});
 		});
+		describe('.publishLibrary', () => {
+			it('generates request', () => {
+				const name = 'noname';
+				return api.publishLibrary({
+					name,
+					auth: 'X'
+				}).then((results) => {
+					results.should.match({
+						method: 'patch',
+						uri: '/v1/libraries/noname',
+						auth: 'X',
+						data: {
+							visibility: 'public'
+						}
+					});
+				});
+			});
+		});
 		describe('.deleteLibrary', () => {
 			it('generates request', () => {
 				return api.deleteLibrary({
