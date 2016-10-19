@@ -103,16 +103,16 @@ export default class Agent {
 		request.end((error, res) => {
 			const body = res && res.body;
 			if (error) {
-				//const uri = request.url;
+				const uri = request.url;
 				const statusCode = error.status;
-				//let longErrorDescription = `${statusCode ? 'HTTP error ' + statusCode : 'Network error'} from ${uri}`;
-				let errorDescription;
+				let errorDescription = `${statusCode ? 'HTTP error ' + statusCode : 'Network error'} from ${uri}`;
+				let shortErrorDescription;
 				if (body && body.error_description) {
-					//longErrorDescription += ' - ' + body.error_description;
-					errorDescription = body.error_description;
+					errorDescription += ' - ' + body.error_description;
+					shortErrorDescription = body.error_description;
 				}
 				const reason = new Error(errorDescription);
-				Object.assign(reason, {statusCode, errorDescription, error, body});
+				Object.assign(reason, {statusCode, errorDescription, shortErrorDescription, error, body});
 				reject(reason);
 			} else {
 				fulfill({
