@@ -1,6 +1,6 @@
 {
   "name": "particle-api-js",
-  "version": "6.2.0",
+  "version": "6.1.0",
   "description": "Particle API Client",
   "main": "lib/Particle.js",
   "scripts": {
@@ -23,7 +23,7 @@
     "type": "git",
     "url": "https://github.com/spark/particle-api-js"
   },
-  "author": "Emily Rose <nexxy@particle.io>",
+  "author": "Julien Vanier <julien@particle.io>",
   "contributors": [
     "Ido Kleinman",
     "Bryce Kahle",
