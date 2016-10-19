@@ -8,7 +8,8 @@ describe('Client', () => {
 		const baseUrl = process.env.API_URL || 'https://api.particle.io';
 		const force = process.env.PARTICLE_LIBRARY_DELETE_TOKEN;
 		if (!force) {
-			throw new Error('PARTICLE_LIBRARY_DELETE_TOKEN should be defined to enable library delete functionality.');
+			console.warn('PARTICLE_LIBRARY_DELETE_TOKEN should be defined to enable library delete functionality.');
+			return;
 		}
 
 		const api = new Particle({baseUrl});
