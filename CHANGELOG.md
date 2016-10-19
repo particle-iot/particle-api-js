@@ -1,10 +1,15 @@
 # changelog
 
-## 6.1.0 - 19 Nov 2016
+## 6.2.0 - 19 Oct 2016
+
+* Add support for account information fields in createUser and setUserInfo
+* Modify error text in response body to contain English description only
+
+## 6.1.0 - 19 Oct 2016
 
 * Add library publish
 
-## 6.0.8 - 17 Nov 2016
+## 6.0.8 - 17 Oct 2016
 
 * Rename library publish to library contribute
 

@@ -1,6 +1,6 @@
 {
   "name": "particle-api-js",
-  "version": "6.1.0",
+  "version": "6.2.0",
   "description": "Particle API Client",
   "main": "lib/Particle.js",
   "scripts": {
@@ -27,7 +27,10 @@
   "contributors": [
     "Ido Kleinman",
     "Bryce Kahle",
-    "Justin Debbink"
+    "Justin Debbink",
+    "Matthew McGowan",
+    "Julien Vanier",
+    "Wojtek Siudzinski"
   ],
   "keywords": [
     "particle",
