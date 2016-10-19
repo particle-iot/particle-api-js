@@ -394,6 +394,13 @@ class Particle {
 		return this.get('/v1/user', auth);
 	}
 
+	/**
+	 * Set details on the current user
+	 * @param  {String} $0.auth Access Token
+	 * @param  {String} $0.stripeToken Set user's stripe token for payment
+	 * @param  {String} $0.account_info Set user's extended info fields (name, business account, company name, etc)
+	 * @return {Promise}
+	 */
 	setUserInfo({ stripeToken, account_info, auth }) {
 		return this.put('/v1/user', {
 			stripe_token: stripeToken,
