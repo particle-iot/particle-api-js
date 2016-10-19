@@ -26,6 +26,7 @@ const props = {
 	token: 'Y',
 	signal: '1',
 	auth: 'X',
+	account_info : { first_name: 'John', last_name: 'Scully', business_account: true, company_name: 'Apple Inc.' },
 	files: {
 		'app.ino': new Buffer('void() {}\nsetup() {}\n')
 	},
@@ -88,9 +89,17 @@ describe('ParticleAPI', () => {
 		});
 		describe('.createUser', () => {
 			it('sends credentials', () => {
-				return api.createUser(props).then(({ data }) => {
-					data.username.should.equal(props.username);
-					data.password.should.equal(props.password);
+				return api.createUser(props).then(( results ) => {
+					results.should.eql({
+						method: 'post',
+						uri: '/v1/users',
+						auth: undefined,
+						data: {
+							username: props.username,
+							password: props.password,
+							account_info: props.account_info
+						}
+					});
 				});
 			});
 		});
@@ -435,9 +444,17 @@ describe('ParticleAPI', () => {
 		});
 		describe('.setUserInfo', () => {
 			it('generates request', () => {
-				return api.setUserInfo({ auth: 'X', stripeToken: '123ABCD' }).then((results) => {
-					results.uri.should.be.instanceOf(String);
-					results.auth.should.equal('X');
+				return api.setUserInfo({ auth: 'X', stripeToken: '123ABCD', account_info: {first_name: 'John', last_name: 'Scully'} }).then((results) => {
+					results.should.eql({
+						method: 'put',
+						uri: '/v1/user',
+						auth: 'X',
+						data: {
+							stripe_token: '123ABCD',
+							account_info: {first_name: 'John', last_name: 'Scully'}
+						}
+					});
+
 				});
 			});
 		});
