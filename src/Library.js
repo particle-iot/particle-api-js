@@ -1,5 +1,5 @@
 /* Library
- * Represents a version of a library published in the cloud.
+ * Represents a version of a library contributed in the cloud.
  */
 
 export default class Library {

@@ -476,18 +476,22 @@ class Particle {
 	}
 
 	/**
-	 * Publish a new library version int the compressed archive
+	 * Contribute a new library version int the compressed archive
 	 * @param  {String} $0.auth Access Token
 	 * @param  {String} $0.archive Compressed archive file containing the library sources
 	 * @return {Promise}
 	 */
-	publishLibrary({ auth, archive }) {
+	contributeLibrary({ auth, archive }) {
 		const files = {
 			'archive.tar.gz': archive
 		};
 
 		return this.request({ uri: '/v1/libraries',
 			files, auth, method: 'post' });
+	}
+
+	publishLibrary({auth, name}) {
+		return this.request({ uri: `/v1/libraries/${name}`, auth, method: 'patch', data: {visibility:'public'}});
 	}
 
 	/**

@@ -527,11 +527,11 @@ describe('ParticleAPI', () => {
 				});
 			});
 		});
-		describe('.publishLibrary', () => {
+		describe('.contributeLibrary', () => {
 			it('generates request', () => {
 				const archive = new Buffer('tarball');
 
-				return api.publishLibrary({
+				return api.contributeLibrary({
 					archive: archive,
 					auth: 'X'
 				}).then((results) => {
@@ -539,6 +539,24 @@ describe('ParticleAPI', () => {
 						method: 'post',
 						uri: '/v1/libraries',
 						auth: 'X'
+					});
+				});
+			});
+		});
+		describe('.publishLibrary', () => {
+			it('generates request', () => {
+				const name = 'noname';
+				return api.publishLibrary({
+					name,
+					auth: 'X'
+				}).then((results) => {
+					results.should.match({
+						method: 'patch',
+						uri: '/v1/libraries/noname',
+						auth: 'X',
+						data: {
+							visibility: 'public'
+						}
 					});
 				});
 			});

@@ -48,12 +48,12 @@ export default class Client {
 	}
 
 	/**
-	 * Publish a new library version
+	 * Contribute a new library version
 	 * @param  {Buffer} archive The compressed archive with the library source
 	 * @return {Promise}
 	 */
-	publishLibrary(archive) {
-		return this.api.publishLibrary({ archive, auth: this.auth })
+	contributeLibrary(archive) {
+		return this.api.contributeLibrary({ archive, auth: this.auth })
 			.then(payload => {
 				const library = payload.body.data || {};
 				return new Library(this, library);
@@ -62,6 +62,20 @@ export default class Client {
 			});
 	}
 
+	/**
+	 * Make the the most recent private library version public
+	 * @param  {string} name The name of the library to publish
+	 * @return {Promise} To publish the library
+	 */
+	publishLibrary(name) {
+		return this.api.publishLibrary({name, auth: this.auth })
+			.then(payload => {
+				const library = payload.body.data || {};
+				return new Library(this, library);
+			}, error => {
+				this._throwError(error);
+			});
+	}
 
 	/**
 	 * Delete an entire published library

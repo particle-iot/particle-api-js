@@ -20,7 +20,7 @@ describe('Library', () => {
 		it('return the file contents', () => {
 			client.downloadFile = (url) => {
 				return Promise.resolve(`${url}-content`);
-			}
+			};
 
 			const library = new Library(client, {
 				attributes: {
