@@ -1,6 +1,6 @@
 # changelog
 
-## unreleased
+## 6.2.0 - 19 Oct 2016
 
 * Add support for account information fields in createUser and setUserInfo
 * Add "shortErrorDescription" in response body to contain English description only
