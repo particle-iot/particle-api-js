@@ -59,6 +59,17 @@ class Particle {
 	}
 
 	/**
+	 * Verify new user account via verification email
+	 * @param  {String} $0.token the string token sent in the verification email
+	 * @return {Promise}
+	 */
+	verifyUser({ token }) {
+		return this.post('/v1/user/verify', {
+			token
+		});
+	}
+
+	/**
 	 * Send reset password email for a Particle Cloud user account
 	 * @param  {String} $0.username Email of the user
 	 * @return {Promise}
@@ -402,10 +413,12 @@ class Particle {
 	 * @return {Promise}
 	 */
 	setUserInfo({ stripeToken, account_info, auth }) {
-		return this.put('/v1/user', {
-			stripe_token: stripeToken,
-			account_info: account_info,
-		}, auth);
+		var bodyObj = {};
+
+		(stripeToken ? bodyObj.stripe_token = stripeToken : null);
+		(account_info ? bodyObj.account_info = account_info : null);
+
+		return this.put('/v1/user', bodyObj, auth);
 	}
 
 	checkSIM({ iccid, auth }) {
