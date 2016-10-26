@@ -49,12 +49,14 @@ class Particle {
 	 * Create a user account for the Particle Cloud
 	 * @param  {String} $0.username Email of the new user
 	 * @param  {String} $0.password Password
-	 * @param  {String} $0.account_info Object that contains account information such as user real name, company name, business account flag etc
+	 * @param  {String} $0.accountInfo Object that contains account information fields such as user real name, company name, business account flag etc
 	 * @return {Promise}
 	 */
-	createUser({ username, password, account_info }) {
+	createUser({ username, password, accountInfo }) {
 		return this.post('/v1/users', {
-			username, password, account_info,
+			username,
+			password,
+			account_info : accountInfo,
 		});
 	}
 
@@ -409,14 +411,14 @@ class Particle {
 	 * Set details on the current user
 	 * @param  {String} $0.auth Access Token
 	 * @param  {String} $0.stripeToken Set user's stripe token for payment
-	 * @param  {String} $0.account_info Set user's extended info fields (name, business account, company name, etc)
+	 * @param  {String} $0.accountInfo Set user's extended info fields (name, business account, company name, etc)
 	 * @return {Promise}
 	 */
-	setUserInfo({ stripeToken, account_info, auth }) {
-		var bodyObj = {};
+	setUserInfo({ stripeToken, accountInfo, auth }) {
+		const bodyObj = {};
 
 		(stripeToken ? bodyObj.stripe_token = stripeToken : null);
-		(account_info ? bodyObj.account_info = account_info : null);
+		(accountInfo ? bodyObj.account_info = accountInfo : null);
 
 		return this.put('/v1/user', bodyObj, auth);
 	}
