@@ -412,13 +412,15 @@ class Particle {
 	 * @param  {String} $0.auth Access Token
 	 * @param  {String} $0.stripeToken Set user's stripe token for payment
 	 * @param  {String} $0.accountInfo Set user's extended info fields (name, business account, company name, etc)
+	 * @param  {String} $0.password Change authenticated user password
 	 * @return {Promise}
 	 */
-	setUserInfo({ stripeToken, accountInfo, auth }) {
+	setUserInfo({ stripeToken, accountInfo, password, auth }) {
 		const bodyObj = {};
 
 		(stripeToken ? bodyObj.stripe_token = stripeToken : null);
 		(accountInfo ? bodyObj.account_info = accountInfo : null);
+		(password ? bodyObj.password = password : null);
 
 		return this.put('/v1/user', bodyObj, auth);
 	}
