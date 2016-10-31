@@ -1,6 +1,6 @@
 # changelog
 
-## TBD
+## 6.3.0 - 31 Oct 2016
 
 * Add support for account verification endpoint via verifyUser function
 * Change account_info input parameter in createUser and setUserInfo to be camel case - accountInfo
