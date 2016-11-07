@@ -107,4 +107,8 @@ export default class Client {
 	compileCode(files, platformId, targetVersion) {
 		return this.api.compileCode({ files, platformId, targetVersion, auth: this.auth });
 	}
+
+	signalDevice({ signal, deviceId }) {
+		return this.api.signalDevice({ signal, deviceId, auth: this.auth });
+	}
 }
