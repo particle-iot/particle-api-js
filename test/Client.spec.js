@@ -69,6 +69,16 @@ describe('Client', () => {
 		});
 	});
 
+	describe('signalDevice', () => {
+		it('delegates to api', () => {
+			api.signalDevice = ({ deviceId, signal }) => {
+				return Promise.resolve([true, client.auth]);
+			};
+			return expect(client.signalDevice({ deviceId: 'testid', signal: true }))
+			.to.eventually.eql([true, client.auth]);
+		});
+	});
+
 	describe('publishLibrary', () => {
 		it('delegates to api and returns the library metadata on success', () => {
 			const name = 'fred';
