@@ -1,5 +1,9 @@
 # changelog
 
+## 6.4.0 - 09 Nov 2016
+
+* Create a wrapper for `signalDevice` in `Client.js`.
+
 ## 6.3.0 - 31 Oct 2016
 
 * Add support for account verification endpoint via verifyUser function
