@@ -460,17 +460,33 @@ class Particle {
 	 * @param  {String} $0.sort Ordering key for the library list
 	 * @param  {Array<String>}  $0.architectures List of architectures to filter
 	 * @param  {String} $0.category Category to filter
+	 * @param  {String} $0.scope The library scope to list. Default is 'all'. Other values are
+	 * - 'all' - list public libraries and my private libraries
+	 * - 'public' - list only public libraries
+	 * - 'private' - list only my private libraries
+	 * - 'mine' - list my libraries (public and private)
+	 * - 'official' - list only official libraries
+	 * - 'verified' - list only verified libraries
+	 * - 'featured' - list only featured libraries
+	 * @param  {String} $0.excludeScopes  list of scopes to exclude
+	 * @param  {String} $0.category Category to filter
 	 * @return {Promise}
 	 */
-	listLibraries({ auth, page, limit, filter, sort, architectures, category }) {
+	listLibraries({ auth, page, limit, filter, sort, architectures, category, scope, excludeScopes }) {
 		return this.get('/v1/libraries', auth, {
 			page,
 			filter,
 			limit,
 			sort,
-			architectures: (Array.isArray(architectures) ? architectures.join(',') : architectures),
-			category
+			architectures: this._asList(architectures),
+			category,
+			scope,
+			excludeScopes: this._asList(excludeScope)
 		});
+	}
+
+	_asList(value) {
+		return (Array.isArray(value) ? value.join(',') : value);
 	}
 
 	/**
