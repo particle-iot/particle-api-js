@@ -494,7 +494,9 @@ describe('ParticleAPI', () => {
 						page: 3,
 						limit: undefined,
 						filter: 'abc',
+						excludeScopes: undefined,
 						sort: 'name',
+						scope: undefined,
 						architectures: 'spark-core,particle-photon',
 						category: 'Other'
 					});
