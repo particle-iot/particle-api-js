@@ -1,5 +1,9 @@
 # changelog
 
+## 6.4.1 - 15 Dec 2016
+
+* Add scopes to library listing
+
 ## 6.4.0 - 09 Nov 2016
 
 * Create a wrapper for `signalDevice` in `Client.js`.
