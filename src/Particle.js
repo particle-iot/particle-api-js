@@ -481,7 +481,7 @@ class Particle {
 			architectures: this._asList(architectures),
 			category,
 			scope,
-			excludeScopes: this._asList(excludeScope)
+			excludeScopes: this._asList(excludeScopes)
 		});
 	}
 
