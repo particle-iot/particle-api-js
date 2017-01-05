@@ -136,4 +136,13 @@ describe('Client', () => {
 		});
 	});
 
+	describe('listDevices', () => {
+		it('delegates to api', () => {
+			api.listDevices = ({auth}) => {
+				return Promise.resolve([auth]);
+			};
+			return expect(client.listDevices()).to.eventually.eql([client.auth]);
+		});
+	});
+
 });

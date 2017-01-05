@@ -111,4 +111,8 @@ export default class Client {
 	signalDevice({ signal, deviceId }) {
 		return this.api.signalDevice({ signal, deviceId, auth: this.auth });
 	}
+
+	listDevices() {
+		return this.api.listDevices({ auth: this.auth });
+	}
 }
