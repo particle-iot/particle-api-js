@@ -1,5 +1,9 @@
 # changelog
 
+## 6.4.2 - 05 Jan 2017
+
+* Create a wrapper for `listDevices` in `Client.js`.
+
 ## 6.4.1 - 15 Dec 2016
 
 * Add scopes to library listing
