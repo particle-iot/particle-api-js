@@ -1,5 +1,5 @@
 import {expect} from './test-setup';
-import Library from '../src/Library';
+import Library from '../../src/models/Library';
 
 let client = {};
 describe('Library', () => {
