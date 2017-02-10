@@ -68,7 +68,7 @@ export default class Client {
 	 * @return {Promise} To publish the library
 	 */
 	publishLibrary(name) {
-		return this.api.publishLibrary({name, auth: this.auth })
+		return this.api.publishLibrary({ name, auth: this.auth })
 			.then(payload => {
 				const library = payload.body.data || {};
 				return new Library(this, library);
