@@ -1,5 +1,10 @@
 # changelog
 
+## 6.4.3 - 15 Feb 2017
+
+* Create a wrapper for `listBuildTargets` in `Client.js`.
+* Marked `compileCode`, `signalDevice`, `listDevices` and `listBuildTargets` as deprecated. Those methods will be removed in 6.5
+
 ## 6.4.2 - 05 Jan 2017
 
 * Create a wrapper for `listDevices` in `Client.js`.

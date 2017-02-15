@@ -68,7 +68,7 @@ export default class Client {
 	 * @return {Promise} To publish the library
 	 */
 	publishLibrary(name) {
-		return this.api.publishLibrary({name, auth: this.auth })
+		return this.api.publishLibrary({ name, auth: this.auth })
 			.then(payload => {
 				const library = payload.body.data || {};
 				return new Library(this, library);
@@ -104,15 +104,56 @@ export default class Client {
 		return this.api.downloadFile({ url });
 	}
 
+	/**
+	 * @param {Object} files Object containing files to be compiled
+	 * @param {Number} platformId Platform id number of the device you are compiling for
+	 * @param {String} targetVersion System firmware version to compile against
+	 * @return {Promise}
+	 * @deprecated Will be removed in 6.5
+	 */
 	compileCode(files, platformId, targetVersion) {
 		return this.api.compileCode({ files, platformId, targetVersion, auth: this.auth });
 	}
 
+	/**
+	 * @param {String} $0.deviceId Device ID or Name
+	 * @param {Boolean} $0.signal   Signal on or off
+	 * @return {Promise}
+	 * @deprecated Will be removed in 6.5
+	 */
 	signalDevice({ signal, deviceId }) {
 		return this.api.signalDevice({ signal, deviceId, auth: this.auth });
 	}
 
+	/**
+	 * @return {Promise}
+	 * @deprecated Will be removed in 6.5
+	 */
 	listDevices() {
 		return this.api.listDevices({ auth: this.auth });
+	}
+
+	/**
+	 * @return {Promise}
+	 * @deprecated Will be removed in 6.5
+	 */
+	listBuildTargets() {
+		return this.api.listBuildTargets({ onlyFeatured: true, auth: this.auth })
+			.then(payload => {
+				let targets = [];
+				for (let target of payload.body.targets) {
+					for (let platform of target.platforms) {
+						targets.push({
+							version: target.version,
+							platform: platform,
+							prerelease: target.prereleases.indexOf(platform) > -1,
+							firmware_vendor: target.firmware_vendor
+						});
+					}
+				}
+				return targets;
+			}, error => {
+
+			});
 	}
 }

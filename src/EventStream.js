@@ -47,17 +47,18 @@ class EventStream extends EventEmitter {
 					res.on('end', () => {
 						try {
 							body = JSON.parse(body);
-						} catch (e) {}
-						this.emit('response', {
-							statusCode,
-							body
-						});
-						let errorDescription = `HTTP error ${statusCode} from ${this.uri}`;
-						if (body && body.error_description) {
-							errorDescription += ' - ' + body.error_description;
+						} finally {
+							this.emit('response', {
+								statusCode,
+								body
+							});
+							let errorDescription = `HTTP error ${statusCode} from ${this.uri}`;
+							if (body && body.error_description) {
+								errorDescription += ' - ' + body.error_description;
+							}
+							reject({ statusCode, errorDescription, body });
+							this.req = undefined;
 						}
-						reject({ statusCode, errorDescription, body });
-						this.req = undefined;
 					});
 					return;
 				}

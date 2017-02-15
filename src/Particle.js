@@ -41,7 +41,7 @@ class Particle {
 			grant_type: 'password',
 			client_id: this.clientId,
 			client_secret: this.clientSecret,
-			expires_in: tokenDuration,
+			expires_in: tokenDuration
 		}, method: 'post' });
 	}
 
@@ -56,7 +56,7 @@ class Particle {
 		return this.post('/v1/users', {
 			username,
 			password,
-			account_info : accountInfo,
+			account_info : accountInfo
 		});
 	}
 
@@ -89,7 +89,7 @@ class Particle {
 	 */
 	removeAccessToken({ username, password, token }) {
 		return this.delete(`/v1/access_tokens/${token}`, {
-			access_token: token,
+			access_token: token
 		}, { username, password });
 	}
 
@@ -166,14 +166,14 @@ class Particle {
 		return this.post('/v1/device_claims', { iccid }, auth);
 	}
 
-	validatePromoCode({auth, promoCode}) {
+	validatePromoCode({ auth, promoCode }) {
 		return this.get(`/v1/promo_code/${promoCode}`, auth);
 	}
 
 	changeProduct({ deviceId, productId, shouldUpdate, auth }) {
 		return this.put(`/v1/devices/${deviceId}`, {
 			product_id: productId,
-			update_after_claim: shouldUpdate || false,
+			update_after_claim: shouldUpdate || false
 		}, auth);
 	}
 
@@ -197,7 +197,7 @@ class Particle {
 	 */
 	signalDevice({ deviceId, signal, auth }) {
 		return this.put(`/v1/devices/${deviceId}`, {
-			signal: ( !!signal ? '1' : '0' ),
+			signal: ( signal ? '1' : '0' )
 		}, auth);
 	}
 
@@ -228,7 +228,7 @@ class Particle {
 	 */
 	flashTinker({ deviceId, auth }) {
 		return this.put(`/v1/devices/${deviceId}`, {
-			app: 'tinker',
+			app: 'tinker'
 		}, auth);
 	}
 
@@ -296,7 +296,7 @@ class Particle {
 	 */
 	callFunction({ deviceId, name, argument, auth }) {
 		return this.post(`/v1/devices/${deviceId}/${name}`, {
-			args: argument,
+			args: argument
 		}, auth);
 	}
 
@@ -433,7 +433,7 @@ class Particle {
 		return this.put(`/v1/sims/${iccid}`, {
 			country: countryCode,
 			promo_code: promoCode,
-			action: 'activate',
+			action: 'activate'
 		}, auth);
 	}
 
@@ -530,8 +530,8 @@ class Particle {
 			files, auth, method: 'post' });
 	}
 
-	publishLibrary({auth, name}) {
-		return this.request({ uri: `/v1/libraries/${name}`, auth, method: 'patch', data: {visibility:'public'}});
+	publishLibrary({ auth, name }) {
+		return this.request({ uri: `/v1/libraries/${name}`, auth, method: 'patch', data: { visibility:'public' } });
 	}
 
 	/**
@@ -588,7 +588,7 @@ class Particle {
 	}
 
 	client(options = {}) {
-		return new Client(Object.assign({ api: this}, options));
+		return new Client(Object.assign({ api: this }, options));
 	}
 }
 

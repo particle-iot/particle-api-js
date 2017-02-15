@@ -29,23 +29,23 @@ export default class Agent {
 	}
 
 	get(uri, auth, query) {
-		return this.request({uri, auth, method: 'get', query: query});
+		return this.request({ uri, auth, method: 'get', query: query });
 	}
 
 	head(uri, auth) {
-		return this.request({uri, auth, method: 'head'});
+		return this.request({ uri, auth, method: 'head' });
 	}
 
 	post(uri, data, auth) {
-		return this.request({uri, data, auth, method: 'post'});
+		return this.request({ uri, data, auth, method: 'post' });
 	}
 
 	put(uri, data, auth) {
-		return this.request({uri, data, auth, method: 'put'});
+		return this.request({ uri, data, auth, method: 'put' });
 	}
 
 	delete(uri, data, auth) {
-		return this.request({uri, data, auth, method: 'delete'});
+		return this.request({ uri, data, auth, method: 'delete' });
 	}
 
 
@@ -60,9 +60,9 @@ export default class Agent {
 	 * @param {Object} files         array of file names and file content
 	 * @return {Promise} A promise. fulfilled with {body, statusCode}, rejected with { statusCode, errorDescription, error, body }
 	 */
-	request({uri, method, data = undefined, auth, query = undefined, form = undefined, files = undefined}) {
+	request({ uri, method, data = undefined, auth, query = undefined, form = undefined, files = undefined }) {
 		const requestFiles = this._sanitizeFiles(files);
-		return this._request({uri, method, data, auth, query, form, files: requestFiles});
+		return this._request({ uri, method, data, auth, query, form, files: requestFiles });
 	}
 
 	/**
@@ -76,8 +76,8 @@ export default class Agent {
 	 * @param {Object} files         array of file names and file content
 	 * @return {Promise} A promise. fulfilled with {body, statusCode}, rejected with { statusCode, errorDescription, error, body }
 	 */
-	_request({uri, method, data, auth, query, form, files}) {
-		const req = this._buildRequest({uri, method, data, auth, query, form, files});
+	_request({ uri, method, data, auth, query, form, files }) {
+		const req = this._buildRequest({ uri, method, data, auth, query, form, files });
 		return this._promiseResponse(req);
 	}
 
@@ -112,7 +112,7 @@ export default class Agent {
 					shortErrorDescription = body.error_description;
 				}
 				const reason = new Error(errorDescription);
-				Object.assign(reason, {statusCode, errorDescription, shortErrorDescription, error, body});
+				Object.assign(reason, { statusCode, errorDescription, shortErrorDescription, error, body });
 				reject(reason);
 			} else {
 				fulfill({
@@ -123,7 +123,7 @@ export default class Agent {
 		});
 	}
 
-	_buildRequest({uri, method, data, auth, query, form, files, makerequest=request}) {
+	_buildRequest({ uri, method, data, auth, query, form, files, makerequest=request }) {
 		const req = makerequest(method, uri);
 		if (this.prefix) {
 			req.use(this.prefix);
@@ -165,7 +165,7 @@ export default class Agent {
 			if (auth.username !== undefined) {
 				req.auth(auth.username, auth.password);
 			} else {
-				req.set({Authorization: `Bearer ${auth}`});
+				req.set({ Authorization: `Bearer ${auth}` });
 			}
 		}
 		return req;
