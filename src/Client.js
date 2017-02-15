@@ -104,15 +104,47 @@ export default class Client {
 		return this.api.downloadFile({ url });
 	}
 
+	/**
+	 * @deprecated
+	 */
 	compileCode(files, platformId, targetVersion) {
 		return this.api.compileCode({ files, platformId, targetVersion, auth: this.auth });
 	}
 
+	/**
+	 * @deprecated
+	 */
 	signalDevice({ signal, deviceId }) {
 		return this.api.signalDevice({ signal, deviceId, auth: this.auth });
 	}
 
+	/**
+	 * @deprecated
+	 */
 	listDevices() {
 		return this.api.listDevices({ auth: this.auth });
+	}
+
+	/**
+	 * @deprecated
+	 */
+	listBuildTargets() {
+		return this.api.listBuildTargets({ onlyFeatured: true, auth: this.auth })
+			.then(payload => {
+				let targets = [];
+				for (let target of payload.body.targets) {
+					for (let platform of target.platforms) {
+						targets.push({
+							version: target.version,
+							platform: platform,
+							prerelease: target.prereleases.includes(platform),
+							firmware_vendor: target.firmware_vendor
+						});
+					}
+				}
+				return targets;
+			}, error => {
+
+			});
 	}
 }
