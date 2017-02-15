@@ -105,28 +105,37 @@ export default class Client {
 	}
 
 	/**
-	 * @deprecated
+	 * @param {Object} files Object containing files to be compiled
+	 * @param {Number} platformId Platform id number of the device you are compiling for
+	 * @param {String} targetVersion System firmware version to compile against
+	 * @return {Promise}
+	 * @deprecated Will be removed in 6.5
 	 */
 	compileCode(files, platformId, targetVersion) {
 		return this.api.compileCode({ files, platformId, targetVersion, auth: this.auth });
 	}
 
 	/**
-	 * @deprecated
+	 * @param {String} $0.deviceId Device ID or Name
+	 * @param {Boolean} $0.signal   Signal on or off
+	 * @return {Promise}
+	 * @deprecated Will be removed in 6.5
 	 */
 	signalDevice({ signal, deviceId }) {
 		return this.api.signalDevice({ signal, deviceId, auth: this.auth });
 	}
 
 	/**
-	 * @deprecated
+	 * @return {Promise}
+	 * @deprecated Will be removed in 6.5
 	 */
 	listDevices() {
 		return this.api.listDevices({ auth: this.auth });
 	}
 
 	/**
-	 * @deprecated
+	 * @return {Promise}
+	 * @deprecated Will be removed in 6.5
 	 */
 	listBuildTargets() {
 		return this.api.listBuildTargets({ onlyFeatured: true, auth: this.auth })
