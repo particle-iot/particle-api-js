@@ -146,7 +146,7 @@ export default class Client {
 						targets.push({
 							version: target.version,
 							platform: platform,
-							prerelease: target.prereleases.includes(platform),
+							prerelease: target.prereleases.indexOf(platform) > -1,
 							firmware_vendor: target.firmware_vendor
 						});
 					}
