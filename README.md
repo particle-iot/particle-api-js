@@ -23,6 +23,14 @@ $ bower install particle-api-js
 </script>
 ```
 
+## Building
+
+Make your changes to the files in the `src` directory, then from the project directory run:
+
+`npm run compile && npm run build`
+
+The `dist` directory will contain the compiled and minified files that can be included in your project.
+
 ## Documentation
 
 First, read the [documentation for Particle API JS on the Documentation website.][docs-website] It contains examples to get started.
