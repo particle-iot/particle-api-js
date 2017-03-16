@@ -170,10 +170,9 @@ class Particle {
 		return this.get(`/v1/promo_code/${promoCode}`, auth);
 	}
 
-	changeProduct({ deviceId, productId, shouldUpdate, auth }) {
+	changeProduct({ deviceId, productId, auth }) {
 		return this.put(`/v1/devices/${deviceId}`, {
-			product_id: productId,
-			update_after_claim: shouldUpdate || false
+			product_id: productId
 		}, auth);
 	}
 
