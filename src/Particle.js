@@ -563,6 +563,71 @@ class Particle {
 		return req.then(res => res.body);
 	}
 
+	/**
+	 * List OAuth client created by the account
+	 * @param  {String} $0.auth Access Token
+	 * @return {Promise}
+	 */
+	listOAuthClients({ auth }) {
+		return this.get('/v1/clients', auth);
+	}
+
+	/**
+	 * Create an OAuth client
+	 * @param  {String} $0.name               Name of the OAuth client
+	 * @param  {String} $0.type               web, installed or web
+	 * @param  {String} [$0.redirect_uri]     URL to redirect after OAuth flow. Only for type web.
+	 * @param  {Object} [$0.scope]            Limits what the access tokens created by this client can do.
+	 * @param  {String} $0.auth               Access Token
+	 * @return {Promise}
+	 */
+	createOAuthClient({ name, type, redirect_uri, scope, auth }) {
+		const data = { name, type, redirect_uri, scope };
+		return this.post('/v1/clients', data, auth);
+	}
+
+	/**
+	 * Update an OAuth client
+	 * @param  {String} $0.clientId           The OAuth client to update
+	 * @param  {String} [$0.name]             New Name of the OAuth client
+	 * @param  {Object} [$0.scope]            New scope of the OAuth client
+	 * @param  {String} $0.auth               Access Token
+	 * @return {Promise}
+	 */
+	updateOAuthClient({ clientId, name, scope, auth }) {
+		const data = { name, scope };
+		return this.put(`/v1/clients/${clientId}`, data, auth);
+	}
+
+	/**
+	 * Remove an OAuth client
+	 * @param  {String} $0.clientId           The OAuth client to update
+	 * @param  {String} $0.auth               Access Token
+	 * @return {Promise}
+	 */
+	deleteOAuthClient({ clientId, auth }) {
+		return this.delete(`/v1/clients/${clientId}`, null, auth);
+	}
+
+	/**
+	 * List products the account has access to
+	 * @param  {String} $0.auth Access Token
+	 * @return {Promise}
+	 */
+	listProducts({ auth }) {
+		return this.get('/v1/products', auth);
+	}
+
+	/**
+	 * Get detailed informationa about a product
+	 * @param  {String} $0.productId Product ID
+	 * @param  {String} $0.auth     Access token
+	 * @return {Promise}
+	 */
+	getProduct({ productId, auth }) {
+		return this.get(`/v1/products/${productId}`, auth);
+	}
+
 	get(uri, auth, query = undefined) {
 		return this.agent.get(uri, auth, query);
 	}

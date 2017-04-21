@@ -50,7 +50,11 @@ const props = {
 		username: 'u',
 		password: 'p'
 	},
-	rejectUnauthorized: true
+	rejectUnauthorized: true,
+	clientId: 'client-123',
+	type: 'web',
+	redirect_uri: 'https://example.com',
+	scope: ''
 };
 
 class Common {
@@ -598,7 +602,91 @@ describe('ParticleAPI', () => {
 				});
 			});
 		});
+
+		describe('.listOAuthClients', () => {
+			it('generates request', () => {
+				return api.listOAuthClients({ auth: 'X' }).then((results) => {
+					results.should.match({
+						method: 'get',
+						uri: '/v1/clients',
+						auth: 'X'
+					});
+				});
+			});
+		});
+
+		describe('.createOAuthClient', () => {
+			it('generates request', () => {
+				return api.createOAuthClient(props).then((results) => {
+					results.should.match({
+						method: 'post',
+						uri: '/v1/clients',
+						auth: 'X',
+						data: {
+							name: props.name,
+							type: props.type,
+							redirect_uri: props.redirect_uri,
+							scope: props.scope
+						}
+					});
+				});
+			});
+		});
+
+		describe('.updateOAuthClient', () => {
+			it('generates request', () => {
+				return api.updateOAuthClient(props).then((results) => {
+					results.should.match({
+						method: 'put',
+						uri: `/v1/clients/${props.clientId}`,
+						auth: 'X',
+						data: {
+							name: props.name,
+							scope: props.scope
+						}
+					});
+				});
+			});
+		});
+
+		describe('.deleteOAuthClient', () => {
+			it('generates request', () => {
+				return api.deleteOAuthClient(props).then((results) => {
+					results.should.match({
+						method: 'delete',
+						uri: `/v1/clients/${props.clientId}`,
+						auth: 'X'
+					});
+				});
+			});
+		});
+
+		describe('.listProducts', () => {
+			it('generates request', () => {
+				return api.listProducts({ auth: 'X' }).then((results) => {
+					results.should.match({
+						method: 'get',
+						uri: '/v1/products',
+						auth: 'X'
+					});
+				});
+			});
+		});
+
+		describe('.getProduct', () => {
+			it('generates request', () => {
+				return api.getProduct({ productId: 123, auth: 'X' }).then((results) => {
+					results.should.match({
+						method: 'get',
+						uri: '/v1/products/123',
+						auth: 'X'
+					});
+				});
+			});
+		});
+
 	});
+
 
 	describe('.client', () => {
 		it('creates a client', (done) => {
