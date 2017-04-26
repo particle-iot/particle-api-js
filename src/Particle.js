@@ -27,8 +27,6 @@ class Particle {
 		Object.assign(this, Defaults, options);
 		this.context = {};
 		this.agent = new Agent(this.baseUrl);
-		this.setContext({name:'tool', value: this.tool});
-		this.setContext({name:'project', value: this.project});
 	}
 
 	_isValidContext(name, context) {
@@ -55,7 +53,15 @@ class Particle {
 		return Object.assign(this.context, context);
 	}
 
-	trackingIdentity({auth, full=false, context=undefined}={}) {
+	/**
+	 * Retrieves the information that is used to identify the current login for tracking.
+	 * @param {string} auth      The access token
+	 * @param {Boolean} full      When true, retrieve all information for registering a user with the tracking API. When false,
+	 *  retrieve only the unique tracking ID for the current login.
+	 * @param {object} context   Context information.
+	 * @returns {Promise<object>} Resolve the tracking identify of the current login
+	 */
+	trackingIdentity({auth, full=false, context}={}) {
 		return this.get('/v1/user/identify', auth, (full ? undefined : {tracking:1}), context);
 	}
 
@@ -194,7 +200,7 @@ class Particle {
 	 * @param  {String} [$0.iccid] ICCID of the SIM card used in the Electron
 	 * @return {Promise}
 	 */
-	getClaimCode({ auth, iccid = undefined, context }) {
+	getClaimCode({ auth, iccid, context }) {
 		return this.post('/v1/device_claims', { iccid }, auth, context);
 	}
 
@@ -475,7 +481,7 @@ class Particle {
 	 * @param  {Boolean} [$0.onlyFeatured=false] Only list featured build targets
 	 * @return {Promise}
 	 */
-	listBuildTargets({ auth, onlyFeatured = undefined, context}) {
+	listBuildTargets({ auth, onlyFeatured, context}) {
 		let query;
 		if (onlyFeatured !== undefined) {
 			query = { featured: !!onlyFeatured };
@@ -596,7 +602,7 @@ class Particle {
 		return req.then(res => res.body);
 	}
 
-	get(uri, auth, query = undefined, context = undefined) {
+	get(uri, auth, query, context) {
 		context = this._buildContext(context);
 		return this.agent.get(uri, auth, query, context);
 	}
