@@ -23,8 +23,40 @@ class Particle {
 	 * @param  {Object} options Options to be used for all requests (see [Defaults](../src/Defaults.js))
 	 */
 	constructor(options = {}) {
+		// todo - this seems a bit dangerous - would be better to put all options/context in a contained object
 		Object.assign(this, Defaults, options);
+		this.context = {};
 		this.agent = new Agent(this.baseUrl);
+		this.setContext({name:'tool', value: this.tool});
+		this.setContext({name:'project', value: this.project});
+	}
+
+	_isValidContext(name, context) {
+		return (name==='tool' || name==='project') && context!==undefined;
+	}
+
+	setContext(name, context) {
+		if (context!==undefined) {
+			if (this._isValidContext(name, context)) {
+				this.context[name] = context;
+			} else {
+				throw Error('uknown context name or undefined context: '+name);
+			}
+		}
+	}
+
+	/**
+	 * Builds the final context from the context parameter and the context items in the api.
+	 * @param {Object} context       The invocation context, this takes precedence over the local context.
+	 * @return {Object} The context to use.
+	 * @private
+	 */
+	_buildContext(context) {
+		return Object.assign(this.context, context);
+	}
+
+	trackingIdentity({auth, full=false, context=undefined}={}) {
+		return this.get('/v1/user/identify', auth, (full ? undefined : {tracking:1}), context);
 	}
 
 	/**
@@ -34,7 +66,7 @@ class Particle {
 	 * @param  {Number} $0.tokenDuration How long the access token should last in seconds
 	 * @return {Promise}
 	 */
-	login({ username, password, tokenDuration = this.tokenDuration }) {
+	login({ username, password, tokenDuration = this.tokenDuration, context }) {
 		return this.request({ uri: '/oauth/token', form: {
 			username,
 			password,
@@ -42,7 +74,7 @@ class Particle {
 			client_id: this.clientId,
 			client_secret: this.clientSecret,
 			expires_in: tokenDuration
-		}, method: 'post' });
+		}, method: 'post', context});
 	}
 
 	/**
@@ -52,12 +84,12 @@ class Particle {
 	 * @param  {String} $0.accountInfo Object that contains account information fields such as user real name, company name, business account flag etc
 	 * @return {Promise}
 	 */
-	createUser({ username, password, accountInfo }) {
+	createUser({ username, password, accountInfo, context}) {
 		return this.post('/v1/users', {
 			username,
 			password,
 			account_info : accountInfo
-		});
+		}, undefined, context);
 	}
 
 	/**
@@ -65,10 +97,10 @@ class Particle {
 	 * @param  {String} $0.token the string token sent in the verification email
 	 * @return {Promise}
 	 */
-	verifyUser({ token }) {
+	verifyUser({ token, context }) {
 		return this.post('/v1/user/verify', {
 			token
-		});
+		}, undefined, context);
 	}
 
 	/**
@@ -76,8 +108,8 @@ class Particle {
 	 * @param  {String} $0.username Email of the user
 	 * @return {Promise}
 	 */
-	resetPassword({ username }) {
-		return this.post('/v1/user/password-reset', { username });
+	resetPassword({ username, context }) {
+		return this.post('/v1/user/password-reset', { username }, undefined, context);
 	}
 
 	/**
@@ -87,10 +119,10 @@ class Particle {
 	 * @param  {String} $0.token    Access token you wish to revoke
 	 * @return {Promise}
 	 */
-	removeAccessToken({ username, password, token }) {
+	removeAccessToken({ username, password, token, context }) {
 		return this.delete(`/v1/access_tokens/${token}`, {
 			access_token: token
-		}, { username, password });
+		}, { username, password }, context);
 	}
 
 	/**
@@ -99,8 +131,8 @@ class Particle {
 	 * @param  {String} $0.password Password
 	 * @return {Promise}
 	 */
-	listAccessTokens({ username, password }) {
-		return this.get('/v1/access_tokens', { username, password });
+	listAccessTokens({ username, password, context}) {
+		return this.get('/v1/access_tokens', { username, password }, undefined, context);
 	}
 
 	/**
@@ -108,8 +140,8 @@ class Particle {
 	 * @param  {String} $0.auth Access Token
 	 * @return {Promise}
 	 */
-	listDevices({ auth }) {
-		return this.get('/v1/devices', auth);
+	listDevices({ auth, context }) {
+		return this.get('/v1/devices', auth, undefined, context);
 	}
 
 	/**
@@ -118,8 +150,8 @@ class Particle {
 	 * @param  {String} $0.auth     Access token
 	 * @return {Promise}
 	 */
-	getDevice({ deviceId, auth }) {
-		return this.get(`/v1/devices/${deviceId}`, auth);
+	getDevice({ deviceId, auth, context }) {
+		return this.get(`/v1/devices/${deviceId}`, auth, undefined, context);
 	}
 
 	/**
@@ -128,11 +160,11 @@ class Particle {
 	 * @param  {String} $0.auth     Access Token
 	 * @return {Promise}
 	 */
-	claimDevice({ deviceId, requestTransfer, auth }) {
+	claimDevice({ deviceId, requestTransfer, auth, context}) {
 		return this.post('/v1/devices', {
 			id: deviceId,
 			request_transfer: !!requestTransfer
-		}, auth);
+		}, auth, context);
 	}
 
 	/**
@@ -141,8 +173,8 @@ class Particle {
 	 * @param  {String} $0.auth     Access Token
 	 * @return {Promise}
 	 */
-	removeDevice({ deviceId, auth }) {
-		return this.delete(`/v1/devices/${deviceId}`, null, auth);
+	removeDevice({ deviceId, auth, context}) {
+		return this.delete(`/v1/devices/${deviceId}`, null, auth, context);
 	}
 
 	/**
@@ -152,8 +184,8 @@ class Particle {
 	 * @param  {String} $0.auth     Access Token
 	 * @return {Promise}
 	 */
-	renameDevice({ deviceId, name, auth }) {
-		return this.put(`/v1/devices/${deviceId}`, { name }, auth);
+	renameDevice({ deviceId, name, auth, context }) {
+		return this.put(`/v1/devices/${deviceId}`, { name }, auth, context);
 	}
 
 	/**
@@ -162,19 +194,19 @@ class Particle {
 	 * @param  {String} [$0.iccid] ICCID of the SIM card used in the Electron
 	 * @return {Promise}
 	 */
-	getClaimCode({ auth, iccid = undefined }) {
-		return this.post('/v1/device_claims', { iccid }, auth);
+	getClaimCode({ auth, iccid = undefined, context }) {
+		return this.post('/v1/device_claims', { iccid }, auth, context);
 	}
 
-	validatePromoCode({ auth, promoCode }) {
-		return this.get(`/v1/promo_code/${promoCode}`, auth);
+	validatePromoCode({ auth, promoCode, context }) {
+		return this.get(`/v1/promo_code/${promoCode}`, auth, undefined, context);
 	}
 
-	changeProduct({ deviceId, productId, shouldUpdate, auth }) {
+	changeProduct({ deviceId, productId, shouldUpdate, auth, context }) {
 		return this.put(`/v1/devices/${deviceId}`, {
 			product_id: productId,
 			update_after_claim: shouldUpdate || false
-		}, auth);
+		}, auth, context);
 	}
 
 	/**
@@ -184,8 +216,8 @@ class Particle {
 	 * @param  {String} $0.auth     Access Token
 	 * @return {Promise}
 	 */
-	getVariable({ deviceId, name, auth }) {
-		return this.get(`/v1/devices/${deviceId}/${name}`, auth);
+	getVariable({ deviceId, name, auth, context }) {
+		return this.get(`/v1/devices/${deviceId}/${name}`, auth, undefined, context);
 	}
 
 	/**
@@ -195,10 +227,10 @@ class Particle {
 	 * @param  {String} $0.auth     Access Token
 	 * @return {Promise}
 	 */
-	signalDevice({ deviceId, signal, auth }) {
+	signalDevice({ deviceId, signal, auth, context }) {
 		return this.put(`/v1/devices/${deviceId}`, {
 			signal: ( signal ? '1' : '0' )
-		}, auth);
+		}, auth, context);
 	}
 
 	/**
@@ -209,7 +241,7 @@ class Particle {
 	 * @param  {String} $0.auth          String
 	 * @return {Promise}
 	 */
-	flashDevice({ deviceId, files, targetVersion, auth }) {
+	flashDevice({ deviceId, files, targetVersion, auth, context}) {
 		const form = {};
 		if (targetVersion) {
 			form.build_target_version = targetVersion;
@@ -217,7 +249,7 @@ class Particle {
 			form.latest = 'true';
 		}
 		return this.request({ uri: `/v1/devices/${deviceId}`,
-			files, auth, form, method: 'put' });
+			files, auth, form, method: 'put', context });
 	}
 
 	/**
@@ -226,10 +258,10 @@ class Particle {
 	 * @param  {String} $0.auth     Access Token
 	 * @return {Promise}
 	 */
-	flashTinker({ deviceId, auth }) {
+	flashTinker({ deviceId, auth, context }) {
 		return this.put(`/v1/devices/${deviceId}`, {
 			app: 'tinker'
-		}, auth);
+		}, auth, context);
 	}
 
 	/**
@@ -240,7 +272,7 @@ class Particle {
 	 * @param  {String} $0.auth          Access Token
 	 * @return {Promise}
 	 */
-	compileCode({ files, platformId, targetVersion, auth }) {
+	compileCode({ files, platformId, targetVersion, auth, context }) {
 		const form = { platform_id: platformId };
 		if (targetVersion) {
 			form.build_target_version = targetVersion;
@@ -248,7 +280,7 @@ class Particle {
 			form.latest = 'true';
 		}
 		return this.request({ uri: '/v1/binaries',
-			files, auth, form, method: 'post' });
+			files, auth, form, method: 'post', context});
 	}
 
 	/**
@@ -257,7 +289,7 @@ class Particle {
 	 * @param  {String} $0.auth     Access Token
 	 * @return {Request}
 	 */
-	downloadFirmwareBinary({ binaryId, auth }) {
+	downloadFirmwareBinary({ binaryId, auth, context }) {
 		const uri = `/v1/binaries/${binaryId}`;
 		const req = request('get', uri);
 		req.use(this.prefix);
@@ -276,14 +308,14 @@ class Particle {
 	 * @param  {String} $0.auth      Access Token
 	 * @return {Promise}
 	 */
-	sendPublicKey({ deviceId, key, algorithm, auth }) {
+	sendPublicKey({ deviceId, key, algorithm, auth, context }) {
 		return this.post(`/v1/provisioning/${deviceId}`, {
 			deviceID: deviceId,
 			publicKey: ( typeof key === 'string' ? key : key.toString() ),
 			filename: 'particle-api',
 			order: `manual_${ Date.now() }`,
 			algorithm: algorithm || 'rsa'
-		}, auth);
+		}, auth, context);
 	}
 
 	/**
@@ -294,10 +326,10 @@ class Particle {
 	 * @param  {String} $0.auth     Access Token
 	 * @return {Promise}
 	 */
-	callFunction({ deviceId, name, argument, auth }) {
+	callFunction({ deviceId, name, argument, auth, context }) {
 		return this.post(`/v1/devices/${deviceId}/${name}`, {
 			args: argument
-		}, auth);
+		}, auth, context);
 	}
 
 	/**
@@ -310,7 +342,7 @@ class Particle {
 	 * @return {Promise} If the promise resolves, the resolution value will be an EventStream object that will
 	 * emit 'event' events, as well as the specific named event.
 	 */
-	getEventStream({ deviceId, name, org, product, auth }) {
+	getEventStream({ deviceId, name, org, product, auth, context }) {
 		let uri = '/v1/';
 		if (org) {
 			uri += `orgs/${org}/`;
@@ -344,12 +376,12 @@ class Particle {
 	 * @param  {String} $0.auth      Access Token
 	 * @return {Promise}
 	 */
-	publishEvent({ name, data, isPrivate, auth }) {
+	publishEvent({ name, data, isPrivate, auth, context}) {
 		return this.post('/v1/devices/events', {
 			name,
 			data,
 			'private': isPrivate
-		}, auth);
+		}, auth, context);
 	}
 
 	/**
@@ -369,14 +401,14 @@ class Particle {
 	 * @param  {String} $0.auth               Access Token
 	 * @return {Promise}
 	 */
-	createWebhook({ deviceId, name, url, requestType, headers, json, query, responseTemplate, responseTopic, rejectUnauthorized, webhookAuth, form, auth }) {
-		const data = { event: name, url, requestType, headers, json, query, responseTemplate, responseTopic, rejectUnauthorized, auth: webhookAuth, form };
+	createWebhook({ deviceId, name, url, requestType, headers, json, query, responseTemplate, responseTopic, rejectUnauthorized, webhookAuth, form, auth, context }) {
+		const data = { event: name, url, requestType, headers, json, query, responseTemplate, responseTopic, rejectUnauthorized, auth: webhookAuth, form};
 		if (deviceId === 'mine') {
 			data.mydevices = true;
 		} else {
 			data.deviceid = deviceId;
 		}
-		return this.post('/v1/webhooks', data, auth);
+		return this.post('/v1/webhooks', data, auth, context);
 	}
 
 	/**
@@ -385,8 +417,8 @@ class Particle {
 	 * @param  {String} $0.auth   Access Token
 	 * @return {Promise}
 	 */
-	deleteWebhook({ hookId, auth }) {
-		return this.delete(`/v1/webhooks/${hookId}`, null, auth);
+	deleteWebhook({ hookId, auth, context }) {
+		return this.delete(`/v1/webhooks/${hookId}`, null, auth, context);
 	}
 
 	/**
@@ -394,8 +426,8 @@ class Particle {
 	 * @param  {String} $0.auth Access Token
 	 * @return {Promise}
 	 */
-	listWebhooks({ auth }) {
-		return this.get('/v1/webhooks', auth);
+	listWebhooks({ auth, context }) {
+		return this.get('/v1/webhooks', auth, context);
 	}
 
 	/**
@@ -403,8 +435,8 @@ class Particle {
 	 * @param  {String} $0.auth Access Token
 	 * @return {Promise}
 	 */
-	getUserInfo({ auth }) {
-		return this.get('/v1/user', auth);
+	getUserInfo({ auth, context }) {
+		return this.get('/v1/user', auth, context);
 	}
 
 	/**
@@ -415,26 +447,26 @@ class Particle {
 	 * @param  {String} $0.password Change authenticated user password
 	 * @return {Promise}
 	 */
-	setUserInfo({ stripeToken, accountInfo, password, auth }) {
+	setUserInfo({ stripeToken, accountInfo, password, auth, context }) {
 		const bodyObj = {};
 
 		(stripeToken ? bodyObj.stripe_token = stripeToken : null);
 		(accountInfo ? bodyObj.account_info = accountInfo : null);
 		(password ? bodyObj.password = password : null);
 
-		return this.put('/v1/user', bodyObj, auth);
+		return this.put('/v1/user', bodyObj, auth, context);
 	}
 
-	checkSIM({ iccid, auth }) {
-		return this.head(`/v1/sims/${iccid}`, auth);
+	checkSIM({ iccid, auth, context }) {
+		return this.head(`/v1/sims/${iccid}`, auth, undefined, context);
 	}
 
-	activateSIM({ iccid, countryCode, promoCode, auth }) {
+	activateSIM({ iccid, countryCode, promoCode, auth, context }) {
 		return this.put(`/v1/sims/${iccid}`, {
 			country: countryCode,
 			promo_code: promoCode,
 			action: 'activate'
-		}, auth);
+		}, auth, context);
 	}
 
 	/**
@@ -443,12 +475,12 @@ class Particle {
 	 * @param  {Boolean} [$0.onlyFeatured=false] Only list featured build targets
 	 * @return {Promise}
 	 */
-	listBuildTargets({ auth, onlyFeatured = undefined }) {
+	listBuildTargets({ auth, onlyFeatured = undefined, context}) {
 		let query;
 		if (onlyFeatured !== undefined) {
 			query = { featured: !!onlyFeatured };
 		}
-		return this.get('/v1/build_targets', auth, query);
+		return this.get('/v1/build_targets', auth, query, context);
 	}
 
 	/**
@@ -470,9 +502,10 @@ class Particle {
 	 * - 'featured' - list only featured libraries
 	 * @param  {String} $0.excludeScopes  list of scopes to exclude
 	 * @param  {String} $0.category Category to filter
+	 * @param  {Object} $0.context  The invocation context
 	 * @return {Promise}
 	 */
-	listLibraries({ auth, page, limit, filter, sort, architectures, category, scope, excludeScopes }) {
+	listLibraries({ auth, page, limit, filter, sort, architectures, category, scope, excludeScopes, context}) {
 		return this.get('/v1/libraries', auth, {
 			page,
 			filter,
@@ -482,7 +515,7 @@ class Particle {
 			category,
 			scope,
 			excludeScopes: this._asList(excludeScopes)
-		});
+		}, context);
 	}
 
 	_asList(value) {
@@ -496,8 +529,8 @@ class Particle {
 	 * @param  {String} $0.version Version of the library to fetch (default: latest)
 	 * @return {Promise}
 	 */
-	getLibrary({ auth, name, version }) {
-		return this.get(`/v1/libraries/${name}`, auth, { version });
+	getLibrary({ auth, name, version, context }) {
+		return this.get(`/v1/libraries/${name}`, auth, { version }, context);
 	}
 
 	/**
@@ -508,11 +541,11 @@ class Particle {
 	 * @param  {Number} $0.limit Number of items per page
 	 * @return {Promise}
 	 */
-	getLibraryVersions({ auth, name, page, limit }) {
+	getLibraryVersions({ auth, name, page, limit, context }) {
 		return this.get(`/v1/libraries/${name}/versions`, auth, {
 			page,
 			limit
-		});
+		}, context);
 	}
 
 	/**
@@ -521,17 +554,17 @@ class Particle {
 	 * @param  {String} $0.archive Compressed archive file containing the library sources
 	 * @return {Promise}
 	 */
-	contributeLibrary({ auth, archive }) {
+	contributeLibrary({ auth, archive, context }) {
 		const files = {
 			'archive.tar.gz': archive
 		};
 
 		return this.request({ uri: '/v1/libraries',
-			files, auth, method: 'post' });
+			files, auth, context, method: 'post' });
 	}
 
-	publishLibrary({ auth, name }) {
-		return this.request({ uri: `/v1/libraries/${name}`, auth, method: 'patch', data: { visibility:'public' } });
+	publishLibrary({ auth, name, context}) {
+		return this.request({ uri: `/v1/libraries/${name}`, auth, context, method: 'patch', data: { visibility:'public' } });
 	}
 
 	/**
@@ -541,8 +574,8 @@ class Particle {
 	 * @param  {String} $0.force Key to force deleting a public library
 	 * @return {Promise}
 	 */
-	deleteLibrary({ auth, name, force }) {
-		return this.delete(`/v1/libraries/${name}`, { force }, auth);
+	deleteLibrary({ auth, name, force, context }) {
+		return this.delete(`/v1/libraries/${name}`, { force }, auth, context);
 	}
 
 	/**
@@ -563,27 +596,33 @@ class Particle {
 		return req.then(res => res.body);
 	}
 
-	get(uri, auth, query = undefined) {
-		return this.agent.get(uri, auth, query);
+	get(uri, auth, query = undefined, context = undefined) {
+		context = this._buildContext(context);
+		return this.agent.get(uri, auth, query, context);
 	}
 
-	head(uri, auth) {
-		return this.agent.head(uri, auth);
+	head(uri, auth, query, context) {
+		context = this._buildContext(context);
+		return this.agent.head(uri, auth, query, context);
 	}
 
-	post(uri, data, auth) {
-		return this.agent.post(uri, data, auth);
+	post(uri, data, auth, context) {
+		context = this._buildContext(context);
+		return this.agent.post(uri, data, auth, context);
 	}
 
-	put(uri, data, auth) {
-		return this.agent.put(uri, data, auth);
+	put(uri, data, auth, context) {
+		context = this._buildContext(context);
+		return this.agent.put(uri, data, auth, context);
 	}
 
-	delete(uri, data, auth) {
-		return this.agent.delete(uri, data, auth);
+	delete(uri, data, auth, context) {
+		context = this._buildContext(context);
+		return this.agent.delete(uri, data, auth, context);
 	}
 
 	request(args) {
+		args.context = this._buildContext(args.context);
 		return this.agent.request(args);
 	}
 

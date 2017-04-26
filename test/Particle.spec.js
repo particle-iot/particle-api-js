@@ -4,9 +4,9 @@ import Particle from '../src/Particle';
 import Defaults from '../src/Defaults';
 import Client from '../src/Client';
 import { createServer } from 'http';
-import sinon from 'sinon';
 import EventStream from '../src/EventStream';
 import FakeAgent from './FakeAgent';
+import {sinon, expect} from './test-setup';
 
 let api;
 let server;
@@ -82,6 +82,27 @@ describe('ParticleAPI', () => {
 				});
 			});
 		});
+		describe('trackingIdentity', () => {
+			const context = { tool: { name: 'cli', version:'1.2.3' } };
+			it('full', () => {
+				return api.trackingIdentity({auth: 'X', full: true, context})
+					.then((req) => {
+						expect(req).to.have.property('uri').eql('/v1/user/identify');
+						expect(req).to.have.property('method').eql('get');
+						expect(req).to.have.property('query').eql(undefined);
+						expect(req).to.have.property('context').eql(context);
+						expect(req).to.have.property('auth').eql('X');
+					});
+			});
+			it('id only', () => {
+				return api.trackingIdentity().then(req => {
+					expect(req).to.have.property('uri').eql('/v1/user/identify');
+					expect(req).to.have.property('method').eql('get');
+					expect(req).to.have.property('context').eql({});
+					expect(req).to.have.property('query').eql({tracking:1});
+				});
+			});
+		});
 		describe('.login', () => {
 			it('sends credentials', () => {
 				return api.login(props).then(Common.expectCredentials);
@@ -94,6 +115,7 @@ describe('ParticleAPI', () => {
 						method: 'post',
 						uri: '/v1/users',
 						auth: undefined,
+						context: {},
 						data: {
 							username: props.username,
 							password: props.password,
@@ -449,6 +471,7 @@ describe('ParticleAPI', () => {
 						method: 'put',
 						uri: '/v1/user',
 						auth: 'X',
+						context: {},
 						data: {
 							stripe_token: '123ABCD',
 							account_info: {first_name: 'John', last_name: 'Scully'}
@@ -610,4 +633,98 @@ describe('ParticleAPI', () => {
 			done();
 		});
 	});
+
+	describe('context', () => {
+		describe('_isValidContext', () => {
+			it('does not have context items set after default construction', () => {
+				const api = new Particle();
+				api.should.have.property('context').eql({});
+			});
+			it('is valid for known types and non-empty object', () => {
+				api._isValidContext('tool', {abc:'123'}).should.be.ok;
+				api._isValidContext('project', {abc:'123'}).should.be.ok;
+			});
+			it('is not valid for unknown types and non-empty object', () => {
+				api._isValidContext('tool1', {abc:'123'}).should.not.be.ok;
+				api._isValidContext('project1', {abc:'123'}).should.not.be.ok;
+			});
+			it('is not valid for known types and falsey object', () => {
+				api._isValidContext('tool', {}).should.not.be.ok;
+				api._isValidContext('tool', 0).should.not.be.ok;
+				api._isValidContext('tool', null).should.not.be.ok;
+				api._isValidContext('tool').should.not.be.ok;
+			});
+			it('sets a valid context', () => {
+				api.setContext('tool', {name:'spanner'});
+				api.context.should.have.property('tool').property('name').equal('spanner');
+			});
+		});
+
+		describe('_buildContext', () => {
+			it('uses the api context when no context provided', () => {
+				const tool = {name:'spanner'};
+				api.setContext('tool', tool);
+				api._buildContext().should.eql({tool});
+			});
+			it('overrides the api context completely for a given context item', () => {
+				const tool = {name:'spanner', version:'1.2.3'};
+				api.setContext('tool', tool);
+				const newTool = {name:'pliers'};
+				api._buildContext({tool:newTool}).should.eql({tool:newTool});
+			});
+		});
+
+		describe('agent forwarders', () => {
+			let context;
+			let contextResult;
+			let result;
+			beforeEach(() => {
+				context = { abc: 123 };
+				contextResult = { def: 456 };
+				result = 'result';
+				api._buildContext = sinon.stub().returns(contextResult);
+			});
+
+			afterEach(() => {
+				expect(api._buildContext).to.have.been.calledWith(context);
+			});
+
+			it('calls _buildContext from get', () => {
+				api.agent.get = sinon.stub().returns(result);
+				api.get('uri', 'auth', 'query', context).should.eql(result);
+				expect(api.agent.get).to.have.been.calledWith('uri', 'auth', 'query', contextResult);
+			});
+
+			it('calls _buildContext from head', () => {
+				api.agent.head = sinon.stub().returns(result);
+				api.head('uri', 'auth', 'query', context).should.eql(result);
+				expect(api.agent.head).to.have.been.calledWith('uri', 'auth', 'query', contextResult);
+			});
+
+			it('calls _buildContext from post', () => {
+				api.agent.post = sinon.stub().returns(result);
+				api.post('uri', 'data', 'auth', context).should.eql(result);
+				expect(api.agent.post).to.have.been.calledWith('uri', 'data', 'auth', contextResult);
+			});
+
+			it('calls _buildContext from put', () => {
+				api.agent.put = sinon.stub().returns(result);
+				api.put('uri', 'data', 'auth', context).should.eql(result);
+				expect(api.agent.put).to.have.been.calledWith('uri', 'data', 'auth', contextResult);
+			});
+
+			it('calls _buildContext from delete', () => {
+				api.agent.delete = sinon.stub().returns(result);
+				api.delete('uri', 'data', 'auth', context).should.eql(result);
+				expect(api.agent.delete).to.have.been.calledWith('uri', 'data', 'auth', contextResult);
+			});
+
+			it('calls _buildContext from request', () => {
+				api.agent.request = sinon.stub().returns(result);
+				api.request({context}).should.eql(result);
+				expect(api.agent.request).to.have.been.calledWith({context:contextResult});
+			});
+		});
+	});
+
 });

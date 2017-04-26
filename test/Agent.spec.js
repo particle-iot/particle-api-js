@@ -26,44 +26,49 @@ describe('Agent', () => {
 	});
 
 	describe('resource operations', () => {
+		let context;
+		beforeEach(() => {
+			context = { blah: {}}
+		});
+
 		it('can get a resource', () => {
 			const sut = new Agent();
 			sut.request = sinon.stub();
 			sut.request.returns('123');
-			expect(sut.get('abcd', 'auth', 'query')).to.be.equal('123');
-			expect(sut.request).to.be.calledWith({auth: 'auth', method: 'get', query: 'query', uri: 'abcd'});
+			expect(sut.get('abcd', 'auth', 'query', context)).to.be.equal('123');
+			expect(sut.request).to.be.calledWith({auth: 'auth', method: 'get', query: 'query', uri: 'abcd', context});
 		});
 
 		it('can head a resource', () => {
 			const sut = new Agent();
 			sut.request = sinon.stub();
 			sut.request.returns('123');
-			expect(sut.head('abcd', 'auth')).to.be.equal('123');
-			expect(sut.request).to.be.calledWith({auth: 'auth', method: 'head', uri: 'abcd'});
+			expect(sut.head('abcd', 'auth', 'query', context)).to.be.equal('123');
+			expect(sut.request).to.be.calledWith({auth: 'auth', method: 'head', uri: 'abcd', query: 'query', context });
 		});
 
 		it('can post a resource', () => {
 			const sut = new Agent();
 			sut.request = sinon.stub();
 			sut.request.returns('123');
-			expect(sut.post('abcd', 'data', 'auth')).to.be.equal('123');
-			expect(sut.request).to.be.calledWith({auth: 'auth', method: 'post', data: 'data', uri: 'abcd'});
+			expect(sut.post('abcd', 'data', 'auth', context)).to.be.equal('123');
+			expect(sut.request).to.be.calledWith({auth: 'auth', method: 'post', data: 'data', uri: 'abcd', context});
 		});
 
 		it('can put a resource', () => {
 			const sut = new Agent();
 			sut.request = sinon.stub();
 			sut.request.returns('123');
-			expect(sut.put('abcd', 'data', 'auth')).to.be.equal('123');
-			expect(sut.request).to.be.calledWith({auth: 'auth', method: 'put', data:'data', uri: 'abcd'});
+			expect(sut.put('abcd', 'data', 'auth', context)).to.be.equal('123');
+			expect(sut.request).to.be.calledWith({auth: 'auth', method: 'put', data:'data', uri: 'abcd', context});
 		});
 
 		it('can delete a resource', () => {
 			const sut = new Agent();
 			sut.request = sinon.stub();
 			sut.request.returns('123');
-			expect(sut.delete('abcd', 'data', 'auth')).to.be.equal('123');
-			expect(sut.request).to.be.calledWith({auth: 'auth', method: 'delete', data:'data', uri: 'abcd'});
+			expect(sut.delete('abcd', 'data', 'auth', context)).to.be.equal('123');
+			expect(sut.request).to.be.calledWith({auth: 'auth', method: 'delete', data:'data', uri: 'abcd', context});
 		});
 	});
 
@@ -94,6 +99,7 @@ describe('Agent', () => {
 	});
 
 	describe('build request', () => {
+
 		it('uses prefix if provided', () => {
 			const sut = new Agent();
 			sut.prefix = 'abc';
@@ -116,6 +122,28 @@ describe('Agent', () => {
 			expect(req).to.be.calledWith('get', 'uri');
 			expect(use).to.be.notCalled;
 		});
+
+		it('should invoke _applyContext with the request and context when provided', () => {
+			const sut = new Agent();
+			sut._applyContext = sinon.stub();
+			sut.prefix = undefined;
+			const request = {};
+			const context = { foo: {}};
+			const req = sinon.stub().returns(request);
+			sut._buildRequest({uri: 'uri', method: 'get', context, makerequest: req});
+			expect(sut._applyContext).to.be.calledWith(sinon.match.same(request), sinon.match.same(context));
+		});
+
+		it('should not invoke _applyContext when no context is provided', () => {
+			const sut = new Agent();
+			sut._applyContext = sinon.stub();
+			sut.prefix = undefined;
+			const request = {};
+			const req = sinon.stub().returns(request);
+			sut._buildRequest({uri: 'uri', method: 'get', makerequest: req});
+			expect(sut._applyContext).to.not.be.called;
+		});
+
 
 		it('should invoke authorize with the request and auth', () => {
 			const sut = new Agent();
@@ -230,7 +258,7 @@ describe('Agent', () => {
 		expect(result).to.be.equal('request_result');
 		expect(sut._sanitizeFiles).calledOnce.calledWith(sinon.match.same(files));
 		expect(sut._request).calledOnce.calledWith({uri: 'abc', auth: undefined, method: 'post', data: '123', query: 'all', form:form,
-			files:sanitizedFiles});
+			files:sanitizedFiles, context: undefined});
 	});
 
 	it('uses default arguments for request', () => {
@@ -241,9 +269,8 @@ describe('Agent', () => {
 		const result = sut.request({uri: 'abc', method:'post'});
 		expect(result).to.equal('123');
 		expect(sut._request).calledOnce.calledWith({uri: 'abc', method:'post',
-			auth: undefined, data: undefined, files: undefined, form: undefined, query: undefined });
+			auth: undefined, data: undefined, files: undefined, form: undefined, query: undefined, context: undefined });
 	});
-
 
 	it('builds and sends the request', () => {
 		const sut = new Agent();
@@ -255,7 +282,7 @@ describe('Agent', () => {
 		promiseResponse.returns('promise');
 
 		const requestArgs = {uri:'uri', method:'method', data:'data', auth:'auth', query: 'query',
-			form: 'form', files: 'files'};
+			form: 'form', files: 'files', context};
 		const result = sut._request(requestArgs);
 		expect(result).to.be.equal('promise');
 		expect(buildRequest).calledWith(requestArgs);
@@ -351,5 +378,123 @@ describe('Agent', () => {
 					failData.errorDescription, error:failData.error, body:failData.response ? failData.response.body : undefined});
 			});
 		}
+	});
+
+	describe('context', () => {
+		let sut;
+
+		beforeEach(() => {
+			sut = new Agent();
+		});
+
+		describe('_nameAtVersion', () => {
+			it('returns empty string when no name given', () => {
+				expect(sut._nameAtVersion('', '1.2.3')).to.eql('');
+			});
+
+			it('returns just the name when no version given', () => {
+				expect(sut._nameAtVersion('fred')).to.eql('fred');
+			});
+
+			it('returns name@version when both are given', () => {
+				expect(sut._nameAtVersion('fred', '1.2.3')).to.eql('fred@1.2.3');
+			});
+		});
+
+		describe('_applyContext', () => {
+			let req;
+			beforeEach(() => {
+				req = { set: sinon.stub() };
+			});
+			it('applies the tool context when defined',() => {
+				const context = { tool: {name: 'spanner' }};
+				sut._applyContext(req, context);
+				expect(req.set).to.have.been.calledOnce;
+				expect(req.set).to.have.been.calledWith('X-Particle-Tool', 'spanner');
+			});
+
+			it('does not apply the tool context when not defined',() => {
+				const context = { tool: {name2: 'spanner' }};
+				sut._applyContext(req, context);
+				expect(req.set).to.have.not.been.called;
+			});
+
+			it('applies the project context when defined',() => {
+				const context = { project: {name: 'blinky' }};
+				sut._applyContext(req, context);
+				expect(req.set).to.have.been.calledOnce;
+				expect(req.set).to.have.been.calledWith('X-Particle-Project', 'blinky');
+			});
+
+			it('does not apply the tool context when not defined',() => {
+				const context = { project: {name2: 'blinky' }};
+				sut._applyContext(req, context);
+				expect(req.set).to.have.been.not.called;
+			});
+		});
+
+		describe('_addToolContext', () => {
+			it('does not add a header when the tool name is not defined', () => {
+				const req = { set: sinon.stub() };
+				const tool = { noname: 'cli' };
+				sut._addToolContext(req, tool);
+				expect(req.set).to.have.not.been.called;
+			});
+
+			it('adds a header when the tool is defined', () => {
+				const req = { set: sinon.stub() };
+				const tool = { name: 'cli' };
+				sut._addToolContext(req, tool);
+				expect(req.set).to.have.been.calledWith('X-Particle-Tool', 'cli');
+			});
+
+			it('adds a header when the tool and components is defined', () => {
+				const req = { set: sinon.stub() };
+				const tool = { name: 'cli', version: '1.2.3', components: [
+					{ name: 'bar', version: 'a.b.c'},
+					{ name: 'foo', version: '0.0.1'}
+				]};
+				sut._addToolContext(req, tool);
+				expect(req.set).to.have.been.calledWith('X-Particle-Tool', 'cli@1.2.3; bar@a.b.c; foo@0.0.1');
+			});
+
+		});
+
+		describe('_addProjectContext', () => {
+			it('adds a header when the project is defined', () => {
+				const req = { set: sinon.stub() };
+				const project = { name: 'blinky' };
+				sut._addProjectContext(req, project);
+				expect(req.set).to.have.been.calledWith('X-Particle-Project', 'blinky');
+			});
+
+			it('does not set the header when the project has no name', () => {
+				const req = { set: sinon.stub() };
+				const project = { noname: 'blinky' };
+				sut._addProjectContext(req, project);
+				expect(req.set).to.have.not.been.called;
+			});
+		});
+
+		describe('_buildSemicolonSeparatedProperties', () => {
+			const obj = { name: 'fred', color: 'pink' };
+			it('returns empty string when no default property', () => {
+				expect(sut._buildSemicolonSeparatedProperties(obj)).to.be.eql('');
+			});
+
+			it('returns empty string when default property does not exist', () => {
+				expect(sut._buildSemicolonSeparatedProperties(obj, 'job')).to.be.eql('');
+			});
+
+			it('returns the default property only', () => {
+				expect(sut._buildSemicolonSeparatedProperties({name:'fred'}, 'name')).eql('fred');
+			});
+
+			it('returns the default property plus additional properties', () => {
+				expect(sut._buildSemicolonSeparatedProperties(obj, 'name')).eql('fred; color=pink');
+			});
+		});
+
+
 	});
 });

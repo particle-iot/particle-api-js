@@ -28,24 +28,24 @@ export default class Agent {
 		this.prefix = prefix(baseUrl);
 	}
 
-	get(uri, auth, query) {
-		return this.request({ uri, auth, method: 'get', query: query });
+	get(uri, auth, query, context) {
+		return this.request({ uri, auth, method: 'get', query, context });
 	}
 
-	head(uri, auth) {
-		return this.request({ uri, auth, method: 'head' });
+	head(uri, auth, query, context) {
+		return this.request({ uri, auth, method: 'head', query, context });
 	}
 
-	post(uri, data, auth) {
-		return this.request({ uri, data, auth, method: 'post' });
+	post(uri, data, auth, context) {
+		return this.request({ uri, data, auth, method: 'post', context });
 	}
 
-	put(uri, data, auth) {
-		return this.request({ uri, data, auth, method: 'put' });
+	put(uri, data, auth, context) {
+		return this.request({ uri, data, auth, method: 'put', context });
 	}
 
-	delete(uri, data, auth) {
-		return this.request({ uri, data, auth, method: 'delete' });
+	delete(uri, data, auth, context) {
+		return this.request({ uri, data, auth, method: 'delete', context });
 	}
 
 
@@ -58,11 +58,12 @@ export default class Agent {
 	 * @param {String} query         Query parameters
 	 * @param {Object} form          Form fields
 	 * @param {Object} files         array of file names and file content
+	 * @parma {Object} context       the invocation context, describing the tool and project.
 	 * @return {Promise} A promise. fulfilled with {body, statusCode}, rejected with { statusCode, errorDescription, error, body }
 	 */
-	request({ uri, method, data = undefined, auth, query = undefined, form = undefined, files = undefined }) {
+	request({ uri, method, data = undefined, auth, query = undefined, form = undefined, files = undefined, context = undefined }) {
 		const requestFiles = this._sanitizeFiles(files);
-		return this._request({ uri, method, data, auth, query, form, files: requestFiles });
+		return this._request({ uri, method, data, auth, query, form, context, files: requestFiles });
 	}
 
 	/**
@@ -74,10 +75,11 @@ export default class Agent {
 	 * @param {String} query         Query parameters
 	 * @param {Object} form          Form fields
 	 * @param {Object} files         array of file names and file content
+	 * @param {Object} context       the invocation context
 	 * @return {Promise} A promise. fulfilled with {body, statusCode}, rejected with { statusCode, errorDescription, error, body }
 	 */
-	_request({ uri, method, data, auth, query, form, files }) {
-		const req = this._buildRequest({ uri, method, data, auth, query, form, files });
+	_request({ uri, method, data, auth, query, form, files, context }) {
+		const req = this._buildRequest({ uri, method, data, auth, query, form, context, files });
 		return this._promiseResponse(req);
 	}
 
@@ -123,12 +125,15 @@ export default class Agent {
 		});
 	}
 
-	_buildRequest({ uri, method, data, auth, query, form, files, makerequest=request }) {
+	_buildRequest({ uri, method, data, auth, query, form, files, context, makerequest=request }) {
 		const req = makerequest(method, uri);
 		if (this.prefix) {
 			req.use(this.prefix);
 		}
 		this._authorizationHeader(req, auth);
+		if (context) {
+			this._applyContext(req, context);
+		}
 		if (query) {
 			req.query(query);
 		}
@@ -151,6 +156,73 @@ export default class Agent {
 			req.send(data);
 		}
 		return req;
+	}
+
+	_applyContext(req, context) {
+		if (context.tool) {
+			this._addToolContext(req, context.tool);
+		}
+		if (context.project) {
+			this._addProjectContext(req, context.project);
+		}
+	}
+
+	_addToolContext(req, tool) {
+		let value = '';
+		if (tool.name) {
+			value += this._toolIdent(tool);
+			if (tool.components) {
+				for (let component of tool.components) {
+					value += '; '+this._toolIdent(component);
+				}
+			}
+		}
+		if (value) {
+			req.set('X-Particle-Tool', value);
+		}
+	}
+
+	_toolIdent(tool) {
+		return this._nameAtVersion(tool.name, tool.version);
+	}
+
+	_nameAtVersion(name, version) {
+		let value = '';
+		if (name) {
+			value += name;
+			if (version) {
+				value += '@'+version;
+			}
+		}
+		return value;
+	}
+
+	_addProjectContext(req, project) {
+		let value = this._buildSemicolonSeparatedProperties(project, 'name');
+		if (value) {
+			req.set('X-Particle-Project', value);
+		}
+	}
+
+	/**
+	 * Creates a string like primaryPropertyValue; name=value; name1=value
+	 * from the properties of an object.
+	 * @param {object} obj               The object to create the string from
+	 * @param {string} primaryProperty   The name of the primary property which is the default value and must be defined.
+	 * @private
+	 * @return {string} The formatted string representing the object properties and the default property.
+	 */
+	_buildSemicolonSeparatedProperties(obj, primaryProperty) {
+		let value = '';
+		if (obj[primaryProperty]) {
+			value += obj[primaryProperty];
+			for (let prop in obj) {
+				if (prop!==primaryProperty && obj.hasOwnProperty(prop)) {
+					value += '; '+prop+'='+obj[prop];
+				}
+			}
+		}
+		return value;
 	}
 
 	/**
