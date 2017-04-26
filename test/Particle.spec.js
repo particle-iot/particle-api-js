@@ -66,6 +66,10 @@ const props = {
 	notes: 'A fancy Photon',
 	desiredFirmwareVersion: 42,
 	flash: false,
+	version: 42,
+	title: 'prod',
+	description: 'ready for production',
+	file: new Buffer('ELF...'),
 };
 
 const product = 'ze-product-v1';
@@ -431,12 +435,26 @@ describe('ParticleAPI', () => {
 			});
 		});
 		describe('.getVariable', () => {
-			it('generates request', () => {
-				return api.getVariable(props).then(Common.expectDeviceUrlAndToken);
+			describe('user scope', () => {
+				it('generates request', () => {
+					return api.getVariable(props).then((results) => {
+						results.should.match({
+							method: 'get',
+							uri: `/v1/devices/${props.deviceId}/${props.name}`,
+							auth: props.auth
+						});
+					});
+				});
 			});
-			it('sends proper data', () => {
-				return api.getVariable(props).then(({ uri }) => {
-					uri.should.containEql(props.name);
+			describe('product scope', () => {
+				it('generates request', () => {
+					return api.getVariable(propsWithProduct).then((results) => {
+						results.should.match({
+							method: 'get',
+							uri: `/v1/products/${product}/devices/${props.deviceId}/${props.name}`,
+							auth: props.auth
+						});
+					});
 				});
 			});
 		});
@@ -514,13 +532,32 @@ describe('ParticleAPI', () => {
 			});
 		});
 		describe('.callFunction', () => {
-			it('generates request', () => {
-				return api.callFunction(props).then(Common.expectDeviceUrlAndToken);
+			describe('user scope', () => {
+				it('generates request', () => {
+					return api.callFunction(props).then((results) => {
+						results.should.match({
+							method: 'post',
+							uri: `/v1/devices/${props.deviceId}/${props.name}`,
+							auth: props.auth,
+							data: {
+								args: props.argument,
+							}
+						});
+					});
+				});
 			});
-			it('sends proper data', () => {
-				return api.callFunction(props).then(({ data }) => {
-					data.should.be.instanceOf(Object);
-					data.args.should.equal(props.argument);
+			describe('product scope', () => {
+				it('generates request', () => {
+					return api.callFunction(propsWithProduct).then((results) => {
+						results.should.match({
+							method: 'post',
+							uri: `/v1/products/${product}/devices/${props.deviceId}/${props.name}`,
+							auth: props.auth,
+							data: {
+								args: props.argument,
+							}
+						});
+					});
 				});
 			});
 		});
@@ -697,6 +734,34 @@ describe('ParticleAPI', () => {
 						}
 					});
 
+				});
+			});
+		});
+		describe('.listSIMs', () => {
+			describe('user scope', () => {
+				it('generates request', () => {
+					return api.listSIMs(props).then((results) => {
+						results.should.match({
+							method: 'get',
+							uri: '/v1/sims',
+							auth: props.auth
+						});
+					});
+				});
+			});
+			describe('product scope', () => {
+				it('generates request', () => {
+					return api.listSIMs(propsWithProduct).then((results) => {
+						results.should.match({
+							method: 'get',
+							uri: `/v1/products/${product}/sims`,
+							auth: props.auth,
+							query: {
+								page: props.page,
+								perPage: props.perPage
+							}
+						});
+					});
 				});
 			});
 		});
@@ -975,11 +1040,125 @@ describe('ParticleAPI', () => {
 
 		describe('.getProduct', () => {
 			it('generates request', () => {
-				return api.getProduct({ productId: 123, auth: 'X' }).then((results) => {
+				return api.getProduct(propsWithProduct).then((results) => {
 					results.should.match({
 						method: 'get',
-						uri: '/v1/products/123',
-						auth: 'X'
+						uri: `/v1/products/${product}`,
+						auth: props.auth
+					});
+				});
+			});
+		});
+
+		describe('.listProductFirmware', () => {
+			it('generates request', () => {
+				return api.listProductFirmware(propsWithProduct).then((results) => {
+					results.should.match({
+						method: 'get',
+						uri: `/v1/products/${product}/firmware`,
+						auth: props.auth
+					});
+				});
+			});
+		});
+
+		describe('.uploadProductFirmware', () => {
+			it('generates request', () => {
+				return api.uploadProductFirmware(propsWithProduct).then((results) => {
+					results.should.match({
+						method: 'post',
+						uri: `/v1/products/${product}/firmware`,
+						auth: props.auth,
+						files: {
+							'firmware.bin': props.file,
+						},
+						form: {
+							version: props.version,
+							title: props.title,
+							description: props.description
+						}
+					});
+				});
+			});
+		});
+
+		describe('.getProductFirmware', () => {
+			it('generates request', () => {
+				return api.getProductFirmware(propsWithProduct).then((results) => {
+					results.should.match({
+						method: 'get',
+						uri: `/v1/products/${product}/firmware/${props.version}`,
+						auth: props.auth
+					});
+				});
+			});
+		});
+
+		describe('.updateProductFirmware', () => {
+			it('generates request', () => {
+				return api.updateProductFirmware(propsWithProduct).then((results) => {
+					results.should.match({
+						method: 'put',
+						uri: `/v1/products/${product}/firmware/${props.version}`,
+						auth: props.auth,
+						data: {
+							title: props.title,
+							description: props.description
+						}
+					});
+				});
+			});
+		});
+
+		describe('.releaseProductFirmware', () => {
+			it('generates request', () => {
+				return api.releaseProductFirmware(propsWithProduct).then((results) => {
+					results.should.match({
+						method: 'put',
+						uri: `/v1/products/${product}/firmware/release`,
+						auth: props.auth,
+						data: {
+							version: props.version,
+						}
+					});
+				});
+			});
+		});
+
+		describe('.listTeamMembers', () => {
+			it('generates request', () => {
+				return api.listTeamMembers(propsWithProduct).then((results) => {
+					results.should.match({
+						method: 'get',
+						uri: `/v1/products/${product}/team`,
+						auth: props.auth
+					});
+				});
+			});
+		});
+
+		describe('.inviteTeamMember', () => {
+			it('generates request', () => {
+				return api.inviteTeamMember(propsWithProduct).then((results) => {
+					results.should.match({
+						method: 'post',
+						uri: `/v1/products/${product}/team`,
+						auth: props.auth,
+						data: {
+							username: props.username
+						}
+					});
+				});
+			});
+		});
+
+		describe('.removeTeamMember', () => {
+			it('generates request', () => {
+				return api.removeTeamMember(propsWithProduct).then((results) => {
+					results.should.match({
+						method: 'delete',
+						uri: `/v1/products/${product}/team/${props.username}`,
+						auth: props.auth,
 					});
 				});
 			});

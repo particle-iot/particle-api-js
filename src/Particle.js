@@ -280,11 +280,15 @@ class Particle {
 	 * Get the value of a device variable
 	 * @param  {String} $0.deviceId Device ID or Name
 	 * @param  {String} $0.name     Variable name
+	 * @param  {String} [$0.product] Device in this product ID or slug
 	 * @param  {String} $0.auth     Access Token
 	 * @return {Promise}
 	 */
-	getVariable({ deviceId, name, auth }) {
-		return this.get(`/v1/devices/${deviceId}/${name}`, auth);
+	getVariable({ deviceId, name, product, auth }) {
+		const uri = product ?
+			`/v1/products/${product}/devices/${deviceId}/${name}` :
+			`/v1/devices/${deviceId}/${name}`;
+		return this.get(uri, auth);
 	}
 
 	/**
@@ -390,13 +394,15 @@ class Particle {
 	 * @param  {String} $0.deviceId Device ID or Name
 	 * @param  {String} $0.name     Function name
 	 * @param  {String} $0.argument Function argument
+	 * @param  {String} [$0.product] Device in this product ID or slug
 	 * @param  {String} $0.auth     Access Token
 	 * @return {Promise}
 	 */
-	callFunction({ deviceId, name, argument, auth }) {
-		return this.post(`/v1/devices/${deviceId}/${name}`, {
-			args: argument
-		}, auth);
+	callFunction({ deviceId, name, argument, product, auth }) {
+		const uri = product ?
+			`/v1/products/${product}/devices/${deviceId}/${name}` :
+			`/v1/devices/${deviceId}/${name}`;
+		return this.post(uri, { args: argument }, auth);
 	}
 
 	/**
@@ -404,7 +410,7 @@ class Particle {
 	 * @param  {String} [$0.deviceId] Device ID or Name, or `mine` to indicate only your devices.
 	 * @param  {String} [$0.name]     Event Name
 	 * @param  {String} [$0.org]     Organization Slug
-	 * @param  {String} [$0.product]     Product Slug or Product ID
+	 * @param  {String} [$0.product] Events for this product ID or slug
 	 * @param  {String} $0.auth     Access Token
 	 * @return {Promise} If the promise resolves, the resolution value will be an EventStream object that will
 	 * emit 'event' events, as well as the specific named event.
@@ -485,7 +491,7 @@ class Particle {
 	 * @return {Promise}
 	 */
 	deleteWebhook({ hookId, auth }) {
-		return this.delete(`/v1/webhooks/${hookId}`, null, auth);
+		return this.delete(`/v1/webhooks/${hookId}`, undefined, auth);
 	}
 
 	/**
@@ -496,6 +502,8 @@ class Particle {
 	listWebhooks({ auth }) {
 		return this.get('/v1/webhooks', auth);
 	}
+
+
 
 	/**
 	 * Get details about the current user
@@ -524,6 +532,20 @@ class Particle {
 		return this.put('/v1/user', bodyObj, auth);
 	}
 
+	/**
+	 * List SIM cards owned by a user or product
+	 * @param  {String} $0.auth         Access Token
+	 * @param  {Number} [$0.page]       (Product only) Current page of results
+	 * @param  {Number} [$0.perPage]    (Product only) Records per page
+	 * @param  {String} [$0.product] SIM cards for this product ID or slug
+	 * @return {Promise}
+	 */
+	listSIMs({ page, perPage, product, auth }) {
+		const uri = product ? `/v1/products/${product}/sims` : '/v1/sims';
+		const query = product ? { page, perPage } : undefined;
+		return this.get(uri, auth, query);
+	}
+
 	checkSIM({ iccid, auth }) {
 		return this.head(`/v1/sims/${iccid}`, auth);
 	}
@@ -535,6 +557,8 @@ class Particle {
 			action: 'activate'
 		}, auth);
 	}
+
+
 
 	/**
 	 * List valid build targets to be used for compiling
@@ -726,15 +750,149 @@ class Particle {
 	}
 
 	/**
-	 * Get detailed informationa about a product
-	 * @param  {String} $0.productId Product ID
+	 * Get detailed information about a product
+	 * @param  {String} $0.product  Product ID or slug
 	 * @param  {String} $0.auth     Access token
 	 * @return {Promise}
 	 */
-	getProduct({ productId, auth }) {
-		return this.get(`/v1/products/${productId}`, auth);
+	getProduct({ product, auth }) {
+		return this.get(`/v1/products/${product}`, auth);
 	}
 
+	/**
+	 * List product firmware versions
+	 * @param  {String} $0.product Firmware for this product ID or slug
+	 * @param  {String} $0.auth Access Token
+	 * @return {Promise}
+	 */
+	listProductFirmware({ product, auth }) {
+		return this.get(`/v1/products/${product}/firmware`, auth);
+	}
+
+	/**
+	 * List product firmware versions
+	 * @param  {Buffer}
+	 * @param  {Object} $0.file    Path or Buffer of the new firmware file
+	 * @param  {Number} $0.version Version number of new firmware
+	 * @param  {String} $0.title   Short identifier for the new firmware
+	 * @param  {String} [$0.description] Longer description for the new firmware
+	 * @param  {String} $0.product Firmware for this product ID or slug
+	 * @param  {String} $0.auth Access Token
+	 * @return {Promise}
+	 */
+	uploadProductFirmware({ file, version, title, description, product, auth }) {
+		return this.request({
+			uri: `/v1/products/${product}/firmware`,
+			method: 'post',
+			files: {
+				'firmware.bin': file
+			},
+			form: {
+				version,
+				title,
+				description
+			},
+			auth
+		});
+	}
+
+	/**
+	 * Get information about a product firmware version
+	 * @param  {Number} $0.version Version number of firmware
+	 * @param  {String} $0.product Firmware for this product ID or slug
+	 * @param  {String} $0.auth    Access token
+	 * @return {Promise}
+	 */
+	getProductFirmware({ version, product, auth }) {
+		return this.get(`/v1/products/${product}/firmware/${version}`, auth);
+	}
+
+	/**
+	 * Update information for a product firmware version
+	 * @param  {Buffer}
+	 * @param  {Number} $0.version Version number of new firmware
+	 * @param  {String} [$0.title]   New title
+	 * @param  {String} [$0.description] New description
+	 * @param  {String} $0.product Firmware for this product ID or slug
+	 * @param  {String} $0.auth Access Token
+	 * @return {Promise}
+	 */
+	updateProductFirmware({ version, title, description, product, auth }) {
+		const uri = `/v1/products/${product}/firmware/${version}`;
+		return this.put(uri, { title, description }, auth);
+	}
+
+	/**
+	 * Download a product firmware binary
+	 * @param  {Number} $0.version Version number of new firmware
+	 * @param  {String} $0.product Firmware for this product ID or slug
+	 * @param  {String} $0.auth    Access Token
+	 * @return {Request}
+	 */
+	downloadProductFirmware({ version, product, auth }) {
+		const uri = `/v1/products/${product}/firmware/${version}`;
+		const req = request('get', uri);
+		req.use(this.prefix);
+		this.headers(req, auth);
+		if (this.debug) {
+			this.debug(req);
+		}
+		return req;
+	}
+
+	/**
+	 * Release a product firmware version as the default version
+	 * @param  {Buffer}
+	 * @param  {Number} $0.version Version number of new firmware
+	 * @param  {String} $0.product Firmware for this product ID or slug
+	 * @param  {String} $0.auth Access Token
+	 * @return {Promise}
+	 */
+	releaseProductFirmware({ version, product, auth }) {
+		const uri = `/v1/products/${product}/firmware/release`;
+		return this.put(uri, { version }, auth);
+	}
+
+	/**
+	 * List product team members
+	 * @param  {String} $0.product Team for this product ID or slug
+	 * @param  {String} $0.auth Access Token
+	 * @return {Promise}
+	 */
+	listTeamMembers({ product, auth }) {
+		return this.get(`/v1/products/${product}/team`, auth);
+	}
+
+	/**
+	 * Invite Particle user to a product team
+	 * @param  {String} $0.username  Username for the Particle account
+	 * @param  {String} $0.product Team for this product ID or slug
+	 * @param  {String} $0.auth Access Token
+	 * @return {Promise}
+	 */
+	inviteTeamMember({ username, product, auth }) {
+		return this.post(`/v1/products/${product}/team`, { username }, auth);
+	}
+
+	/**
+	 * Remove Particle user to a product team
+	 * @param  {String} $0.username  Username for the Particle account
+	 * @param  {String} $0.product Team for this product ID or slug
+	 * @param  {String} $0.auth Access Token
+	 * @return {Promise}
+	 */
+	removeTeamMember({ username, product, auth }) {
+		return this.delete(`/v1/products/${product}/team/${username}`, null, auth);
+	}
+
+
+	/**
+	 * API URI to access a device
+	 * @param  {String} $0.deviceId  Device ID to access
+	 * @param  {String} [$0.product] Device only in this product ID or slug
+	 * @private
+	 * @returns {string}
+	 */
 	deviceUri({ deviceId, product }) {
 		return product ? `/v1/products/${product}/devices/${deviceId}` : `/v1/devices/${deviceId}`;
 	}
