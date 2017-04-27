@@ -72,7 +72,8 @@ const props = {
 	file: new Buffer('ELF...'),
 	countryCode: 'RO',
 	iccid: '1234567890',
-	iccids: ['1234567890', '9876543210']
+	iccids: ['1234567890', '9876543210'],
+	deviceName: 'mydev',
 };
 
 const product = 'ze-product-v1';
@@ -263,6 +264,17 @@ describe('ParticleAPI', () => {
 				});
 			});
 		});
+		describe('.removeDeviceOwner', () => {
+			it('generates request', () => {
+				return api.removeDeviceOwner(propsWithProduct).then((results) => {
+					results.should.match({
+						method: 'delete',
+						uri: `/v1/products/${product}/devices/${props.deviceId}/owner`,
+						auth: props.auth
+					});
+				});
+			});
+		});
 		describe('.renameDevice', () => {
 			describe('user scope', () => {
 				it('generates request', () => {
@@ -418,10 +430,47 @@ describe('ParticleAPI', () => {
 				});
 			});
 		});
-		describe('.getClaimCode', () => {
+		describe('.provisionDevice', () => {
 			it('generates request', () => {
-				return api.getClaimCode({ auth: 'X' }).then((results) => {
-					results.auth.should.equal('X');
+				return api.provisionDevice(props).then((results) => {
+					results.should.match({
+						method: 'post',
+						uri: '/v1/devices',
+						auth: props.auth,
+						data: {
+							productId: props.productId
+						}
+					});
+				});
+			});
+		});
+		describe('.getClaimCode', () => {
+			describe('user scope', () => {
+				it('generates request', () => {
+					return api.getClaimCode(props).then((results) => {
+						results.should.match({
+							method: 'post',
+							uri: '/v1/device_claims',
+							auth: props.auth,
+							data: {
+								iccid: props.iccid
+							}
+						});
+					});
+				});
+			});
+			describe('product scope', () => {
+				it('generates request', () => {
+					return api.getClaimCode(propsWithProduct).then((results) => {
+						results.should.match({
+							method: 'post',
+							uri: `/v1/products/${product}/device_claims`,
+							auth: props.auth,
+							data: {
+								iccid: props.iccid
+							}
+						});
+					});
 				});
 			});
 		});
@@ -760,6 +809,9 @@ describe('ParticleAPI', () => {
 							uri: `/v1/products/${product}/sims`,
 							auth: props.auth,
 							query: {
+								iccid: props.iccid,
+								deviceId: props.deviceId,
+								deviceName: props.deviceName,
 								page: props.page,
 								perPage: props.perPage
 							}
@@ -774,10 +826,9 @@ describe('ParticleAPI', () => {
 					return api.activateSIM(props).then((results) => {
 						results.should.match({
 							method: 'put',
-							uri: '/v1/sims',
+							uri: `/v1/sims/${props.iccid}`,
 							auth: props.auth,
 							data: {
-								iccid: props.iccid,
 								countryCode: props.countryCode,
 								action: 'activate'
 							}
@@ -820,6 +871,122 @@ describe('ParticleAPI', () => {
 				});
 			});
 		});
+		describe('.deactivateSIM', () => {
+			describe('user scope', () => {
+				it('generates request', () => {
+					return api.deactivateSIM(props).then((results) => {
+						results.should.match({
+							method: 'put',
+							uri: `/v1/sims/${props.iccid}`,
+							auth: props.auth,
+							data: {
+								action: 'deactivate'
+							}
+						});
+					});
+				});
+			});
+			describe('product scope', () => {
+				it('generates request', () => {
+					return api.deactivateSIM(propsWithProduct).then((results) => {
+						results.should.match({
+							method: 'put',
+							uri: `/v1/products/${product}/sims/${props.iccid}`,
+							auth: props.auth,
+							data: {
+								action: 'deactivate'
+							}
+						});
+					});
+				});
+			});
+		});
+		describe('.reactivateSIM', () => {
+			describe('user scope', () => {
+				it('generates request', () => {
+					return api.reactivateSIM(props).then((results) => {
+						results.should.match({
+							method: 'put',
+							uri: `/v1/sims/${props.iccid}`,
+							auth: props.auth,
+							data: {
+								mb_limit: props.mbLimit,
+								action: 'reactivate'
+							}
+						});
+					});
+				});
+			});
+			describe('product scope', () => {
+				it('generates request', () => {
+					return api.reactivateSIM(propsWithProduct).then((results) => {
+						results.should.match({
+							method: 'put',
+							uri: `/v1/products/${product}/sims/${props.iccid}`,
+							auth: props.auth,
+							data: {
+								mb_limit: props.mbLimit,
+								action: 'reactivate'
+							}
+						});
+					});
+				});
+			});
+		});
+		describe('.removeSIM', () => {
+			describe('user scope', () => {
+				it('generates request', () => {
+					return api.removeSIM(props).then((results) => {
+						results.should.match({
+							method: 'delete',
+							uri: `/v1/sims/${props.iccid}`,
+							auth: props.auth
+						});
+					});
+				});
+			});
+			describe('product scope', () => {
+				it('generates request', () => {
+					return api.removeSIM(propsWithProduct).then((results) => {
+						results.should.match({
+							method: 'delete',
+							uri: `/v1/products/${product}/sims/${props.iccid}`,
+							auth: props.auth
+						});
+					});
+				});
+			});
+		});
+		describe('.updateSIM', () => {
+			describe('user scope', () => {
+				it('generates request', () => {
+					return api.updateSIM(props).then((results) => {
+						results.should.match({
+							method: 'put',
+							uri: `/v1/sims/${props.iccid}`,
+							auth: props.auth,
+							data: {
+								mb_limit: props.mbLimit
+							}
+						});
+					});
+				});
+			});
+			describe('product scope', () => {
+				it('generates request', () => {
+					return api.updateSIM(propsWithProduct).then((results) => {
+						results.should.match({
+							method: 'put',
+							uri: `/v1/products/${product}/sims/${props.iccid}`,
+							auth: props.auth,
+							data: {
+								mb_limit: props.mbLimit
+							}
+						});
+					});
+				});
+			});
+		});
 		describe('.getSIMDataUsage', () => {
 			describe('user scope', () => {
 				it('generates request', () => {
@@ -833,28 +1000,24 @@ describe('ParticleAPI', () => {
 				});
 			});
 			describe('product scope', () => {
-				describe('single SIM', () => {
-					it('generates request', () => {
-						return api.getSIMDataUsage(propsWithProduct).then((results) => {
-							results.should.match({
-								method: 'get',
-								uri: `/v1/products/${product}/sims/${props.iccid}/data_usage`,
-								auth: props.auth
-							});
+				it('generates request', () => {
+					return api.getSIMDataUsage(propsWithProduct).then((results) => {
+						results.should.match({
+							method: 'get',
+							uri: `/v1/products/${product}/sims/${props.iccid}/data_usage`,
+							auth: props.auth
 						});
 					});
 				});
-				describe('all SIMs', () => {
-					it('generates request', () => {
-						const propsNoSIM = Object.assign({}, propsWithProduct);
-						delete propsNoSIM.iccid;
-						return api.getSIMDataUsage(propsNoSIM).then((results) => {
-							results.should.match({
-								method: 'get',
-								uri: `/v1/products/${product}/sims/data_usage`,
-								auth: props.auth
-							});
-						});
+			});
+		});
+		describe('.getFleetDataUsage', () => {
+			it('generates request', () => {
+				return api.getFleetDataUsage(propsWithProduct).then((results) => {
+					results.should.match({
+						method: 'get',
+						uri: `/v1/products/${product}/sims/data_usage`,
+						auth: props.auth
 					});
 				});
 			});

@@ -175,6 +175,18 @@ class Particle {
 	}
 
 	/**
+	 * Unclaim a product device its the owner, but keep it in the product
+	 * @param  {String} $0.deviceId Device ID or Name
+	 * @param  {String} $0.product  Remove from this product ID or slug
+	 * @param  {String} $0.auth     Access Token
+	 * @return {Promise}
+	 */
+	removeDeviceOwner({ deviceId, deny, product, auth }) {
+		const uri = `/v1/products/${product}/devices/${deviceId}/owner`;
+		return this.delete(uri, undefined, auth);
+	}
+
+	/**
 	 * Rename a device
 	 * @param  {String} $0.deviceId Device ID or Name
 	 * @param  {String} $0.name     Desired Name
@@ -256,13 +268,25 @@ class Particle {
 	}
 
 	/**
-	 * Generate a claim code to use in the device claiming process.
-	 * @param  {String} $0.auth  Access Token
-	 * @param  {String} [$0.iccid] ICCID of the SIM card used in the Electron
+	 * Provision a new device for products that allow self-provisioning
+	 * @param  {String} $0.productId Product ID where to create this device
+	 * @param  {String} $0.auth      Access Token
 	 * @return {Promise}
 	 */
-	getClaimCode({ auth, iccid }) {
-		return this.post('/v1/device_claims', { iccid }, auth);
+	provisionDevice({ productId, auth }) {
+		return this.post('/v1/devices', { productId }, auth);
+	}
+
+	/**
+	 * Generate a claim code to use in the device claiming process.
+	 * @param  {String} [$0.iccid] ICCID of the SIM card used in the Electron
+	 * @param  {String} [$0.product] Device in this product ID or slug
+	 * @param  {String} $0.auth  Access Token
+	 * @return {Promise}
+	 */
+	getClaimCode({ iccid, product, auth }) {
+		const uri = product ? `/v1/products/${product}/device_claims` : '/v1/device_claims';
+		return this.post(uri, { iccid }, auth);
 	}
 
 	validatePromoCode({ auth, promoCode }) {
@@ -534,30 +558,43 @@ class Particle {
 
 	/**
 	 * List SIM cards owned by a user or product
+	 * @param  {String} [$0.iccid]    (Product only) Filter to SIM cards matching this ICCID
+	 * @param  {String} [$0.deviceId] (Product only) Filter to SIM cards matching this device ID
+	 * @param  {String} [$0.deviceName] (Product only) Filter to SIM cards matching this device name
 	 * @param  {Number} [$0.page]     (Product only) Current page of results
 	 * @param  {Number} [$0.perPage]  (Product only) Records per page
 	 * @param  {String} [$0.product]  SIM cards for this product ID or slug
 	 * @param  {String} $0.auth       Access Token
 	 * @return {Promise}
 	 */
-	listSIMs({ page, perPage, product, auth }) {
+	listSIMs({ iccid, deviceId, deviceName, page, perPage, product, auth }) {
 		const uri = product ? `/v1/products/${product}/sims` : '/v1/sims';
-		const query = product ? { page, perPage } : undefined;
+		const query = product ? {  iccid, deviceId, deviceName, page, perPage } : undefined;
 		return this.get(uri, auth, query);
 	}
 
 	/**
-	 * Get SIM card data usage for the current billing period
-	 * @param  {String} $0.iccid      ICCID of the SIM card. Omit for all SIM in a product.
-	 * @param  {String} [$0.product]  SIM cards for this product ID or slug
+	 * Get data usage for one SIM card for the current billing period
+	 * @param  {String} $0.iccid      ICCID of the SIM card
+	 * @param  {String} [$0.product]  SIM card for this product ID or slug
 	 * @param  {String} $0.auth       Access Token
 	 * @return {Promise}
 	 */
 	getSIMDataUsage({ iccid, product, auth }) {
 		const uri = product ?
-			(iccid ? `/v1/products/${product}/sims/${iccid}/data_usage` : `/v1/products/${product}/sims/data_usage`) :
+			`/v1/products/${product}/sims/${iccid}/data_usage` :
 			`/v1/sims/${iccid}/data_usage`;
 		return this.get(uri, auth);
+	}
+
+	/**
+	 * Get data usage for all SIM cards in a product the current billing period
+	 * @param  {String} $0.product  SIM cards for this product ID or slug
+	 * @param  {String} $0.auth     Access Token
+	 * @return {Promise}
+	 */
+	getFleetDataUsage({ product, auth }) {
+		return this.get(`/v1/products/${product}/sims/data_usage`, auth);
 	}
 
 	checkSIM({ iccid, auth }) {
@@ -565,8 +602,8 @@ class Particle {
 	}
 
 	/**
-	 * Active and add SIM cards to an account or product
-	 * @param  {String} $0.iccid        ICCID of the SIM card to activate
+	 * Activate and add SIM cards to an account or product
+	 * @param  {String} $0.iccid        ICCID of the SIM card
 	 * @param  {Array<String>} $0.iccids (Product only) ICCID of multiple SIM cards to import
 	 * @param  {String} $0.countryCode The ISO country code for the SIM cards
 	 * @param  {String} [$0.product]  SIM cards for this product ID or slug
@@ -576,34 +613,66 @@ class Particle {
 	activateSIM({ iccid, iccids, countryCode, promoCode, product, auth }) {
 		// promoCode is deprecated
 		iccids = iccids || [iccid];
-		const uri = product ? `/v1/products/${product}/sims` : '/v1/sims';
+		const uri = product ? `/v1/products/${product}/sims` : `/v1/sims/${iccid}`;
 		const data = product ?
 			{ sims: iccids, countryCode } :
-			{ iccid, countryCode, promoCode, action: 'activate' };
+			{ countryCode, promoCode, action: 'activate' };
 		const method = product ? 'post' : 'put';
 
 		return this.request({ uri, method, data, auth });
 	}
 
 	/**
-	 * Update SIM card data limit, state, etc
-	 * @param  {String} $0.iccid        ICCID of the SIM card to import
+	 * Deactivate a SIM card so it doesn't incur data usage in future months.
+	 * @param  {String} $0.iccid      ICCID of the SIM card
+	 * @param  {String} [$0.product]  SIM cards for this product ID or slug
+	 * @param  {String} $0.auth       Access Token
+	 * @return {Promise}
+	 */
+	deactivateSIM({ iccid, product, auth }) {
+		const uri = product ? `/v1/products/${product}/sims/${iccid}` : `/v1/sims/${iccid}`;
+		const data = { action: 'deactivate' };
+		return this.put(uri, data, auth);
+	}
+
+	/**
+	 * Reactivate a SIM card the was deactivated or unpause a SIM card that was automatically paused
+	 * @param  {String} $0.iccid      ICCID of the SIM card
+	 * @param  {Number} [$0.mbLimit]  New monthly data limit. Necessary if unpausing a SIM card
+	 * @param  {String} [$0.product]  SIM cards for this product ID or slug
+	 * @param  {String} $0.auth       Access Token
+	 * @return {Promise}
+	 */
+	reactivateSIM({ iccid, mbLimit, product, auth }) {
+		const uri = product ? `/v1/products/${product}/sims/${iccid}` : `/v1/sims/${iccid}`;
+		const data = { mb_limit: mbLimit, action: 'reactivate' };
+		return this.put(uri, data, auth);
+	}
+
+	/**
+	 * Update SIM card data limit
+	 * @param  {String} $0.iccid        ICCID of the SIM card
 	 * @param  {Array}  $0.mbLimit     Data limit in megabyte for the SIM card
-	 * @param  {String} $0.countryCode The ISO country code for the SIM cards
 	 * @param  {String} [$0.product]  SIM cards for this product ID or slug
 	 * @param  {String} $0.auth       Access Token
 	 * @return {Promise}
 	 */
 	updateSIM({ iccid, mbLimit, product, auth }) {
-		// promoCode is deprecated
-		iccids = iccids || [iccid];
-		const uri = product ? `/v1/products/${product}/sims` : '/v1/sims';
-		const data = product ?
-			{ sims: iccids, countryCode } :
-			{ iccid, countryCode, promoCode, action: 'activate' };
-		const method = product ? 'post' : 'put';
+		const uri = product ? `/v1/products/${product}/sims/${iccid}` : `/v1/sims/${iccid}`;
+		const data = { mb_limit: mbLimit };
+		return this.put(uri, data, auth);
+	}
 
-		return this.request({ uri, method, data, auth });
+	/**
+	 * Remove a SIM card from an account so it can be activated by a different account
+	 * @param  {String} $0.iccid      ICCID of the SIM card
+	 * @param  {String} [$0.product]  SIM cards for this product ID or slug
+	 * @param  {String} $0.auth       Access Token
+	 * @return {Promise}
+	 */
+	removeSIM({ iccid, product, auth }) {
+		const uri = product ? `/v1/products/${product}/sims/${iccid}` : `/v1/sims/${iccid}`;
+		return this.delete(uri, undefined, auth);
 	}
 
 	/**
