@@ -193,4 +193,15 @@ describe('Client', () => {
 		});
 	});
 
+	describe('trackingIdentity', () => {
+		it('delegates to api', () => {
+			api.trackingIdentity = ({auth, full, context}) => {
+				return Promise.resolve({auth, full, context});
+			};
+			const context = {abd:123};
+			const full = 456;
+			return expect(client.trackingIdentity({full, context})).to.eventually.eql({auth:client.auth, full, context});
+		});
+	});
+
 });
