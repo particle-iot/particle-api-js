@@ -70,6 +70,9 @@ const props = {
 	title: 'prod',
 	description: 'ready for production',
 	file: new Buffer('ELF...'),
+	countryCode: 'RO',
+	iccid: '1234567890',
+	iccids: ['1234567890', '9876543210']
 };
 
 const product = 'ze-product-v1';
@@ -766,10 +769,93 @@ describe('ParticleAPI', () => {
 			});
 		});
 		describe('.activateSIM', () => {
-			it('generates request', () => {
-				return api.activateSIM({ auth: 'X', countryCode: 'XX', promoCode: '123ABCD', iccid: '1234567890123456789' }).then((results) => {
-					results.uri.should.be.instanceOf(String);
-					results.auth.should.equal('X');
+			describe('user scope', () => {
+				it('generates request', () => {
+					return api.activateSIM(props).then((results) => {
+						results.should.match({
+							method: 'put',
+							uri: '/v1/sims',
+							auth: props.auth,
+							data: {
+								iccid: props.iccid,
+								countryCode: props.countryCode,
+								action: 'activate'
+							}
+						});
+					});
+				});
+			});
+			describe('product scope', () => {
+				describe('single SIM', () => {
+					it('generates request', () => {
+						const propsSingleSIM = Object.assign({}, propsWithProduct);
+						delete propsSingleSIM.iccids;
+						return api.activateSIM(propsSingleSIM).then((results) => {
+							results.should.match({
+								method: 'post',
+								uri: `/v1/products/${product}/sims`,
+								auth: props.auth,
+								data: {
+									sims: [props.iccid],
+									countryCode: props.countryCode,
+								}
+							});
+						});
+					});
+				});
+				describe('multiple SIMs', () => {
+					it('generates request', () => {
+						return api.activateSIM(propsWithProduct).then((results) => {
+							results.should.match({
+								method: 'post',
+								uri: `/v1/products/${product}/sims`,
+								auth: props.auth,
+								data: {
+									sims: props.iccids,
+									countryCode: props.countryCode,
+								}
+							});
+						});
+					});
+				});
+			});
+		});
+		describe('.getSIMDataUsage', () => {
+			describe('user scope', () => {
+				it('generates request', () => {
+					return api.getSIMDataUsage(props).then((results) => {
+						results.should.match({
+							method: 'get',
+							uri: `/v1/sims/${props.iccid}/data_usage`,
+							auth: props.auth
+						});
+					});
+				});
+			});
+			describe('product scope', () => {
+				describe('single SIM', () => {
+					it('generates request', () => {
+						return api.getSIMDataUsage(propsWithProduct).then((results) => {
+							results.should.match({
+								method: 'get',
+								uri: `/v1/products/${product}/sims/${props.iccid}/data_usage`,
+								auth: props.auth
+							});
+						});
+					});
+				});
+				describe('all SIMs', () => {
+					it('generates request', () => {
+						const propsNoSIM = Object.assign({}, propsWithProduct);
+						delete propsNoSIM.iccid;
+						return api.getSIMDataUsage(propsNoSIM).then((results) => {
+							results.should.match({
+								method: 'get',
+								uri: `/v1/products/${product}/sims/data_usage`,
+								auth: props.auth
+							});
+						});
+					});
 				});
 			});
 		});
