@@ -455,7 +455,7 @@ describe('Agent', () => {
 					{ name: 'foo', version: '0.0.1'}
 				]};
 				sut._addToolContext(req, tool);
-				expect(req.set).to.have.been.calledWith('X-Particle-Tool', 'cli@1.2.3; bar@a.b.c; foo@0.0.1');
+				expect(req.set).to.have.been.calledWith('X-Particle-Tool', 'cli@1.2.3, bar@a.b.c, foo@0.0.1');
 			});
 
 		});

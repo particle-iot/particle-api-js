@@ -173,7 +173,7 @@ export default class Agent {
 			value += this._toolIdent(tool);
 			if (tool.components) {
 				for (let component of tool.components) {
-					value += '; '+this._toolIdent(component);
+					value += ', '+this._toolIdent(component);
 				}
 			}
 		}
