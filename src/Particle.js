@@ -329,9 +329,9 @@ class Particle {
 	}
 
 	/**
-	 * Compile and flash application firmware to a device
+	 * Compile and flash application firmware to a device. Pass a pre-compiled binary to flash it directly to the device.
 	 * @param  {String} $0.deviceId      Device ID or Name
-	 * @param  {Object} $0.files         Object containing files to be compiled. Keys should be the filenames, and the values should be a path or Buffer of the file contents.
+	 * @param  {Object} $0.files         Object containing files to be compiled and flashed. Keys should be the filenames, and the values should be a path or Buffer of the file contents.
 	 * @param  {String} [$0.targetVersion=latest] System firmware version to compile against
 	 * @param  {String} $0.auth          String
 	 * @return {Promise}
@@ -348,12 +348,15 @@ class Particle {
 	}
 
 	/**
-	 * Flash the Tinker application to a device
+	 * DEPRECATED: Flash the Tinker application to a device. Instead compile and flash the Tinker source code.
 	 * @param  {String} $0.deviceId Device ID or Name
 	 * @param  {String} $0.auth     Access Token
 	 * @return {Promise}
 	 */
 	flashTinker({ deviceId, auth }) {
+		if (console && console.warning) {
+			console.warning('Particle.flashTinker is deprecated');
+		}
 		return this.put(`/v1/devices/${deviceId}`, {
 			app: 'tinker'
 		}, auth);
@@ -470,15 +473,14 @@ class Particle {
 	 * @param  {String} $0.name      Event name
 	 * @param  {String} $0.data      Event data
 	 * @param  {Boolean} $0.isPrivate Should the event be publicly available?
+	 * @param  {String} [$0.product]  Event for this product ID or slug
 	 * @param  {String} $0.auth      Access Token
 	 * @return {Promise}
 	 */
-	publishEvent({ name, data, isPrivate, auth }) {
-		return this.post('/v1/devices/events', {
-			name,
-			data,
-			'private': isPrivate
-		}, auth);
+	publishEvent({ name, data, isPrivate, product, auth }) {
+		const uri = product ? `/v1/products/${product}/events` : '/v1/devices/events';
+		const postData = { name, data, private: isPrivate };
+		return this.post(uri, postData, auth);
 	}
 
 	/**
@@ -490,41 +492,48 @@ class Particle {
 	 * @param  {Object} [$0.headers]            Additional headers to add to the webhook
 	 * @param  {Object} [$0.json]               JSON data
 	 * @param  {Object} [$0.query]              Query string data
+	 * @param  {String} [$0.body]               Custom webhook request body
 	 * @param  {Object} [$0.responseTemplate]   Webhook response template
 	 * @param  {Object} [$0.responseTopic]      Webhook response topic
 	 * @param  {Boolean} [$0.rejectUnauthorized] Reject invalid HTTPS certificates
+	 * @params {Boolean} [$0.noDefaults]        Don't include default event data in the webhook request
 	 * @param  {Object} [$0.webhookAuth]        HTTP Basic Auth information
 	 * @param  {Object} [$0.form]               Form data
+	 * @param  {String} [$0.product]          Webhook for this product ID or slug
 	 * @param  {String} $0.auth               Access Token
 	 * @return {Promise}
 	 */
-	createWebhook({ deviceId, name, url, requestType, headers, json, query, responseTemplate, responseTopic, rejectUnauthorized, webhookAuth, form, auth }) {
-		const data = { event: name, url, requestType, headers, json, query, responseTemplate, responseTopic, rejectUnauthorized, auth: webhookAuth, form };
+	createWebhook({ deviceId, name, url, requestType, headers, json, query, body, responseTemplate, responseTopic, rejectUnauthorized, webhookAuth, noDefaults, form, product, auth }) {
+		// deviceId: 'mine' is deprecated since webhooks only trigger on your device anyways
 		if (deviceId === 'mine') {
-			data.mydevices = true;
-		} else {
-			data.deviceid = deviceId;
+			deviceId = undefined;
 		}
-		return this.post('/v1/webhooks', data, auth);
+		const uri = product ? `/v1/products/${product}/webhooks` : '/v1/webhooks';
+		const data = { event: name, deviceid: deviceId, url, requestType, headers, json, query, body, responseTemplate, responseTopic, rejectUnauthorized, auth: webhookAuth, noDefaults, form };
+		return this.post(uri, data, auth);
 	}
 
 	/**
 	 * Delete a webhook
 	 * @param  {String} $0.hookId Webhook ID
+	 * @param  {String} [$0.product]          Webhook for this product ID or slug
 	 * @param  {String} $0.auth   Access Token
 	 * @return {Promise}
 	 */
-	deleteWebhook({ hookId, auth }) {
-		return this.delete(`/v1/webhooks/${hookId}`, undefined, auth);
+	deleteWebhook({ hookId, product, auth }) {
+		const uri = product ? `/v1/products/${product}/webhooks/${hookId}` : `/v1/webhooks/${hookId}`;
+		return this.delete(uri, undefined, auth);
 	}
 
 	/**
-	 * List all webhooks owned by the account
+	 * List all webhooks owned by the account or product
+	 * @param  {String} [$0.product]          Webhook for this product ID or slug
 	 * @param  {String} $0.auth Access Token
 	 * @return {Promise}
 	 */
-	listWebhooks({ auth }) {
-		return this.get('/v1/webhooks', auth);
+	listWebhooks({ product, auth }) {
+		const uri = product ? `/v1/products/${product}/webhooks` : '/v1/webhooks';
+		return this.get(uri, auth);
 	}
 
 
@@ -945,7 +954,7 @@ class Particle {
 	 * @return {Request}
 	 */
 	downloadProductFirmware({ version, product, auth }) {
-		const uri = `/v1/products/${product}/firmware/${version}`;
+		const uri = `/v1/products/${product}/firmware/${version}/binary`;
 		const req = request('get', uri);
 		req.use(this.prefix);
 		this.headers(req, auth);

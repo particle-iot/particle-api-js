@@ -15,6 +15,7 @@ const props = {
 	url: 'http://www.zombo.com/',
 	password: 'test-password',
 	data: { sentient: true },
+	isPrivate: true,
 	username: 'test-user',
 	argument: 'noThanks',
 	shouldUpdate: 'duh',
@@ -44,6 +45,7 @@ const props = {
 	json: {
 		j: 'd'
 	},
+	body: '{{data}}',
 	responseTopic: 'topic',
 	responseTemplate: 'template',
 	webhookAuth: {
@@ -51,6 +53,8 @@ const props = {
 		password: 'p'
 	},
 	rejectUnauthorized: true,
+	noDefaults: true,
+	hookId: 'hook-1234567890',
 	clientId: 'client-123',
 	type: 'web',
 	redirect_uri: 'https://example.com',
@@ -703,50 +707,164 @@ describe('ParticleAPI', () => {
 
 		});
 		describe('.publishEvent', () => {
-			it('sends proper data', () => {
-				return api.publishEvent(props).then(({ data }) => {
-					data.should.be.instanceOf(Object);
-					data.name.should.equal(props.name);
-					data.data.should.equal(props.data);
+			describe('user scope', () => {
+				it('generates request', () => {
+					return api.publishEvent(props).then((results) => {
+						results.should.match({
+							method: 'post',
+							uri: '/v1/devices/events',
+							auth: props.auth,
+							data: {
+								name: props.name,
+								data: props.data,
+								private: props.isPrivate
+							}
+						});
+					});
+				});
+			});
+			describe('product scope', () => {
+				it('generates request', () => {
+					return api.publishEvent(propsWithProduct).then((results) => {
+						results.should.match({
+							method: 'post',
+							uri: `/v1/products/${product}/events`,
+							auth: props.auth,
+							data: {
+								name: props.name,
+								data: props.data,
+								private: props.isPrivate
+							}
+						});
+					});
 				});
 			});
 		});
 		describe('.createWebhook', () => {
-			it('creates for a single device', () => {
-				return api.createWebhook(props).then(({ data }) => {
-					data.should.be.instanceOf(Object);
-					data.event.should.equal(props.name);
-					data.url.should.equal(props.url);
-					data.deviceid.should.equal(props.deviceId);
-					data.responseTemplate.should.equal(props.responseTemplate);
-					data.responseTopic.should.equal(props.responseTopic);
-					data.query.should.equal(props.query);
-					data.form.should.equal(props.form);
-					data.json.should.equal(props.json);
-					data.headers.should.equal(props.headers);
-					data.auth.should.equal(props.webhookAuth);
-					data.requestType.should.equal(props.requestType);
-					data.rejectUnauthorized.should.equal(props.rejectUnauthorized);
+			describe('user scope', () => {
+				it('creates for a single device', () => {
+					return api.createWebhook(props).then((results) => {
+						results.should.match({
+							method: 'post',
+							uri: '/v1/webhooks',
+							auth: props.auth,
+							data: {
+								event: props.name,
+								url: props.url,
+								deviceid: props.deviceId,
+								responseTemplate: props.responseTemplate,
+								responseTopic: props.responseTopic,
+								query: props.query,
+								form: props.form,
+								json: props.json,
+								headers: props.headers,
+								auth: props.webhookAuth,
+								requestType: props.requestType,
+								rejectUnauthorized: props.rejectUnauthorized,
+							}
+						});
+					});
+				});
+				it('creates for user\'s devices', () => {
+					const params = Object.assign({}, props, { deviceId: 'mine' });
+					return api.createWebhook(params).then((results) => {
+						results.should.match({
+							method: 'post',
+							uri: '/v1/webhooks',
+							auth: props.auth,
+							data: {
+								event: props.name,
+								url: props.url,
+								deviceid: undefined,
+								responseTemplate: props.responseTemplate,
+								responseTopic: props.responseTopic,
+								query: props.query,
+								form: props.form,
+								json: props.json,
+								body: props.body,
+								headers: props.headers,
+								auth: props.webhookAuth,
+								requestType: props.requestType,
+								rejectUnauthorized: props.rejectUnauthorized,
+								noDefaults: props.noDefaults
+							}
+						});
+					});
 				});
 			});
-			it('creates for user\'s devices', () => {
-				return api.createWebhook({ deviceId: 'mine' }).then(({ data }) => {
-					data.should.be.instanceOf(Object);
-					data.mydevices.should.equal(true);
+			describe('product scope', () => {
+				it('generates request', () => {
+					return api.createWebhook(propsWithProduct).then((results) => {
+						results.should.match({
+							method: 'post',
+							uri: `/v1/products/${product}/webhooks`,
+							auth: props.auth,
+							data: {
+								event: props.name,
+								url: props.url,
+								deviceid: props.deviceId,
+								responseTemplate: props.responseTemplate,
+								responseTopic: props.responseTopic,
+								query: props.query,
+								form: props.form,
+								json: props.json,
+								body: props.body,
+								headers: props.headers,
+								auth: props.webhookAuth,
+								requestType: props.requestType,
+								rejectUnauthorized: props.rejectUnauthorized,
+								noDefaults: props.noDefaults
+							}
+						});
+					});
 				});
 			});
 		});
 		describe('.deleteWebhook', () => {
-			it('sends proper data', () => {
-				return api.deleteWebhook({ hookId: 'captain' }).then(({ uri }) => {
-					uri.should.endWith('webhooks/captain');
+			describe('user scope', () => {
+				it('generates request', () => {
+					return api.deleteWebhook(props).then((results) => {
+						results.should.match({
+							method: 'delete',
+							uri: `/v1/webhooks/${props.hookId}`,
+							auth: props.auth,
+						});
+					});
+				});
+			});
+			describe('product scope', () => {
+				it('generates request', () => {
+					return api.deleteWebhook(propsWithProduct).then((results) => {
+						results.should.match({
+							method: 'delete',
+							uri: `/v1/products/${product}/webhooks/${props.hookId}`,
+							auth: props.auth,
+						});
+					});
 				});
 			});
 		});
 		describe('.listWebhooks', () => {
-			it('generates request', () => {
-				return api.listWebhooks(props).then(({ auth }) => {
-					auth.should.equal(props.auth);
+			describe('user scope', () => {
+				it('generates request', () => {
+					return api.listWebhooks(props).then((results) => {
+						results.should.match({
+							method: 'get',
+							uri: '/v1/webhooks',
+							auth: props.auth,
+						});
+					});
+				});
+			});
+			describe('product scope', () => {
+				it('generates request', () => {
+					return api.listWebhooks(propsWithProduct).then((results) => {
+						results.should.match({
+							method: 'get',
+							uri: `/v1/products/${product}/webhooks`,
+							auth: props.auth,
+						});
+					});
 				});
 			});
 		});
