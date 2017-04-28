@@ -824,10 +824,10 @@ describe('ParticleAPI', () => {
 				});
 			});
 		});
-		describe('.deleteWebhook', () => {
+		describe('.removeWebhook', () => {
 			describe('user scope', () => {
 				it('generates request', () => {
-					return api.deleteWebhook(props).then((results) => {
+					return api.removeWebhook(props).then((results) => {
 						results.should.match({
 							method: 'delete',
 							uri: `/v1/webhooks/${props.hookId}`,
@@ -838,7 +838,7 @@ describe('ParticleAPI', () => {
 			});
 			describe('product scope', () => {
 				it('generates request', () => {
-					return api.deleteWebhook(propsWithProduct).then((results) => {
+					return api.removeWebhook(propsWithProduct).then((results) => {
 						results.should.match({
 							method: 'delete',
 							uri: `/v1/products/${product}/webhooks/${props.hookId}`,
@@ -940,10 +940,10 @@ describe('ParticleAPI', () => {
 				});
 			});
 		});
-		describe('.deleteIntegration', () => {
+		describe('.removeIntegration', () => {
 			describe('user scope', () => {
 				it('generates request', () => {
-					return api.deleteIntegration(props).then((results) => {
+					return api.removeIntegration(props).then((results) => {
 						results.should.match({
 							method: 'delete',
 							uri: `/v1/integrations/${props.integrationId}`,
@@ -954,7 +954,7 @@ describe('ParticleAPI', () => {
 			});
 			describe('product scope', () => {
 				it('generates request', () => {
-					return api.deleteIntegration(propsWithProduct).then((results) => {
+					return api.removeIntegration(propsWithProduct).then((results) => {
 						results.should.match({
 							method: 'delete',
 							uri: `/v1/products/${product}/integrations/${props.integrationId}`,
@@ -1374,9 +1374,9 @@ describe('ParticleAPI', () => {
 				});
 			});
 		});
-		describe('.deleteLibrary', () => {
+		describe('.removeLibrary', () => {
 			it('generates request', () => {
-				return api.deleteLibrary({
+				return api.removeLibrary({
 					name: 'mylib',
 					auth: 'X',
 					force: 'xyz'
@@ -1649,6 +1649,15 @@ describe('ParticleAPI', () => {
 					});
 				});
 			});
+		});
+	});
+
+	describe('backwards-compatibility function aliases', () => {
+		it('maps deleteWebhook to removeWebhook', () => {
+			api.removeWebhook.should.equal(api.deleteWebhook);
+		});
+		it('maps deleteLibrary to removeLibrary', () => {
+			api.removeLibrary.should.equal(api.deleteLibrary);
 		});
 	});
 

@@ -514,13 +514,13 @@ class Particle {
 	}
 
 	/**
-	 * Delete a webhook
+	 * Remove a webhook
 	 * @param  {String} $0.hookId Webhook ID
 	 * @param  {String} [$0.product]          Webhook for this product ID or slug
 	 * @param  {String} $0.auth   Access Token
 	 * @return {Promise}
 	 */
-	deleteWebhook({ hookId, product, auth }) {
+	removeWebhook({ hookId, product, auth }) {
 		const uri = product ? `/v1/products/${product}/webhooks/${hookId}` : `/v1/webhooks/${hookId}`;
 		return this.delete(uri, undefined, auth);
 	}
@@ -575,14 +575,14 @@ class Particle {
 	}
 
 	/**
-	 * Delete an integration to send events to an external service
+	 * Remove an integration to send events to an external service
 	 *
-	 * @param  {String} $0.integrationId    The integration to delete
+	 * @param  {String} $0.integrationId    The integration to remove
 	 * @param  {String} [$0.product]        Integration for this product ID or slug
 	 * @param  {String} $0.auth             Access Token
 	 * @return {Promise}
 	 */
-	deleteIntegration({ integrationId, product, auth }) {
+	removeIntegration({ integrationId, product, auth }) {
 		const uri = product ? `/v1/products/${product}/integrations/${integrationId}` : `/v1/integrations/${integrationId}`;
 		return this.delete(uri, undefined, auth);
 	}
@@ -842,13 +842,13 @@ class Particle {
 	}
 
 	/**
-	 * Delete one version of a library or an entire published library
+	 * Remove one version of a library or an entire published library
 	 * @param  {String} $0.auth Access Token
-	 * @param  {String} $0.name Name of the library to delete
+	 * @param  {String} $0.name Name of the library to remove
 	 * @param  {String} $0.force Key to force deleting a public library
 	 * @return {Promise}
 	 */
-	deleteLibrary({ auth, name, force }) {
+	removeLibrary({ auth, name, force }) {
 		return this.delete(`/v1/libraries/${name}`, { force }, auth);
 	}
 
@@ -915,11 +915,11 @@ class Particle {
 	/**
 	 * Remove an OAuth client
 	 * @param  {String} $0.clientId           The OAuth client to update
-	 * @param  {String} [$0.product]          Delete client linked to this product ID or slug
+	 * @param  {String} [$0.product]          OAuth client linked to this product ID or slug
 	 * @param  {String} $0.auth               Access Token
 	 * @return {Promise}
 	 */
-	deleteOAuthClient({ clientId, product, auth }) {
+	removeOAuthClient({ clientId, product, auth }) {
 		const uri = product ? `/v1/products/${product}/clients/${clientId}` : `/v1/clients/${clientId}`;
 		return this.delete(uri, null, auth);
 	}
@@ -1109,5 +1109,9 @@ class Particle {
 		return new Client(Object.assign({ api: this }, options));
 	}
 }
+
+// Aliases for backwards compatibility
+Particle.prototype.deleteWebhook = Particle.prototype.removeWebhook;
+Particle.prototype.deleteLibrary = Particle.prototype.removeLibrary;
 
 export default Particle;
