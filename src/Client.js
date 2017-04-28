@@ -6,6 +6,10 @@ export default class Client {
 		Object.assign(this, { auth, api });
 	}
 
+	ready() {
+		return Boolean(this.auth);
+	}
+
 	/**
 	 * Get firmware library objects
 	 * @param  {Object} query The query parameters for libraries. See Particle.listLibraries
