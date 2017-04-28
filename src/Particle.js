@@ -115,7 +115,7 @@ class Particle {
 	 * @param  {String} $0.auth         Access Token
 	 * @return {Promise}
 	 */
-	listDevices({ deviceId, deviceName, sortAttr, sortDir, page, perPage, product,  auth }) {
+	listDevices({ deviceId, deviceName, sortAttr, sortDir, page, perPage, product, auth }) {
 		const uri = product ? `/v1/products/${product}/devices` : '/v1/devices';
 		const query = product ? { deviceId, deviceName, sortAttr, sortDir, page, perPage } : undefined;
 		return this.get(uri, auth, query);
@@ -354,9 +354,11 @@ class Particle {
 	 * @return {Promise}
 	 */
 	flashTinker({ deviceId, auth }) {
+		/* eslint-disable no-console */
 		if (console && console.warning) {
 			console.warning('Particle.flashTinker is deprecated');
 		}
+		/* eslint-enable no-console */
 		return this.put(`/v1/devices/${deviceId}`, {
 			app: 'tinker'
 		}, auth);
@@ -551,7 +553,7 @@ class Particle {
 	 */
 	createIntegration({ integrationType, event, settings, deviceId, product, auth }) {
 		const uri = product ? `/v1/products/${product}/integrations` : '/v1/integrations';
-		const data = Object.assign({ event, deviceid: deviceId, }, settings);
+		const data = Object.assign({ event, deviceid: deviceId }, settings);
 		return this.post(uri, data, auth);
 	}
 
@@ -570,7 +572,7 @@ class Particle {
 	 */
 	editIntegration({ integrationId, event, settings, deviceId, product, auth }) {
 		const uri = product ? `/v1/products/${product}/integrations/${integrationId}` : `/v1/integrations/${integrationId}`;
-		const data = Object.assign({ event, deviceid: deviceId, }, settings);
+		const data = Object.assign({ event, deviceid: deviceId }, settings);
 		return this.put(uri, data, auth);
 	}
 
@@ -638,7 +640,7 @@ class Particle {
 	 */
 	listSIMs({ iccid, deviceId, deviceName, page, perPage, product, auth }) {
 		const uri = product ? `/v1/products/${product}/sims` : '/v1/sims';
-		const query = product ? {  iccid, deviceId, deviceName, page, perPage } : undefined;
+		const query = product ? { iccid, deviceId, deviceName, page, perPage } : undefined;
 		return this.get(uri, auth, query);
 	}
 
@@ -955,7 +957,6 @@ class Particle {
 
 	/**
 	 * List product firmware versions
-	 * @param  {Buffer}
 	 * @param  {Object} $0.file    Path or Buffer of the new firmware file
 	 * @param  {Number} $0.version Version number of new firmware
 	 * @param  {String} $0.title   Short identifier for the new firmware
@@ -993,7 +994,6 @@ class Particle {
 
 	/**
 	 * Update information for a product firmware version
-	 * @param  {Buffer}
 	 * @param  {Number} $0.version Version number of new firmware
 	 * @param  {String} [$0.title]   New title
 	 * @param  {String} [$0.description] New description
@@ -1026,7 +1026,6 @@ class Particle {
 
 	/**
 	 * Release a product firmware version as the default version
-	 * @param  {Buffer}
 	 * @param  {Number} $0.version Version number of new firmware
 	 * @param  {String} $0.product Firmware for this product ID or slug
 	 * @param  {String} $0.auth Access Token
