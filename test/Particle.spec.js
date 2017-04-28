@@ -55,6 +55,7 @@ const props = {
 	rejectUnauthorized: true,
 	noDefaults: true,
 	hookId: 'hook-1234567890',
+	integrationId: 'integration-1234567890',
 	clientId: 'client-123',
 	type: 'web',
 	redirect_uri: 'https://example.com',
@@ -78,6 +79,9 @@ const props = {
 	iccid: '1234567890',
 	iccids: ['1234567890', '9876543210'],
 	deviceName: 'mydev',
+	settings: {
+		url: 'http://example.com',
+	},
 };
 
 const product = 'ze-product-v1';
@@ -862,6 +866,122 @@ describe('ParticleAPI', () => {
 						results.should.match({
 							method: 'get',
 							uri: `/v1/products/${product}/webhooks`,
+							auth: props.auth,
+						});
+					});
+				});
+			});
+		});
+		describe('.createIntegration', () => {
+			describe('user scope', () => {
+				it('generates request', () => {
+					return api.createIntegration(props).then((results) => {
+						results.should.match({
+							method: 'post',
+							uri: '/v1/integrations',
+							auth: props.auth,
+							data: {
+								event: props.event,
+								deviceid: props.deviceId,
+								url: props.settings.url,
+							}
+						});
+					});
+				});
+			});
+			describe('product scope', () => {
+				it('generates request', () => {
+					return api.createIntegration(propsWithProduct).then((results) => {
+						results.should.match({
+							method: 'post',
+							uri: `/v1/products/${product}/integrations`,
+							auth: props.auth,
+							data: {
+								event: props.event,
+								deviceid: props.deviceId,
+								url: props.settings.url,
+							}
+						});
+					});
+				});
+			});
+		});
+		describe('.editIntegration', () => {
+			describe('user scope', () => {
+				it('generates request', () => {
+					return api.editIntegration(props).then((results) => {
+						results.should.match({
+							method: 'put',
+							uri: `/v1/integrations/${props.integrationId}`,
+							auth: props.auth,
+							data: {
+								event: props.event,
+								deviceid: props.deviceId,
+								url: props.settings.url,
+							}
+						});
+					});
+				});
+			});
+			describe('product scope', () => {
+				it('generates request', () => {
+					return api.editIntegration(propsWithProduct).then((results) => {
+						results.should.match({
+							method: 'put',
+							uri: `/v1/products/${product}/integrations/${props.integrationId}`,
+							auth: props.auth,
+							data: {
+								event: props.event,
+								deviceid: props.deviceId,
+								url: props.settings.url,
+							}
+						});
+					});
+				});
+			});
+		});
+		describe('.deleteIntegration', () => {
+			describe('user scope', () => {
+				it('generates request', () => {
+					return api.deleteIntegration(props).then((results) => {
+						results.should.match({
+							method: 'delete',
+							uri: `/v1/integrations/${props.integrationId}`,
+							auth: props.auth,
+						});
+					});
+				});
+			});
+			describe('product scope', () => {
+				it('generates request', () => {
+					return api.deleteIntegration(propsWithProduct).then((results) => {
+						results.should.match({
+							method: 'delete',
+							uri: `/v1/products/${product}/integrations/${props.integrationId}`,
+							auth: props.auth,
+						});
+					});
+				});
+			});
+		});
+		describe('.listIntegrations', () => {
+			describe('user scope', () => {
+				it('generates request', () => {
+					return api.listIntegrations(props).then((results) => {
+						results.should.match({
+							method: 'get',
+							uri: '/v1/integrations',
+							auth: props.auth,
+						});
+					});
+				});
+			});
+			describe('product scope', () => {
+				it('generates request', () => {
+					return api.listIntegrations(propsWithProduct).then((results) => {
+						results.should.match({
+							method: 'get',
+							uri: `/v1/products/${product}/integrations`,
 							auth: props.auth,
 						});
 					});

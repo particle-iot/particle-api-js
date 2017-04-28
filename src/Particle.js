@@ -485,7 +485,7 @@ class Particle {
 
 	/**
 	 * Create a webhook
-	 * @param  {String} $0.deviceId           Device ID or Name
+	 * @param  {String} $0.deviceId           Trigger webhook only for this device ID or Name
 	 * @param  {String} $0.name               Webhook name
 	 * @param  {String} $0.url                URL the webhook should hit
 	 * @param  {String} [$0.requestType=POST]        HTTP method to use
@@ -527,7 +527,7 @@ class Particle {
 
 	/**
 	 * List all webhooks owned by the account or product
-	 * @param  {String} [$0.product]          Webhook for this product ID or slug
+	 * @param  {String} [$0.product]          Webhooks for this product ID or slug
 	 * @param  {String} $0.auth Access Token
 	 * @return {Promise}
 	 */
@@ -536,7 +536,67 @@ class Particle {
 		return this.get(uri, auth);
 	}
 
+	/**
+	 * Create an integration to send events to an external service
+     *
+	 * See the API docs for details https://docs.particle.io/reference/api/#integrations-webhooks-
+	 *
+	 * @param  {String} $0.integrationType  The kind of external integration. One of Webhook, AzureIotHub, GoogleCloudPubSub, GoogleMaps
+	 * @param  {String} $0.event            Event that triggers the integration
+	 * @params {Object} $0.settings         Settings specific to that integration type
+	 * @param  {String} [$0.deviceId]       Trigger integration only for this device ID or Name
+	 * @param  {String} [$0.product]        Integration for this product ID or slug
+	 * @param  {String} $0.auth             Access Token
+	 * @return {Promise}
+	 */
+	createIntegration({ integrationType, event, settings, deviceId, product, auth }) {
+		const uri = product ? `/v1/products/${product}/integrations` : '/v1/integrations';
+		const data = Object.assign({ event, deviceid: deviceId, }, settings);
+		return this.post(uri, data, auth);
+	}
 
+	/**
+	 * Edit an integration to send events to an external service
+	 *
+	 * See the API docs for details https://docs.particle.io/reference/api/#integrations-webhooks-
+	 *
+	 * @param  {String} $0.integrationId    The integration to edit
+	 * @param  {String} [$0.event]          Change the event that triggers the integration
+	 * @params {Object} [$0.settings]       Change the settings specific to that integration type
+	 * @param  {String} [$0.deviceId]       Trigger integration only for this device ID or Name
+	 * @param  {String} [$0.product]        Integration for this product ID or slug
+	 * @param  {String} $0.auth             Access Token
+	 * @return {Promise}
+	 */
+	editIntegration({ integrationId, event, settings, deviceId, product, auth }) {
+		const uri = product ? `/v1/products/${product}/integrations/${integrationId}` : `/v1/integrations/${integrationId}`;
+		const data = Object.assign({ event, deviceid: deviceId, }, settings);
+		return this.put(uri, data, auth);
+	}
+
+	/**
+	 * Delete an integration to send events to an external service
+	 *
+	 * @param  {String} $0.integrationId    The integration to delete
+	 * @param  {String} [$0.product]        Integration for this product ID or slug
+	 * @param  {String} $0.auth             Access Token
+	 * @return {Promise}
+	 */
+	deleteIntegration({ integrationId, product, auth }) {
+		const uri = product ? `/v1/products/${product}/integrations/${integrationId}` : `/v1/integrations/${integrationId}`;
+		return this.delete(uri, undefined, auth);
+	}
+
+	/**
+	 * List all integrations owned by the account or product
+	 * @param  {String} [$0.product]        Integrations for this product ID or slug
+	 * @param  {String} $0.auth Access Token
+	 * @return {Promise}
+	 */
+	listIntegrations({ product, auth }) {
+		const uri = product ? `/v1/products/${product}/integrations` : '/v1/integrations';
+		return this.get(uri, auth);
+	}
 
 	/**
 	 * Get details about the current user
