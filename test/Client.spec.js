@@ -194,14 +194,24 @@ describe('Client', () => {
 	});
 
 	describe('trackingIdentity', () => {
-		it('delegates to api', () => {
+		it('delegates to api and unpacks the body', () => {
 			api.trackingIdentity = ({auth, full, context}) => {
-				return Promise.resolve({auth, full, context});
+				return Promise.resolve({body: {auth, full, context}});
 			};
 			const context = {abd:123};
 			const full = 456;
 			return expect(client.trackingIdentity({full, context})).to.eventually.eql({auth:client.auth, full, context});
 		});
+
+		it('delegates to api with default parameters and unpacks the body', () => {
+			api.trackingIdentity = ({auth, full, context}) => {
+				return Promise.resolve({body: {auth, full, context}});
+			};
+			const context = undefined;
+			const full = false;
+			return expect(client.trackingIdentity()).to.eventually.eql({auth:client.auth, full, context});
+		});
+
 	});
 
 });

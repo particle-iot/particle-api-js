@@ -161,7 +161,10 @@ export default class Client {
 			});
 	}
 
-	trackingIdentity({ full, context }) {
-		return this.api.trackingIdentity({ full, context, auth: this.auth });
+	trackingIdentity({ full=false, context }={}) {
+		return this.api.trackingIdentity({ full, context, auth: this.auth })
+			.then(payload => {
+				return payload.body;
+			});
 	}
 }
