@@ -468,7 +468,7 @@ describe('ParticleAPI', () => {
 						uri: '/v1/devices',
 						auth: props.auth,
 						data: {
-							productId: props.productId
+							product_id: props.productId
 						}
 					});
 				});

@@ -45,6 +45,7 @@ class Particle {
 
 	/**
 	 * Builds the final context from the context parameter and the context items in the api.
+	 * @param {Object} context       The invocation context, this takes precedence over the local context.
 	 * @return {Object} The context to use.
 	 * @private
 	 */
@@ -71,7 +72,7 @@ class Particle {
 	 * @param  {Number} $0.tokenDuration How long the access token should last in seconds
 	 * @return {Promise}
 	 */
-	login({ username, password, tokenDuration = this.tokenDuration }) {
+	login({ username, password, tokenDuration = this.tokenDuration, context }) {
 		return this.request({ uri: '/oauth/token', form: {
 			username,
 			password,
@@ -79,7 +80,7 @@ class Particle {
 			client_id: this.clientId,
 			client_secret: this.clientSecret,
 			expires_in: tokenDuration
-		}, method: 'post'});
+		}, method: 'post', context});
 	}
 
 	/**
@@ -89,12 +90,12 @@ class Particle {
 	 * @param  {String} $0.accountInfo Object that contains account information fields such as user real name, company name, business account flag etc
 	 * @return {Promise}
 	 */
-	createUser({ username, password, accountInfo}) {
+	createUser({ username, password, accountInfo, context }) {
 		return this.post('/v1/users', {
 			username,
 			password,
 			account_info : accountInfo
-		}, undefined);
+		}, undefined, context);
 	}
 
 	/**
@@ -102,10 +103,10 @@ class Particle {
 	 * @param  {String} $0.token the string token sent in the verification email
 	 * @return {Promise}
 	 */
-	verifyUser({ token }) {
+	verifyUser({ token, context }) {
 		return this.post('/v1/user/verify', {
 			token
-		}, undefined);
+		}, undefined, context);
 	}
 
 	/**
@@ -113,8 +114,8 @@ class Particle {
 	 * @param  {String} $0.username Email of the user
 	 * @return {Promise}
 	 */
-	resetPassword({ username }) {
-		return this.post('/v1/user/password-reset', { username }, undefined);
+	resetPassword({ username, context }) {
+		return this.post('/v1/user/password-reset', { username }, undefined, context);
 	}
 
 	/**
@@ -124,10 +125,10 @@ class Particle {
 	 * @param  {String} $0.token    Access token you wish to revoke
 	 * @return {Promise}
 	 */
-	removeAccessToken({ username, password, token }) {
+	removeAccessToken({ username, password, token, context }) {
 		return this.delete(`/v1/access_tokens/${token}`, {
 			access_token: token
-		}, { username, password });
+		}, { username, password }, context);
 	}
 
 	/**
@@ -136,8 +137,8 @@ class Particle {
 	 * @param  {String} $0.password Password
 	 * @return {Promise}
 	 */
-	listAccessTokens({ username, password}) {
-		return this.get('/v1/access_tokens', { username, password }, undefined);
+	listAccessTokens({ username, password, context }) {
+		return this.get('/v1/access_tokens', { username, password }, undefined, context);
 	}
 
 	/**
@@ -152,10 +153,10 @@ class Particle {
 	 * @param  {String} $0.auth         Access Token
 	 * @return {Promise}
 	 */
-	listDevices({ deviceId, deviceName, sortAttr, sortDir, page, perPage, product, auth }) {
+	listDevices({ deviceId, deviceName, sortAttr, sortDir, page, perPage, product, auth, context }) {
 		const uri = product ? `/v1/products/${product}/devices` : '/v1/devices';
 		const query = product ? { deviceId, deviceName, sortAttr, sortDir, page, perPage } : undefined;
-		return this.get(uri, auth, query);
+		return this.get(uri, auth, query, context);
 	}
 
 	/**
@@ -165,9 +166,9 @@ class Particle {
 	 * @param  {String} $0.auth      Access token
 	 * @return {Promise}
 	 */
-	getDevice({ deviceId, product, auth }) {
+	getDevice({ deviceId, product, auth, context }) {
 		const uri = this.deviceUri({ deviceId, product });
-		return this.get(uri, auth);
+		return this.get(uri, auth, undefined, context);
 	}
 
 	/**
@@ -176,11 +177,11 @@ class Particle {
 	 * @param  {String} $0.auth     Access Token
 	 * @return {Promise}
 	 */
-	claimDevice({ deviceId, requestTransfer, auth}) {
+	claimDevice({ deviceId, requestTransfer, auth, context }) {
 		return this.post('/v1/devices', {
 			id: deviceId,
 			request_transfer: !!requestTransfer
-		}, auth);
+		}, auth, context);
 	}
 
 	/**
@@ -190,11 +191,11 @@ class Particle {
 	 * @param  {String} $0.auth     Access Token
 	 * @return {Promise}
 	 */
-	addDeviceToProduct({ deviceId, product, auth }) {
+	addDeviceToProduct({ deviceId, product, auth, context }) {
 		const uri = `/v1/products/${product}/devices`;
 		return this.post(uri, {
 			id: deviceId
-		}, auth);
+		}, auth, context);
 	}
 
 	/**
@@ -205,10 +206,10 @@ class Particle {
 	 * @param  {String} $0.auth     Access Token
 	 * @return {Promise}
 	 */
-	removeDevice({ deviceId, deny, product, auth }) {
+	removeDevice({ deviceId, deny, product, auth, context }) {
 		const uri = this.deviceUri({ deviceId, product });
 		const data = product ? { deny } : undefined;
-		return this.delete(uri, data, auth);
+		return this.delete(uri, data, auth, context);
 	}
 
 	/**
@@ -218,9 +219,9 @@ class Particle {
 	 * @param  {String} $0.auth     Access Token
 	 * @return {Promise}
 	 */
-	removeDeviceOwner({ deviceId, deny, product, auth }) {
+	removeDeviceOwner({ deviceId, deny, product, auth, context }) {
 		const uri = `/v1/products/${product}/devices/${deviceId}/owner`;
-		return this.delete(uri, undefined, auth);
+		return this.delete(uri, undefined, auth, context);
 	}
 
 	/**
@@ -231,8 +232,8 @@ class Particle {
 	 * @param  {String} $0.auth     Access Token
 	 * @return {Promise}
 	 */
-	renameDevice({ deviceId, name, product, auth }) {
-		return this.updateDevice({ deviceId, name, product, auth });
+	renameDevice({ deviceId, name, product, auth, context }) {
+		return this.updateDevice({ deviceId, name, product, auth, context });
 	}
 
 	/**
@@ -243,8 +244,8 @@ class Particle {
 	 * @param  {String} $0.auth      Access Token
 	 * @return {Promise}
 	 */
-	setDeviceNotes({ deviceId, notes, product, auth }) {
-		return this.updateDevice({ deviceId, notes, product, auth });
+	setDeviceNotes({ deviceId, notes, product, auth, context }) {
+		return this.updateDevice({ deviceId, notes, product, auth, context });
 	}
 
 	/**
@@ -255,8 +256,8 @@ class Particle {
 	 * @param  {String} $0.auth          Access Token
 	 * @return {Promise}
 	 */
-	markAsDevelopmentDevice({ deviceId, development = true, product, auth }) {
-		return this.updateDevice({ deviceId, development, product, auth });
+	markAsDevelopmentDevice({ deviceId, development = true, product, auth, context }) {
+		return this.updateDevice({ deviceId, development, product, auth, context });
 	}
 
 	/**
@@ -268,8 +269,8 @@ class Particle {
 	 * @param  {String} $0.auth          Access Token
 	 * @return {Promise}
 	 */
-	lockDeviceProductFirmware({ deviceId, desiredFirmwareVersion, flash, product, auth }) {
-		return this.updateDevice({ deviceId, desiredFirmwareVersion, flash, product, auth });
+	lockDeviceProductFirmware({ deviceId, desiredFirmwareVersion, flash, product, auth, context }) {
+		return this.updateDevice({ deviceId, desiredFirmwareVersion, flash, product, auth, context });
 	}
 
 	/**
@@ -279,8 +280,8 @@ class Particle {
 	 * @param  {String} $0.auth          Access Token
 	 * @return {Promise}
 	 */
-	unlockDeviceProductFirmware({ deviceId, product, auth }) {
-		return this.updateDevice({ deviceId, desiredFirmwareVersion: null, product, auth });
+	unlockDeviceProductFirmware({ deviceId, product, auth, context }) {
+		return this.updateDevice({ deviceId, desiredFirmwareVersion: null, product, auth, context });
 	}
 
 	/**
@@ -296,12 +297,12 @@ class Particle {
 	 * @param  {String} $0.auth           Access Token
 	 * @return {Promise}
 	 */
-	updateDevice({ deviceId, name, notes, development, desiredFirmwareVersion, flash, product, auth }) {
+	updateDevice({ deviceId, name, notes, development, desiredFirmwareVersion, flash, product, auth, context }) {
 		const uri = this.deviceUri({ deviceId, product });
 		const data = product ?
 			{ name, notes, development, desired_firmware_version: desiredFirmwareVersion, flash } :
 			{ name, notes };
-		return this.put(uri, data, auth);
+		return this.put(uri, data, auth, context);
 	}
 
 	/**
@@ -310,8 +311,8 @@ class Particle {
 	 * @param  {String} $0.auth      Access Token
 	 * @return {Promise}
 	 */
-	provisionDevice({ productId, auth }) {
-		return this.post('/v1/devices', { productId }, auth);
+	provisionDevice({ productId, auth, context }) {
+		return this.post('/v1/devices', { product_id: productId }, auth, context);
 	}
 
 	/**
@@ -321,19 +322,19 @@ class Particle {
 	 * @param  {String} $0.auth  Access Token
 	 * @return {Promise}
 	 */
-	getClaimCode({ iccid, product, auth }) {
+	getClaimCode({ iccid, product, auth, context }) {
 		const uri = product ? `/v1/products/${product}/device_claims` : '/v1/device_claims';
-		return this.post(uri, { iccid }, auth);
+		return this.post(uri, { iccid }, auth, context);
 	}
 
-	validatePromoCode({ auth, promoCode }) {
-		return this.get(`/v1/promo_code/${promoCode}`, auth, undefined);
+	validatePromoCode({ auth, promoCode, context }) {
+		return this.get(`/v1/promo_code/${promoCode}`, auth, undefined, context);
 	}
 
-	changeProduct({ deviceId, productId, auth }) {
+	changeProduct({ deviceId, productId, auth, context }) {
 		return this.put(`/v1/devices/${deviceId}`, {
 			product_id: productId
-		}, auth);
+		}, auth, context);
 	}
 
 	/**
@@ -344,11 +345,11 @@ class Particle {
 	 * @param  {String} $0.auth     Access Token
 	 * @return {Promise}
 	 */
-	getVariable({ deviceId, name, product, auth }) {
+	getVariable({ deviceId, name, product, auth, context }) {
 		const uri = product ?
 			`/v1/products/${product}/devices/${deviceId}/${name}` :
 			`/v1/devices/${deviceId}/${name}`;
-		return this.get(uri, auth);
+		return this.get(uri, auth, undefined, context);
 	}
 
 	/**
@@ -358,10 +359,10 @@ class Particle {
 	 * @param  {String} $0.auth     Access Token
 	 * @return {Promise}
 	 */
-	signalDevice({ deviceId, signal, auth }) {
+	signalDevice({ deviceId, signal, auth, context }) {
 		return this.put(`/v1/devices/${deviceId}`, {
 			signal: ( signal ? '1' : '0' )
-		}, auth);
+		}, auth, context);
 	}
 
 	/**
@@ -372,7 +373,7 @@ class Particle {
 	 * @param  {String} $0.auth          String
 	 * @return {Promise}
 	 */
-	flashDevice({ deviceId, files, targetVersion, auth}) {
+	flashDevice({ deviceId, files, targetVersion, auth, context }) {
 		const form = {};
 		if (targetVersion) {
 			form.build_target_version = targetVersion;
@@ -380,7 +381,7 @@ class Particle {
 			form.latest = 'true';
 		}
 		return this.request({ uri: `/v1/devices/${deviceId}`,
-			files, auth, form, method: 'put' });
+			files, auth, form, context, method: 'put' });
 	}
 
 	/**
@@ -389,7 +390,7 @@ class Particle {
 	 * @param  {String} $0.auth     Access Token
 	 * @return {Promise}
 	 */
-	flashTinker({ deviceId, auth }) {
+	flashTinker({ deviceId, auth, context }) {
 		/* eslint-disable no-console */
 		if (console && console.warning) {
 			console.warning('Particle.flashTinker is deprecated');
@@ -397,7 +398,7 @@ class Particle {
 		/* eslint-enable no-console */
 		return this.put(`/v1/devices/${deviceId}`, {
 			app: 'tinker'
-		}, auth);
+		}, auth, context);
 	}
 
 	/**
@@ -408,7 +409,7 @@ class Particle {
 	 * @param  {String} $0.auth          Access Token
 	 * @return {Promise}
 	 */
-	compileCode({ files, platformId, targetVersion, auth }) {
+	compileCode({ files, platformId, targetVersion, auth, context }) {
 		const form = { platform_id: platformId };
 		if (targetVersion) {
 			form.build_target_version = targetVersion;
@@ -416,7 +417,7 @@ class Particle {
 			form.latest = 'true';
 		}
 		return this.request({ uri: '/v1/binaries',
-			files, auth, form, method: 'post'});
+			files, auth, form, context, method: 'post'});
 	}
 
 	/**
@@ -425,7 +426,7 @@ class Particle {
 	 * @param  {String} $0.auth     Access Token
 	 * @return {Request}
 	 */
-	downloadFirmwareBinary({ binaryId, auth }) {
+	downloadFirmwareBinary({ binaryId, auth, context }) {
 		const uri = `/v1/binaries/${binaryId}`;
 		const req = request('get', uri);
 		req.use(this.prefix);
@@ -444,14 +445,14 @@ class Particle {
 	 * @param  {String} $0.auth      Access Token
 	 * @return {Promise}
 	 */
-	sendPublicKey({ deviceId, key, algorithm, auth }) {
+	sendPublicKey({ deviceId, key, algorithm, auth, context }) {
 		return this.post(`/v1/provisioning/${deviceId}`, {
 			deviceID: deviceId,
 			publicKey: ( typeof key === 'string' ? key : key.toString() ),
 			filename: 'particle-api',
 			order: `manual_${ Date.now() }`,
 			algorithm: algorithm || 'rsa'
-		}, auth);
+		}, auth, context);
 	}
 
 	/**
@@ -463,11 +464,11 @@ class Particle {
 	 * @param  {String} $0.auth     Access Token
 	 * @return {Promise}
 	 */
-	callFunction({ deviceId, name, argument, product, auth }) {
+	callFunction({ deviceId, name, argument, product, auth, context }) {
 		const uri = product ?
 			`/v1/products/${product}/devices/${deviceId}/${name}` :
 			`/v1/devices/${deviceId}/${name}`;
-		return this.post(uri, { args: argument }, auth);
+		return this.post(uri, { args: argument }, auth, context);
 	}
 
 	/**
@@ -480,7 +481,7 @@ class Particle {
 	 * @return {Promise} If the promise resolves, the resolution value will be an EventStream object that will
 	 * emit 'event' events, as well as the specific named event.
 	 */
-	getEventStream({ deviceId, name, org, product, auth }) {
+	getEventStream({ deviceId, name, org, product, auth, context }) {
 		let uri = '/v1/';
 		if (org) {
 			uri += `orgs/${org}/`;
@@ -515,10 +516,10 @@ class Particle {
 	 * @param  {String} $0.auth      Access Token
 	 * @return {Promise}
 	 */
-	publishEvent({ name, data, isPrivate, product, auth }) {
+	publishEvent({ name, data, isPrivate, product, auth, context }) {
 		const uri = product ? `/v1/products/${product}/events` : '/v1/devices/events';
 		const postData = { name, data, private: isPrivate };
-		return this.post(uri, postData, auth);
+		return this.post(uri, postData, auth, context);
 	}
 
 	/**
@@ -541,14 +542,14 @@ class Particle {
 	 * @param  {String} $0.auth               Access Token
 	 * @return {Promise}
 	 */
-	createWebhook({ deviceId, name, url, requestType, headers, json, query, body, responseTemplate, responseTopic, rejectUnauthorized, webhookAuth, noDefaults, form, product, auth }) {
+	createWebhook({ deviceId, name, url, requestType, headers, json, query, body, responseTemplate, responseTopic, rejectUnauthorized, webhookAuth, noDefaults, form, product, auth, context }) {
 		// deviceId: 'mine' is deprecated since webhooks only trigger on your device anyways
 		if (deviceId === 'mine') {
 			deviceId = undefined;
 		}
 		const uri = product ? `/v1/products/${product}/webhooks` : '/v1/webhooks';
 		const data = { event: name, deviceid: deviceId, url, requestType, headers, json, query, body, responseTemplate, responseTopic, rejectUnauthorized, auth: webhookAuth, noDefaults, form };
-		return this.post(uri, data, auth);
+		return this.post(uri, data, auth, context);
 	}
 
 	/**
@@ -558,9 +559,9 @@ class Particle {
 	 * @param  {String} $0.auth   Access Token
 	 * @return {Promise}
 	 */
-	removeWebhook({ hookId, product, auth }) {
+	removeWebhook({ hookId, product, auth, context }) {
 		const uri = product ? `/v1/products/${product}/webhooks/${hookId}` : `/v1/webhooks/${hookId}`;
-		return this.delete(uri, undefined, auth);
+		return this.delete(uri, undefined, auth, context);
 	}
 
 	/**
@@ -569,9 +570,9 @@ class Particle {
 	 * @param  {String} $0.auth Access Token
 	 * @return {Promise}
 	 */
-	listWebhooks({ product, auth }) {
+	listWebhooks({ product, auth, context }) {
 		const uri = product ? `/v1/products/${product}/webhooks` : '/v1/webhooks';
-		return this.get(uri, auth);
+		return this.get(uri, auth, undefined, context);
 	}
 
 	/**
@@ -587,10 +588,10 @@ class Particle {
 	 * @param  {String} $0.auth             Access Token
 	 * @return {Promise}
 	 */
-	createIntegration({ integrationType, event, settings, deviceId, product, auth }) {
+	createIntegration({ integrationType, event, settings, deviceId, product, auth, context }) {
 		const uri = product ? `/v1/products/${product}/integrations` : '/v1/integrations';
 		const data = Object.assign({ event, deviceid: deviceId }, settings);
-		return this.post(uri, data, auth);
+		return this.post(uri, data, auth, context);
 	}
 
 	/**
@@ -606,10 +607,10 @@ class Particle {
 	 * @param  {String} $0.auth             Access Token
 	 * @return {Promise}
 	 */
-	editIntegration({ integrationId, event, settings, deviceId, product, auth }) {
+	editIntegration({ integrationId, event, settings, deviceId, product, auth, context }) {
 		const uri = product ? `/v1/products/${product}/integrations/${integrationId}` : `/v1/integrations/${integrationId}`;
 		const data = Object.assign({ event, deviceid: deviceId }, settings);
-		return this.put(uri, data, auth);
+		return this.put(uri, data, auth, context);
 	}
 
 	/**
@@ -620,9 +621,9 @@ class Particle {
 	 * @param  {String} $0.auth             Access Token
 	 * @return {Promise}
 	 */
-	removeIntegration({ integrationId, product, auth }) {
+	removeIntegration({ integrationId, product, auth, context }) {
 		const uri = product ? `/v1/products/${product}/integrations/${integrationId}` : `/v1/integrations/${integrationId}`;
-		return this.delete(uri, undefined, auth);
+		return this.delete(uri, undefined, auth, context);
 	}
 
 	/**
@@ -631,9 +632,9 @@ class Particle {
 	 * @param  {String} $0.auth Access Token
 	 * @return {Promise}
 	 */
-	listIntegrations({ product, auth }) {
+	listIntegrations({ product, auth, context }) {
 		const uri = product ? `/v1/products/${product}/integrations` : '/v1/integrations';
-		return this.get(uri, auth);
+		return this.get(uri, auth, undefined, context);
 	}
 
 	/**
@@ -641,8 +642,8 @@ class Particle {
 	 * @param  {String} $0.auth Access Token
 	 * @return {Promise}
 	 */
-	getUserInfo({ auth }) {
-		return this.get('/v1/user', auth);
+	getUserInfo({ auth, context }) {
+		return this.get('/v1/user', auth, undefined, context);
 	}
 
 	/**
@@ -653,14 +654,14 @@ class Particle {
 	 * @param  {String} $0.password Change authenticated user password
 	 * @return {Promise}
 	 */
-	setUserInfo({ stripeToken, accountInfo, password, auth }) {
+	setUserInfo({ stripeToken, accountInfo, password, auth, context }) {
 		const bodyObj = {};
 
 		(stripeToken ? bodyObj.stripe_token = stripeToken : null);
 		(accountInfo ? bodyObj.account_info = accountInfo : null);
 		(password ? bodyObj.password = password : null);
 
-		return this.put('/v1/user', bodyObj, auth);
+		return this.put('/v1/user', bodyObj, auth, context);
 	}
 
 	/**
@@ -674,10 +675,10 @@ class Particle {
 	 * @param  {String} $0.auth       Access Token
 	 * @return {Promise}
 	 */
-	listSIMs({ iccid, deviceId, deviceName, page, perPage, product, auth }) {
+	listSIMs({ iccid, deviceId, deviceName, page, perPage, product, auth, context }) {
 		const uri = product ? `/v1/products/${product}/sims` : '/v1/sims';
 		const query = product ? { iccid, deviceId, deviceName, page, perPage } : undefined;
-		return this.get(uri, auth, query);
+		return this.get(uri, auth, query, context);
 	}
 
 	/**
@@ -687,11 +688,11 @@ class Particle {
 	 * @param  {String} $0.auth       Access Token
 	 * @return {Promise}
 	 */
-	getSIMDataUsage({ iccid, product, auth }) {
+	getSIMDataUsage({ iccid, product, auth, context }) {
 		const uri = product ?
 			`/v1/products/${product}/sims/${iccid}/data_usage` :
 			`/v1/sims/${iccid}/data_usage`;
-		return this.get(uri, auth);
+		return this.get(uri, auth, undefined, context);
 	}
 
 	/**
@@ -700,12 +701,12 @@ class Particle {
 	 * @param  {String} $0.auth     Access Token
 	 * @return {Promise}
 	 */
-	getFleetDataUsage({ product, auth }) {
-		return this.get(`/v1/products/${product}/sims/data_usage`, auth);
+	getFleetDataUsage({ product, auth, context }) {
+		return this.get(`/v1/products/${product}/sims/data_usage`, auth, undefined, context);
 	}
 
-	checkSIM({ iccid, auth }) {
-		return this.head(`/v1/sims/${iccid}`, auth, undefined);
+	checkSIM({ iccid, auth, context }) {
+		return this.head(`/v1/sims/${iccid}`, auth, undefined, context);
 	}
 
 	/**
@@ -717,7 +718,7 @@ class Particle {
 	 * @param  {String} $0.auth       Access Token
 	 * @return {Promise}
 	 */
-	activateSIM({ iccid, iccids, countryCode, promoCode, product, auth }) {
+	activateSIM({ iccid, iccids, countryCode, promoCode, product, auth, context }) {
 		// promoCode is deprecated
 		iccids = iccids || [iccid];
 		const uri = product ? `/v1/products/${product}/sims` : `/v1/sims/${iccid}`;
@@ -726,7 +727,7 @@ class Particle {
 			{ countryCode, promoCode, action: 'activate' };
 		const method = product ? 'post' : 'put';
 
-		return this.request({ uri, method, data, auth });
+		return this.request({ uri, method, data, auth, context });
 	}
 
 	/**
@@ -736,10 +737,10 @@ class Particle {
 	 * @param  {String} $0.auth       Access Token
 	 * @return {Promise}
 	 */
-	deactivateSIM({ iccid, product, auth }) {
+	deactivateSIM({ iccid, product, auth, context }) {
 		const uri = product ? `/v1/products/${product}/sims/${iccid}` : `/v1/sims/${iccid}`;
 		const data = { action: 'deactivate' };
-		return this.put(uri, data, auth);
+		return this.put(uri, data, auth, context);
 	}
 
 	/**
@@ -750,10 +751,10 @@ class Particle {
 	 * @param  {String} $0.auth       Access Token
 	 * @return {Promise}
 	 */
-	reactivateSIM({ iccid, mbLimit, product, auth }) {
+	reactivateSIM({ iccid, mbLimit, product, auth, context }) {
 		const uri = product ? `/v1/products/${product}/sims/${iccid}` : `/v1/sims/${iccid}`;
 		const data = { mb_limit: mbLimit, action: 'reactivate' };
-		return this.put(uri, data, auth);
+		return this.put(uri, data, auth, context);
 	}
 
 	/**
@@ -764,10 +765,10 @@ class Particle {
 	 * @param  {String} $0.auth       Access Token
 	 * @return {Promise}
 	 */
-	updateSIM({ iccid, mbLimit, product, auth }) {
+	updateSIM({ iccid, mbLimit, product, auth, context }) {
 		const uri = product ? `/v1/products/${product}/sims/${iccid}` : `/v1/sims/${iccid}`;
 		const data = { mb_limit: mbLimit };
-		return this.put(uri, data, auth);
+		return this.put(uri, data, auth, context);
 	}
 
 	/**
@@ -777,28 +778,27 @@ class Particle {
 	 * @param  {String} $0.auth       Access Token
 	 * @return {Promise}
 	 */
-	removeSIM({ iccid, product, auth }) {
+	removeSIM({ iccid, product, auth, context }) {
 		const uri = product ? `/v1/products/${product}/sims/${iccid}` : `/v1/sims/${iccid}`;
-		return this.delete(uri, undefined, auth);
+		return this.delete(uri, undefined, auth, context);
 	}
 
 	/**
 	 * List valid build targets to be used for compiling
-	 * @param  {String} $0.auth         Access Token
 	 * @param  {Boolean} [$0.onlyFeatured=false] Only list featured build targets
+	 * @param  {String} $0.auth       Access Token
 	 * @return {Promise}
 	 */
-	listBuildTargets({ auth, onlyFeatured}) {
+	listBuildTargets({ onlyFeatured, auth, context }) {
 		let query;
 		if (onlyFeatured !== undefined) {
 			query = { featured: !!onlyFeatured };
 		}
-		return this.get('/v1/build_targets', auth, query);
+		return this.get('/v1/build_targets', auth, query, context);
 	}
 
 	/**
 	 * List firmware libraries
-	 * @param  {String} $0.auth Access Token
 	 * @param  {Number} $0.page Page index (default, first page)
 	 * @param  {Number} $0.limit Number of items per page
 	 * @param  {String} $0.filter Search term for the libraries
@@ -815,9 +815,10 @@ class Particle {
 	 * - 'featured' - list only featured libraries
 	 * @param  {String} $0.excludeScopes  list of scopes to exclude
 	 * @param  {String} $0.category Category to filter
+	 * @param  {String} $0.auth Access Token
 	 * @return {Promise}
 	 */
-	listLibraries({ auth, page, limit, filter, sort, architectures, category, scope, excludeScopes}) {
+	listLibraries({ page, limit, filter, sort, architectures, category, scope, excludeScopes, auth, context }) {
 		return this.get('/v1/libraries', auth, {
 			page,
 			filter,
@@ -827,7 +828,7 @@ class Particle {
 			category,
 			scope,
 			excludeScopes: this._asList(excludeScopes)
-		});
+		}, context);
 	}
 
 	_asList(value) {
@@ -836,58 +837,65 @@ class Particle {
 
 	/**
 	 * Get firmware library details
-	 * @param  {String} $0.auth Access Token
 	 * @param  {String} $0.name Name of the library to fetch
 	 * @param  {String} $0.version Version of the library to fetch (default: latest)
+	 * @param  {String} $0.auth Access Token
 	 * @return {Promise}
 	 */
-	getLibrary({ auth, name, version }) {
-		return this.get(`/v1/libraries/${name}`, auth, { version });
+	getLibrary({ name, version, auth, context }) {
+		return this.get(`/v1/libraries/${name}`, auth, { version }, context);
 	}
 
 	/**
 	 * Firmware library details for each version
-	 * @param  {String} $0.auth Access Token
 	 * @param  {String} $0.name Name of the library to fetch
 	 * @param  {Number} $0.page Page index (default, first page)
 	 * @param  {Number} $0.limit Number of items per page
+	 * @param  {String} $0.auth Access Token
 	 * @return {Promise}
 	 */
-	getLibraryVersions({ auth, name, page, limit }) {
+	getLibraryVersions({ name, page, limit, auth, context }) {
 		return this.get(`/v1/libraries/${name}/versions`, auth, {
 			page,
 			limit
-		});
+		}, context);
 	}
 
 	/**
-	 * Contribute a new library version int the compressed archive
-	 * @param  {String} $0.auth Access Token
+	 * Contribute a new library version from a compressed archive
 	 * @param  {String} $0.archive Compressed archive file containing the library sources
+	 * @param  {String} $0.auth Access Token
 	 * @return {Promise}
 	 */
-	contributeLibrary({ auth, archive }) {
+	contributeLibrary({ archive, auth, context }) {
 		const files = {
 			'archive.tar.gz': archive
 		};
 
 		return this.request({ uri: '/v1/libraries',
-			files, auth, method: 'post' });
+			files, auth, context, method: 'post' });
 	}
 
-	publishLibrary({ auth, name}) {
-		return this.request({ uri: `/v1/libraries/${name}`, auth, method: 'patch', data: { visibility:'public' } });
+	/**
+	 * Publish the latest version of a library to the public
+	 * @param  {String} $0.name Name of the library to publish
+	 * @param  {String} $0.auth Access Token
+	 * @return {Promise}
+	 */
+	publishLibrary({ name, auth, context }) {
+		return this.request({ uri: `/v1/libraries/${name}`,
+			auth, context, method: 'patch', data: { visibility: 'public' } });
 	}
 
 	/**
 	 * Remove one version of a library or an entire published library
-	 * @param  {String} $0.auth Access Token
 	 * @param  {String} $0.name Name of the library to remove
 	 * @param  {String} $0.force Key to force deleting a public library
+	 * @param  {String} $0.auth Access Token
 	 * @return {Promise}
 	 */
-	removeLibrary({ auth, name, force }) {
-		return this.delete(`/v1/libraries/${name}`, { force }, auth);
+	removeLibrary({ name, force, auth, context }) {
+		return this.delete(`/v1/libraries/${name}`, { force }, auth, context);
 	}
 
 	/**
@@ -914,9 +922,9 @@ class Particle {
 	 * @param  {String} $0.auth Access Token
 	 * @return {Promise}
 	 */
-	listOAuthClients({ product, auth }) {
+	listOAuthClients({ product, auth, context }) {
 		const uri = product ? `/v1/products/${product}/clients` : '/v1/clients';
-		return this.get(uri, auth);
+		return this.get(uri, auth, undefined, context);
 	}
 
 	/**
@@ -929,10 +937,10 @@ class Particle {
 	 * @param  {String} $0.auth               Access Token
 	 * @return {Promise}
 	 */
-	createOAuthClient({ name, type, redirect_uri, scope, product, auth }) {
+	createOAuthClient({ name, type, redirect_uri, scope, product, auth, context }) {
 		const uri = product ? `/v1/products/${product}/clients` : '/v1/clients';
 		const data = { name, type, redirect_uri, scope };
-		return this.post(uri, data, auth);
+		return this.post(uri, data, auth, context);
 	}
 
 	/**
@@ -944,10 +952,10 @@ class Particle {
 	 * @param  {String} $0.auth               Access Token
 	 * @return {Promise}
 	 */
-	updateOAuthClient({ clientId, name, scope, product, auth }) {
+	updateOAuthClient({ clientId, name, scope, product, auth, context }) {
 		const uri = product ? `/v1/products/${product}/clients/${clientId}` : `/v1/clients/${clientId}`;
 		const data = { name, scope };
-		return this.put(uri, data, auth);
+		return this.put(uri, data, auth, context);
 	}
 
 	/**
@@ -957,9 +965,9 @@ class Particle {
 	 * @param  {String} $0.auth               Access Token
 	 * @return {Promise}
 	 */
-	removeOAuthClient({ clientId, product, auth }) {
+	removeOAuthClient({ clientId, product, auth, context }) {
 		const uri = product ? `/v1/products/${product}/clients/${clientId}` : `/v1/clients/${clientId}`;
-		return this.delete(uri, null, auth);
+		return this.delete(uri, undefined, auth, context);
 	}
 
 	/**
@@ -967,8 +975,8 @@ class Particle {
 	 * @param  {String} $0.auth Access Token
 	 * @return {Promise}
 	 */
-	listProducts({ auth }) {
-		return this.get('/v1/products', auth);
+	listProducts({ auth, context }) {
+		return this.get('/v1/products', auth, undefined, context);
 	}
 
 	/**
@@ -977,8 +985,8 @@ class Particle {
 	 * @param  {String} $0.auth     Access token
 	 * @return {Promise}
 	 */
-	getProduct({ product, auth }) {
-		return this.get(`/v1/products/${product}`, auth);
+	getProduct({ product, auth, context }) {
+		return this.get(`/v1/products/${product}`, auth, undefined, context);
 	}
 
 	/**
@@ -987,8 +995,8 @@ class Particle {
 	 * @param  {String} $0.auth Access Token
 	 * @return {Promise}
 	 */
-	listProductFirmware({ product, auth }) {
-		return this.get(`/v1/products/${product}/firmware`, auth);
+	listProductFirmware({ product, auth, context }) {
+		return this.get(`/v1/products/${product}/firmware`, auth, undefined, context);
 	}
 
 	/**
@@ -1001,7 +1009,7 @@ class Particle {
 	 * @param  {String} $0.auth Access Token
 	 * @return {Promise}
 	 */
-	uploadProductFirmware({ file, version, title, description, product, auth }) {
+	uploadProductFirmware({ file, version, title, description, product, auth, context }) {
 		return this.request({
 			uri: `/v1/products/${product}/firmware`,
 			method: 'post',
@@ -1013,6 +1021,7 @@ class Particle {
 				title,
 				description
 			},
+			context,
 			auth
 		});
 	}
@@ -1024,8 +1033,8 @@ class Particle {
 	 * @param  {String} $0.auth    Access token
 	 * @return {Promise}
 	 */
-	getProductFirmware({ version, product, auth }) {
-		return this.get(`/v1/products/${product}/firmware/${version}`, auth);
+	getProductFirmware({ version, product, auth, context }) {
+		return this.get(`/v1/products/${product}/firmware/${version}`, auth, undefined, context);
 	}
 
 	/**
@@ -1037,9 +1046,9 @@ class Particle {
 	 * @param  {String} $0.auth Access Token
 	 * @return {Promise}
 	 */
-	updateProductFirmware({ version, title, description, product, auth }) {
+	updateProductFirmware({ version, title, description, product, auth, context }) {
 		const uri = `/v1/products/${product}/firmware/${version}`;
-		return this.put(uri, { title, description }, auth);
+		return this.put(uri, { title, description }, auth, context);
 	}
 
 	/**
@@ -1049,7 +1058,7 @@ class Particle {
 	 * @param  {String} $0.auth    Access Token
 	 * @return {Request}
 	 */
-	downloadProductFirmware({ version, product, auth }) {
+	downloadProductFirmware({ version, product, auth, context }) {
 		const uri = `/v1/products/${product}/firmware/${version}/binary`;
 		const req = request('get', uri);
 		req.use(this.prefix);
@@ -1067,9 +1076,9 @@ class Particle {
 	 * @param  {String} $0.auth Access Token
 	 * @return {Promise}
 	 */
-	releaseProductFirmware({ version, product, auth }) {
+	releaseProductFirmware({ version, product, auth, context }) {
 		const uri = `/v1/products/${product}/firmware/release`;
-		return this.put(uri, { version }, auth);
+		return this.put(uri, { version }, auth, context);
 	}
 
 	/**
@@ -1078,8 +1087,8 @@ class Particle {
 	 * @param  {String} $0.auth Access Token
 	 * @return {Promise}
 	 */
-	listTeamMembers({ product, auth }) {
-		return this.get(`/v1/products/${product}/team`, auth);
+	listTeamMembers({ product, auth, context }) {
+		return this.get(`/v1/products/${product}/team`, auth, undefined, context);
 	}
 
 	/**
@@ -1089,8 +1098,8 @@ class Particle {
 	 * @param  {String} $0.auth Access Token
 	 * @return {Promise}
 	 */
-	inviteTeamMember({ username, product, auth }) {
-		return this.post(`/v1/products/${product}/team`, { username }, auth);
+	inviteTeamMember({ username, product, auth, context }) {
+		return this.post(`/v1/products/${product}/team`, { username }, auth, context);
 	}
 
 	/**
@@ -1100,8 +1109,8 @@ class Particle {
 	 * @param  {String} $0.auth Access Token
 	 * @return {Promise}
 	 */
-	removeTeamMember({ username, product, auth }) {
-		return this.delete(`/v1/products/${product}/team/${username}`, null, auth);
+	removeTeamMember({ username, product, auth, context }) {
+		return this.delete(`/v1/products/${product}/team/${username}`, undefined, auth, context);
 	}
 
 
