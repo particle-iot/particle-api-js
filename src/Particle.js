@@ -23,8 +23,45 @@ class Particle {
 	 * @param  {Object} options Options to be used for all requests (see [Defaults](../src/Defaults.js))
 	 */
 	constructor(options = {}) {
+		// todo - this seems a bit dangerous - would be better to put all options/context in a contained object
 		Object.assign(this, Defaults, options);
+		this.context = {};
 		this.agent = new Agent(this.baseUrl);
+	}
+
+	_isValidContext(name, context) {
+		return (name==='tool' || name==='project') && context!==undefined;
+	}
+
+	setContext(name, context) {
+		if (context!==undefined) {
+			if (this._isValidContext(name, context)) {
+				this.context[name] = context;
+			} else {
+				throw Error('uknown context name or undefined context: '+name);
+			}
+		}
+	}
+
+	/**
+	 * Builds the final context from the context parameter and the context items in the api.
+	 * @return {Object} The context to use.
+	 * @private
+	 */
+	_buildContext(context) {
+		return Object.assign(this.context, context);
+	}
+
+	/**
+	 * Retrieves the information that is used to identify the current login for tracking.
+	 * @param {string} auth      The access token
+	 * @param {Boolean} full      When true, retrieve all information for registering a user with the tracking API. When false,
+	 *  retrieve only the unique tracking ID for the current login.
+	 * @param {object} context   Context information.
+	 * @returns {Promise<object>} Resolve the tracking identify of the current login
+	 */
+	trackingIdentity({auth, full=false, context}={}) {
+		return this.get('/v1/user/identify', auth, (full ? undefined : {tracking:1}), context);
 	}
 
 	/**
@@ -42,7 +79,7 @@ class Particle {
 			client_id: this.clientId,
 			client_secret: this.clientSecret,
 			expires_in: tokenDuration
-		}, method: 'post' });
+		}, method: 'post'});
 	}
 
 	/**
@@ -52,12 +89,12 @@ class Particle {
 	 * @param  {String} $0.accountInfo Object that contains account information fields such as user real name, company name, business account flag etc
 	 * @return {Promise}
 	 */
-	createUser({ username, password, accountInfo }) {
+	createUser({ username, password, accountInfo}) {
 		return this.post('/v1/users', {
 			username,
 			password,
 			account_info : accountInfo
-		});
+		}, undefined);
 	}
 
 	/**
@@ -68,7 +105,7 @@ class Particle {
 	verifyUser({ token }) {
 		return this.post('/v1/user/verify', {
 			token
-		});
+		}, undefined);
 	}
 
 	/**
@@ -77,7 +114,7 @@ class Particle {
 	 * @return {Promise}
 	 */
 	resetPassword({ username }) {
-		return this.post('/v1/user/password-reset', { username });
+		return this.post('/v1/user/password-reset', { username }, undefined);
 	}
 
 	/**
@@ -99,8 +136,8 @@ class Particle {
 	 * @param  {String} $0.password Password
 	 * @return {Promise}
 	 */
-	listAccessTokens({ username, password }) {
-		return this.get('/v1/access_tokens', { username, password });
+	listAccessTokens({ username, password}) {
+		return this.get('/v1/access_tokens', { username, password }, undefined);
 	}
 
 	/**
@@ -139,7 +176,7 @@ class Particle {
 	 * @param  {String} $0.auth     Access Token
 	 * @return {Promise}
 	 */
-	claimDevice({ deviceId, requestTransfer, auth }) {
+	claimDevice({ deviceId, requestTransfer, auth}) {
 		return this.post('/v1/devices', {
 			id: deviceId,
 			request_transfer: !!requestTransfer
@@ -290,7 +327,7 @@ class Particle {
 	}
 
 	validatePromoCode({ auth, promoCode }) {
-		return this.get(`/v1/promo_code/${promoCode}`, auth);
+		return this.get(`/v1/promo_code/${promoCode}`, auth, undefined);
 	}
 
 	changeProduct({ deviceId, productId, auth }) {
@@ -335,7 +372,7 @@ class Particle {
 	 * @param  {String} $0.auth          String
 	 * @return {Promise}
 	 */
-	flashDevice({ deviceId, files, targetVersion, auth }) {
+	flashDevice({ deviceId, files, targetVersion, auth}) {
 		const form = {};
 		if (targetVersion) {
 			form.build_target_version = targetVersion;
@@ -379,7 +416,7 @@ class Particle {
 			form.latest = 'true';
 		}
 		return this.request({ uri: '/v1/binaries',
-			files, auth, form, method: 'post' });
+			files, auth, form, method: 'post'});
 	}
 
 	/**
@@ -668,7 +705,7 @@ class Particle {
 	}
 
 	checkSIM({ iccid, auth }) {
-		return this.head(`/v1/sims/${iccid}`, auth);
+		return this.head(`/v1/sims/${iccid}`, auth, undefined);
 	}
 
 	/**
@@ -751,7 +788,7 @@ class Particle {
 	 * @param  {Boolean} [$0.onlyFeatured=false] Only list featured build targets
 	 * @return {Promise}
 	 */
-	listBuildTargets({ auth, onlyFeatured = undefined }) {
+	listBuildTargets({ auth, onlyFeatured}) {
 		let query;
 		if (onlyFeatured !== undefined) {
 			query = { featured: !!onlyFeatured };
@@ -780,7 +817,7 @@ class Particle {
 	 * @param  {String} $0.category Category to filter
 	 * @return {Promise}
 	 */
-	listLibraries({ auth, page, limit, filter, sort, architectures, category, scope, excludeScopes }) {
+	listLibraries({ auth, page, limit, filter, sort, architectures, category, scope, excludeScopes}) {
 		return this.get('/v1/libraries', auth, {
 			page,
 			filter,
@@ -838,7 +875,7 @@ class Particle {
 			files, auth, method: 'post' });
 	}
 
-	publishLibrary({ auth, name }) {
+	publishLibrary({ auth, name}) {
 		return this.request({ uri: `/v1/libraries/${name}`, auth, method: 'patch', data: { visibility:'public' } });
 	}
 
@@ -1079,27 +1116,33 @@ class Particle {
 		return product ? `/v1/products/${product}/devices/${deviceId}` : `/v1/devices/${deviceId}`;
 	}
 
-	get(uri, auth, query = undefined) {
-		return this.agent.get(uri, auth, query);
+	get(uri, auth, query, context) {
+		context = this._buildContext(context);
+		return this.agent.get(uri, auth, query, context);
 	}
 
-	head(uri, auth) {
-		return this.agent.head(uri, auth);
+	head(uri, auth, query, context) {
+		context = this._buildContext(context);
+		return this.agent.head(uri, auth, query, context);
 	}
 
-	post(uri, data, auth) {
-		return this.agent.post(uri, data, auth);
+	post(uri, data, auth, context) {
+		context = this._buildContext(context);
+		return this.agent.post(uri, data, auth, context);
 	}
 
-	put(uri, data, auth) {
-		return this.agent.put(uri, data, auth);
+	put(uri, data, auth, context) {
+		context = this._buildContext(context);
+		return this.agent.put(uri, data, auth, context);
 	}
 
-	delete(uri, data, auth) {
-		return this.agent.delete(uri, data, auth);
+	delete(uri, data, auth, context) {
+		context = this._buildContext(context);
+		return this.agent.delete(uri, data, auth, context);
 	}
 
 	request(args) {
+		args.context = this._buildContext(args.context);
 		return this.agent.request(args);
 	}
 

@@ -6,6 +6,10 @@ export default class Client {
 		Object.assign(this, { auth, api });
 	}
 
+	ready() {
+		return Boolean(this.auth);
+	}
+
 	/**
 	 * Get firmware library objects
 	 * @param  {Object} query The query parameters for libraries. See Particle.listLibraries
@@ -154,6 +158,13 @@ export default class Client {
 				return targets;
 			}, error => {
 
+			});
+	}
+
+	trackingIdentity({ full=false, context }={}) {
+		return this.api.trackingIdentity({ full, context, auth: this.auth })
+			.then(payload => {
+				return payload.body;
 			});
 	}
 }
