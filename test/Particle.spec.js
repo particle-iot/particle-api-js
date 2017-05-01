@@ -15,6 +15,7 @@ const props = {
 	url: 'http://www.zombo.com/',
 	password: 'test-password',
 	data: { sentient: true },
+	isPrivate: true,
 	username: 'test-user',
 	argument: 'noThanks',
 	shouldUpdate: 'duh',
@@ -44,14 +45,48 @@ const props = {
 	json: {
 		j: 'd'
 	},
+	body: '{{data}}',
 	responseTopic: 'topic',
 	responseTemplate: 'template',
 	webhookAuth: {
 		username: 'u',
 		password: 'p'
 	},
-	rejectUnauthorized: true
+	rejectUnauthorized: true,
+	noDefaults: true,
+	hookId: 'hook-1234567890',
+	integrationId: 'integration-1234567890',
+	clientId: 'client-123',
+	type: 'web',
+	redirect_uri: 'https://example.com',
+	scope: '',
+	deviceName: 'test-device',
+	page: 5,
+	perPage: 50,
+	sortAttr: 'deviceId',
+	sortDir: 'asc',
+	deny: false,
+	deviceIds: ['abc', 'xyz'],
+	development: false,
+	notes: 'A fancy Photon',
+	desiredFirmwareVersion: 42,
+	flash: false,
+	version: 42,
+	title: 'prod',
+	description: 'ready for production',
+	file: new Buffer('ELF...'),
+	countryCode: 'RO',
+	iccid: '1234567890',
+	iccids: ['1234567890', '9876543210'],
+	deviceName: 'mydev',
+	settings: {
+		url: 'http://example.com',
+	},
 };
+
+const product = 'ze-product-v1';
+
+const propsWithProduct = Object.assign({ product }, props);
 
 class Common {
 
@@ -132,16 +167,59 @@ describe('ParticleAPI', () => {
 			});
 		});
 		describe('.listDevices', () => {
-			it('generates request', () => {
-				return api.listDevices({ auth: 'X' }).then((results) => {
-					results.uri.should.be.instanceOf(String);
-					results.auth.should.equal('X');
+			describe('user scope', () => {
+				it('generates request', () => {
+					return api.listDevices(props).then((results) => {
+						results.should.match({
+							method: 'get',
+							uri: '/v1/devices',
+							auth: props.auth,
+							query: undefined
+						});
+					});
+				});
+			});
+			describe('product scope', () => {
+				it('generates request', () => {
+					return api.listDevices(propsWithProduct).then((results) => {
+						results.should.match({
+							method: 'get',
+							uri: `/v1/products/${product}/devices`,
+							auth: props.auth,
+							query: {
+								deviceName: props.deviceName,
+								page: props.page,
+								perPage: props.perPage,
+								sortAttr: props.sortAttr,
+								sortDir: props.sortDir
+							}
+						});
+					});
 				});
 			});
 		});
 		describe('.getDevice', () => {
-			it('generates request', () => {
-				return api.getDevice(props).then(Common.expectDeviceUrlAndToken);
+			describe('user scope', () => {
+				it('generates request', () => {
+					return api.getDevice(props).then((results) => {
+						results.should.match({
+							method: 'get',
+							uri: `/v1/devices/${props.deviceId}`,
+							auth: props.auth
+						});
+					});
+				});
+			});
+			describe('product scope', () => {
+				it('generates request', () => {
+					return api.getDevice(propsWithProduct).then((results) => {
+						results.should.match({
+							method: 'get',
+							uri: `/v1/products/${product}/devices/${props.deviceId}`,
+							auth: props.auth
+						});
+					});
+				});
 			});
 		});
 		describe('.claimDevice', () => {
@@ -153,26 +231,254 @@ describe('ParticleAPI', () => {
 				});
 			});
 		});
+		describe('.addDeviceToProduct', () => {
+			it('sends request', () => {
+				return api.addDeviceToProduct(propsWithProduct).then((results) => {
+					results.should.match({
+						method: 'post',
+						uri: `/v1/products/${product}/devices`,
+						auth: props.auth,
+						data: {
+							id: props.deviceId
+						}
+					});
+				});
+			});
+		});
 		describe('.removeDevice', () => {
+			describe('user scope', () => {
+				it('generates request', () => {
+					return api.removeDevice(props).then((results) => {
+						results.should.match({
+							method: 'delete',
+							uri: `/v1/devices/${props.deviceId}`,
+							auth: props.auth
+						});
+					});
+				});
+			});
+			describe('product scope', () => {
+				it('generates request', () => {
+					return api.removeDevice(propsWithProduct).then((results) => {
+						results.should.match({
+							method: 'delete',
+							uri: `/v1/products/${product}/devices/${props.deviceId}`,
+							auth: props.auth,
+							data: {
+								deny: props.deny
+							}
+						});
+					});
+				});
+			});
+		});
+		describe('.removeDeviceOwner', () => {
 			it('generates request', () => {
-				return api.removeDevice(props).then(Common.expectDeviceUrlAndToken);
+				return api.removeDeviceOwner(propsWithProduct).then((results) => {
+					results.should.match({
+						method: 'delete',
+						uri: `/v1/products/${product}/devices/${props.deviceId}/owner`,
+						auth: props.auth
+					});
+				});
 			});
 		});
 		describe('.renameDevice', () => {
-			it('generates request', () => {
-				return api.renameDevice(props).then(Common.expectDeviceUrlAndToken);
+			describe('user scope', () => {
+				it('generates request', () => {
+					return api.renameDevice(props).then((results) => {
+						results.should.match({
+							method: 'put',
+							uri: `/v1/devices/${props.deviceId}`,
+							auth: props.auth,
+							data: {
+								name: props.name
+							}
+						});
+					});
+				});
 			});
-			it('sends proper data', () => {
-				return api.renameDevice(props).then(({ data }) => {
-					data.should.be.instanceOf(Object);
-					data.name.should.equal(props.name);
+			describe('product scope', () => {
+				it('generates request', () => {
+					return api.renameDevice(propsWithProduct).then((results) => {
+						results.should.match({
+							method: 'put',
+							uri: `/v1/products/${product}/devices/${props.deviceId}`,
+							auth: props.auth,
+							data: {
+								name: props.name
+							}
+						});
+					});
+				});
+			});
+		});
+		describe('.setDeviceNotes', () => {
+			describe('user scope', () => {
+				it('generates request', () => {
+					return api.setDeviceNotes(props).then((results) => {
+						results.should.match({
+							method: 'put',
+							uri: `/v1/devices/${props.deviceId}`,
+							auth: props.auth,
+							data: {
+								notes: props.notes
+							}
+						});
+					});
+				});
+			});
+			describe('product scope', () => {
+				it('generates request', () => {
+					return api.setDeviceNotes(propsWithProduct).then((results) => {
+						results.should.match({
+							method: 'put',
+							uri: `/v1/products/${product}/devices/${props.deviceId}`,
+							auth: props.auth,
+							data: {
+								notes: props.notes
+							}
+						});
+					});
+				});
+			});
+		});
+		describe('.markAsDevelopmentDevice', () => {
+			describe('without development parameter', () => {
+				it('generates request', () => {
+					const params = Object.assign({}, propsWithProduct, { development: undefined });
+					return api.markAsDevelopmentDevice(params).then((results) => {
+						results.should.match({
+							method: 'put',
+							uri: `/v1/products/${product}/devices/${props.deviceId}`,
+							auth: props.auth,
+							data: {
+								development: true
+							}
+						});
+					});
+				});
+			});
+			describe('with development parameter', () => {
+				it('generates request', () => {
+					return api.markAsDevelopmentDevice(propsWithProduct).then((results) => {
+						results.should.match({
+							method: 'put',
+							uri: `/v1/products/${product}/devices/${props.deviceId}`,
+							auth: props.auth,
+							data: {
+								development: false
+							}
+						});
+					});
+				});
+			});
+		});
+		describe('.lockDeviceProductFirmware', () => {
+			it('generates request', () => {
+				return api.lockDeviceProductFirmware(propsWithProduct).then((results) => {
+					results.should.match({
+						method: 'put',
+						uri: `/v1/products/${product}/devices/${props.deviceId}`,
+						auth: props.auth,
+						data: {
+							desired_firmware_version: props.desiredFirmwareVersion,
+							flash: props.flash
+						}
+					});
+				});
+			});
+		});
+		describe('.unlockDeviceProductFirmware', () => {
+			it('generates request', () => {
+				return api.unlockDeviceProductFirmware(propsWithProduct).then((results) => {
+					results.should.match({
+						method: 'put',
+						uri: `/v1/products/${product}/devices/${props.deviceId}`,
+						auth: props.auth,
+						data: {
+							desired_firmware_version: null
+						}
+					});
+				});
+			});
+		});
+		describe('.updateDevice', () => {
+			describe('user scope', () => {
+				it('generates request', () => {
+					return api.updateDevice(props).then((results) => {
+						results.should.match({
+							method: 'put',
+							uri: `/v1/devices/${props.deviceId}`,
+							auth: props.auth,
+							data: {
+								name: props.name,
+								notes: props.notes
+							}
+						});
+					});
+				});
+			});
+			describe('product scope', () => {
+				it('generates request', () => {
+					return api.updateDevice(propsWithProduct).then((results) => {
+						results.should.match({
+							method: 'put',
+							uri: `/v1/products/${product}/devices/${props.deviceId}`,
+							auth: props.auth,
+							data: {
+								name: props.name,
+								notes: props.notes,
+								development: props.development,
+								desired_firmware_version: props.desiredFirmwareVersion,
+								flash: props.flash
+							}
+						});
+					});
+				});
+			});
+		});
+		describe('.provisionDevice', () => {
+			it('generates request', () => {
+				return api.provisionDevice(props).then((results) => {
+					results.should.match({
+						method: 'post',
+						uri: '/v1/devices',
+						auth: props.auth,
+						data: {
+							productId: props.productId
+						}
+					});
 				});
 			});
 		});
 		describe('.getClaimCode', () => {
-			it('generates request', () => {
-				return api.getClaimCode({ auth: 'X' }).then((results) => {
-					results.auth.should.equal('X');
+			describe('user scope', () => {
+				it('generates request', () => {
+					return api.getClaimCode(props).then((results) => {
+						results.should.match({
+							method: 'post',
+							uri: '/v1/device_claims',
+							auth: props.auth,
+							data: {
+								iccid: props.iccid
+							}
+						});
+					});
+				});
+			});
+			describe('product scope', () => {
+				it('generates request', () => {
+					return api.getClaimCode(propsWithProduct).then((results) => {
+						results.should.match({
+							method: 'post',
+							uri: `/v1/products/${product}/device_claims`,
+							auth: props.auth,
+							data: {
+								iccid: props.iccid
+							}
+						});
+					});
 				});
 			});
 		});
@@ -189,12 +495,26 @@ describe('ParticleAPI', () => {
 			});
 		});
 		describe('.getVariable', () => {
-			it('generates request', () => {
-				return api.getVariable(props).then(Common.expectDeviceUrlAndToken);
+			describe('user scope', () => {
+				it('generates request', () => {
+					return api.getVariable(props).then((results) => {
+						results.should.match({
+							method: 'get',
+							uri: `/v1/devices/${props.deviceId}/${props.name}`,
+							auth: props.auth
+						});
+					});
+				});
 			});
-			it('sends proper data', () => {
-				return api.getVariable(props).then(({ uri }) => {
-					uri.should.containEql(props.name);
+			describe('product scope', () => {
+				it('generates request', () => {
+					return api.getVariable(propsWithProduct).then((results) => {
+						results.should.match({
+							method: 'get',
+							uri: `/v1/products/${product}/devices/${props.deviceId}/${props.name}`,
+							auth: props.auth
+						});
+					});
 				});
 			});
 		});
@@ -272,13 +592,32 @@ describe('ParticleAPI', () => {
 			});
 		});
 		describe('.callFunction', () => {
-			it('generates request', () => {
-				return api.callFunction(props).then(Common.expectDeviceUrlAndToken);
+			describe('user scope', () => {
+				it('generates request', () => {
+					return api.callFunction(props).then((results) => {
+						results.should.match({
+							method: 'post',
+							uri: `/v1/devices/${props.deviceId}/${props.name}`,
+							auth: props.auth,
+							data: {
+								args: props.argument,
+							}
+						});
+					});
+				});
 			});
-			it('sends proper data', () => {
-				return api.callFunction(props).then(({ data }) => {
-					data.should.be.instanceOf(Object);
-					data.args.should.equal(props.argument);
+			describe('product scope', () => {
+				it('generates request', () => {
+					return api.callFunction(propsWithProduct).then((results) => {
+						results.should.match({
+							method: 'post',
+							uri: `/v1/products/${product}/devices/${props.deviceId}/${props.name}`,
+							auth: props.auth,
+							data: {
+								args: props.argument,
+							}
+						});
+					});
 				});
 			});
 		});
@@ -372,50 +711,280 @@ describe('ParticleAPI', () => {
 
 		});
 		describe('.publishEvent', () => {
-			it('sends proper data', () => {
-				return api.publishEvent(props).then(({ data }) => {
-					data.should.be.instanceOf(Object);
-					data.name.should.equal(props.name);
-					data.data.should.equal(props.data);
+			describe('user scope', () => {
+				it('generates request', () => {
+					return api.publishEvent(props).then((results) => {
+						results.should.match({
+							method: 'post',
+							uri: '/v1/devices/events',
+							auth: props.auth,
+							data: {
+								name: props.name,
+								data: props.data,
+								private: props.isPrivate
+							}
+						});
+					});
+				});
+			});
+			describe('product scope', () => {
+				it('generates request', () => {
+					return api.publishEvent(propsWithProduct).then((results) => {
+						results.should.match({
+							method: 'post',
+							uri: `/v1/products/${product}/events`,
+							auth: props.auth,
+							data: {
+								name: props.name,
+								data: props.data,
+								private: props.isPrivate
+							}
+						});
+					});
 				});
 			});
 		});
 		describe('.createWebhook', () => {
-			it('creates for a single device', () => {
-				return api.createWebhook(props).then(({ data }) => {
-					data.should.be.instanceOf(Object);
-					data.event.should.equal(props.name);
-					data.url.should.equal(props.url);
-					data.deviceid.should.equal(props.deviceId);
-					data.responseTemplate.should.equal(props.responseTemplate);
-					data.responseTopic.should.equal(props.responseTopic);
-					data.query.should.equal(props.query);
-					data.form.should.equal(props.form);
-					data.json.should.equal(props.json);
-					data.headers.should.equal(props.headers);
-					data.auth.should.equal(props.webhookAuth);
-					data.requestType.should.equal(props.requestType);
-					data.rejectUnauthorized.should.equal(props.rejectUnauthorized);
+			describe('user scope', () => {
+				it('creates for a single device', () => {
+					return api.createWebhook(props).then((results) => {
+						results.should.match({
+							method: 'post',
+							uri: '/v1/webhooks',
+							auth: props.auth,
+							data: {
+								event: props.name,
+								url: props.url,
+								deviceid: props.deviceId,
+								responseTemplate: props.responseTemplate,
+								responseTopic: props.responseTopic,
+								query: props.query,
+								form: props.form,
+								json: props.json,
+								headers: props.headers,
+								auth: props.webhookAuth,
+								requestType: props.requestType,
+								rejectUnauthorized: props.rejectUnauthorized,
+							}
+						});
+					});
+				});
+				it('creates for user\'s devices', () => {
+					const params = Object.assign({}, props, { deviceId: 'mine' });
+					return api.createWebhook(params).then((results) => {
+						results.should.match({
+							method: 'post',
+							uri: '/v1/webhooks',
+							auth: props.auth,
+							data: {
+								event: props.name,
+								url: props.url,
+								deviceid: undefined,
+								responseTemplate: props.responseTemplate,
+								responseTopic: props.responseTopic,
+								query: props.query,
+								form: props.form,
+								json: props.json,
+								body: props.body,
+								headers: props.headers,
+								auth: props.webhookAuth,
+								requestType: props.requestType,
+								rejectUnauthorized: props.rejectUnauthorized,
+								noDefaults: props.noDefaults
+							}
+						});
+					});
 				});
 			});
-			it('creates for user\'s devices', () => {
-				return api.createWebhook({ deviceId: 'mine' }).then(({ data }) => {
-					data.should.be.instanceOf(Object);
-					data.mydevices.should.equal(true);
+			describe('product scope', () => {
+				it('generates request', () => {
+					return api.createWebhook(propsWithProduct).then((results) => {
+						results.should.match({
+							method: 'post',
+							uri: `/v1/products/${product}/webhooks`,
+							auth: props.auth,
+							data: {
+								event: props.name,
+								url: props.url,
+								deviceid: props.deviceId,
+								responseTemplate: props.responseTemplate,
+								responseTopic: props.responseTopic,
+								query: props.query,
+								form: props.form,
+								json: props.json,
+								body: props.body,
+								headers: props.headers,
+								auth: props.webhookAuth,
+								requestType: props.requestType,
+								rejectUnauthorized: props.rejectUnauthorized,
+								noDefaults: props.noDefaults
+							}
+						});
+					});
 				});
 			});
 		});
-		describe('.deleteWebhook', () => {
-			it('sends proper data', () => {
-				return api.deleteWebhook({ hookId: 'captain' }).then(({ uri }) => {
-					uri.should.endWith('webhooks/captain');
+		describe('.removeWebhook', () => {
+			describe('user scope', () => {
+				it('generates request', () => {
+					return api.removeWebhook(props).then((results) => {
+						results.should.match({
+							method: 'delete',
+							uri: `/v1/webhooks/${props.hookId}`,
+							auth: props.auth,
+						});
+					});
+				});
+			});
+			describe('product scope', () => {
+				it('generates request', () => {
+					return api.removeWebhook(propsWithProduct).then((results) => {
+						results.should.match({
+							method: 'delete',
+							uri: `/v1/products/${product}/webhooks/${props.hookId}`,
+							auth: props.auth,
+						});
+					});
 				});
 			});
 		});
 		describe('.listWebhooks', () => {
-			it('generates request', () => {
-				return api.listWebhooks(props).then(({ auth }) => {
-					auth.should.equal(props.auth);
+			describe('user scope', () => {
+				it('generates request', () => {
+					return api.listWebhooks(props).then((results) => {
+						results.should.match({
+							method: 'get',
+							uri: '/v1/webhooks',
+							auth: props.auth,
+						});
+					});
+				});
+			});
+			describe('product scope', () => {
+				it('generates request', () => {
+					return api.listWebhooks(propsWithProduct).then((results) => {
+						results.should.match({
+							method: 'get',
+							uri: `/v1/products/${product}/webhooks`,
+							auth: props.auth,
+						});
+					});
+				});
+			});
+		});
+		describe('.createIntegration', () => {
+			describe('user scope', () => {
+				it('generates request', () => {
+					return api.createIntegration(props).then((results) => {
+						results.should.match({
+							method: 'post',
+							uri: '/v1/integrations',
+							auth: props.auth,
+							data: {
+								event: props.event,
+								deviceid: props.deviceId,
+								url: props.settings.url,
+							}
+						});
+					});
+				});
+			});
+			describe('product scope', () => {
+				it('generates request', () => {
+					return api.createIntegration(propsWithProduct).then((results) => {
+						results.should.match({
+							method: 'post',
+							uri: `/v1/products/${product}/integrations`,
+							auth: props.auth,
+							data: {
+								event: props.event,
+								deviceid: props.deviceId,
+								url: props.settings.url,
+							}
+						});
+					});
+				});
+			});
+		});
+		describe('.editIntegration', () => {
+			describe('user scope', () => {
+				it('generates request', () => {
+					return api.editIntegration(props).then((results) => {
+						results.should.match({
+							method: 'put',
+							uri: `/v1/integrations/${props.integrationId}`,
+							auth: props.auth,
+							data: {
+								event: props.event,
+								deviceid: props.deviceId,
+								url: props.settings.url,
+							}
+						});
+					});
+				});
+			});
+			describe('product scope', () => {
+				it('generates request', () => {
+					return api.editIntegration(propsWithProduct).then((results) => {
+						results.should.match({
+							method: 'put',
+							uri: `/v1/products/${product}/integrations/${props.integrationId}`,
+							auth: props.auth,
+							data: {
+								event: props.event,
+								deviceid: props.deviceId,
+								url: props.settings.url,
+							}
+						});
+					});
+				});
+			});
+		});
+		describe('.removeIntegration', () => {
+			describe('user scope', () => {
+				it('generates request', () => {
+					return api.removeIntegration(props).then((results) => {
+						results.should.match({
+							method: 'delete',
+							uri: `/v1/integrations/${props.integrationId}`,
+							auth: props.auth,
+						});
+					});
+				});
+			});
+			describe('product scope', () => {
+				it('generates request', () => {
+					return api.removeIntegration(propsWithProduct).then((results) => {
+						results.should.match({
+							method: 'delete',
+							uri: `/v1/products/${product}/integrations/${props.integrationId}`,
+							auth: props.auth,
+						});
+					});
+				});
+			});
+		});
+		describe('.listIntegrations', () => {
+			describe('user scope', () => {
+				it('generates request', () => {
+					return api.listIntegrations(props).then((results) => {
+						results.should.match({
+							method: 'get',
+							uri: '/v1/integrations',
+							auth: props.auth,
+						});
+					});
+				});
+			});
+			describe('product scope', () => {
+				it('generates request', () => {
+					return api.listIntegrations(propsWithProduct).then((results) => {
+						results.should.match({
+							method: 'get',
+							uri: `/v1/products/${product}/integrations`,
+							auth: props.auth,
+						});
+					});
 				});
 			});
 		});
@@ -458,11 +1027,236 @@ describe('ParticleAPI', () => {
 				});
 			});
 		});
+		describe('.listSIMs', () => {
+			describe('user scope', () => {
+				it('generates request', () => {
+					return api.listSIMs(props).then((results) => {
+						results.should.match({
+							method: 'get',
+							uri: '/v1/sims',
+							auth: props.auth
+						});
+					});
+				});
+			});
+			describe('product scope', () => {
+				it('generates request', () => {
+					return api.listSIMs(propsWithProduct).then((results) => {
+						results.should.match({
+							method: 'get',
+							uri: `/v1/products/${product}/sims`,
+							auth: props.auth,
+							query: {
+								iccid: props.iccid,
+								deviceId: props.deviceId,
+								deviceName: props.deviceName,
+								page: props.page,
+								perPage: props.perPage
+							}
+						});
+					});
+				});
+			});
+		});
 		describe('.activateSIM', () => {
+			describe('user scope', () => {
+				it('generates request', () => {
+					return api.activateSIM(props).then((results) => {
+						results.should.match({
+							method: 'put',
+							uri: `/v1/sims/${props.iccid}`,
+							auth: props.auth,
+							data: {
+								countryCode: props.countryCode,
+								action: 'activate'
+							}
+						});
+					});
+				});
+			});
+			describe('product scope', () => {
+				describe('single SIM', () => {
+					it('generates request', () => {
+						const propsSingleSIM = Object.assign({}, propsWithProduct);
+						delete propsSingleSIM.iccids;
+						return api.activateSIM(propsSingleSIM).then((results) => {
+							results.should.match({
+								method: 'post',
+								uri: `/v1/products/${product}/sims`,
+								auth: props.auth,
+								data: {
+									sims: [props.iccid],
+									countryCode: props.countryCode,
+								}
+							});
+						});
+					});
+				});
+				describe('multiple SIMs', () => {
+					it('generates request', () => {
+						return api.activateSIM(propsWithProduct).then((results) => {
+							results.should.match({
+								method: 'post',
+								uri: `/v1/products/${product}/sims`,
+								auth: props.auth,
+								data: {
+									sims: props.iccids,
+									countryCode: props.countryCode,
+								}
+							});
+						});
+					});
+				});
+			});
+		});
+		describe('.deactivateSIM', () => {
+			describe('user scope', () => {
+				it('generates request', () => {
+					return api.deactivateSIM(props).then((results) => {
+						results.should.match({
+							method: 'put',
+							uri: `/v1/sims/${props.iccid}`,
+							auth: props.auth,
+							data: {
+								action: 'deactivate'
+							}
+						});
+					});
+				});
+			});
+			describe('product scope', () => {
+				it('generates request', () => {
+					return api.deactivateSIM(propsWithProduct).then((results) => {
+						results.should.match({
+							method: 'put',
+							uri: `/v1/products/${product}/sims/${props.iccid}`,
+							auth: props.auth,
+							data: {
+								action: 'deactivate'
+							}
+						});
+					});
+				});
+			});
+		});
+		describe('.reactivateSIM', () => {
+			describe('user scope', () => {
+				it('generates request', () => {
+					return api.reactivateSIM(props).then((results) => {
+						results.should.match({
+							method: 'put',
+							uri: `/v1/sims/${props.iccid}`,
+							auth: props.auth,
+							data: {
+								mb_limit: props.mbLimit,
+								action: 'reactivate'
+							}
+						});
+					});
+				});
+			});
+			describe('product scope', () => {
+				it('generates request', () => {
+					return api.reactivateSIM(propsWithProduct).then((results) => {
+						results.should.match({
+							method: 'put',
+							uri: `/v1/products/${product}/sims/${props.iccid}`,
+							auth: props.auth,
+							data: {
+								mb_limit: props.mbLimit,
+								action: 'reactivate'
+							}
+						});
+					});
+				});
+			});
+		});
+		describe('.removeSIM', () => {
+			describe('user scope', () => {
+				it('generates request', () => {
+					return api.removeSIM(props).then((results) => {
+						results.should.match({
+							method: 'delete',
+							uri: `/v1/sims/${props.iccid}`,
+							auth: props.auth
+						});
+					});
+				});
+			});
+			describe('product scope', () => {
+				it('generates request', () => {
+					return api.removeSIM(propsWithProduct).then((results) => {
+						results.should.match({
+							method: 'delete',
+							uri: `/v1/products/${product}/sims/${props.iccid}`,
+							auth: props.auth
+						});
+					});
+				});
+			});
+		});
+		describe('.updateSIM', () => {
+			describe('user scope', () => {
+				it('generates request', () => {
+					return api.updateSIM(props).then((results) => {
+						results.should.match({
+							method: 'put',
+							uri: `/v1/sims/${props.iccid}`,
+							auth: props.auth,
+							data: {
+								mb_limit: props.mbLimit
+							}
+						});
+					});
+				});
+			});
+			describe('product scope', () => {
+				it('generates request', () => {
+					return api.updateSIM(propsWithProduct).then((results) => {
+						results.should.match({
+							method: 'put',
+							uri: `/v1/products/${product}/sims/${props.iccid}`,
+							auth: props.auth,
+							data: {
+								mb_limit: props.mbLimit
+							}
+						});
+					});
+				});
+			});
+		});
+		describe('.getSIMDataUsage', () => {
+			describe('user scope', () => {
+				it('generates request', () => {
+					return api.getSIMDataUsage(props).then((results) => {
+						results.should.match({
+							method: 'get',
+							uri: `/v1/sims/${props.iccid}/data_usage`,
+							auth: props.auth
+						});
+					});
+				});
+			});
+			describe('product scope', () => {
+				it('generates request', () => {
+					return api.getSIMDataUsage(propsWithProduct).then((results) => {
+						results.should.match({
+							method: 'get',
+							uri: `/v1/products/${product}/sims/${props.iccid}/data_usage`,
+							auth: props.auth
+						});
+					});
+				});
+			});
+		});
+		describe('.getFleetDataUsage', () => {
 			it('generates request', () => {
-				return api.activateSIM({ auth: 'X', countryCode: 'XX', promoCode: '123ABCD', iccid: '1234567890123456789' }).then((results) => {
-					results.uri.should.be.instanceOf(String);
-					results.auth.should.equal('X');
+				return api.getFleetDataUsage(propsWithProduct).then((results) => {
+					results.should.match({
+						method: 'get',
+						uri: `/v1/products/${product}/sims/data_usage`,
+						auth: props.auth
+					});
 				});
 			});
 		});
@@ -580,9 +1374,9 @@ describe('ParticleAPI', () => {
 				});
 			});
 		});
-		describe('.deleteLibrary', () => {
+		describe('.removeLibrary', () => {
 			it('generates request', () => {
-				return api.deleteLibrary({
+				return api.removeLibrary({
 					name: 'mylib',
 					auth: 'X',
 					force: 'xyz'
@@ -598,7 +1392,290 @@ describe('ParticleAPI', () => {
 				});
 			});
 		});
+
+		describe('.listOAuthClients', () => {
+			describe('user scope', () => {
+				it('generates request', () => {
+					return api.listOAuthClients(props).then((results) => {
+						results.should.match({
+							method: 'get',
+							uri: '/v1/clients',
+							auth: props.auth
+						});
+					});
+				});
+			});
+			describe('product scope', () => {
+				it('generates request', () => {
+					return api.listOAuthClients(propsWithProduct).then((results) => {
+						results.should.match({
+							method: 'get',
+							uri: `/v1/products/${product}/clients`,
+							auth: props.auth
+						});
+					});
+				});
+			});
+		});
+
+		describe('.createOAuthClient', () => {
+			describe('user scope', () => {
+				it('generates request', () => {
+					return api.createOAuthClient(props).then((results) => {
+						results.should.match({
+							method: 'post',
+							uri: '/v1/clients',
+							auth: props.auth,
+							data: {
+								name: props.name,
+								type: props.type,
+								redirect_uri: props.redirect_uri,
+								scope: props.scope
+							}
+						});
+					});
+				});
+			});
+			describe('product scope', () => {
+				it('generates request', () => {
+					return api.createOAuthClient(propsWithProduct).then((results) => {
+						results.should.match({
+							method: 'post',
+							uri: `/v1/products/${product}/clients`,
+							auth: props.auth,
+							data: {
+								name: props.name,
+								type: props.type,
+								redirect_uri: props.redirect_uri,
+								scope: props.scope
+							}
+						});
+					});
+				});
+			});
+		});
+
+		describe('.updateOAuthClient', () => {
+			describe('user scope', () => {
+				it('generates request', () => {
+					return api.updateOAuthClient(props).then((results) => {
+						results.should.match({
+							method: 'put',
+							uri: `/v1/clients/${props.clientId}`,
+							auth: 'X',
+							data: {
+								name: props.name,
+								scope: props.scope
+							}
+						});
+					});
+				});
+			});
+			describe('product scope', () => {
+				it('generates request', () => {
+					return api.updateOAuthClient(propsWithProduct).then((results) => {
+						results.should.match({
+							method: 'put',
+							uri: `/v1/products/${product}/clients/${props.clientId}`,
+							auth: 'X',
+							data: {
+								name: props.name,
+								scope: props.scope
+							}
+						});
+					});
+				});
+			});
+		});
+
+		describe('.removeOAuthClient', () => {
+			describe('user scope', () => {
+				it('generates request', () => {
+					return api.removeOAuthClient(props).then((results) => {
+						results.should.match({
+							method: 'delete',
+							uri: `/v1/clients/${props.clientId}`,
+							auth: 'X'
+						});
+					});
+				});
+			});
+			describe('product scope', () => {
+				it('generates request', () => {
+					return api.removeOAuthClient(propsWithProduct).then((results) => {
+						results.should.match({
+							method: 'delete',
+							uri: `/v1/products/${product}/clients/${props.clientId}`,
+							auth: 'X'
+						});
+					});
+				});
+			});
+		});
+
+		describe('.listProducts', () => {
+			it('generates request', () => {
+				return api.listProducts(props).then((results) => {
+					results.should.match({
+						method: 'get',
+						uri: '/v1/products',
+						auth: props.auth
+					});
+				});
+			});
+		});
+
+		describe('.getProduct', () => {
+			it('generates request', () => {
+				return api.getProduct(propsWithProduct).then((results) => {
+					results.should.match({
+						method: 'get',
+						uri: `/v1/products/${product}`,
+						auth: props.auth
+					});
+				});
+			});
+		});
+
+		describe('.listProductFirmware', () => {
+			it('generates request', () => {
+				return api.listProductFirmware(propsWithProduct).then((results) => {
+					results.should.match({
+						method: 'get',
+						uri: `/v1/products/${product}/firmware`,
+						auth: props.auth
+					});
+				});
+			});
+		});
+
+		describe('.uploadProductFirmware', () => {
+			it('generates request', () => {
+				return api.uploadProductFirmware(propsWithProduct).then((results) => {
+					results.should.match({
+						method: 'post',
+						uri: `/v1/products/${product}/firmware`,
+						auth: props.auth,
+						files: {
+							'firmware.bin': props.file,
+						},
+						form: {
+							version: props.version,
+							title: props.title,
+							description: props.description
+						}
+					});
+				});
+			});
+		});
+
+		describe('.getProductFirmware', () => {
+			it('generates request', () => {
+				return api.getProductFirmware(propsWithProduct).then((results) => {
+					results.should.match({
+						method: 'get',
+						uri: `/v1/products/${product}/firmware/${props.version}`,
+						auth: props.auth
+					});
+				});
+			});
+		});
+
+		describe('.updateProductFirmware', () => {
+			it('generates request', () => {
+				return api.updateProductFirmware(propsWithProduct).then((results) => {
+					results.should.match({
+						method: 'put',
+						uri: `/v1/products/${product}/firmware/${props.version}`,
+						auth: props.auth,
+						data: {
+							title: props.title,
+							description: props.description
+						}
+					});
+				});
+			});
+		});
+
+		describe('.releaseProductFirmware', () => {
+			it('generates request', () => {
+				return api.releaseProductFirmware(propsWithProduct).then((results) => {
+					results.should.match({
+						method: 'put',
+						uri: `/v1/products/${product}/firmware/release`,
+						auth: props.auth,
+						data: {
+							version: props.version,
+						}
+					});
+				});
+			});
+		});
+
+		describe('.listTeamMembers', () => {
+			it('generates request', () => {
+				return api.listTeamMembers(propsWithProduct).then((results) => {
+					results.should.match({
+						method: 'get',
+						uri: `/v1/products/${product}/team`,
+						auth: props.auth
+					});
+				});
+			});
+		});
+
+		describe('.inviteTeamMember', () => {
+			it('generates request', () => {
+				return api.inviteTeamMember(propsWithProduct).then((results) => {
+					results.should.match({
+						method: 'post',
+						uri: `/v1/products/${product}/team`,
+						auth: props.auth,
+						data: {
+							username: props.username
+						}
+					});
+				});
+			});
+		});
+
+		describe('.removeTeamMember', () => {
+			it('generates request', () => {
+				return api.removeTeamMember(propsWithProduct).then((results) => {
+					results.should.match({
+						method: 'delete',
+						uri: `/v1/products/${product}/team/${props.username}`,
+						auth: props.auth,
+					});
+				});
+			});
+		});
 	});
+
+	describe('backwards-compatibility function aliases', () => {
+		it('maps deleteWebhook to removeWebhook', () => {
+			api.removeWebhook.should.equal(api.deleteWebhook);
+		});
+		it('maps deleteLibrary to removeLibrary', () => {
+			api.removeLibrary.should.equal(api.deleteLibrary);
+		});
+	});
+
+	describe('.deviceUri', () => {
+		describe('user scope', () => {
+			it('gets the user device uri', () => {
+				const uri = api.deviceUri({ deviceId: 'abc' });
+				uri.should.equal('/v1/devices/abc');
+			});
+		});
+		describe('product scope', () => {
+			it('gets the product device uri', () => {
+				const uri = api.deviceUri({ deviceId: 'abc', product: 'xyz' });
+				uri.should.equal('/v1/products/xyz/devices/abc');
+			});
+		});
+	});
+
 
 	describe('.client', () => {
 		it('creates a client', (done) => {

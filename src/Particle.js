@@ -104,22 +104,33 @@ class Particle {
 	}
 
 	/**
-	 * List devices claimed to the account
-	 * @param  {String} $0.auth Access Token
+	 * List devices claimed to the account or product
+	 * @param  {String} [$0.deviceId]   (Product only) Filter results to devices with this ID (partial matching)
+	 * @param  {String} [$0.deviceName] (Product only) Filter results to devices with this name (partial matching)
+	 * @param  {String} [$0.sortAttr]   (Product only) The attribute by which to sort results. See API docs for options.
+	 * @param  {String} [$0.sortDir]    (Product only) The direction of sorting. See API docs for options.
+	 * @param  {Number} [$0.page]       (Product only) Current page of results
+	 * @param  {Number} [$0.perPage]    (Product only) Records per page
+	 * @param  {String} [$0.product]    List devices in this product ID or slug
+	 * @param  {String} $0.auth         Access Token
 	 * @return {Promise}
 	 */
-	listDevices({ auth }) {
-		return this.get('/v1/devices', auth);
+	listDevices({ deviceId, deviceName, sortAttr, sortDir, page, perPage, product, auth }) {
+		const uri = product ? `/v1/products/${product}/devices` : '/v1/devices';
+		const query = product ? { deviceId, deviceName, sortAttr, sortDir, page, perPage } : undefined;
+		return this.get(uri, auth, query);
 	}
 
 	/**
 	 * Get detailed informationa about a device
-	 * @param  {String} $0.deviceId Device ID or Name
-	 * @param  {String} $0.auth     Access token
+	 * @param  {String} $0.deviceId  Device ID or Name
+	 * @param  {String} [$0.product] Device in this product ID or slug
+	 * @param  {String} $0.auth      Access token
 	 * @return {Promise}
 	 */
-	getDevice({ deviceId, auth }) {
-		return this.get(`/v1/devices/${deviceId}`, auth);
+	getDevice({ deviceId, product, auth }) {
+		const uri = this.deviceUri({ deviceId, product });
+		return this.get(uri, auth);
 	}
 
 	/**
@@ -136,34 +147,146 @@ class Particle {
 	}
 
 	/**
-	 * Unclaim / Remove a device from your account
-	 * @param  {String} $0.deviceId Device ID or Name
+	 * Add a device to a product or move device out of quarantine.
+	 * @param  {String} $0.deviceId Device ID
+	 * @param  {String} $0.product  Add to this product ID or slug
 	 * @param  {String} $0.auth     Access Token
 	 * @return {Promise}
 	 */
-	removeDevice({ deviceId, auth }) {
-		return this.delete(`/v1/devices/${deviceId}`, null, auth);
+	addDeviceToProduct({ deviceId, product, auth }) {
+		const uri = `/v1/products/${product}/devices`;
+		return this.post(uri, {
+			id: deviceId
+		}, auth);
+	}
+
+	/**
+	 * Unclaim / Remove a device from your account or product, or deny quarantine
+	 * @param  {String} $0.deviceId Device ID or Name
+	 * @param  {Boolean} [$0.deny]  (Product only) Deny this quarantined device, instead of removing an already approved device
+	 * @param  {String} $0.product  Remove from this product ID or slug
+	 * @param  {String} $0.auth     Access Token
+	 * @return {Promise}
+	 */
+	removeDevice({ deviceId, deny, product, auth }) {
+		const uri = this.deviceUri({ deviceId, product });
+		const data = product ? { deny } : undefined;
+		return this.delete(uri, data, auth);
+	}
+
+	/**
+	 * Unclaim a product device its the owner, but keep it in the product
+	 * @param  {String} $0.deviceId Device ID or Name
+	 * @param  {String} $0.product  Remove from this product ID or slug
+	 * @param  {String} $0.auth     Access Token
+	 * @return {Promise}
+	 */
+	removeDeviceOwner({ deviceId, deny, product, auth }) {
+		const uri = `/v1/products/${product}/devices/${deviceId}/owner`;
+		return this.delete(uri, undefined, auth);
 	}
 
 	/**
 	 * Rename a device
 	 * @param  {String} $0.deviceId Device ID or Name
 	 * @param  {String} $0.name     Desired Name
+	 * @param  {String} [$0.product] Rename device in this product ID or slug
 	 * @param  {String} $0.auth     Access Token
 	 * @return {Promise}
 	 */
-	renameDevice({ deviceId, name, auth }) {
-		return this.put(`/v1/devices/${deviceId}`, { name }, auth);
+	renameDevice({ deviceId, name, product, auth }) {
+		return this.updateDevice({ deviceId, name, product, auth });
+	}
+
+	/**
+	 * Store some notes about device
+	 * @param  {String} $0.deviceId  Device ID or Name
+	 * @params {String} $0.notes     Your notes about this device
+	 * @param  {String} [$0.product] Device in this product ID or slug
+	 * @param  {String} $0.auth      Access Token
+	 * @return {Promise}
+	 */
+	setDeviceNotes({ deviceId, notes, product, auth }) {
+		return this.updateDevice({ deviceId, notes, product, auth });
+	}
+
+	/**
+	 * Mark device as being used in development of a product so it opts out of automatic firmware updates
+	 * @param  {String} $0.deviceId      Device ID or Name
+	 * @param  {Boolean} $0.development  Set to true to mark as development, false to return to product fleet
+	 * @param  {String} $0.product       Device in this product ID or slug
+	 * @param  {String} $0.auth          Access Token
+	 * @return {Promise}
+	 */
+	markAsDevelopmentDevice({ deviceId, development = true, product, auth }) {
+		return this.updateDevice({ deviceId, development, product, auth });
+	}
+
+	/**
+	 * Mark device as being used in development of a product so it opts out of automatic firmware updates
+	 * @param  {String} $0.deviceId      Device ID or Name
+	 * @params {Number} $0.desiredFirmwareVersion Lock the product device to run this firmware version.
+	 * @params {Boolean} [$0.flash]      Immediately flash firmware indicated by desiredFirmwareVersion
+	 * @param  {String} $0.product       Device in this product ID or slug
+	 * @param  {String} $0.auth          Access Token
+	 * @return {Promise}
+	 */
+	lockDeviceProductFirmware({ deviceId, desiredFirmwareVersion, flash, product, auth }) {
+		return this.updateDevice({ deviceId, desiredFirmwareVersion, flash, product, auth });
+	}
+
+	/**
+	 * Mark device as receiving automatic firmware updates
+	 * @param  {String} $0.deviceId      Device ID or Name
+	 * @param  {String} $0.product       Device in this product ID or slug
+	 * @param  {String} $0.auth          Access Token
+	 * @return {Promise}
+	 */
+	unlockDeviceProductFirmware({ deviceId, product, auth }) {
+		return this.updateDevice({ deviceId, desiredFirmwareVersion: null, product, auth });
+	}
+
+	/**
+	 * Update multiple device attributes at the same time
+	 * @param  {String} $0.deviceId       Device ID or Name
+	 * @param  {String} [$0.name]         Desired Name
+	 * @params {String} [$0.notes]        Your notes about this device
+	 * @param  {Boolean} [$0.development] (Product only) Set to true to mark as development, false to return to product fleet
+	 * @params {Number} [$0.desiredFirmwareVersion] (Product only) Lock the product device to run this firmware version.
+	 *                                              Pass `null` to unlock firmware and go back to released firmware.
+	 * @params {Boolean} [$0.flash]       (Product only) Immediately flash firmware indicated by desiredFirmwareVersion
+	 * @param  {String} [$0.product]      Device in this product ID or slug
+	 * @param  {String} $0.auth           Access Token
+	 * @return {Promise}
+	 */
+	updateDevice({ deviceId, name, notes, development, desiredFirmwareVersion, flash, product, auth }) {
+		const uri = this.deviceUri({ deviceId, product });
+		const data = product ?
+			{ name, notes, development, desired_firmware_version: desiredFirmwareVersion, flash } :
+			{ name, notes };
+		return this.put(uri, data, auth);
+	}
+
+	/**
+	 * Provision a new device for products that allow self-provisioning
+	 * @param  {String} $0.productId Product ID where to create this device
+	 * @param  {String} $0.auth      Access Token
+	 * @return {Promise}
+	 */
+	provisionDevice({ productId, auth }) {
+		return this.post('/v1/devices', { productId }, auth);
 	}
 
 	/**
 	 * Generate a claim code to use in the device claiming process.
-	 * @param  {String} $0.auth  Access Token
 	 * @param  {String} [$0.iccid] ICCID of the SIM card used in the Electron
+	 * @param  {String} [$0.product] Device in this product ID or slug
+	 * @param  {String} $0.auth  Access Token
 	 * @return {Promise}
 	 */
-	getClaimCode({ auth, iccid = undefined }) {
-		return this.post('/v1/device_claims', { iccid }, auth);
+	getClaimCode({ iccid, product, auth }) {
+		const uri = product ? `/v1/products/${product}/device_claims` : '/v1/device_claims';
+		return this.post(uri, { iccid }, auth);
 	}
 
 	validatePromoCode({ auth, promoCode }) {
@@ -180,11 +303,15 @@ class Particle {
 	 * Get the value of a device variable
 	 * @param  {String} $0.deviceId Device ID or Name
 	 * @param  {String} $0.name     Variable name
+	 * @param  {String} [$0.product] Device in this product ID or slug
 	 * @param  {String} $0.auth     Access Token
 	 * @return {Promise}
 	 */
-	getVariable({ deviceId, name, auth }) {
-		return this.get(`/v1/devices/${deviceId}/${name}`, auth);
+	getVariable({ deviceId, name, product, auth }) {
+		const uri = product ?
+			`/v1/products/${product}/devices/${deviceId}/${name}` :
+			`/v1/devices/${deviceId}/${name}`;
+		return this.get(uri, auth);
 	}
 
 	/**
@@ -201,9 +328,9 @@ class Particle {
 	}
 
 	/**
-	 * Compile and flash application firmware to a device
+	 * Compile and flash application firmware to a device. Pass a pre-compiled binary to flash it directly to the device.
 	 * @param  {String} $0.deviceId      Device ID or Name
-	 * @param  {Object} $0.files         Object containing files to be compiled. Keys should be the filenames, and the values should be a path or Buffer of the file contents.
+	 * @param  {Object} $0.files         Object containing files to be compiled and flashed. Keys should be the filenames, and the values should be a path or Buffer of the file contents.
 	 * @param  {String} [$0.targetVersion=latest] System firmware version to compile against
 	 * @param  {String} $0.auth          String
 	 * @return {Promise}
@@ -220,12 +347,17 @@ class Particle {
 	}
 
 	/**
-	 * Flash the Tinker application to a device
+	 * DEPRECATED: Flash the Tinker application to a device. Instead compile and flash the Tinker source code.
 	 * @param  {String} $0.deviceId Device ID or Name
 	 * @param  {String} $0.auth     Access Token
 	 * @return {Promise}
 	 */
 	flashTinker({ deviceId, auth }) {
+		/* eslint-disable no-console */
+		if (console && console.warning) {
+			console.warning('Particle.flashTinker is deprecated');
+		}
+		/* eslint-enable no-console */
 		return this.put(`/v1/devices/${deviceId}`, {
 			app: 'tinker'
 		}, auth);
@@ -290,13 +422,15 @@ class Particle {
 	 * @param  {String} $0.deviceId Device ID or Name
 	 * @param  {String} $0.name     Function name
 	 * @param  {String} $0.argument Function argument
+	 * @param  {String} [$0.product] Device in this product ID or slug
 	 * @param  {String} $0.auth     Access Token
 	 * @return {Promise}
 	 */
-	callFunction({ deviceId, name, argument, auth }) {
-		return this.post(`/v1/devices/${deviceId}/${name}`, {
-			args: argument
-		}, auth);
+	callFunction({ deviceId, name, argument, product, auth }) {
+		const uri = product ?
+			`/v1/products/${product}/devices/${deviceId}/${name}` :
+			`/v1/devices/${deviceId}/${name}`;
+		return this.post(uri, { args: argument }, auth);
 	}
 
 	/**
@@ -304,7 +438,7 @@ class Particle {
 	 * @param  {String} [$0.deviceId] Device ID or Name, or `mine` to indicate only your devices.
 	 * @param  {String} [$0.name]     Event Name
 	 * @param  {String} [$0.org]     Organization Slug
-	 * @param  {String} [$0.product]     Product Slug or Product ID
+	 * @param  {String} [$0.product] Events for this product ID or slug
 	 * @param  {String} $0.auth     Access Token
 	 * @return {Promise} If the promise resolves, the resolution value will be an EventStream object that will
 	 * emit 'event' events, as well as the specific named event.
@@ -340,61 +474,129 @@ class Particle {
 	 * @param  {String} $0.name      Event name
 	 * @param  {String} $0.data      Event data
 	 * @param  {Boolean} $0.isPrivate Should the event be publicly available?
+	 * @param  {String} [$0.product]  Event for this product ID or slug
 	 * @param  {String} $0.auth      Access Token
 	 * @return {Promise}
 	 */
-	publishEvent({ name, data, isPrivate, auth }) {
-		return this.post('/v1/devices/events', {
-			name,
-			data,
-			'private': isPrivate
-		}, auth);
+	publishEvent({ name, data, isPrivate, product, auth }) {
+		const uri = product ? `/v1/products/${product}/events` : '/v1/devices/events';
+		const postData = { name, data, private: isPrivate };
+		return this.post(uri, postData, auth);
 	}
 
 	/**
 	 * Create a webhook
-	 * @param  {String} $0.deviceId           Device ID or Name
+	 * @param  {String} $0.deviceId           Trigger webhook only for this device ID or Name
 	 * @param  {String} $0.name               Webhook name
 	 * @param  {String} $0.url                URL the webhook should hit
 	 * @param  {String} [$0.requestType=POST]        HTTP method to use
 	 * @param  {Object} [$0.headers]            Additional headers to add to the webhook
 	 * @param  {Object} [$0.json]               JSON data
 	 * @param  {Object} [$0.query]              Query string data
+	 * @param  {String} [$0.body]               Custom webhook request body
 	 * @param  {Object} [$0.responseTemplate]   Webhook response template
 	 * @param  {Object} [$0.responseTopic]      Webhook response topic
 	 * @param  {Boolean} [$0.rejectUnauthorized] Reject invalid HTTPS certificates
+	 * @params {Boolean} [$0.noDefaults]        Don't include default event data in the webhook request
 	 * @param  {Object} [$0.webhookAuth]        HTTP Basic Auth information
 	 * @param  {Object} [$0.form]               Form data
+	 * @param  {String} [$0.product]          Webhook for this product ID or slug
 	 * @param  {String} $0.auth               Access Token
 	 * @return {Promise}
 	 */
-	createWebhook({ deviceId, name, url, requestType, headers, json, query, responseTemplate, responseTopic, rejectUnauthorized, webhookAuth, form, auth }) {
-		const data = { event: name, url, requestType, headers, json, query, responseTemplate, responseTopic, rejectUnauthorized, auth: webhookAuth, form };
+	createWebhook({ deviceId, name, url, requestType, headers, json, query, body, responseTemplate, responseTopic, rejectUnauthorized, webhookAuth, noDefaults, form, product, auth }) {
+		// deviceId: 'mine' is deprecated since webhooks only trigger on your device anyways
 		if (deviceId === 'mine') {
-			data.mydevices = true;
-		} else {
-			data.deviceid = deviceId;
+			deviceId = undefined;
 		}
-		return this.post('/v1/webhooks', data, auth);
+		const uri = product ? `/v1/products/${product}/webhooks` : '/v1/webhooks';
+		const data = { event: name, deviceid: deviceId, url, requestType, headers, json, query, body, responseTemplate, responseTopic, rejectUnauthorized, auth: webhookAuth, noDefaults, form };
+		return this.post(uri, data, auth);
 	}
 
 	/**
-	 * Delete a webhook
+	 * Remove a webhook
 	 * @param  {String} $0.hookId Webhook ID
+	 * @param  {String} [$0.product]          Webhook for this product ID or slug
 	 * @param  {String} $0.auth   Access Token
 	 * @return {Promise}
 	 */
-	deleteWebhook({ hookId, auth }) {
-		return this.delete(`/v1/webhooks/${hookId}`, null, auth);
+	removeWebhook({ hookId, product, auth }) {
+		const uri = product ? `/v1/products/${product}/webhooks/${hookId}` : `/v1/webhooks/${hookId}`;
+		return this.delete(uri, undefined, auth);
 	}
 
 	/**
-	 * List all webhooks owned by the account
+	 * List all webhooks owned by the account or product
+	 * @param  {String} [$0.product]          Webhooks for this product ID or slug
 	 * @param  {String} $0.auth Access Token
 	 * @return {Promise}
 	 */
-	listWebhooks({ auth }) {
-		return this.get('/v1/webhooks', auth);
+	listWebhooks({ product, auth }) {
+		const uri = product ? `/v1/products/${product}/webhooks` : '/v1/webhooks';
+		return this.get(uri, auth);
+	}
+
+	/**
+	 * Create an integration to send events to an external service
+     *
+	 * See the API docs for details https://docs.particle.io/reference/api/#integrations-webhooks-
+	 *
+	 * @param  {String} $0.integrationType  The kind of external integration. One of Webhook, AzureIotHub, GoogleCloudPubSub, GoogleMaps
+	 * @param  {String} $0.event            Event that triggers the integration
+	 * @params {Object} $0.settings         Settings specific to that integration type
+	 * @param  {String} [$0.deviceId]       Trigger integration only for this device ID or Name
+	 * @param  {String} [$0.product]        Integration for this product ID or slug
+	 * @param  {String} $0.auth             Access Token
+	 * @return {Promise}
+	 */
+	createIntegration({ integrationType, event, settings, deviceId, product, auth }) {
+		const uri = product ? `/v1/products/${product}/integrations` : '/v1/integrations';
+		const data = Object.assign({ event, deviceid: deviceId }, settings);
+		return this.post(uri, data, auth);
+	}
+
+	/**
+	 * Edit an integration to send events to an external service
+	 *
+	 * See the API docs for details https://docs.particle.io/reference/api/#integrations-webhooks-
+	 *
+	 * @param  {String} $0.integrationId    The integration to edit
+	 * @param  {String} [$0.event]          Change the event that triggers the integration
+	 * @params {Object} [$0.settings]       Change the settings specific to that integration type
+	 * @param  {String} [$0.deviceId]       Trigger integration only for this device ID or Name
+	 * @param  {String} [$0.product]        Integration for this product ID or slug
+	 * @param  {String} $0.auth             Access Token
+	 * @return {Promise}
+	 */
+	editIntegration({ integrationId, event, settings, deviceId, product, auth }) {
+		const uri = product ? `/v1/products/${product}/integrations/${integrationId}` : `/v1/integrations/${integrationId}`;
+		const data = Object.assign({ event, deviceid: deviceId }, settings);
+		return this.put(uri, data, auth);
+	}
+
+	/**
+	 * Remove an integration to send events to an external service
+	 *
+	 * @param  {String} $0.integrationId    The integration to remove
+	 * @param  {String} [$0.product]        Integration for this product ID or slug
+	 * @param  {String} $0.auth             Access Token
+	 * @return {Promise}
+	 */
+	removeIntegration({ integrationId, product, auth }) {
+		const uri = product ? `/v1/products/${product}/integrations/${integrationId}` : `/v1/integrations/${integrationId}`;
+		return this.delete(uri, undefined, auth);
+	}
+
+	/**
+	 * List all integrations owned by the account or product
+	 * @param  {String} [$0.product]        Integrations for this product ID or slug
+	 * @param  {String} $0.auth Access Token
+	 * @return {Promise}
+	 */
+	listIntegrations({ product, auth }) {
+		const uri = product ? `/v1/products/${product}/integrations` : '/v1/integrations';
+		return this.get(uri, auth);
 	}
 
 	/**
@@ -424,16 +626,123 @@ class Particle {
 		return this.put('/v1/user', bodyObj, auth);
 	}
 
+	/**
+	 * List SIM cards owned by a user or product
+	 * @param  {String} [$0.iccid]    (Product only) Filter to SIM cards matching this ICCID
+	 * @param  {String} [$0.deviceId] (Product only) Filter to SIM cards matching this device ID
+	 * @param  {String} [$0.deviceName] (Product only) Filter to SIM cards matching this device name
+	 * @param  {Number} [$0.page]     (Product only) Current page of results
+	 * @param  {Number} [$0.perPage]  (Product only) Records per page
+	 * @param  {String} [$0.product]  SIM cards for this product ID or slug
+	 * @param  {String} $0.auth       Access Token
+	 * @return {Promise}
+	 */
+	listSIMs({ iccid, deviceId, deviceName, page, perPage, product, auth }) {
+		const uri = product ? `/v1/products/${product}/sims` : '/v1/sims';
+		const query = product ? { iccid, deviceId, deviceName, page, perPage } : undefined;
+		return this.get(uri, auth, query);
+	}
+
+	/**
+	 * Get data usage for one SIM card for the current billing period
+	 * @param  {String} $0.iccid      ICCID of the SIM card
+	 * @param  {String} [$0.product]  SIM card for this product ID or slug
+	 * @param  {String} $0.auth       Access Token
+	 * @return {Promise}
+	 */
+	getSIMDataUsage({ iccid, product, auth }) {
+		const uri = product ?
+			`/v1/products/${product}/sims/${iccid}/data_usage` :
+			`/v1/sims/${iccid}/data_usage`;
+		return this.get(uri, auth);
+	}
+
+	/**
+	 * Get data usage for all SIM cards in a product the current billing period
+	 * @param  {String} $0.product  SIM cards for this product ID or slug
+	 * @param  {String} $0.auth     Access Token
+	 * @return {Promise}
+	 */
+	getFleetDataUsage({ product, auth }) {
+		return this.get(`/v1/products/${product}/sims/data_usage`, auth);
+	}
+
 	checkSIM({ iccid, auth }) {
 		return this.head(`/v1/sims/${iccid}`, auth);
 	}
 
-	activateSIM({ iccid, countryCode, promoCode, auth }) {
-		return this.put(`/v1/sims/${iccid}`, {
-			country: countryCode,
-			promo_code: promoCode,
-			action: 'activate'
-		}, auth);
+	/**
+	 * Activate and add SIM cards to an account or product
+	 * @param  {String} $0.iccid        ICCID of the SIM card
+	 * @param  {Array<String>} $0.iccids (Product only) ICCID of multiple SIM cards to import
+	 * @param  {String} $0.countryCode The ISO country code for the SIM cards
+	 * @param  {String} [$0.product]  SIM cards for this product ID or slug
+	 * @param  {String} $0.auth       Access Token
+	 * @return {Promise}
+	 */
+	activateSIM({ iccid, iccids, countryCode, promoCode, product, auth }) {
+		// promoCode is deprecated
+		iccids = iccids || [iccid];
+		const uri = product ? `/v1/products/${product}/sims` : `/v1/sims/${iccid}`;
+		const data = product ?
+			{ sims: iccids, countryCode } :
+			{ countryCode, promoCode, action: 'activate' };
+		const method = product ? 'post' : 'put';
+
+		return this.request({ uri, method, data, auth });
+	}
+
+	/**
+	 * Deactivate a SIM card so it doesn't incur data usage in future months.
+	 * @param  {String} $0.iccid      ICCID of the SIM card
+	 * @param  {String} [$0.product]  SIM cards for this product ID or slug
+	 * @param  {String} $0.auth       Access Token
+	 * @return {Promise}
+	 */
+	deactivateSIM({ iccid, product, auth }) {
+		const uri = product ? `/v1/products/${product}/sims/${iccid}` : `/v1/sims/${iccid}`;
+		const data = { action: 'deactivate' };
+		return this.put(uri, data, auth);
+	}
+
+	/**
+	 * Reactivate a SIM card the was deactivated or unpause a SIM card that was automatically paused
+	 * @param  {String} $0.iccid      ICCID of the SIM card
+	 * @param  {Number} [$0.mbLimit]  New monthly data limit. Necessary if unpausing a SIM card
+	 * @param  {String} [$0.product]  SIM cards for this product ID or slug
+	 * @param  {String} $0.auth       Access Token
+	 * @return {Promise}
+	 */
+	reactivateSIM({ iccid, mbLimit, product, auth }) {
+		const uri = product ? `/v1/products/${product}/sims/${iccid}` : `/v1/sims/${iccid}`;
+		const data = { mb_limit: mbLimit, action: 'reactivate' };
+		return this.put(uri, data, auth);
+	}
+
+	/**
+	 * Update SIM card data limit
+	 * @param  {String} $0.iccid        ICCID of the SIM card
+	 * @param  {Array}  $0.mbLimit     Data limit in megabyte for the SIM card
+	 * @param  {String} [$0.product]  SIM cards for this product ID or slug
+	 * @param  {String} $0.auth       Access Token
+	 * @return {Promise}
+	 */
+	updateSIM({ iccid, mbLimit, product, auth }) {
+		const uri = product ? `/v1/products/${product}/sims/${iccid}` : `/v1/sims/${iccid}`;
+		const data = { mb_limit: mbLimit };
+		return this.put(uri, data, auth);
+	}
+
+	/**
+	 * Remove a SIM card from an account so it can be activated by a different account
+	 * @param  {String} $0.iccid      ICCID of the SIM card
+	 * @param  {String} [$0.product]  SIM cards for this product ID or slug
+	 * @param  {String} $0.auth       Access Token
+	 * @return {Promise}
+	 */
+	removeSIM({ iccid, product, auth }) {
+		const uri = product ? `/v1/products/${product}/sims/${iccid}` : `/v1/sims/${iccid}`;
+		return this.delete(uri, undefined, auth);
 	}
 
 	/**
@@ -534,13 +843,13 @@ class Particle {
 	}
 
 	/**
-	 * Delete one version of a library or an entire published library
+	 * Remove one version of a library or an entire published library
 	 * @param  {String} $0.auth Access Token
-	 * @param  {String} $0.name Name of the library to delete
+	 * @param  {String} $0.name Name of the library to remove
 	 * @param  {String} $0.force Key to force deleting a public library
 	 * @return {Promise}
 	 */
-	deleteLibrary({ auth, name, force }) {
+	removeLibrary({ auth, name, force }) {
 		return this.delete(`/v1/libraries/${name}`, { force }, auth);
 	}
 
@@ -560,6 +869,214 @@ class Particle {
 			});
 		}
 		return req.then(res => res.body);
+	}
+
+	/**
+	 * List OAuth client created by the account
+	 * @param  {String} [$0.product] List clients for this product ID or slug
+	 * @param  {String} $0.auth Access Token
+	 * @return {Promise}
+	 */
+	listOAuthClients({ product, auth }) {
+		const uri = product ? `/v1/products/${product}/clients` : '/v1/clients';
+		return this.get(uri, auth);
+	}
+
+	/**
+	 * Create an OAuth client
+	 * @param  {String} $0.name               Name of the OAuth client
+	 * @param  {String} $0.type               web, installed or web
+	 * @param  {String} [$0.redirect_uri]     URL to redirect after OAuth flow. Only for type web.
+	 * @param  {Object} [$0.scope]            Limits what the access tokens created by this client can do.
+	 * @param  {String} [$0.product]          Create client for this product ID or slug
+	 * @param  {String} $0.auth               Access Token
+	 * @return {Promise}
+	 */
+	createOAuthClient({ name, type, redirect_uri, scope, product, auth }) {
+		const uri = product ? `/v1/products/${product}/clients` : '/v1/clients';
+		const data = { name, type, redirect_uri, scope };
+		return this.post(uri, data, auth);
+	}
+
+	/**
+	 * Update an OAuth client
+	 * @param  {String} $0.clientId           The OAuth client to update
+	 * @param  {String} [$0.name]             New Name of the OAuth client
+	 * @param  {Object} [$0.scope]            New scope of the OAuth client
+	 * @param  {String} [$0.product]          Update client linked to this product ID or slug
+	 * @param  {String} $0.auth               Access Token
+	 * @return {Promise}
+	 */
+	updateOAuthClient({ clientId, name, scope, product, auth }) {
+		const uri = product ? `/v1/products/${product}/clients/${clientId}` : `/v1/clients/${clientId}`;
+		const data = { name, scope };
+		return this.put(uri, data, auth);
+	}
+
+	/**
+	 * Remove an OAuth client
+	 * @param  {String} $0.clientId           The OAuth client to update
+	 * @param  {String} [$0.product]          OAuth client linked to this product ID or slug
+	 * @param  {String} $0.auth               Access Token
+	 * @return {Promise}
+	 */
+	removeOAuthClient({ clientId, product, auth }) {
+		const uri = product ? `/v1/products/${product}/clients/${clientId}` : `/v1/clients/${clientId}`;
+		return this.delete(uri, null, auth);
+	}
+
+	/**
+	 * List products the account has access to
+	 * @param  {String} $0.auth Access Token
+	 * @return {Promise}
+	 */
+	listProducts({ auth }) {
+		return this.get('/v1/products', auth);
+	}
+
+	/**
+	 * Get detailed information about a product
+	 * @param  {String} $0.product  Product ID or slug
+	 * @param  {String} $0.auth     Access token
+	 * @return {Promise}
+	 */
+	getProduct({ product, auth }) {
+		return this.get(`/v1/products/${product}`, auth);
+	}
+
+	/**
+	 * List product firmware versions
+	 * @param  {String} $0.product Firmware for this product ID or slug
+	 * @param  {String} $0.auth Access Token
+	 * @return {Promise}
+	 */
+	listProductFirmware({ product, auth }) {
+		return this.get(`/v1/products/${product}/firmware`, auth);
+	}
+
+	/**
+	 * List product firmware versions
+	 * @param  {Object} $0.file    Path or Buffer of the new firmware file
+	 * @param  {Number} $0.version Version number of new firmware
+	 * @param  {String} $0.title   Short identifier for the new firmware
+	 * @param  {String} [$0.description] Longer description for the new firmware
+	 * @param  {String} $0.product Firmware for this product ID or slug
+	 * @param  {String} $0.auth Access Token
+	 * @return {Promise}
+	 */
+	uploadProductFirmware({ file, version, title, description, product, auth }) {
+		return this.request({
+			uri: `/v1/products/${product}/firmware`,
+			method: 'post',
+			files: {
+				'firmware.bin': file
+			},
+			form: {
+				version,
+				title,
+				description
+			},
+			auth
+		});
+	}
+
+	/**
+	 * Get information about a product firmware version
+	 * @param  {Number} $0.version Version number of firmware
+	 * @param  {String} $0.product Firmware for this product ID or slug
+	 * @param  {String} $0.auth    Access token
+	 * @return {Promise}
+	 */
+	getProductFirmware({ version, product, auth }) {
+		return this.get(`/v1/products/${product}/firmware/${version}`, auth);
+	}
+
+	/**
+	 * Update information for a product firmware version
+	 * @param  {Number} $0.version Version number of new firmware
+	 * @param  {String} [$0.title]   New title
+	 * @param  {String} [$0.description] New description
+	 * @param  {String} $0.product Firmware for this product ID or slug
+	 * @param  {String} $0.auth Access Token
+	 * @return {Promise}
+	 */
+	updateProductFirmware({ version, title, description, product, auth }) {
+		const uri = `/v1/products/${product}/firmware/${version}`;
+		return this.put(uri, { title, description }, auth);
+	}
+
+	/**
+	 * Download a product firmware binary
+	 * @param  {Number} $0.version Version number of new firmware
+	 * @param  {String} $0.product Firmware for this product ID or slug
+	 * @param  {String} $0.auth    Access Token
+	 * @return {Request}
+	 */
+	downloadProductFirmware({ version, product, auth }) {
+		const uri = `/v1/products/${product}/firmware/${version}/binary`;
+		const req = request('get', uri);
+		req.use(this.prefix);
+		this.headers(req, auth);
+		if (this.debug) {
+			this.debug(req);
+		}
+		return req;
+	}
+
+	/**
+	 * Release a product firmware version as the default version
+	 * @param  {Number} $0.version Version number of new firmware
+	 * @param  {String} $0.product Firmware for this product ID or slug
+	 * @param  {String} $0.auth Access Token
+	 * @return {Promise}
+	 */
+	releaseProductFirmware({ version, product, auth }) {
+		const uri = `/v1/products/${product}/firmware/release`;
+		return this.put(uri, { version }, auth);
+	}
+
+	/**
+	 * List product team members
+	 * @param  {String} $0.product Team for this product ID or slug
+	 * @param  {String} $0.auth Access Token
+	 * @return {Promise}
+	 */
+	listTeamMembers({ product, auth }) {
+		return this.get(`/v1/products/${product}/team`, auth);
+	}
+
+	/**
+	 * Invite Particle user to a product team
+	 * @param  {String} $0.username  Username for the Particle account
+	 * @param  {String} $0.product Team for this product ID or slug
+	 * @param  {String} $0.auth Access Token
+	 * @return {Promise}
+	 */
+	inviteTeamMember({ username, product, auth }) {
+		return this.post(`/v1/products/${product}/team`, { username }, auth);
+	}
+
+	/**
+	 * Remove Particle user to a product team
+	 * @param  {String} $0.username  Username for the Particle account
+	 * @param  {String} $0.product Team for this product ID or slug
+	 * @param  {String} $0.auth Access Token
+	 * @return {Promise}
+	 */
+	removeTeamMember({ username, product, auth }) {
+		return this.delete(`/v1/products/${product}/team/${username}`, null, auth);
+	}
+
+
+	/**
+	 * API URI to access a device
+	 * @param  {String} $0.deviceId  Device ID to access
+	 * @param  {String} [$0.product] Device only in this product ID or slug
+	 * @private
+	 * @returns {string}
+	 */
+	deviceUri({ deviceId, product }) {
+		return product ? `/v1/products/${product}/devices/${deviceId}` : `/v1/devices/${deviceId}`;
 	}
 
 	get(uri, auth, query = undefined) {
@@ -590,5 +1107,9 @@ class Particle {
 		return new Client(Object.assign({ api: this }, options));
 	}
 }
+
+// Aliases for backwards compatibility
+Particle.prototype.deleteWebhook = Particle.prototype.removeWebhook;
+Particle.prototype.deleteLibrary = Particle.prototype.removeLibrary;
 
 export default Particle;
