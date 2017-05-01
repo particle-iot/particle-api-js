@@ -1488,10 +1488,10 @@ describe('ParticleAPI', () => {
 			});
 		});
 
-		describe('.deleteOAuthClient', () => {
+		describe('.removeOAuthClient', () => {
 			describe('user scope', () => {
 				it('generates request', () => {
-					return api.deleteOAuthClient(props).then((results) => {
+					return api.removeOAuthClient(props).then((results) => {
 						results.should.match({
 							method: 'delete',
 							uri: `/v1/clients/${props.clientId}`,
@@ -1502,7 +1502,7 @@ describe('ParticleAPI', () => {
 			});
 			describe('product scope', () => {
 				it('generates request', () => {
-					return api.deleteOAuthClient(propsWithProduct).then((results) => {
+					return api.removeOAuthClient(propsWithProduct).then((results) => {
 						results.should.match({
 							method: 'delete',
 							uri: `/v1/products/${product}/clients/${props.clientId}`,
