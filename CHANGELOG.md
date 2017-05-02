@@ -1,5 +1,10 @@
 # changelog
 
+## 6.5.0 - 02 May 2017
+
+* Add support for all product API endpoints.
+* Add support for sending additional context with each call.
+
 ## 6.4.3 - 15 Feb 2017
 
 * Create a wrapper for `listBuildTargets` in `Client.js`.
