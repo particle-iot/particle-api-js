@@ -12,7 +12,7 @@ import Client from './Client';
  * of using the `Particle` class.
  *
  * Most Particle methods take a single unnamed argument object documented as
- * `$0` with key/value pairs for each option.
+ * `options` with key/value pairs for each option.
  */
 class Particle {
 	/**
@@ -20,7 +20,7 @@ class Particle {
 	 *
 	 * Create a new Particle object and call methods below on it.
 	 *
-	 * @param  {Object} options Options to be used for all requests (see [Defaults](../src/Defaults.js))
+	 * @param  {Object} options Options for this API call Options to be used for all requests (see [Defaults](../src/Defaults.js))
 	 */
 	constructor(options = {}) {
 		// todo - this seems a bit dangerous - would be better to put all options/context in a contained object
@@ -45,7 +45,7 @@ class Particle {
 
 	/**
 	 * Builds the final context from the context parameter and the context items in the api.
-	 * @param {Object} context       The invocation context, this takes precedence over the local context.
+	 * @param  {Object} context       The invocation context, this takes precedence over the local context.
 	 * @return {Object} The context to use.
 	 * @private
 	 */
@@ -55,11 +55,12 @@ class Particle {
 
 	/**
 	 * Retrieves the information that is used to identify the current login for tracking.
-	 * @param {string} auth      The access token
-	 * @param {Boolean} full      When true, retrieve all information for registering a user with the tracking API. When false,
+	 * @param  {Object} options Options for this API call
+	 * @param  {String} options.auth      The access token
+	 * @param  {Boolean} options.full      When true, retrieve all information for registering a user with the tracking API. When false,
 	 *  retrieve only the unique tracking ID for the current login.
-	 * @param {object} context   Context information.
-	 * @returns {Promise<object>} Resolve the tracking identify of the current login
+	 * @param  {Object} context   Context information.
+	 * @returns {Promise<Object>} Resolve the tracking identify of the current login
 	 */
 	trackingIdentity({ auth, full = false, context } = {}) {
 		return this.get('/v1/user/identify', auth, (full ? undefined : { tracking: 1 }), context);
@@ -67,9 +68,10 @@ class Particle {
 
 	/**
 	 * Login to Particle Cloud using an existing Particle acccount.
-	 * @param  {String} $0.username      Username for the Particle account
-	 * @param  {String} $0.password      Password for the Particle account
-	 * @param  {Number} $0.tokenDuration How long the access token should last in seconds
+	 * @param  {Object} options Options for this API call
+	 * @param  {String} options.username      Username for the Particle account
+	 * @param  {String} options.password      Password for the Particle account
+	 * @param  {Number} options.tokenDuration How long the access token should last in seconds
 	 * @return {Promise}
 	 */
 	login({ username, password, tokenDuration = this.tokenDuration, context }) {
@@ -85,9 +87,10 @@ class Particle {
 
 	/**
 	 * Create a user account for the Particle Cloud
-	 * @param  {String} $0.username Email of the new user
-	 * @param  {String} $0.password Password
-	 * @param  {String} $0.accountInfo Object that contains account information fields such as user real name, company name, business account flag etc
+	 * @param  {Object} options Options for this API call
+	 * @param  {String} options.username Email of the new user
+	 * @param  {String} options.password Password
+	 * @param  {String} options.accountInfo Object that contains account information fields such as user real name, company name, business account flag etc
 	 * @return {Promise}
 	 */
 	createUser({ username, password, accountInfo, context }) {
@@ -100,7 +103,8 @@ class Particle {
 
 	/**
 	 * Verify new user account via verification email
-	 * @param  {String} $0.token the string token sent in the verification email
+	 * @param  {Object} options Options for this API call
+	 * @param  {String} options.token the string token sent in the verification email
 	 * @return {Promise}
 	 */
 	verifyUser({ token, context }) {
@@ -111,7 +115,8 @@ class Particle {
 
 	/**
 	 * Send reset password email for a Particle Cloud user account
-	 * @param  {String} $0.username Email of the user
+	 * @param  {Object} options Options for this API call
+	 * @param  {String} options.username Email of the user
 	 * @return {Promise}
 	 */
 	resetPassword({ username, context }) {
@@ -120,9 +125,10 @@ class Particle {
 
 	/**
 	 * Revoke an access token
-	 * @param  {String} $0.username Username of the Particle cloud account that the token belongs to.
-	 * @param  {String} $0.password Password for the account
-	 * @param  {String} $0.token    Access token you wish to revoke
+	 * @param  {Object} options Options for this API call
+	 * @param  {String} options.username Username of the Particle cloud account that the token belongs to.
+	 * @param  {String} options.password Password for the account
+	 * @param  {String} options.token    Access token you wish to revoke
 	 * @return {Promise}
 	 */
 	deleteAccessToken({ username, password, token, context }) {
@@ -133,8 +139,9 @@ class Particle {
 
 	/**
 	 * List all valid access tokens for a Particle Cloud account
-	 * @param  {String} $0.username Username
-	 * @param  {String} $0.password Password
+	 * @param  {Object} options Options for this API call
+	 * @param  {String} options.username Username
+	 * @param  {String} options.password Password
 	 * @return {Promise}
 	 */
 	listAccessTokens({ username, password, context }) {
@@ -143,14 +150,15 @@ class Particle {
 
 	/**
 	 * List devices claimed to the account or product
-	 * @param  {String} [$0.deviceId]   (Product only) Filter results to devices with this ID (partial matching)
-	 * @param  {String} [$0.deviceName] (Product only) Filter results to devices with this name (partial matching)
-	 * @param  {String} [$0.sortAttr]   (Product only) The attribute by which to sort results. See API docs for options.
-	 * @param  {String} [$0.sortDir]    (Product only) The direction of sorting. See API docs for options.
-	 * @param  {Number} [$0.page]       (Product only) Current page of results
-	 * @param  {Number} [$0.perPage]    (Product only) Records per page
-	 * @param  {String} [$0.product]    List devices in this product ID or slug
-	 * @param  {String} $0.auth         Access Token
+	 * @param  {Object} options Options for this API call
+	 * @param  {String} [options.deviceId]   (Product only) Filter results to devices with this ID (partial matching)
+	 * @param  {String} [options.deviceName] (Product only) Filter results to devices with this name (partial matching)
+	 * @param  {String} [options.sortAttr]   (Product only) The attribute by which to sort results. See API docs for options.
+	 * @param  {String} [options.sortDir]    (Product only) The direction of sorting. See API docs for options.
+	 * @param  {Number} [options.page]       (Product only) Current page of results
+	 * @param  {Number} [options.perPage]    (Product only) Records per page
+	 * @param  {String} [options.product]    List devices in this product ID or slug
+	 * @param  {String} options.auth         Access Token
 	 * @return {Promise}
 	 */
 	listDevices({ deviceId, deviceName, sortAttr, sortDir, page, perPage, product, auth, context }) {
@@ -161,9 +169,10 @@ class Particle {
 
 	/**
 	 * Get detailed informationa about a device
-	 * @param  {String} $0.deviceId  Device ID or Name
-	 * @param  {String} [$0.product] Device in this product ID or slug
-	 * @param  {String} $0.auth      Access token
+	 * @param  {Object} options Options for this API call
+	 * @param  {String} options.deviceId  Device ID or Name
+	 * @param  {String} [options.product] Device in this product ID or slug
+	 * @param  {String} options.auth      Access token
 	 * @return {Promise}
 	 */
 	getDevice({ deviceId, product, auth, context }) {
@@ -173,8 +182,9 @@ class Particle {
 
 	/**
 	 * Claim a device to the account. The device must be online and unclaimed.
-	 * @param  {String} $0.deviceId Device ID
-	 * @param  {String} $0.auth     Access Token
+	 * @param  {Object} options Options for this API call
+	 * @param  {String} options.deviceId Device ID
+	 * @param  {String} options.auth     Access Token
 	 * @return {Promise}
 	 */
 	claimDevice({ deviceId, requestTransfer, auth, context }) {
@@ -186,9 +196,10 @@ class Particle {
 
 	/**
 	 * Add a device to a product or move device out of quarantine.
-	 * @param  {String} $0.deviceId Device ID
-	 * @param  {String} $0.product  Add to this product ID or slug
-	 * @param  {String} $0.auth     Access Token
+	 * @param  {Object} options Options for this API call
+	 * @param  {String} options.deviceId Device ID
+	 * @param  {String} options.product  Add to this product ID or slug
+	 * @param  {String} options.auth     Access Token
 	 * @return {Promise}
 	 */
 	addDeviceToProduct({ deviceId, product, auth, context }) {
@@ -200,10 +211,11 @@ class Particle {
 
 	/**
 	 * Unclaim / Remove a device from your account or product, or deny quarantine
-	 * @param  {String} $0.deviceId Device ID or Name
-	 * @param  {Boolean} [$0.deny]  (Product only) Deny this quarantined device, instead of removing an already approved device
-	 * @param  {String} $0.product  Remove from this product ID or slug
-	 * @param  {String} $0.auth     Access Token
+	 * @param  {Object} options Options for this API call
+	 * @param  {String} options.deviceId Device ID or Name
+	 * @param  {Boolean} [options.deny]  (Product only) Deny this quarantined device, instead of removing an already approved device
+	 * @param  {String} options.product  Remove from this product ID or slug
+	 * @param  {String} options.auth     Access Token
 	 * @return {Promise}
 	 */
 	removeDevice({ deviceId, deny, product, auth, context }) {
@@ -214,9 +226,10 @@ class Particle {
 
 	/**
 	 * Unclaim a product device its the owner, but keep it in the product
-	 * @param  {String} $0.deviceId Device ID or Name
-	 * @param  {String} $0.product  Remove from this product ID or slug
-	 * @param  {String} $0.auth     Access Token
+	 * @param  {Object} options Options for this API call
+	 * @param  {String} options.deviceId Device ID or Name
+	 * @param  {String} options.product  Remove from this product ID or slug
+	 * @param  {String} options.auth     Access Token
 	 * @return {Promise}
 	 */
 	removeDeviceOwner({ deviceId, deny, product, auth, context }) {
@@ -226,10 +239,11 @@ class Particle {
 
 	/**
 	 * Rename a device
-	 * @param  {String} $0.deviceId Device ID or Name
-	 * @param  {String} $0.name     Desired Name
-	 * @param  {String} [$0.product] Rename device in this product ID or slug
-	 * @param  {String} $0.auth     Access Token
+	 * @param  {Object} options Options for this API call
+	 * @param  {String} options.deviceId Device ID or Name
+	 * @param  {String} options.name     Desired Name
+	 * @param  {String} [options.product] Rename device in this product ID or slug
+	 * @param  {String} options.auth     Access Token
 	 * @return {Promise}
 	 */
 	renameDevice({ deviceId, name, product, auth, context }) {
@@ -238,10 +252,11 @@ class Particle {
 
 	/**
 	 * Instruct the device to turn on/off the LED in a rainbow pattern
-	 * @param  {String} $0.deviceId Device ID or Name
-	 * @param  {Boolean} $0.signal   Signal on or off
-	 * @param  {String} [$0.product] Device in this product ID or slug
-	 * @param  {String} $0.auth     Access Token
+	 * @param  {Object} options Options for this API call
+	 * @param  {String} options.deviceId Device ID or Name
+	 * @param  {Boolean} options.signal   Signal on or off
+	 * @param  {String} [options.product] Device in this product ID or slug
+	 * @param  {String} options.auth     Access Token
 	 * @return {Promise}
 	 */
 	signalDevice({ deviceId, signal, product, auth, context }) {
@@ -250,10 +265,11 @@ class Particle {
 
 	/**
 	 * Store some notes about device
-	 * @param  {String} $0.deviceId  Device ID or Name
-	 * @params {String} $0.notes     Your notes about this device
-	 * @param  {String} [$0.product] Device in this product ID or slug
-	 * @param  {String} $0.auth      Access Token
+	 * @param  {Object} options Options for this API call
+	 * @param  {String} options.deviceId  Device ID or Name
+	 * @params {String} options.notes     Your notes about this device
+	 * @param  {String} [options.product] Device in this product ID or slug
+	 * @param  {String} options.auth      Access Token
 	 * @return {Promise}
 	 */
 	setDeviceNotes({ deviceId, notes, product, auth, context }) {
@@ -262,10 +278,11 @@ class Particle {
 
 	/**
 	 * Mark device as being used in development of a product so it opts out of automatic firmware updates
-	 * @param  {String} $0.deviceId      Device ID or Name
-	 * @param  {Boolean} $0.development  Set to true to mark as development, false to return to product fleet
-	 * @param  {String} $0.product       Device in this product ID or slug
-	 * @param  {String} $0.auth          Access Token
+	 * @param  {Object} options Options for this API call
+	 * @param  {String} options.deviceId      Device ID or Name
+	 * @param  {Boolean} options.development  Set to true to mark as development, false to return to product fleet
+	 * @param  {String} options.product       Device in this product ID or slug
+	 * @param  {String} options.auth          Access Token
 	 * @return {Promise}
 	 */
 	markAsDevelopmentDevice({ deviceId, development = true, product, auth, context }) {
@@ -274,11 +291,12 @@ class Particle {
 
 	/**
 	 * Mark device as being used in development of a product so it opts out of automatic firmware updates
-	 * @param  {String} $0.deviceId      Device ID or Name
-	 * @params {Number} $0.desiredFirmwareVersion Lock the product device to run this firmware version.
-	 * @params {Boolean} [$0.flash]      Immediately flash firmware indicated by desiredFirmwareVersion
-	 * @param  {String} $0.product       Device in this product ID or slug
-	 * @param  {String} $0.auth          Access Token
+	 * @param  {Object} options Options for this API call
+	 * @param  {String} options.deviceId      Device ID or Name
+	 * @params {Number} options.desiredFirmwareVersion Lock the product device to run this firmware version.
+	 * @params {Boolean} [options.flash]      Immediately flash firmware indicated by desiredFirmwareVersion
+	 * @param  {String} options.product       Device in this product ID or slug
+	 * @param  {String} options.auth          Access Token
 	 * @return {Promise}
 	 */
 	lockDeviceProductFirmware({ deviceId, desiredFirmwareVersion, flash, product, auth, context }) {
@@ -287,9 +305,10 @@ class Particle {
 
 	/**
 	 * Mark device as receiving automatic firmware updates
-	 * @param  {String} $0.deviceId      Device ID or Name
-	 * @param  {String} $0.product       Device in this product ID or slug
-	 * @param  {String} $0.auth          Access Token
+	 * @param  {Object} options Options for this API call
+	 * @param  {String} options.deviceId      Device ID or Name
+	 * @param  {String} options.product       Device in this product ID or slug
+	 * @param  {String} options.auth          Access Token
 	 * @return {Promise}
 	 */
 	unlockDeviceProductFirmware({ deviceId, product, auth, context }) {
@@ -298,16 +317,17 @@ class Particle {
 
 	/**
 	 * Update multiple device attributes at the same time
-	 * @param  {String} $0.deviceId       Device ID or Name
-	 * @param  {String} [$0.name]         Desired Name
-	 * @param  {Boolean} $0.signal        Signal device on or off
-	 * @params {String} [$0.notes]        Your notes about this device
-	 * @param  {Boolean} [$0.development] (Product only) Set to true to mark as development, false to return to product fleet
-	 * @params {Number} [$0.desiredFirmwareVersion] (Product only) Lock the product device to run this firmware version.
+	 * @param  {Object} options Options for this API call
+	 * @param  {String} options.deviceId       Device ID or Name
+	 * @param  {String} [options.name]         Desired Name
+	 * @param  {Boolean} options.signal        Signal device on or off
+	 * @params {String} [options.notes]        Your notes about this device
+	 * @param  {Boolean} [options.development] (Product only) Set to true to mark as development, false to return to product fleet
+	 * @params {Number} [options.desiredFirmwareVersion] (Product only) Lock the product device to run this firmware version.
 	 *                                              Pass `null` to unlock firmware and go back to released firmware.
-	 * @params {Boolean} [$0.flash]       (Product only) Immediately flash firmware indicated by desiredFirmwareVersion
-	 * @param  {String} [$0.product]      Device in this product ID or slug
-	 * @param  {String} $0.auth           Access Token
+	 * @params {Boolean} [options.flash]       (Product only) Immediately flash firmware indicated by desiredFirmwareVersion
+	 * @param  {String} [options.product]      Device in this product ID or slug
+	 * @param  {String} options.auth           Access Token
 	 * @return {Promise}
 	 */
 	updateDevice({ deviceId, name, signal, notes, development, desiredFirmwareVersion, flash, product, auth, context }) {
@@ -321,8 +341,9 @@ class Particle {
 
 	/**
 	 * Provision a new device for products that allow self-provisioning
-	 * @param  {String} $0.productId Product ID where to create this device
-	 * @param  {String} $0.auth      Access Token
+	 * @param  {Object} options Options for this API call
+	 * @param  {String} options.productId Product ID where to create this device
+	 * @param  {String} options.auth      Access Token
 	 * @return {Promise}
 	 */
 	provisionDevice({ productId, auth, context }) {
@@ -333,9 +354,10 @@ class Particle {
 	 * Generate a claim code to use in the device claiming process.
 	 * To generate a claim code for a product, the access token MUST belong to a
 	 * customer of the product.
-	 * @param  {String} [$0.iccid] ICCID of the SIM card used in the Electron
-	 * @param  {String} [$0.product] Device in this product ID or slug
-	 * @param  {String} $0.auth  Access Token
+	 * @param  {Object} options Options for this API call
+	 * @param  {String} [options.iccid] ICCID of the SIM card used in the Electron
+	 * @param  {String} [options.product] Device in this product ID or slug
+	 * @param  {String} options.auth  Access Token
 	 * @return {Promise}
 	 */
 	getClaimCode({ iccid, product, auth, context }) {
@@ -355,10 +377,11 @@ class Particle {
 
 	/**
 	 * Get the value of a device variable
-	 * @param  {String} $0.deviceId Device ID or Name
-	 * @param  {String} $0.name     Variable name
-	 * @param  {String} [$0.product] Device in this product ID or slug
-	 * @param  {String} $0.auth     Access Token
+	 * @param  {Object} options Options for this API call
+	 * @param  {String} options.deviceId Device ID or Name
+	 * @param  {String} options.name     Variable name
+	 * @param  {String} [options.product] Device in this product ID or slug
+	 * @param  {String} options.auth     Access Token
 	 * @return {Promise}
 	 */
 	getVariable({ deviceId, name, product, auth, context }) {
@@ -370,10 +393,11 @@ class Particle {
 
 	/**
 	 * Compile and flash application firmware to a device. Pass a pre-compiled binary to flash it directly to the device.
-	 * @param  {String} $0.deviceId      Device ID or Name
-	 * @param  {Object} $0.files         Object containing files to be compiled and flashed. Keys should be the filenames, and the values should be a path or Buffer of the file contents.
-	 * @param  {String} [$0.targetVersion=latest] System firmware version to compile against
-	 * @param  {String} $0.auth          String
+	 * @param  {Object} options Options for this API call
+	 * @param  {String} options.deviceId      Device ID or Name
+	 * @param  {Object} options.files         Object containing files to be compiled and flashed. Keys should be the filenames, and the values should be a path or Buffer of the file contents.
+	 * @param  {String} [options.targetVersion=latest] System firmware version to compile against
+	 * @param  {String} options.auth          String
 	 * @return {Promise}
 	 */
 	flashDevice({ deviceId, files, targetVersion, auth, context }) {
@@ -389,8 +413,9 @@ class Particle {
 
 	/**
 	 * DEPRECATED: Flash the Tinker application to a device. Instead compile and flash the Tinker source code.
-	 * @param  {String} $0.deviceId Device ID or Name
-	 * @param  {String} $0.auth     Access Token
+	 * @param  {Object} options Options for this API call
+	 * @param  {String} options.deviceId Device ID or Name
+	 * @param  {String} options.auth     Access Token
 	 * @return {Promise}
 	 */
 	flashTinker({ deviceId, auth, context }) {
@@ -406,10 +431,11 @@ class Particle {
 
 	/**
 	 * Compile firmware using the Particle Cloud
-	 * @param  {Object} $0.files         Object containing files to be compiled. Keys should be the filenames, and the values should be a path or Buffer of the file contents.
-	 * @param  {Number} [$0.platformId]    Platform id number of the device you are compiling for. Common values are 0=Core, 6=Photon, 10=Electron.
-	 * @param  {String} [$0.targetVersion=latest] System firmware version to compile against
-	 * @param  {String} $0.auth          Access Token
+	 * @param  {Object} options Options for this API call
+	 * @param  {Object} options.files         Object containing files to be compiled. Keys should be the filenames, and the values should be a path or Buffer of the file contents.
+	 * @param  {Number} [options.platformId]    Platform id number of the device you are compiling for. Common values are 0=Core, 6=Photon, 10=Electron.
+	 * @param  {String} [options.targetVersion=latest] System firmware version to compile against
+	 * @param  {String} options.auth          Access Token
 	 * @return {Promise}
 	 */
 	compileCode({ files, platformId, targetVersion, auth, context }) {
@@ -425,8 +451,9 @@ class Particle {
 
 	/**
 	 * Download a firmware binary
-	 * @param  {String} $0.binaryId Binary ID received from a successful compile call
-	 * @param  {String} $0.auth     Access Token
+	 * @param  {Object} options Options for this API call
+	 * @param  {String} options.binaryId Binary ID received from a successful compile call
+	 * @param  {String} options.auth     Access Token
 	 * @return {Request}
 	 */
 	downloadFirmwareBinary({ binaryId, auth, context }) {
@@ -442,10 +469,11 @@ class Particle {
 
 	/**
 	 * Send a new device public key to the Particle Cloud
-	 * @param  {String} $0.deviceId  Device ID or Name
-	 * @param  {(String|Buffer)} $0.key       Public key contents
-	 * @param  {String} [$0.algorithm=rsa] Algorithm used to generate the public key. Valid values are `rsa` or `ecc`.
-	 * @param  {String} $0.auth      Access Token
+	 * @param  {Object} options Options for this API call
+	 * @param  {String} options.deviceId  Device ID or Name
+	 * @param  {(String|Buffer)} options.key       Public key contents
+	 * @param  {String} [options.algorithm=rsa] Algorithm used to generate the public key. Valid values are `rsa` or `ecc`.
+	 * @param  {String} options.auth      Access Token
 	 * @return {Promise}
 	 */
 	sendPublicKey({ deviceId, key, algorithm, auth, context }) {
@@ -460,11 +488,12 @@ class Particle {
 
 	/**
 	 * Call a device function
-	 * @param  {String} $0.deviceId Device ID or Name
-	 * @param  {String} $0.name     Function name
-	 * @param  {String} $0.argument Function argument
-	 * @param  {String} [$0.product] Device in this product ID or slug
-	 * @param  {String} $0.auth     Access Token
+	 * @param  {Object} options Options for this API call
+	 * @param  {String} options.deviceId Device ID or Name
+	 * @param  {String} options.name     Function name
+	 * @param  {String} options.argument Function argument
+	 * @param  {String} [options.product] Device in this product ID or slug
+	 * @param  {String} options.auth     Access Token
 	 * @return {Promise}
 	 */
 	callFunction({ deviceId, name, argument, product, auth, context }) {
@@ -476,11 +505,12 @@ class Particle {
 
 	/**
 	 * Get a stream of events
-	 * @param  {String} [$0.deviceId] Device ID or Name, or `mine` to indicate only your devices.
-	 * @param  {String} [$0.name]     Event Name
-	 * @param  {String} [$0.org]     Organization Slug
-	 * @param  {String} [$0.product] Events for this product ID or slug
-	 * @param  {String} $0.auth     Access Token
+	 * @param  {Object} options Options for this API call
+	 * @param  {String} [options.deviceId] Device ID or Name, or `mine` to indicate only your devices.
+	 * @param  {String} [options.name]     Event Name
+	 * @param  {String} [options.org]     Organization Slug
+	 * @param  {String} [options.product] Events for this product ID or slug
+	 * @param  {String} options.auth     Access Token
 	 * @return {Promise} If the promise resolves, the resolution value will be an EventStream object that will
 	 * emit 'event' events, as well as the specific named event.
 	 */
@@ -512,11 +542,12 @@ class Particle {
 
 	/**
 	 * Publish a event to the Particle Cloud
-	 * @param  {String} $0.name      Event name
-	 * @param  {String} $0.data      Event data
-	 * @param  {Boolean} $0.isPrivate Should the event be publicly available?
-	 * @param  {String} [$0.product]  Event for this product ID or slug
-	 * @param  {String} $0.auth      Access Token
+	 * @param  {Object} options Options for this API call
+	 * @param  {String} options.name      Event name
+	 * @param  {String} options.data      Event data
+	 * @param  {Boolean} options.isPrivate Should the event be publicly available?
+	 * @param  {String} [options.product]  Event for this product ID or slug
+	 * @param  {String} options.auth      Access Token
 	 * @return {Promise}
 	 */
 	publishEvent({ name, data, isPrivate, product, auth, context }) {
@@ -527,22 +558,23 @@ class Particle {
 
 	/**
 	 * Create a webhook
-	 * @param  {String} $0.deviceId           Trigger webhook only for this device ID or Name
-	 * @param  {String} $0.name               Webhook name
-	 * @param  {String} $0.url                URL the webhook should hit
-	 * @param  {String} [$0.requestType=POST]        HTTP method to use
-	 * @param  {Object} [$0.headers]            Additional headers to add to the webhook
-	 * @param  {Object} [$0.json]               JSON data
-	 * @param  {Object} [$0.query]              Query string data
-	 * @param  {String} [$0.body]               Custom webhook request body
-	 * @param  {Object} [$0.responseTemplate]   Webhook response template
-	 * @param  {Object} [$0.responseTopic]      Webhook response topic
-	 * @param  {Boolean} [$0.rejectUnauthorized] Reject invalid HTTPS certificates
-	 * @params {Boolean} [$0.noDefaults]        Don't include default event data in the webhook request
-	 * @param  {Object} [$0.webhookAuth]        HTTP Basic Auth information
-	 * @param  {Object} [$0.form]               Form data
-	 * @param  {String} [$0.product]          Webhook for this product ID or slug
-	 * @param  {String} $0.auth               Access Token
+	 * @param  {Object} options Options for this API call
+	 * @param  {String} options.deviceId           Trigger webhook only for this device ID or Name
+	 * @param  {String} options.name               Webhook name
+	 * @param  {String} options.url                URL the webhook should hit
+	 * @param  {String} [options.requestType=POST]        HTTP method to use
+	 * @param  {Object} [options.headers]            Additional headers to add to the webhook
+	 * @param  {Object} [options.json]               JSON data
+	 * @param  {Object} [options.query]              Query string data
+	 * @param  {String} [options.body]               Custom webhook request body
+	 * @param  {Object} [options.responseTemplate]   Webhook response template
+	 * @param  {Object} [options.responseTopic]      Webhook response topic
+	 * @param  {Boolean} [options.rejectUnauthorized] Reject invalid HTTPS certificates
+	 * @params {Boolean} [options.noDefaults]        Don't include default event data in the webhook request
+	 * @param  {Object} [options.webhookAuth]        HTTP Basic Auth information
+	 * @param  {Object} [options.form]               Form data
+	 * @param  {String} [options.product]          Webhook for this product ID or slug
+	 * @param  {String} options.auth               Access Token
 	 * @return {Promise}
 	 */
 	createWebhook({ deviceId, name, url, requestType, headers, json, query, body, responseTemplate, responseTopic, rejectUnauthorized, webhookAuth, noDefaults, form, product, auth, context }) {
@@ -557,9 +589,10 @@ class Particle {
 
 	/**
 	 * Delete a webhook
-	 * @param  {String} $0.hookId Webhook ID
-	 * @param  {String} [$0.product]          Webhook for this product ID or slug
-	 * @param  {String} $0.auth   Access Token
+	 * @param  {Object} options Options for this API call
+	 * @param  {String} options.hookId Webhook ID
+	 * @param  {String} [options.product]          Webhook for this product ID or slug
+	 * @param  {String} options.auth   Access Token
 	 * @return {Promise}
 	 */
 	deleteWebhook({ hookId, product, auth, context }) {
@@ -569,8 +602,9 @@ class Particle {
 
 	/**
 	 * List all webhooks owned by the account or product
-	 * @param  {String} [$0.product]          Webhooks for this product ID or slug
-	 * @param  {String} $0.auth Access Token
+	 * @param  {Object} options Options for this API call
+	 * @param  {String} [options.product]          Webhooks for this product ID or slug
+	 * @param  {String} options.auth Access Token
 	 * @return {Promise}
 	 */
 	listWebhooks({ product, auth, context }) {
@@ -583,12 +617,13 @@ class Particle {
      *
 	 * See the API docs for details https://docs.particle.io/reference/api/#integrations-webhooks-
 	 *
-	 * @param  {String} $0.integrationType  The kind of external integration. One of Webhook, AzureIotHub, GoogleCloudPubSub, GoogleMaps
-	 * @param  {String} $0.event            Event that triggers the integration
-	 * @params {Object} $0.settings         Settings specific to that integration type
-	 * @param  {String} [$0.deviceId]       Trigger integration only for this device ID or Name
-	 * @param  {String} [$0.product]        Integration for this product ID or slug
-	 * @param  {String} $0.auth             Access Token
+	 * @param  {Object} options Options for this API call
+	 * @param  {String} options.integrationType  The kind of external integration. One of Webhook, AzureIotHub, GoogleCloudPubSub, GoogleMaps
+	 * @param  {String} options.event            Event that triggers the integration
+	 * @params {Object} options.settings         Settings specific to that integration type
+	 * @param  {String} [options.deviceId]       Trigger integration only for this device ID or Name
+	 * @param  {String} [options.product]        Integration for this product ID or slug
+	 * @param  {String} options.auth             Access Token
 	 * @return {Promise}
 	 */
 	createIntegration({ integrationType, event, settings, deviceId, product, auth, context }) {
@@ -602,12 +637,13 @@ class Particle {
 	 *
 	 * See the API docs for details https://docs.particle.io/reference/api/#integrations-webhooks-
 	 *
-	 * @param  {String} $0.integrationId    The integration to edit
-	 * @param  {String} [$0.event]          Change the event that triggers the integration
-	 * @params {Object} [$0.settings]       Change the settings specific to that integration type
-	 * @param  {String} [$0.deviceId]       Trigger integration only for this device ID or Name
-	 * @param  {String} [$0.product]        Integration for this product ID or slug
-	 * @param  {String} $0.auth             Access Token
+	 * @param  {Object} options Options for this API call
+	 * @param  {String} options.integrationId    The integration to edit
+	 * @param  {String} [options.event]          Change the event that triggers the integration
+	 * @params {Object} [options.settings]       Change the settings specific to that integration type
+	 * @param  {String} [options.deviceId]       Trigger integration only for this device ID or Name
+	 * @param  {String} [options.product]        Integration for this product ID or slug
+	 * @param  {String} options.auth             Access Token
 	 * @return {Promise}
 	 */
 	editIntegration({ integrationId, event, settings, deviceId, product, auth, context }) {
@@ -619,9 +655,10 @@ class Particle {
 	/**
 	 * Delete an integration to send events to an external service
 	 *
-	 * @param  {String} $0.integrationId    The integration to remove
-	 * @param  {String} [$0.product]        Integration for this product ID or slug
-	 * @param  {String} $0.auth             Access Token
+	 * @param  {Object} options Options for this API call
+	 * @param  {String} options.integrationId    The integration to remove
+	 * @param  {String} [options.product]        Integration for this product ID or slug
+	 * @param  {String} options.auth             Access Token
 	 * @return {Promise}
 	 */
 	deleteIntegration({ integrationId, product, auth, context }) {
@@ -631,8 +668,9 @@ class Particle {
 
 	/**
 	 * List all integrations owned by the account or product
-	 * @param  {String} [$0.product]        Integrations for this product ID or slug
-	 * @param  {String} $0.auth Access Token
+	 * @param  {Object} options Options for this API call
+	 * @param  {String} [options.product]        Integrations for this product ID or slug
+	 * @param  {String} options.auth Access Token
 	 * @return {Promise}
 	 */
 	listIntegrations({ product, auth, context }) {
@@ -642,7 +680,8 @@ class Particle {
 
 	/**
 	 * Get details about the current user
-	 * @param  {String} $0.auth Access Token
+	 * @param  {Object} options Options for this API call
+	 * @param  {String} options.auth Access Token
 	 * @return {Promise}
 	 */
 	getUserInfo({ auth, context }) {
@@ -651,10 +690,11 @@ class Particle {
 
 	/**
 	 * Set details on the current user
-	 * @param  {String} $0.auth Access Token
-	 * @param  {String} $0.stripeToken Set user's stripe token for payment
-	 * @param  {String} $0.accountInfo Set user's extended info fields (name, business account, company name, etc)
-	 * @param  {String} $0.password Change authenticated user password
+	 * @param  {Object} options Options for this API call
+	 * @param  {String} options.auth Access Token
+	 * @param  {String} options.stripeToken Set user's stripe token for payment
+	 * @param  {String} options.accountInfo Set user's extended info fields (name, business account, company name, etc)
+	 * @param  {String} options.password Change authenticated user password
 	 * @return {Promise}
 	 */
 	setUserInfo({ stripeToken, accountInfo, password, auth, context }) {
@@ -669,13 +709,14 @@ class Particle {
 
 	/**
 	 * List SIM cards owned by a user or product
-	 * @param  {String} [$0.iccid]    (Product only) Filter to SIM cards matching this ICCID
-	 * @param  {String} [$0.deviceId] (Product only) Filter to SIM cards matching this device ID
-	 * @param  {String} [$0.deviceName] (Product only) Filter to SIM cards matching this device name
-	 * @param  {Number} [$0.page]     (Product only) Current page of results
-	 * @param  {Number} [$0.perPage]  (Product only) Records per page
-	 * @param  {String} [$0.product]  SIM cards for this product ID or slug
-	 * @param  {String} $0.auth       Access Token
+	 * @param  {Object} options Options for this API call
+	 * @param  {String} [options.iccid]    (Product only) Filter to SIM cards matching this ICCID
+	 * @param  {String} [options.deviceId] (Product only) Filter to SIM cards matching this device ID
+	 * @param  {String} [options.deviceName] (Product only) Filter to SIM cards matching this device name
+	 * @param  {Number} [options.page]     (Product only) Current page of results
+	 * @param  {Number} [options.perPage]  (Product only) Records per page
+	 * @param  {String} [options.product]  SIM cards for this product ID or slug
+	 * @param  {String} options.auth       Access Token
 	 * @return {Promise}
 	 */
 	listSIMs({ iccid, deviceId, deviceName, page, perPage, product, auth, context }) {
@@ -686,9 +727,10 @@ class Particle {
 
 	/**
 	 * Get data usage for one SIM card for the current billing period
-	 * @param  {String} $0.iccid      ICCID of the SIM card
-	 * @param  {String} [$0.product]  SIM card for this product ID or slug
-	 * @param  {String} $0.auth       Access Token
+	 * @param  {Object} options Options for this API call
+	 * @param  {String} options.iccid      ICCID of the SIM card
+	 * @param  {String} [options.product]  SIM card for this product ID or slug
+	 * @param  {String} options.auth       Access Token
 	 * @return {Promise}
 	 */
 	getSIMDataUsage({ iccid, product, auth, context }) {
@@ -700,8 +742,9 @@ class Particle {
 
 	/**
 	 * Get data usage for all SIM cards in a product the current billing period
-	 * @param  {String} $0.product  SIM cards for this product ID or slug
-	 * @param  {String} $0.auth     Access Token
+	 * @param  {Object} options Options for this API call
+	 * @param  {String} options.product  SIM cards for this product ID or slug
+	 * @param  {String} options.auth     Access Token
 	 * @return {Promise}
 	 */
 	getFleetDataUsage({ product, auth, context }) {
@@ -714,11 +757,12 @@ class Particle {
 
 	/**
 	 * Activate and add SIM cards to an account or product
-	 * @param  {String} $0.iccid        ICCID of the SIM card
-	 * @param  {Array<String>} $0.iccids (Product only) ICCID of multiple SIM cards to import
-	 * @param  {String} $0.countryCode The ISO country code for the SIM cards
-	 * @param  {String} [$0.product]  SIM cards for this product ID or slug
-	 * @param  {String} $0.auth       Access Token
+	 * @param  {Object} options Options for this API call
+	 * @param  {String} options.iccid        ICCID of the SIM card
+	 * @param  {Array<String>} options.iccids (Product only) ICCID of multiple SIM cards to import
+	 * @param  {String} options.countryCode The ISO country code for the SIM cards
+	 * @param  {String} [options.product]  SIM cards for this product ID or slug
+	 * @param  {String} options.auth       Access Token
 	 * @return {Promise}
 	 */
 	activateSIM({ iccid, iccids, countryCode, promoCode, product, auth, context }) {
@@ -735,9 +779,10 @@ class Particle {
 
 	/**
 	 * Deactivate a SIM card so it doesn't incur data usage in future months.
-	 * @param  {String} $0.iccid      ICCID of the SIM card
-	 * @param  {String} [$0.product]  SIM cards for this product ID or slug
-	 * @param  {String} $0.auth       Access Token
+	 * @param  {Object} options Options for this API call
+	 * @param  {String} options.iccid      ICCID of the SIM card
+	 * @param  {String} [options.product]  SIM cards for this product ID or slug
+	 * @param  {String} options.auth       Access Token
 	 * @return {Promise}
 	 */
 	deactivateSIM({ iccid, product, auth, context }) {
@@ -748,10 +793,11 @@ class Particle {
 
 	/**
 	 * Reactivate a SIM card the was deactivated or unpause a SIM card that was automatically paused
-	 * @param  {String} $0.iccid      ICCID of the SIM card
-	 * @param  {Number} [$0.mbLimit]  New monthly data limit. Necessary if unpausing a SIM card
-	 * @param  {String} [$0.product]  SIM cards for this product ID or slug
-	 * @param  {String} $0.auth       Access Token
+	 * @param  {Object} options Options for this API call
+	 * @param  {String} options.iccid      ICCID of the SIM card
+	 * @param  {Number} [options.mbLimit]  New monthly data limit. Necessary if unpausing a SIM card
+	 * @param  {String} [options.product]  SIM cards for this product ID or slug
+	 * @param  {String} options.auth       Access Token
 	 * @return {Promise}
 	 */
 	reactivateSIM({ iccid, mbLimit, product, auth, context }) {
@@ -762,10 +808,11 @@ class Particle {
 
 	/**
 	 * Update SIM card data limit
-	 * @param  {String} $0.iccid        ICCID of the SIM card
-	 * @param  {Array}  $0.mbLimit     Data limit in megabyte for the SIM card
-	 * @param  {String} [$0.product]  SIM cards for this product ID or slug
-	 * @param  {String} $0.auth       Access Token
+	 * @param  {Object} options Options for this API call
+	 * @param  {String} options.iccid        ICCID of the SIM card
+	 * @param  {Array}  options.mbLimit     Data limit in megabyte for the SIM card
+	 * @param  {String} [options.product]  SIM cards for this product ID or slug
+	 * @param  {String} options.auth       Access Token
 	 * @return {Promise}
 	 */
 	updateSIM({ iccid, mbLimit, product, auth, context }) {
@@ -776,9 +823,10 @@ class Particle {
 
 	/**
 	 * Remove a SIM card from an account so it can be activated by a different account
-	 * @param  {String} $0.iccid      ICCID of the SIM card
-	 * @param  {String} [$0.product]  SIM cards for this product ID or slug
-	 * @param  {String} $0.auth       Access Token
+	 * @param  {Object} options Options for this API call
+	 * @param  {String} options.iccid      ICCID of the SIM card
+	 * @param  {String} [options.product]  SIM cards for this product ID or slug
+	 * @param  {String} options.auth       Access Token
 	 * @return {Promise}
 	 */
 	removeSIM({ iccid, product, auth, context }) {
@@ -788,8 +836,9 @@ class Particle {
 
 	/**
 	 * List valid build targets to be used for compiling
-	 * @param  {Boolean} [$0.onlyFeatured=false] Only list featured build targets
-	 * @param  {String} $0.auth       Access Token
+	 * @param  {Object} options Options for this API call
+	 * @param  {Boolean} [options.onlyFeatured=false] Only list featured build targets
+	 * @param  {String} options.auth       Access Token
 	 * @return {Promise}
 	 */
 	listBuildTargets({ onlyFeatured, auth, context }) {
@@ -802,13 +851,14 @@ class Particle {
 
 	/**
 	 * List firmware libraries
-	 * @param  {Number} $0.page Page index (default, first page)
-	 * @param  {Number} $0.limit Number of items per page
-	 * @param  {String} $0.filter Search term for the libraries
-	 * @param  {String} $0.sort Ordering key for the library list
-	 * @param  {Array<String>}  $0.architectures List of architectures to filter
-	 * @param  {String} $0.category Category to filter
-	 * @param  {String} $0.scope The library scope to list. Default is 'all'. Other values are
+	 * @param  {Object} options Options for this API call
+	 * @param  {Number} options.page Page index (default, first page)
+	 * @param  {Number} options.limit Number of items per page
+	 * @param  {String} options.filter Search term for the libraries
+	 * @param  {String} options.sort Ordering key for the library list
+	 * @param  {Array<String>}  options.architectures List of architectures to filter
+	 * @param  {String} options.category Category to filter
+	 * @param  {String} options.scope The library scope to list. Default is 'all'. Other values are
 	 * - 'all' - list public libraries and my private libraries
 	 * - 'public' - list only public libraries
 	 * - 'private' - list only my private libraries
@@ -816,9 +866,9 @@ class Particle {
 	 * - 'official' - list only official libraries
 	 * - 'verified' - list only verified libraries
 	 * - 'featured' - list only featured libraries
-	 * @param  {String} $0.excludeScopes  list of scopes to exclude
-	 * @param  {String} $0.category Category to filter
-	 * @param  {String} $0.auth Access Token
+	 * @param  {String} options.excludeScopes  list of scopes to exclude
+	 * @param  {String} options.category Category to filter
+	 * @param  {String} options.auth Access Token
 	 * @return {Promise}
 	 */
 	listLibraries({ page, limit, filter, sort, architectures, category, scope, excludeScopes, auth, context }) {
@@ -840,9 +890,10 @@ class Particle {
 
 	/**
 	 * Get firmware library details
-	 * @param  {String} $0.name Name of the library to fetch
-	 * @param  {String} $0.version Version of the library to fetch (default: latest)
-	 * @param  {String} $0.auth Access Token
+	 * @param  {Object} options Options for this API call
+	 * @param  {String} options.name Name of the library to fetch
+	 * @param  {String} options.version Version of the library to fetch (default: latest)
+	 * @param  {String} options.auth Access Token
 	 * @return {Promise}
 	 */
 	getLibrary({ name, version, auth, context }) {
@@ -851,10 +902,11 @@ class Particle {
 
 	/**
 	 * Firmware library details for each version
-	 * @param  {String} $0.name Name of the library to fetch
-	 * @param  {Number} $0.page Page index (default, first page)
-	 * @param  {Number} $0.limit Number of items per page
-	 * @param  {String} $0.auth Access Token
+	 * @param  {Object} options Options for this API call
+	 * @param  {String} options.name Name of the library to fetch
+	 * @param  {Number} options.page Page index (default, first page)
+	 * @param  {Number} options.limit Number of items per page
+	 * @param  {String} options.auth Access Token
 	 * @return {Promise}
 	 */
 	getLibraryVersions({ name, page, limit, auth, context }) {
@@ -866,8 +918,9 @@ class Particle {
 
 	/**
 	 * Contribute a new library version from a compressed archive
-	 * @param  {String} $0.archive Compressed archive file containing the library sources
-	 * @param  {String} $0.auth Access Token
+	 * @param  {Object} options Options for this API call
+	 * @param  {String} options.archive Compressed archive file containing the library sources
+	 * @param  {String} options.auth Access Token
 	 * @return {Promise}
 	 */
 	contributeLibrary({ archive, auth, context }) {
@@ -881,8 +934,9 @@ class Particle {
 
 	/**
 	 * Publish the latest version of a library to the public
-	 * @param  {String} $0.name Name of the library to publish
-	 * @param  {String} $0.auth Access Token
+	 * @param  {Object} options Options for this API call
+	 * @param  {String} options.name Name of the library to publish
+	 * @param  {String} options.auth Access Token
 	 * @return {Promise}
 	 */
 	publishLibrary({ name, auth, context }) {
@@ -892,9 +946,10 @@ class Particle {
 
 	/**
 	 * Delete one version of a library or an entire private library
-	 * @param  {String} $0.name Name of the library to remove
-	 * @param  {String} $0.force Key to force deleting a public library
-	 * @param  {String} $0.auth Access Token
+	 * @param  {Object} options Options for this API call
+	 * @param  {String} options.name Name of the library to remove
+	 * @param  {String} options.force Key to force deleting a public library
+	 * @param  {String} options.auth Access Token
 	 * @return {Promise}
 	 */
 	deleteLibrary({ name, force, auth, context }) {
@@ -903,7 +958,8 @@ class Particle {
 
 	/**
 	 * Download an external file that may not be on the API
-	 * @param  {String} $0.url URL of the file.
+	 * @param  {Object} options Options for this API call
+	 * @param  {String} options.url URL of the file.
 	 * @return {Promise} Resolves to a buffer with the file data
 	 */
 	downloadFile({ url }) {
@@ -921,8 +977,9 @@ class Particle {
 
 	/**
 	 * List OAuth client created by the account
-	 * @param  {String} [$0.product] List clients for this product ID or slug
-	 * @param  {String} $0.auth Access Token
+	 * @param  {Object} options Options for this API call
+	 * @param  {String} [options.product] List clients for this product ID or slug
+	 * @param  {String} options.auth Access Token
 	 * @return {Promise}
 	 */
 	listOAuthClients({ product, auth, context }) {
@@ -932,12 +989,13 @@ class Particle {
 
 	/**
 	 * Create an OAuth client
-	 * @param  {String} $0.name               Name of the OAuth client
-	 * @param  {String} $0.type               web, installed or web
-	 * @param  {String} [$0.redirect_uri]     URL to redirect after OAuth flow. Only for type web.
-	 * @param  {Object} [$0.scope]            Limits what the access tokens created by this client can do.
-	 * @param  {String} [$0.product]          Create client for this product ID or slug
-	 * @param  {String} $0.auth               Access Token
+	 * @param  {Object} options Options for this API call
+	 * @param  {String} options.name               Name of the OAuth client
+	 * @param  {String} options.type               web, installed or web
+	 * @param  {String} [options.redirect_uri]     URL to redirect after OAuth flow. Only for type web.
+	 * @param  {Object} [options.scope]            Limits what the access tokens created by this client can do.
+	 * @param  {String} [options.product]          Create client for this product ID or slug
+	 * @param  {String} options.auth               Access Token
 	 * @return {Promise}
 	 */
 	createOAuthClient({ name, type, redirect_uri, scope, product, auth, context }) {
@@ -948,11 +1006,12 @@ class Particle {
 
 	/**
 	 * Update an OAuth client
-	 * @param  {String} $0.clientId           The OAuth client to update
-	 * @param  {String} [$0.name]             New Name of the OAuth client
-	 * @param  {Object} [$0.scope]            New scope of the OAuth client
-	 * @param  {String} [$0.product]          Update client linked to this product ID or slug
-	 * @param  {String} $0.auth               Access Token
+	 * @param  {Object} options Options for this API call
+	 * @param  {String} options.clientId           The OAuth client to update
+	 * @param  {String} [options.name]             New Name of the OAuth client
+	 * @param  {Object} [options.scope]            New scope of the OAuth client
+	 * @param  {String} [options.product]          Update client linked to this product ID or slug
+	 * @param  {String} options.auth               Access Token
 	 * @return {Promise}
 	 */
 	updateOAuthClient({ clientId, name, scope, product, auth, context }) {
@@ -963,9 +1022,10 @@ class Particle {
 
 	/**
 	 * Delete an OAuth client
-	 * @param  {String} $0.clientId           The OAuth client to update
-	 * @param  {String} [$0.product]          OAuth client linked to this product ID or slug
-	 * @param  {String} $0.auth               Access Token
+	 * @param  {Object} options Options for this API call
+	 * @param  {String} options.clientId           The OAuth client to update
+	 * @param  {String} [options.product]          OAuth client linked to this product ID or slug
+	 * @param  {String} options.auth               Access Token
 	 * @return {Promise}
 	 */
 	deleteOAuthClient({ clientId, product, auth, context }) {
@@ -975,7 +1035,8 @@ class Particle {
 
 	/**
 	 * List products the account has access to
-	 * @param  {String} $0.auth Access Token
+	 * @param  {Object} options Options for this API call
+	 * @param  {String} options.auth Access Token
 	 * @return {Promise}
 	 */
 	listProducts({ auth, context }) {
@@ -984,8 +1045,9 @@ class Particle {
 
 	/**
 	 * Get detailed information about a product
-	 * @param  {String} $0.product  Product ID or slug
-	 * @param  {String} $0.auth     Access token
+	 * @param  {Object} options Options for this API call
+	 * @param  {String} options.product  Product ID or slug
+	 * @param  {String} options.auth     Access token
 	 * @return {Promise}
 	 */
 	getProduct({ product, auth, context }) {
@@ -994,8 +1056,9 @@ class Particle {
 
 	/**
 	 * List product firmware versions
-	 * @param  {String} $0.product Firmware for this product ID or slug
-	 * @param  {String} $0.auth Access Token
+	 * @param  {Object} options Options for this API call
+	 * @param  {String} options.product Firmware for this product ID or slug
+	 * @param  {String} options.auth Access Token
 	 * @return {Promise}
 	 */
 	listProductFirmware({ product, auth, context }) {
@@ -1004,12 +1067,13 @@ class Particle {
 
 	/**
 	 * List product firmware versions
-	 * @param  {Object} $0.file    Path or Buffer of the new firmware file
-	 * @param  {Number} $0.version Version number of new firmware
-	 * @param  {String} $0.title   Short identifier for the new firmware
-	 * @param  {String} [$0.description] Longer description for the new firmware
-	 * @param  {String} $0.product Firmware for this product ID or slug
-	 * @param  {String} $0.auth Access Token
+	 * @param  {Object} options Options for this API call
+	 * @param  {Object} options.file    Path or Buffer of the new firmware file
+	 * @param  {Number} options.version Version number of new firmware
+	 * @param  {String} options.title   Short identifier for the new firmware
+	 * @param  {String} [options.description] Longer description for the new firmware
+	 * @param  {String} options.product Firmware for this product ID or slug
+	 * @param  {String} options.auth Access Token
 	 * @return {Promise}
 	 */
 	uploadProductFirmware({ file, version, title, description, product, auth, context }) {
@@ -1031,9 +1095,10 @@ class Particle {
 
 	/**
 	 * Get information about a product firmware version
-	 * @param  {Number} $0.version Version number of firmware
-	 * @param  {String} $0.product Firmware for this product ID or slug
-	 * @param  {String} $0.auth    Access token
+	 * @param  {Object} options Options for this API call
+	 * @param  {Number} options.version Version number of firmware
+	 * @param  {String} options.product Firmware for this product ID or slug
+	 * @param  {String} options.auth    Access token
 	 * @return {Promise}
 	 */
 	getProductFirmware({ version, product, auth, context }) {
@@ -1042,11 +1107,12 @@ class Particle {
 
 	/**
 	 * Update information for a product firmware version
-	 * @param  {Number} $0.version Version number of new firmware
-	 * @param  {String} [$0.title]   New title
-	 * @param  {String} [$0.description] New description
-	 * @param  {String} $0.product Firmware for this product ID or slug
-	 * @param  {String} $0.auth Access Token
+	 * @param  {Object} options Options for this API call
+	 * @param  {Number} options.version Version number of new firmware
+	 * @param  {String} [options.title]   New title
+	 * @param  {String} [options.description] New description
+	 * @param  {String} options.product Firmware for this product ID or slug
+	 * @param  {String} options.auth Access Token
 	 * @return {Promise}
 	 */
 	updateProductFirmware({ version, title, description, product, auth, context }) {
@@ -1056,9 +1122,10 @@ class Particle {
 
 	/**
 	 * Download a product firmware binary
-	 * @param  {Number} $0.version Version number of new firmware
-	 * @param  {String} $0.product Firmware for this product ID or slug
-	 * @param  {String} $0.auth    Access Token
+	 * @param  {Object} options Options for this API call
+	 * @param  {Number} options.version Version number of new firmware
+	 * @param  {String} options.product Firmware for this product ID or slug
+	 * @param  {String} options.auth    Access Token
 	 * @return {Request}
 	 */
 	downloadProductFirmware({ version, product, auth, context }) {
@@ -1074,9 +1141,10 @@ class Particle {
 
 	/**
 	 * Release a product firmware version as the default version
-	 * @param  {Number} $0.version Version number of new firmware
-	 * @param  {String} $0.product Firmware for this product ID or slug
-	 * @param  {String} $0.auth Access Token
+	 * @param  {Object} options Options for this API call
+	 * @param  {Number} options.version Version number of new firmware
+	 * @param  {String} options.product Firmware for this product ID or slug
+	 * @param  {String} options.auth Access Token
 	 * @return {Promise}
 	 */
 	releaseProductFirmware({ version, product, auth, context }) {
@@ -1086,8 +1154,9 @@ class Particle {
 
 	/**
 	 * List product team members
-	 * @param  {String} $0.product Team for this product ID or slug
-	 * @param  {String} $0.auth Access Token
+	 * @param  {Object} options Options for this API call
+	 * @param  {String} options.product Team for this product ID or slug
+	 * @param  {String} options.auth Access Token
 	 * @return {Promise}
 	 */
 	listTeamMembers({ product, auth, context }) {
@@ -1096,9 +1165,10 @@ class Particle {
 
 	/**
 	 * Invite Particle user to a product team
-	 * @param  {String} $0.username  Username for the Particle account
-	 * @param  {String} $0.product Team for this product ID or slug
-	 * @param  {String} $0.auth Access Token
+	 * @param  {Object} options Options for this API call
+	 * @param  {String} options.username  Username for the Particle account
+	 * @param  {String} options.product Team for this product ID or slug
+	 * @param  {String} options.auth Access Token
 	 * @return {Promise}
 	 */
 	inviteTeamMember({ username, product, auth, context }) {
@@ -1107,9 +1177,10 @@ class Particle {
 
 	/**
 	 * Remove Particle user to a product team
-	 * @param  {String} $0.username  Username for the Particle account
-	 * @param  {String} $0.product Team for this product ID or slug
-	 * @param  {String} $0.auth Access Token
+	 * @param  {Object} options Options for this API call
+	 * @param  {String} options.username  Username for the Particle account
+	 * @param  {String} options.product Team for this product ID or slug
+	 * @param  {String} options.auth Access Token
 	 * @return {Promise}
 	 */
 	removeTeamMember({ username, product, auth, context }) {
@@ -1118,8 +1189,9 @@ class Particle {
 
 	/**
 	 * API URI to access a device
-	 * @param  {String} $0.deviceId  Device ID to access
-	 * @param  {String} [$0.product] Device only in this product ID or slug
+	 * @param  {Object} options Options for this API call
+	 * @param  {String} options.deviceId  Device ID to access
+	 * @param  {String} [options.product] Device only in this product ID or slug
 	 * @private
 	 * @returns {string}
 	 */
