@@ -317,6 +317,8 @@ class Particle {
 
 	/**
 	 * Generate a claim code to use in the device claiming process.
+	 * To generate a claim code for a product, the access token MUST belong to a
+	 * customer of the product.
 	 * @param  {String} [$0.iccid] ICCID of the SIM card used in the Electron
 	 * @param  {String} [$0.product] Device in this product ID or slug
 	 * @param  {String} $0.auth  Access Token
@@ -1112,7 +1114,6 @@ class Particle {
 	removeTeamMember({ username, product, auth, context }) {
 		return this.delete(`/v1/products/${product}/team/${username}`, undefined, auth, context);
 	}
-
 
 	/**
 	 * API URI to access a device
