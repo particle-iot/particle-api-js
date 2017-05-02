@@ -512,7 +512,6 @@ describe('ParticleAPI', () => {
 				return api.changeProduct(props).then(({ data }) => {
 					data.should.be.instanceOf(Object);
 					data.product_id.should.equal(props.productId);
-					data.update_after_claim.should.equal(props.shouldUpdate);
 				});
 			});
 		});

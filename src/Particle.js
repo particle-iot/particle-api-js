@@ -61,8 +61,8 @@ class Particle {
 	 * @param {object} context   Context information.
 	 * @returns {Promise<object>} Resolve the tracking identify of the current login
 	 */
-	trackingIdentity({auth, full=false, context}={}) {
-		return this.get('/v1/user/identify', auth, (full ? undefined : {tracking:1}), context);
+	trackingIdentity({ auth, full = false, context } = {}) {
+		return this.get('/v1/user/identify', auth, (full ? undefined : { tracking: 1 }), context);
 	}
 
 	/**
@@ -80,7 +80,7 @@ class Particle {
 			client_id: this.clientId,
 			client_secret: this.clientSecret,
 			expires_in: tokenDuration
-		}, method: 'post', context});
+		}, method: 'post', context });
 	}
 
 	/**
@@ -417,7 +417,7 @@ class Particle {
 			form.latest = 'true';
 		}
 		return this.request({ uri: '/v1/binaries',
-			files, auth, form, context, method: 'post'});
+			files, auth, form, context, method: 'post' });
 	}
 
 	/**
