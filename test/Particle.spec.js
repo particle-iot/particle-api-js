@@ -167,15 +167,15 @@ describe('ParticleAPI', () => {
 				});
 			});
 		});
-		describe('.removeAccessToken', () => {
+		describe('.deleteAccessToken', () => {
 			it('sends credentials', () => {
-				return api.removeAccessToken(props).then(({ auth }) => {
+				return api.deleteAccessToken(props).then(({ auth }) => {
 					auth.username.should.equal(props.username);
 					auth.password.should.equal(props.password);
 				});
 			});
 			it('generates request', () => {
-				return api.removeAccessToken(props).then((results) => {
+				return api.deleteAccessToken(props).then((results) => {
 					results.uri.should.endWith(props.token);
 				});
 			});
@@ -845,10 +845,10 @@ describe('ParticleAPI', () => {
 				});
 			});
 		});
-		describe('.removeWebhook', () => {
+		describe('.deleteWebhook', () => {
 			describe('user scope', () => {
 				it('generates request', () => {
-					return api.removeWebhook(props).then((results) => {
+					return api.deleteWebhook(props).then((results) => {
 						results.should.match({
 							method: 'delete',
 							uri: `/v1/webhooks/${props.hookId}`,
@@ -859,7 +859,7 @@ describe('ParticleAPI', () => {
 			});
 			describe('product scope', () => {
 				it('generates request', () => {
-					return api.removeWebhook(propsWithProduct).then((results) => {
+					return api.deleteWebhook(propsWithProduct).then((results) => {
 						results.should.match({
 							method: 'delete',
 							uri: `/v1/products/${product}/webhooks/${props.hookId}`,
@@ -961,10 +961,10 @@ describe('ParticleAPI', () => {
 				});
 			});
 		});
-		describe('.removeIntegration', () => {
+		describe('.deleteIntegration', () => {
 			describe('user scope', () => {
 				it('generates request', () => {
-					return api.removeIntegration(props).then((results) => {
+					return api.deleteIntegration(props).then((results) => {
 						results.should.match({
 							method: 'delete',
 							uri: `/v1/integrations/${props.integrationId}`,
@@ -975,7 +975,7 @@ describe('ParticleAPI', () => {
 			});
 			describe('product scope', () => {
 				it('generates request', () => {
-					return api.removeIntegration(propsWithProduct).then((results) => {
+					return api.deleteIntegration(propsWithProduct).then((results) => {
 						results.should.match({
 							method: 'delete',
 							uri: `/v1/products/${product}/integrations/${props.integrationId}`,
@@ -1396,9 +1396,9 @@ describe('ParticleAPI', () => {
 				});
 			});
 		});
-		describe('.removeLibrary', () => {
+		describe('.deleteLibrary', () => {
 			it('generates request', () => {
-				return api.removeLibrary({
+				return api.deleteLibrary({
 					name: 'mylib',
 					auth: 'X',
 					force: 'xyz'
@@ -1510,10 +1510,10 @@ describe('ParticleAPI', () => {
 			});
 		});
 
-		describe('.removeOAuthClient', () => {
+		describe('.deleteOAuthClient', () => {
 			describe('user scope', () => {
 				it('generates request', () => {
-					return api.removeOAuthClient(props).then((results) => {
+					return api.deleteOAuthClient(props).then((results) => {
 						results.should.match({
 							method: 'delete',
 							uri: `/v1/clients/${props.clientId}`,
@@ -1524,7 +1524,7 @@ describe('ParticleAPI', () => {
 			});
 			describe('product scope', () => {
 				it('generates request', () => {
-					return api.removeOAuthClient(propsWithProduct).then((results) => {
+					return api.deleteOAuthClient(propsWithProduct).then((results) => {
 						results.should.match({
 							method: 'delete',
 							uri: `/v1/products/${product}/clients/${props.clientId}`,
@@ -1675,11 +1675,8 @@ describe('ParticleAPI', () => {
 	});
 
 	describe('backwards-compatibility function aliases', () => {
-		it('maps deleteWebhook to removeWebhook', () => {
-			api.removeWebhook.should.equal(api.deleteWebhook);
-		});
-		it('maps deleteLibrary to removeLibrary', () => {
-			api.removeLibrary.should.equal(api.deleteLibrary);
+		it('maps removeAccessToken to deleteAccessToken', () => {
+			api.removeAccessToken.should.equal(api.deleteAccessToken);
 		});
 	});
 

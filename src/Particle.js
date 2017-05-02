@@ -125,7 +125,7 @@ class Particle {
 	 * @param  {String} $0.token    Access token you wish to revoke
 	 * @return {Promise}
 	 */
-	removeAccessToken({ username, password, token, context }) {
+	deleteAccessToken({ username, password, token, context }) {
 		return this.delete(`/v1/access_tokens/${token}`, {
 			access_token: token
 		}, { username, password }, context);
@@ -237,6 +237,18 @@ class Particle {
 	}
 
 	/**
+	 * Instruct the device to turn on/off the LED in a rainbow pattern
+	 * @param  {String} $0.deviceId Device ID or Name
+	 * @param  {Boolean} $0.signal   Signal on or off
+	 * @param  {String} [$0.product] Device in this product ID or slug
+	 * @param  {String} $0.auth     Access Token
+	 * @return {Promise}
+	 */
+	signalDevice({ deviceId, signal, product, auth, context }) {
+		return this.updateDevice({ deviceId, signal, product, auth, context });
+	}
+
+	/**
 	 * Store some notes about device
 	 * @param  {String} $0.deviceId  Device ID or Name
 	 * @params {String} $0.notes     Your notes about this device
@@ -288,6 +300,7 @@ class Particle {
 	 * Update multiple device attributes at the same time
 	 * @param  {String} $0.deviceId       Device ID or Name
 	 * @param  {String} [$0.name]         Desired Name
+	 * @param  {Boolean} $0.signal        Signal device on or off
 	 * @params {String} [$0.notes]        Your notes about this device
 	 * @param  {Boolean} [$0.development] (Product only) Set to true to mark as development, false to return to product fleet
 	 * @params {Number} [$0.desiredFirmwareVersion] (Product only) Lock the product device to run this firmware version.
@@ -297,11 +310,12 @@ class Particle {
 	 * @param  {String} $0.auth           Access Token
 	 * @return {Promise}
 	 */
-	updateDevice({ deviceId, name, notes, development, desiredFirmwareVersion, flash, product, auth, context }) {
+	updateDevice({ deviceId, name, signal, notes, development, desiredFirmwareVersion, flash, product, auth, context }) {
+		signal = signal ? '1' : '0';
 		const uri = this.deviceUri({ deviceId, product });
 		const data = product ?
-			{ name, notes, development, desired_firmware_version: desiredFirmwareVersion, flash } :
-			{ name, notes };
+			{ name, signal, notes, development, desired_firmware_version: desiredFirmwareVersion, flash } :
+			{ name, signal, notes };
 		return this.put(uri, data, auth, context);
 	}
 
@@ -352,19 +366,6 @@ class Particle {
 			`/v1/products/${product}/devices/${deviceId}/${name}` :
 			`/v1/devices/${deviceId}/${name}`;
 		return this.get(uri, auth, undefined, context);
-	}
-
-	/**
-	 * Instruct the device to turn on/off the LED in a rainbow pattern
-	 * @param  {String} $0.deviceId Device ID or Name
-	 * @param  {Boolean} $0.signal   Signal on or off
-	 * @param  {String} $0.auth     Access Token
-	 * @return {Promise}
-	 */
-	signalDevice({ deviceId, signal, auth, context }) {
-		return this.put(`/v1/devices/${deviceId}`, {
-			signal: ( signal ? '1' : '0' )
-		}, auth, context);
 	}
 
 	/**
@@ -555,13 +556,13 @@ class Particle {
 	}
 
 	/**
-	 * Remove a webhook
+	 * Delete a webhook
 	 * @param  {String} $0.hookId Webhook ID
 	 * @param  {String} [$0.product]          Webhook for this product ID or slug
 	 * @param  {String} $0.auth   Access Token
 	 * @return {Promise}
 	 */
-	removeWebhook({ hookId, product, auth, context }) {
+	deleteWebhook({ hookId, product, auth, context }) {
 		const uri = product ? `/v1/products/${product}/webhooks/${hookId}` : `/v1/webhooks/${hookId}`;
 		return this.delete(uri, undefined, auth, context);
 	}
@@ -616,14 +617,14 @@ class Particle {
 	}
 
 	/**
-	 * Remove an integration to send events to an external service
+	 * Delete an integration to send events to an external service
 	 *
 	 * @param  {String} $0.integrationId    The integration to remove
 	 * @param  {String} [$0.product]        Integration for this product ID or slug
 	 * @param  {String} $0.auth             Access Token
 	 * @return {Promise}
 	 */
-	removeIntegration({ integrationId, product, auth, context }) {
+	deleteIntegration({ integrationId, product, auth, context }) {
 		const uri = product ? `/v1/products/${product}/integrations/${integrationId}` : `/v1/integrations/${integrationId}`;
 		return this.delete(uri, undefined, auth, context);
 	}
@@ -890,13 +891,13 @@ class Particle {
 	}
 
 	/**
-	 * Remove one version of a library or an entire published library
+	 * Delete one version of a library or an entire private library
 	 * @param  {String} $0.name Name of the library to remove
 	 * @param  {String} $0.force Key to force deleting a public library
 	 * @param  {String} $0.auth Access Token
 	 * @return {Promise}
 	 */
-	removeLibrary({ name, force, auth, context }) {
+	deleteLibrary({ name, force, auth, context }) {
 		return this.delete(`/v1/libraries/${name}`, { force }, auth, context);
 	}
 
@@ -961,13 +962,13 @@ class Particle {
 	}
 
 	/**
-	 * Remove an OAuth client
+	 * Delete an OAuth client
 	 * @param  {String} $0.clientId           The OAuth client to update
 	 * @param  {String} [$0.product]          OAuth client linked to this product ID or slug
 	 * @param  {String} $0.auth               Access Token
 	 * @return {Promise}
 	 */
-	removeOAuthClient({ clientId, product, auth, context }) {
+	deleteOAuthClient({ clientId, product, auth, context }) {
 		const uri = product ? `/v1/products/${product}/clients/${clientId}` : `/v1/clients/${clientId}`;
 		return this.delete(uri, undefined, auth, context);
 	}
@@ -1162,7 +1163,6 @@ class Particle {
 }
 
 // Aliases for backwards compatibility
-Particle.prototype.deleteWebhook = Particle.prototype.removeWebhook;
-Particle.prototype.deleteLibrary = Particle.prototype.removeLibrary;
+Particle.prototype.removeAccessToken = Particle.prototype.deleteAccessToken;
 
 export default Particle;
