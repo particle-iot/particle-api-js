@@ -211,7 +211,7 @@ describe('ParticleAPI', () => {
 							query: {
 								deviceName: props.deviceName,
 								page: props.page,
-								perPage: props.perPage,
+								per_page: props.perPage,
 								sortAttr: props.sortAttr,
 								sortDir: props.sortDir
 							}
@@ -1073,7 +1073,7 @@ describe('ParticleAPI', () => {
 								deviceId: props.deviceId,
 								deviceName: props.deviceName,
 								page: props.page,
-								perPage: props.perPage
+								per_page: props.perPage
 							}
 						});
 					});

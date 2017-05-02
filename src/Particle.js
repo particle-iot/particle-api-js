@@ -155,7 +155,7 @@ class Particle {
 	 */
 	listDevices({ deviceId, deviceName, sortAttr, sortDir, page, perPage, product, auth, context }) {
 		const uri = product ? `/v1/products/${product}/devices` : '/v1/devices';
-		const query = product ? { deviceId, deviceName, sortAttr, sortDir, page, perPage } : undefined;
+		const query = product ? { deviceId, deviceName, sortAttr, sortDir, page, per_page: perPage } : undefined;
 		return this.get(uri, auth, query, context);
 	}
 
@@ -680,7 +680,7 @@ class Particle {
 	 */
 	listSIMs({ iccid, deviceId, deviceName, page, perPage, product, auth, context }) {
 		const uri = product ? `/v1/products/${product}/sims` : '/v1/sims';
-		const query = product ? { iccid, deviceId, deviceName, page, perPage } : undefined;
+		const query = product ? { iccid, deviceId, deviceName, page, per_page: perPage } : undefined;
 		return this.get(uri, auth, query, context);
 	}
 
