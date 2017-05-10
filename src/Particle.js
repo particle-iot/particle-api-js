@@ -59,7 +59,7 @@ class Particle {
 	 * @param  {String} options.auth      The access token
 	 * @param  {Boolean} options.full      When true, retrieve all information for registering a user with the tracking API. When false,
 	 *  retrieve only the unique tracking ID for the current login.
-	 * @param  {Object} context   Context information.
+	 * @param  {Object} options.context   Context information.
 	 * @returns {Promise<Object>} Resolve the tracking identify of the current login
 	 */
 	trackingIdentity({ auth, full = false, context } = {}) {
