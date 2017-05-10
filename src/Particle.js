@@ -54,19 +54,6 @@ class Particle {
 	}
 
 	/**
-	 * Retrieves the information that is used to identify the current login for tracking.
-	 * @param  {Object} options Options for this API call
-	 * @param  {String} options.auth      The access token
-	 * @param  {Boolean} options.full      When true, retrieve all information for registering a user with the tracking API. When false,
-	 *  retrieve only the unique tracking ID for the current login.
-	 * @param  {Object} options.context   Context information.
-	 * @returns {Promise<Object>} Resolve the tracking identify of the current login
-	 */
-	trackingIdentity({ auth, full = false, context } = {}) {
-		return this.get('/v1/user/identify', auth, (full ? undefined : { tracking: 1 }), context);
-	}
-
-	/**
 	 * Login to Particle Cloud using an existing Particle acccount.
 	 * @param  {Object} options Options for this API call
 	 * @param  {String} options.username      Username for the Particle account
@@ -146,6 +133,19 @@ class Particle {
 	 */
 	listAccessTokens({ username, password, context }) {
 		return this.get('/v1/access_tokens', { username, password }, undefined, context);
+	}
+
+	/**
+	 * Retrieves the information that is used to identify the current login for tracking.
+	 * @param  {Object} options Options for this API call
+	 * @param  {String} options.auth      The access token
+	 * @param  {Boolean} options.full      When true, retrieve all information for registering a user with the tracking API. When false,
+	 *  retrieve only the unique tracking ID for the current login.
+	 * @param  {Object} options.context   Context information.
+	 * @returns {Promise<Object>} Resolve the tracking identify of the current login
+	 */
+	trackingIdentity({ auth, full = false, context } = {}) {
+		return this.get('/v1/user/identify', auth, (full ? undefined : { tracking: 1 }), context);
 	}
 
 	/**
