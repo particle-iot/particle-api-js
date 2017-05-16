@@ -144,7 +144,6 @@ describe('Agent', () => {
 			expect(sut._applyContext).to.not.be.called;
 		});
 
-
 		it('should invoke authorize with the request and auth', () => {
 			const sut = new Agent();
 			sut.prefix = undefined;
@@ -243,6 +242,25 @@ describe('Agent', () => {
 			expect(field).to.be.calledWith('form1', 'value1');
 			expect(field).to.be.calledWith('form2', 'value2');
 		});
+
+		it('sets the timeout on the request when defined', () => {
+			const sut = new Agent();
+			sut.prefix = undefined;
+			const req = { timeout: sinon.stub() };
+			const makerequest = sinon.stub().returns(req);
+			sut._buildRequest({timeout: 123, makerequest});
+			expect(req.timeout).calledOnce.calledWith(123);
+		});
+
+		it('does not set the timeout on the request when not defined', () => {
+			const sut = new Agent();
+			sut.prefix = undefined;
+			const req = { timeout: sinon.stub() };
+			const makerequest = sinon.stub().returns(req);
+			sut._buildRequest({makerequest});
+			expect(req.timeout).not.called;
+		});
+
 	});
 
 	it('sanitizes files from a request', () => {
@@ -258,7 +276,19 @@ describe('Agent', () => {
 		expect(result).to.be.equal('request_result');
 		expect(sut._sanitizeFiles).calledOnce.calledWith(sinon.match.same(files));
 		expect(sut._request).calledOnce.calledWith({uri: 'abc', auth: undefined, method: 'post', data: '123', query: 'all', form:form,
-			files:sanitizedFiles, context: undefined});
+			files:sanitizedFiles, timeout: undefined, context: undefined});
+	});
+
+	describe('timeout', () => {
+		it('sets the timeout from the context', () => {
+			const sut = new Agent();
+			sut._request = sinon.stub();
+			const context = { timeout: 123, foo: 'bar' };
+			sut.request({context});
+			expect(sut._request).calledOnce.calledWith({uri: undefined, method: undefined,
+				auth: undefined, data: undefined, files: undefined, form: undefined, query: undefined, timeout: 123,
+				context: { foo: 'bar' } });
+		});
 	});
 
 	it('uses default arguments for request', () => {
@@ -269,20 +299,21 @@ describe('Agent', () => {
 		const result = sut.request({uri: 'abc', method:'post'});
 		expect(result).to.equal('123');
 		expect(sut._request).calledOnce.calledWith({uri: 'abc', method:'post',
-			auth: undefined, data: undefined, files: undefined, form: undefined, query: undefined, context: undefined });
+			auth: undefined, data: undefined, files: undefined, form: undefined, query: undefined, timeout: undefined, context: undefined });
 	});
 
 	it('builds and sends the request', () => {
 		const sut = new Agent();
 		const buildRequest = sinon.stub();
 		const promiseResponse = sinon.stub();
+		const context = {};
 		sut._buildRequest = buildRequest;
 		sut._promiseResponse = promiseResponse;
 		buildRequest.returns('arequest');
 		promiseResponse.returns('promise');
 
 		const requestArgs = {uri:'uri', method:'method', data:'data', auth:'auth', query: 'query',
-			form: 'form', files: 'files', context};
+			form: 'form', files: 'files', timeout: undefined, context};
 		const result = sut._request(requestArgs);
 		expect(result).to.be.equal('promise');
 		expect(buildRequest).calledWith(requestArgs);

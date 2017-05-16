@@ -58,12 +58,18 @@ export default class Agent {
 	 * @param {String} query         Query parameters
 	 * @param {Object} form          Form fields
 	 * @param {Object} files         array of file names and file content
-	 * @parma {Object} context       the invocation context, describing the tool and project.
+	 * @parma {Object} context       the invocation context, describing the tool and project.  A timeout for the request
+	 * in milliseconds may be optionally specified. When not specified, the request does not timeout.
 	 * @return {Promise} A promise. fulfilled with {body, statusCode}, rejected with { statusCode, errorDescription, error, body }
 	 */
 	request({ uri, method, data = undefined, auth, query = undefined, form = undefined, files = undefined, context = undefined }) {
 		const requestFiles = this._sanitizeFiles(files);
-		return this._request({ uri, method, data, auth, query, form, context, files: requestFiles });
+		const timeout = context && context.timeout;
+		if (timeout) {
+			context = Object.assign({}, context);
+			delete context['timeout'];
+		}
+		return this._request({ uri, method, data, auth, query, form, timeout, context, files: requestFiles });
 	}
 
 	/**
@@ -75,11 +81,13 @@ export default class Agent {
 	 * @param {String} query         Query parameters
 	 * @param {Object} form          Form fields
 	 * @param {Object} files         array of file names and file content
+	 * @param {Number} timeout       the number of milliseconds of no response after which the request should timeout.
+	 *      When undefined, the request is not timed out.
 	 * @param {Object} context       the invocation context
 	 * @return {Promise} A promise. fulfilled with {body, statusCode}, rejected with { statusCode, errorDescription, error, body }
 	 */
-	_request({ uri, method, data, auth, query, form, files, context }) {
-		const req = this._buildRequest({ uri, method, data, auth, query, form, context, files });
+	_request({ uri, method, data, auth, query, form, files, timeout, context }) {
+		const req = this._buildRequest({ uri, method, data, auth, query, form, timeout, context, files });
 		return this._promiseResponse(req);
 	}
 
@@ -125,7 +133,7 @@ export default class Agent {
 		});
 	}
 
-	_buildRequest({ uri, method, data, auth, query, form, files, context, makerequest=request }) {
+	_buildRequest({ uri, method, data, auth, query, form, files, timeout, context, makerequest=request }) {
 		const req = makerequest(method, uri);
 		if (this.prefix) {
 			req.use(this.prefix);
@@ -136,6 +144,9 @@ export default class Agent {
 		}
 		if (query) {
 			req.query(query);
+		}
+		if (timeout!==undefined) {
+			req.timeout(timeout);
 		}
 		if (files) {
 			for (let [name, file] of Object.entries(files)) {
