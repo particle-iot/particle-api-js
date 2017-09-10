@@ -19,7 +19,7 @@ $ bower install particle-api-js
 
 #### jsDelivr CDN
 ```html
-<script type="text/javascript" src="//cdn.jsdelivr.net/particle-api-js/5/particle.min.js">
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/particle-api-js@6/lib/Particle.min.js">
 </script>
 ```
 
