@@ -168,15 +168,27 @@ describe('ParticleAPI', () => {
 			});
 		});
 		describe('.deleteAccessToken', () => {
-			it('sends credentials', () => {
-				return api.deleteAccessToken(props).then(({ auth }) => {
-					auth.username.should.equal(props.username);
-					auth.password.should.equal(props.password);
+			it('sends request', () => {
+				return api.deleteAccessToken(props).then((results) => {
+					results.should.match({
+						method: 'delete',
+						uri: `/v1/access_tokens/${props.token}`,
+						auth: {
+							username: props.username,
+							password: props.password
+						}
+					});
 				});
 			});
-			it('generates request', () => {
-				return api.deleteAccessToken(props).then((results) => {
-					results.uri.should.endWith(props.token);
+		});
+		describe('.deleteCurrentAccessToken', () => {
+			it('sends request', () => {
+				return api.deleteCurrentAccessToken(props).then((results) => {
+					results.should.match({
+						method: 'delete',
+						uri: '/v1/access_tokens/current',
+						auth: props.auth,
+					});
 				});
 			});
 		});
