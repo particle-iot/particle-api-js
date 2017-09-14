@@ -1,5 +1,12 @@
 # changelog
 
+## 6.6.1 - 14 Sep 2017
+* Update form-data to v1.0.0-relativepath.2
+
+## 6.6.0 - 12 Sep 2017
+
+* Add support for deleting current token
+
 ## 6.5.0 - 02 May 2017
 
 * Add support for all product API endpoints.

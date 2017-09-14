@@ -125,6 +125,16 @@ class Particle {
 	}
 
 	/**
+	 * Revoke the current session access token
+	 * @param  {Object} options Options for this API call
+	 * @param  {String} options.auth         Access Token
+	 * @return {Promise}
+	 */
+	deleteCurrentAccessToken({ auth, context }) {
+		return this.delete('/v1/access_tokens/current', undefined, auth, context);
+	}
+
+	/**
 	 * List all valid access tokens for a Particle Cloud account
 	 * @param  {Object} options Options for this API call
 	 * @param  {String} options.username Username
