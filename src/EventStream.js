@@ -85,6 +85,12 @@ class EventStream extends EventEmitter {
 	}
 
 	end() {
+		if (!this.req) {
+			// request was ended intentionally by abort
+			// do not auto reconnect.
+			return;
+		}
+
 		this.req = undefined;
 		setTimeout(() => {
 			this.connect().catch(err => {
