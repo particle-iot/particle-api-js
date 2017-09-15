@@ -140,8 +140,8 @@ export default class Agent {
 		if (files) {
 			for (let [name, file] of Object.entries(files)) {
 				req._getFormData().append(name, file.data, {
-					filename: file.path,
-					relativePath: path.dirname(file.path)
+					filename: file.path.replace(/\\/g, '/'),
+					includePath: true
 				});
 			}
 			if (form) {
