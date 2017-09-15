@@ -1,5 +1,8 @@
 # changelog
 
+## 6.6.2 - 15 Sep 2017
+* Fix nested directories bug
+
 ## 6.6.1 - 14 Sep 2017
 * Update form-data to v1.0.0-relativepath.2
 
