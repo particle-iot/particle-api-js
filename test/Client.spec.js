@@ -2,7 +2,7 @@ import {expect, sinon} from './test-setup';
 
 import Client from '../src/Client';
 import * as fixtures from './fixtures';
-import Library from '../src/Library';
+import Library from '../src/models/Library';
 
 let api;
 const token = 'tok';

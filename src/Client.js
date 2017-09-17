@@ -1,5 +1,5 @@
 import Particle from './Particle';
-import Library from './Library';
+import Library from './models/Library';
 
 export default class Client {
 	constructor({ auth, api = new Particle() }) {

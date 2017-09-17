@@ -78,7 +78,8 @@
     "form-data": "https://github.com/spark/form-data/archive/v1.0.0-rc4.tar.gz",
     "stream-http": "https://github.com/spark/stream-http/archive/v2.2.1.tar.gz",
     "superagent": "^2.2.0",
-    "superagent-prefix": "0.0.2"
+    "superagent-prefix": "0.0.2",
+    "verror": "^1.9.0"
   },
   "browser": {
     "http": "stream-http",
