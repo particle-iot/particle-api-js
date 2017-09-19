@@ -139,10 +139,15 @@ export default class Agent {
 		}
 		if (files) {
 			for (let [name, file] of Object.entries(files)) {
-				req._getFormData().append(name, file.data, {
-					filename: file.path.replace(/\\/g, '/'),
-					includePath: true
-				});
+				if (typeof window !== 'undefined') {
+					// We're running in the browser which implements FormData. This has a different API
+					req._getFormData().append(name, file.data, file.path.replace(/\\/g, '/'));
+				} else {
+					req._getFormData().append(name, file.data, {
+						filename: file.path.replace(/\\/g, '/'),
+						includePath: true
+					});
+				}
 			}
 			if (form) {
 				for (let [name, value] of Object.entries(form)) {

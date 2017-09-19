@@ -215,8 +215,14 @@ describe('Agent', () => {
 			};
 			sut._buildRequest({uri: 'uri', method: 'get', files: files, makerequest: req});
 			expect(attach.callCount).to.be.equal(2);
-			expect(attach).to.be.calledWith('file', 'filedata', {filename: 'filepath', includePath: true});
-			expect(attach).to.be.calledWith('file2', 'file2data', {filename: 'file2path', includePath: true});
+			if (typeof window !== 'undefined') {
+				// Browser FormData has a different API
+				expect(attach).to.be.calledWith('file', 'filedata', 'filepath');
+				expect(attach).to.be.calledWith('file2', 'file2data', 'file2path');
+			} else {
+				expect(attach).to.be.calledWith('file', 'filedata', {filename: 'filepath', includePath: true});
+				expect(attach).to.be.calledWith('file2', 'file2data', {filename: 'file2path', includePath: true});
+			}
 		});
 
 		it('should attach files and form data', () => {
@@ -237,8 +243,14 @@ describe('Agent', () => {
 			const form = {form1: 'value1', form2: 'value2'};
 			sut._buildRequest({uri: 'uri', method: 'get', files: files, form: form, makerequest: req});
 			expect(attach.callCount).to.be.equal(2);
-			expect(attach).to.be.calledWith('file', 'filedata', {filename: 'filepath', includePath: true});
-			expect(attach).to.be.calledWith('file2', 'file2data', {filename: 'file2path', includePath: true});
+			if (typeof window !== 'undefined') {
+				// Browser FormData has a different API
+				expect(attach).to.be.calledWith('file', 'filedata', 'filepath');
+				expect(attach).to.be.calledWith('file2', 'file2data', 'file2path');
+			} else {
+				expect(attach).to.be.calledWith('file', 'filedata', {filename: 'filepath', includePath: true});
+				expect(attach).to.be.calledWith('file2', 'file2data', {filename: 'file2path', includePath: true});
+			}
 			expect(field.callCount).to.be.equal(2);
 			expect(field).to.be.calledWith('form1', 'value1');
 			expect(field).to.be.calledWith('form2', 'value2');
@@ -246,15 +258,32 @@ describe('Agent', () => {
 
 		it('should handle nested dirs', () => {
 			const sut = new Agent();
-			const files = {
-				file: {data: 'filedata', path: 'filepath.ino'},
-				file2: {data: 'file2data', path: 'dir/file2path.cpp'},
-				file3: {data: 'file3data', path: 'dir\\windowsfile2path.cpp'}
+			let files;
+
+			if (typeof window !== 'undefined') {
+				// We're running in a browser, this requires usage of blobs
+				files = {
+					file: {data: new Blob(['filedata']), path: 'filepath.ino'},
+					file2: {data: new Blob(['file2data']), path: 'dir/file2path.cpp'},
+					file3: {data: new Blob(['file3data']), path: 'dir\\windowsfile2path.cpp'}
+				}
+
+				const req = sut._buildRequest({uri: 'uri', method: 'get', files: files});
+				expect(req._formData.get('file').name).to.eql('filepath.ino');
+				expect(req._formData.get('file2').name).to.eql('dir/file2path.cpp');
+				expect(req._formData.get('file3').name).to.eql('dir/windowsfile2path.cpp');
+			} else {
+				files = {
+					file: {data: 'filedata', path: 'filepath.ino'},
+					file2: {data: 'file2data', path: 'dir/file2path.cpp'},
+					file3: {data: 'file3data', path: 'dir\\windowsfile2path.cpp'}
+				}
+
+				const req = sut._buildRequest({uri: 'uri', method: 'get', files: files});
+				expect(req._formData._streams[0]).to.contain('filename="filepath.ino"');
+				expect(req._formData._streams[3]).to.contain('filename="dir/file2path.cpp"');
+				expect(req._formData._streams[6]).to.contain('filename="dir/windowsfile2path.cpp"');
 			}
-			const req = sut._buildRequest({uri: 'uri', method: 'get', files: files});
-			expect(req._formData._streams[0]).to.contain('filename="filepath.ino"');
-			expect(req._formData._streams[3]).to.contain('filename="dir/file2path.cpp"');
-			expect(req._formData._streams[6]).to.contain('filename="dir/windowsfile2path.cpp"');
 		});
 	});
 
