@@ -143,7 +143,7 @@ export default class Agent {
 				let options = {
 					filepath: file.path
 				};
-				if (this._inBrowser()) {
+				if (this._inBrowser(makerequest)) {
 					options = file.path;
 				}
 				req.attach(name, file.data, options);
@@ -162,10 +162,9 @@ export default class Agent {
 		return req;
 	}
 
-	_inBrowser() {
-		const browserWindow = (typeof window !== 'undefined');
-		const webWorker = (typeof self !== 'undefined');
-		return browserWindow || webWorker;
+	_inBrowser(makerequest) {
+		// superagent only has the getXHR method in the browser version
+		return !!makerequest.getXHR;
 	}
 
 	_applyContext(req, context) {
