@@ -8,7 +8,7 @@ node_js:
 matrix:
   include:
     # This extra job will run tests in the browser
-    - node_js: 5
+    - node_js: 6
       env: TEST_SUITE=browser
 cache:
   directories:

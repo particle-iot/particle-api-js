@@ -242,15 +242,44 @@ describe('Agent', () => {
 		it('should handle nested dirs', () => {
 			const sut = new Agent();
 			const files = {
-				file: {data: 'filedata', path: 'filepath.ino'},
-				file2: {data: 'file2data', path: 'dir/file2path.cpp'},
-				file3: {data: 'file3data', path: 'dir\\windowsfile2path.cpp'}
+				file: {data: makeFile('filedata'), path: 'filepath.ino'},
+				file2: {data: makeFile('file2data'), path: 'dir/file2path.cpp'}
 			}
 			const req = sut._buildRequest({uri: 'uri', method: 'get', files: files});
-			expect(req._formData._streams[0]).to.contain('filename="filepath.ino"');
-			expect(req._formData._streams[3]).to.contain('filename="dir/file2path.cpp"');
-			expect(req._formData._streams[6]).to.contain('filename="dir/windowsfile2path.cpp"');
+			expect(extractFilename(req._formData, 'file', 0)).to.eql('filepath.ino');
+			expect(extractFilename(req._formData, 'file2', 3)).to.eql('dir/file2path.cpp');
 		});
+
+		if (!inBrowser()) {
+			it('should handle Windows nested dirs', () => {
+				const sut = new Agent();
+				const files = {
+					file: {data: makeFile('filedata'), path: 'dir\\windowsfilepath.cpp'}
+				}
+				const req = sut._buildRequest({uri: 'uri', method: 'get', files: files});
+				expect(extractFilename(req._formData, 'file', 0)).to.eql('dir/windowsfilepath.cpp');
+			});
+		}
+
+		function inBrowser() {
+			return typeof window !== 'undefined';
+		}
+
+		function makeFile(data) {
+			if (inBrowser()) {
+				return new Blob([data]);
+			} else {
+				return data;
+			}
+		}
+
+		function extractFilename(formData, fieldName, fieldIndex) {
+			if (inBrowser()) {
+				return formData.get(fieldName).name;
+			} else {
+				return /filename="([^"]*)"/.exec(formData._streams[fieldIndex])[1];
+			}
+		}
 	});
 
 	it('sanitizes files from a request', () => {

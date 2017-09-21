@@ -405,7 +405,7 @@ class Particle {
 	 * Compile and flash application firmware to a device. Pass a pre-compiled binary to flash it directly to the device.
 	 * @param  {Object} options Options for this API call
 	 * @param  {String} options.deviceId      Device ID or Name
-	 * @param  {Object} options.files         Object containing files to be compiled and flashed. Keys should be the filenames, and the values should be a path or Buffer of the file contents.
+	 * @param  {Object} options.files         Object containing files to be compiled and flashed. Keys should be the filenames, including relative path, and the values should be a path or Buffer of the file contents in Node, or a File or Blob in the browser.
 	 * @param  {String} [options.targetVersion=latest] System firmware version to compile against
 	 * @param  {String} options.auth          String
 	 * @return {Promise}
@@ -442,7 +442,7 @@ class Particle {
 	/**
 	 * Compile firmware using the Particle Cloud
 	 * @param  {Object} options Options for this API call
-	 * @param  {Object} options.files         Object containing files to be compiled. Keys should be the filenames, and the values should be a path or Buffer of the file contents.
+	 * @param  {Object} options.files         Object containing files to be compiled. Keys should be the filenames, including relative path, and the values should be a path or Buffer of the file contents in Node, or a File or Blob in the browser.
 	 * @param  {Number} [options.platformId]    Platform id number of the device you are compiling for. Common values are 0=Core, 6=Photon, 10=Electron.
 	 * @param  {String} [options.targetVersion=latest] System firmware version to compile against
 	 * @param  {String} options.auth          Access Token
@@ -930,6 +930,7 @@ class Particle {
 	 * Contribute a new library version from a compressed archive
 	 * @param  {Object} options Options for this API call
 	 * @param  {String} options.archive Compressed archive file containing the library sources
+	 *                                  Either a path or Buffer of the file contents in Node, or a File or Blob in the browser.
 	 * @param  {String} options.auth Access Token
 	 * @return {Promise}
 	 */
@@ -974,7 +975,8 @@ class Particle {
 	 */
 	downloadFile({ url }) {
 		let req = request.get(url);
-		if (req.buffer) {
+		// Different API in Node and browser
+		if (!request.getXHR) {
 			req = req.buffer(true).parse(binaryParser);
 		} else if (req.responseType) {
 			req = req.responseType('arraybuffer').then(res => {
@@ -1079,6 +1081,7 @@ class Particle {
 	 * List product firmware versions
 	 * @param  {Object} options Options for this API call
 	 * @param  {Object} options.file    Path or Buffer of the new firmware file
+	 *                                  Either a path or Buffer of the file contents in Node, or a File or Blob in the browser.
 	 * @param  {Number} options.version Version number of new firmware
 	 * @param  {String} options.title   Short identifier for the new firmware
 	 * @param  {String} [options.description] Longer description for the new firmware
