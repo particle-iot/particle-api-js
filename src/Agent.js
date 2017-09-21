@@ -19,8 +19,6 @@
 
 import request from 'superagent';
 import prefix from 'superagent-prefix';
-import path from 'path';
-
 
 export default class Agent {
 

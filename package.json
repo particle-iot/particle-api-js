@@ -76,6 +76,7 @@
   "dependencies": {
     "babel-runtime": "^6.9.2",
     "stream-http": "https://github.com/spark/stream-http/archive/v2.2.1.tar.gz",
+    "form-data": ">2.2.0",
     "superagent": "^3.6.0",
     "superagent-prefix": "0.0.2"
   },
