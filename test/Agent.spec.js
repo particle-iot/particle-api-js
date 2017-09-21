@@ -204,19 +204,15 @@ describe('Agent', () => {
 			sut.prefix = undefined;
 			const req = sinon.stub();
 			const attach = sinon.stub();
-			req.returns({_getFormData: () => {
-				return {
-					append: attach
-				}
-			}});
+			req.returns({ attach: attach });
 			const files = {
 				file: {data: 'filedata', path: 'filepath'},
 				file2: {data: 'file2data', path: 'file2path'}
 			};
 			sut._buildRequest({uri: 'uri', method: 'get', files: files, makerequest: req});
 			expect(attach.callCount).to.be.equal(2);
-			expect(attach).to.be.calledWith('file', 'filedata', {filename: 'filepath', includePath: true});
-			expect(attach).to.be.calledWith('file2', 'file2data', {filename: 'file2path', includePath: true});
+			expect(attach).to.be.calledWith('file', 'filedata', {filepath: 'filepath'});
+			expect(attach).to.be.calledWith('file2', 'file2data', {filepath: 'file2path'});
 		});
 
 		it('should attach files and form data', () => {
@@ -225,11 +221,10 @@ describe('Agent', () => {
 			const req = sinon.stub();
 			const attach = sinon.stub();
 			const field = sinon.stub();
-			req.returns({_getFormData: () => {
-				return {
-					append: attach
-				}
-			}, field: field});
+			req.returns({
+				attach: attach,
+				field: field
+			});
 			const files = {
 				file: {data: 'filedata', path: 'filepath'},
 				file2: {data: 'file2data', path: 'file2path'}
@@ -237,8 +232,8 @@ describe('Agent', () => {
 			const form = {form1: 'value1', form2: 'value2'};
 			sut._buildRequest({uri: 'uri', method: 'get', files: files, form: form, makerequest: req});
 			expect(attach.callCount).to.be.equal(2);
-			expect(attach).to.be.calledWith('file', 'filedata', {filename: 'filepath', includePath: true});
-			expect(attach).to.be.calledWith('file2', 'file2data', {filename: 'file2path', includePath: true});
+			expect(attach).to.be.calledWith('file', 'filedata', {filepath: 'filepath'});
+			expect(attach).to.be.calledWith('file2', 'file2data', {filepath: 'file2path'});
 			expect(field.callCount).to.be.equal(2);
 			expect(field).to.be.calledWith('form1', 'value1');
 			expect(field).to.be.calledWith('form2', 'value2');

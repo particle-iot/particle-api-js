@@ -139,10 +139,14 @@ export default class Agent {
 		}
 		if (files) {
 			for (let [name, file] of Object.entries(files)) {
-				req._getFormData().append(name, file.data, {
-					filename: file.path.replace(/\\/g, '/'),
-					includePath: true
-				});
+				// API for Form Data is different in Node and in browser
+				let options = {
+					filepath: file.path
+				};
+				if (this._inBrowser()) {
+					options = file.path;
+				}
+				req.attach(name, file.data, options);
 			}
 			if (form) {
 				for (let [name, value] of Object.entries(form)) {
@@ -156,6 +160,12 @@ export default class Agent {
 			req.send(data);
 		}
 		return req;
+	}
+
+	_inBrowser() {
+		const browserWindow = (typeof window !== 'undefined');
+		const webWorker = (typeof self !== 'undefined');
+		return browserWindow || webWorker;
 	}
 
 	_applyContext(req, context) {
