@@ -7,6 +7,7 @@ if [ "${TEST_SUITE}" = "browser" ]; then
   sh -e /etc/init.d/xvfb start
   # give xvfb some time to start
   sleep 3 
+  npm run build
   npm run test:browser
 else
   npm run test

@@ -19,8 +19,6 @@
 
 import request from 'superagent';
 import prefix from 'superagent-prefix';
-import path from 'path';
-
 
 export default class Agent {
 
@@ -139,10 +137,14 @@ export default class Agent {
 		}
 		if (files) {
 			for (let [name, file] of Object.entries(files)) {
-				req._getFormData().append(name, file.data, {
-					filename: file.path.replace(/\\/g, '/'),
-					includePath: true
-				});
+				// API for Form Data is different in Node and in browser
+				let options = {
+					filepath: file.path
+				};
+				if (this._inBrowser(makerequest)) {
+					options = file.path;
+				}
+				req.attach(name, file.data, options);
 			}
 			if (form) {
 				for (let [name, value] of Object.entries(form)) {
@@ -156,6 +158,11 @@ export default class Agent {
 			req.send(data);
 		}
 		return req;
+	}
+
+	_inBrowser(makerequest) {
+		// superagent only has the getXHR method in the browser version
+		return !!makerequest.getXHR;
 	}
 
 	_applyContext(req, context) {
