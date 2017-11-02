@@ -78,7 +78,7 @@ const props = {
 	countryCode: 'RO',
 	iccid: '1234567890',
 	iccids: ['1234567890', '9876543210'],
-	deviceName: 'mydev',
+	serialNumber: 'PH-123456',
 	settings: {
 		url: 'http://example.com',
 	},
@@ -1680,6 +1680,18 @@ describe('ParticleAPI', () => {
 						method: 'delete',
 						uri: `/v1/products/${product}/team/${props.username}`,
 						auth: props.auth,
+					});
+				});
+			});
+		});
+
+		describe('.lookupSerialNumber', () => {
+			it('generates request', () => {
+				return api.lookupSerialNumber(props).then((results) => {
+					results.should.match({
+						method: 'get',
+						uri: `/v1/serial_numbers/${props.serialNumber}`,
+						auth: props.auth
 					});
 				});
 			});

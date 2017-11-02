@@ -1201,6 +1201,18 @@ class Particle {
 	}
 
 	/**
+	 * Fetch details about a serial number
+	 * @param  {Object} options Options for this API call
+	 * @param  {String} options.serialNumber The serial number printed on the barcode of the device packaging
+	 * @param  {String} options.auth Access Token
+	 * @return {Promise}
+	 */
+	lookupSerialNumber({ serialNumber, auth, context }) {
+		return this.get(`/v1/serial_numbers/${serialNumber}`, auth, undefined, context);
+	}
+
+
+	/**
 	 * API URI to access a device
 	 * @param  {Object} options Options for this API call
 	 * @param  {String} options.deviceId  Device ID to access
