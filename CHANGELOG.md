@@ -1,5 +1,9 @@
 # changelog
 
+## 7.0.0 - 7 Nov 2017
+* Update to latest superagent with support for nested directory. **Drops support for Node versions earlier than 4.**
+* Add serial number endpoint
+
 ## 6.6.2 - 15 Sep 2017
 * Fix nested directories bug
 
