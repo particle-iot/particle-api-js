@@ -73,6 +73,20 @@ class Particle {
 	}
 
 	/**
+	 * Login to Particle Cloud using an OAuth client.
+	 * @param  {Object} options Options for this API call
+	 * @param  {Object} options.context   Context information.
+	 * @return {Promise}
+	 */
+	loginAsClientOwner({ context }) {
+		return this.request({ uri: '/oauth/token', form: {
+			grant_type: 'client_credentials',
+			client_id: this.clientId,
+			client_secret: this.clientSecret
+		}, method: 'post', context });
+	}
+
+	/**
 	 * Create a user account for the Particle Cloud
 	 * @param  {Object} options Options for this API call
 	 * @param  {String} options.username Email of the new user
