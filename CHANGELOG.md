@@ -1,5 +1,8 @@
 # changelog
 
+## 7.0.1 - 16 Nov 2017
+* Add loginAsClientOwner method
+
 ## 7.0.0 - 7 Nov 2017
 * Update to latest superagent with support for nested directory. **Drops support for Node versions earlier than 4.**
 * Add serial number endpoint
