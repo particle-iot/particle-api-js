@@ -98,9 +98,9 @@
 ## 5.3.0 - 8 June 2016
 
 * Add details to README
-* Adding responseTemplate and responseTopic to webhook creation. Thanks @acasas! [#20](https://github.com/spark/particle-api-js/pull/20)
-* Add password reset route [#27](https://github.com/spark/particle-api-js/pull/27)
-* Make event stream compatible with new product routes [#28](https://github.com/spark/particle-api-js/pull/28)
+* Adding responseTemplate and responseTopic to webhook creation. Thanks @acasas! [#20](https://github.com/particle-iot/particle-api-js/pull/20)
+* Add password reset route [#27](https://github.com/particle-iot/particle-api-js/pull/27)
+* Make event stream compatible with new product routes [#28](https://github.com/particle-iot/particle-api-js/pull/28)
 
 ## 5.2.7 - 2 May 2016
 
@@ -116,11 +116,11 @@
 
 ## 5.2.4 - 21 Mar 2016
 
-* `flashDevice` `latest` also needs to be a string, not a boolean. [#12](https://github.com/spark/particle-api-js/issues/12)
+* `flashDevice` `latest` also needs to be a string, not a boolean. [#12](https://github.com/particle-iot/particle-api-js/issues/12)
 
 ## 5.2.3 - 11 Mar 2016
 
-* Remove setting of `User-Agent` header because that is not allowed in browsers. [#10](https://github.com/spark/particle-api-js/issues/10)
+* Remove setting of `User-Agent` header because that is not allowed in browsers. [#10](https://github.com/particle-iot/particle-api-js/issues/10)
 
 ## 5.2.2 - 3 Mar 2016
 
@@ -143,7 +143,7 @@
 
 ## 5.1.0 - 26 Feb 2016
 
-* Fix event stream. [#8](https://github.com/spark/particle-api-js/issues/8)
+* Fix event stream. [#8](https://github.com/particle-iot/particle-api-js/issues/8)
 * Add `downloadFirmwareBinary`
 * Add ability to intercept requests for debugging
 * Use library version for User-Agent
@@ -153,7 +153,7 @@
 
 ## 5.0.2 - 24 Feb 2016
 
-* Remove trailing slash from `baseUrl`. [#7](https://github.com/spark/particle-api-js/issues/7)
+* Remove trailing slash from `baseUrl`. [#7](https://github.com/particle-iot/particle-api-js/issues/7)
 
 ## 5.0.1 - 18 Feb 2016
 
