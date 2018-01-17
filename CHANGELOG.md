@@ -1,5 +1,13 @@
 # changelog
 
+## 7.1.0 - 17 Jan 2018
+
+* Update jsDelivr link [PR #66](https://github.com/particle-iot/particle-api-js/pull/66). Thanks @LukasDrgon!
+* Stop auto reconnecting when event stream is intentionally disconnected [PR #69](https://github.com/particle-iot/particle-api-js/pull/69). Thanks @spacetc62!
+* Add createCustomer [PR #78](https://github.com/particle-iot/particle-api-js/pull/78). Thanks @monkeytronics!
+* Fix event stream exception when it is an HTML response [PR #64](https://github.com/particle-iot/particle-api-js/pull/64). Thanks @spacetc62!
+* Update links after GitHub organization rename to `particle-iot` [PR #79](https://github.com/particle-iot/particle-api-js/pull/79)
+
 ## 7.0.1 - 16 Nov 2017
 * Add loginAsClientOwner method
 
