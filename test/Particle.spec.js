@@ -157,6 +157,20 @@ describe('ParticleAPI', () => {
 				});
 			});
 		});
+		describe('.createCustomer', () => {  
+			it('sends client ID and secret', () => {
+				let clientApi = new Particle({
+					clientId: 'foo',
+					clientSecret: 'bar'
+				});
+				clientApi.agent = new FakeAgent();
+				return clientApi.loginAsClientOwner({}).then(req => {
+					expect(req.form).to.have.property('client_id').eql('foo');
+					expect(req.form).to.have.property('client_secret').eql('bar');
+					expect(req.form).to.have.property('grant_type').eql('client_credentials');
+				});
+			});
+		});
 		describe('.createUser', () => {
 			it('sends credentials', () => {
 				return api.createUser(props).then(( results ) => {
