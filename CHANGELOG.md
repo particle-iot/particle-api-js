@@ -1,5 +1,22 @@
 # changelog
 
+## 7.0.1 - 16 Nov 2017
+* Add loginAsClientOwner method
+
+## 7.0.0 - 7 Nov 2017
+* Update to latest superagent with support for nested directory. **Drops support for Node versions earlier than 4.**
+* Add serial number endpoint
+
+## 6.6.2 - 15 Sep 2017
+* Fix nested directories bug
+
+## 6.6.1 - 14 Sep 2017
+* Update form-data to v1.0.0-relativepath.2
+
+## 6.6.0 - 12 Sep 2017
+
+* Add support for deleting current token
+
 ## 6.5.0 - 02 May 2017
 
 * Add support for all product API endpoints.
@@ -81,9 +98,9 @@
 ## 5.3.0 - 8 June 2016
 
 * Add details to README
-* Adding responseTemplate and responseTopic to webhook creation. Thanks @acasas! [#20](https://github.com/spark/particle-api-js/pull/20)
-* Add password reset route [#27](https://github.com/spark/particle-api-js/pull/27)
-* Make event stream compatible with new product routes [#28](https://github.com/spark/particle-api-js/pull/28)
+* Adding responseTemplate and responseTopic to webhook creation. Thanks @acasas! [#20](https://github.com/particle-iot/particle-api-js/pull/20)
+* Add password reset route [#27](https://github.com/particle-iot/particle-api-js/pull/27)
+* Make event stream compatible with new product routes [#28](https://github.com/particle-iot/particle-api-js/pull/28)
 
 ## 5.2.7 - 2 May 2016
 
@@ -99,11 +116,11 @@
 
 ## 5.2.4 - 21 Mar 2016
 
-* `flashDevice` `latest` also needs to be a string, not a boolean. [#12](https://github.com/spark/particle-api-js/issues/12)
+* `flashDevice` `latest` also needs to be a string, not a boolean. [#12](https://github.com/particle-iot/particle-api-js/issues/12)
 
 ## 5.2.3 - 11 Mar 2016
 
-* Remove setting of `User-Agent` header because that is not allowed in browsers. [#10](https://github.com/spark/particle-api-js/issues/10)
+* Remove setting of `User-Agent` header because that is not allowed in browsers. [#10](https://github.com/particle-iot/particle-api-js/issues/10)
 
 ## 5.2.2 - 3 Mar 2016
 
@@ -126,7 +143,7 @@
 
 ## 5.1.0 - 26 Feb 2016
 
-* Fix event stream. [#8](https://github.com/spark/particle-api-js/issues/8)
+* Fix event stream. [#8](https://github.com/particle-iot/particle-api-js/issues/8)
 * Add `downloadFirmwareBinary`
 * Add ability to intercept requests for debugging
 * Use library version for User-Agent
@@ -136,7 +153,7 @@
 
 ## 5.0.2 - 24 Feb 2016
 
-* Remove trailing slash from `baseUrl`. [#7](https://github.com/spark/particle-api-js/issues/7)
+* Remove trailing slash from `baseUrl`. [#7](https://github.com/particle-iot/particle-api-js/issues/7)
 
 ## 5.0.1 - 18 Feb 2016
 

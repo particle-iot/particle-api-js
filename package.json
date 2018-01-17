@@ -1,6 +1,6 @@
 {
   "name": "particle-api-js",
-  "version": "6.5.0",
+  "version": "7.0.1",
   "description": "Particle API Client",
   "main": "lib/Particle.js",
   "scripts": {
@@ -22,7 +22,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/spark/particle-api-js"
+    "url": "https://github.com/particle-iot/particle-api-js"
   },
   "author": "Julien Vanier <julien@particle.io>",
   "contributors": [
@@ -75,9 +75,9 @@
   },
   "dependencies": {
     "babel-runtime": "^6.9.2",
-    "form-data": "https://github.com/spark/form-data/archive/v1.0.0-relative-path.tar.gz",
-    "stream-http": "https://github.com/spark/stream-http/archive/v2.2.1.tar.gz",
-    "superagent": "^2.2.0",
+    "stream-http": "https://github.com/particle-iot/stream-http/archive/v2.2.1.tar.gz",
+    "form-data": ">2.2.0",
+    "superagent": "^3.6.0",
     "superagent-prefix": "0.0.2"
   },
   "browser": {

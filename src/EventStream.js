@@ -47,6 +47,9 @@ class EventStream extends EventEmitter {
 					res.on('end', () => {
 						try {
 							body = JSON.parse(body);
+						} catch (e) {
+							// don't bother doing anything special if the JSON.parse fails
+							// since we are already about to reject the promise anyway
 						} finally {
 							this.emit('response', {
 								statusCode,
@@ -85,6 +88,12 @@ class EventStream extends EventEmitter {
 	}
 
 	end() {
+		if (!this.req) {
+			// request was ended intentionally by abort
+			// do not auto reconnect.
+			return;
+		}
+
 		this.req = undefined;
 		setTimeout(() => {
 			this.connect().catch(err => {

@@ -71,7 +71,40 @@ class Particle {
 			expires_in: tokenDuration
 		}, method: 'post', context });
 	}
+	
+	/**
+	 * Create Customer for Product.
+	 * @param  {Object} options Options for this API call
+	 * @param  {String} options.username      Username for the Particle account
+	 * @param  {String} options.password      Password for the Particle account
+	 * @param  {String} options.product       List devices in this product ID or slug	 
+	 * @return {Promise}
+	 */
+	createCustomer({ email, password, product, context }) {
+		const uri =`/v1/products/${product}/customers`;
+		return this.request({ uri: uri, form: {
+			email,
+			password,
+			grant_type: 'client_credentials',
+			client_id: this.clientId,
+			client_secret: this.clientSecret			
+		}, method: 'post', context });
+	}	
 
+	/**
+	 * Login to Particle Cloud using an OAuth client.
+	 * @param  {Object} options Options for this API call
+	 * @param  {Object} options.context   Context information.
+	 * @return {Promise}
+	 */
+	loginAsClientOwner({ context }) {
+		return this.request({ uri: '/oauth/token', form: {
+			grant_type: 'client_credentials',
+			client_id: this.clientId,
+			client_secret: this.clientSecret
+		}, method: 'post', context });
+	}
+	
 	/**
 	 * Create a user account for the Particle Cloud
 	 * @param  {Object} options Options for this API call
@@ -87,7 +120,7 @@ class Particle {
 			account_info : accountInfo
 		}, undefined, context);
 	}
-
+	
 	/**
 	 * Verify new user account via verification email
 	 * @param  {Object} options Options for this API call
@@ -122,6 +155,16 @@ class Particle {
 		return this.delete(`/v1/access_tokens/${token}`, {
 			access_token: token
 		}, { username, password }, context);
+	}
+
+	/**
+	 * Revoke the current session access token
+	 * @param  {Object} options Options for this API call
+	 * @param  {String} options.auth         Access Token
+	 * @return {Promise}
+	 */
+	deleteCurrentAccessToken({ auth, context }) {
+		return this.delete('/v1/access_tokens/current', undefined, auth, context);
 	}
 
 	/**
@@ -395,7 +438,7 @@ class Particle {
 	 * Compile and flash application firmware to a device. Pass a pre-compiled binary to flash it directly to the device.
 	 * @param  {Object} options Options for this API call
 	 * @param  {String} options.deviceId      Device ID or Name
-	 * @param  {Object} options.files         Object containing files to be compiled and flashed. Keys should be the filenames, and the values should be a path or Buffer of the file contents.
+	 * @param  {Object} options.files         Object containing files to be compiled and flashed. Keys should be the filenames, including relative path, and the values should be a path or Buffer of the file contents in Node, or a File or Blob in the browser.
 	 * @param  {String} [options.targetVersion=latest] System firmware version to compile against
 	 * @param  {String} options.auth          String
 	 * @return {Promise}
@@ -432,7 +475,7 @@ class Particle {
 	/**
 	 * Compile firmware using the Particle Cloud
 	 * @param  {Object} options Options for this API call
-	 * @param  {Object} options.files         Object containing files to be compiled. Keys should be the filenames, and the values should be a path or Buffer of the file contents.
+	 * @param  {Object} options.files         Object containing files to be compiled. Keys should be the filenames, including relative path, and the values should be a path or Buffer of the file contents in Node, or a File or Blob in the browser.
 	 * @param  {Number} [options.platformId]    Platform id number of the device you are compiling for. Common values are 0=Core, 6=Photon, 10=Electron.
 	 * @param  {String} [options.targetVersion=latest] System firmware version to compile against
 	 * @param  {String} options.auth          Access Token
@@ -920,6 +963,7 @@ class Particle {
 	 * Contribute a new library version from a compressed archive
 	 * @param  {Object} options Options for this API call
 	 * @param  {String} options.archive Compressed archive file containing the library sources
+	 *                                  Either a path or Buffer of the file contents in Node, or a File or Blob in the browser.
 	 * @param  {String} options.auth Access Token
 	 * @return {Promise}
 	 */
@@ -964,7 +1008,8 @@ class Particle {
 	 */
 	downloadFile({ url }) {
 		let req = request.get(url);
-		if (req.buffer) {
+		// Different API in Node and browser
+		if (!request.getXHR) {
 			req = req.buffer(true).parse(binaryParser);
 		} else if (req.responseType) {
 			req = req.responseType('arraybuffer').then(res => {
@@ -1069,6 +1114,7 @@ class Particle {
 	 * List product firmware versions
 	 * @param  {Object} options Options for this API call
 	 * @param  {Object} options.file    Path or Buffer of the new firmware file
+	 *                                  Either a path or Buffer of the file contents in Node, or a File or Blob in the browser.
 	 * @param  {Number} options.version Version number of new firmware
 	 * @param  {String} options.title   Short identifier for the new firmware
 	 * @param  {String} [options.description] Longer description for the new firmware
@@ -1186,6 +1232,18 @@ class Particle {
 	removeTeamMember({ username, product, auth, context }) {
 		return this.delete(`/v1/products/${product}/team/${username}`, undefined, auth, context);
 	}
+
+	/**
+	 * Fetch details about a serial number
+	 * @param  {Object} options Options for this API call
+	 * @param  {String} options.serialNumber The serial number printed on the barcode of the device packaging
+	 * @param  {String} options.auth Access Token
+	 * @return {Promise}
+	 */
+	lookupSerialNumber({ serialNumber, auth, context }) {
+		return this.get(`/v1/serial_numbers/${serialNumber}`, auth, undefined, context);
+	}
+
 
 	/**
 	 * API URI to access a device

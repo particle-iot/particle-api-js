@@ -78,7 +78,7 @@ const props = {
 	countryCode: 'RO',
 	iccid: '1234567890',
 	iccids: ['1234567890', '9876543210'],
-	deviceName: 'mydev',
+	serialNumber: 'PH-123456',
 	settings: {
 		url: 'http://example.com',
 	},
@@ -143,6 +143,34 @@ describe('ParticleAPI', () => {
 				return api.login(props).then(Common.expectCredentials);
 			});
 		});
+		describe('.loginAsClientOwner', () => {
+			it('sends client ID and secret', () => {
+				let clientApi = new Particle({
+					clientId: 'foo',
+					clientSecret: 'bar'
+				});
+				clientApi.agent = new FakeAgent();
+				return clientApi.loginAsClientOwner({}).then(req => {
+					expect(req.form).to.have.property('client_id').eql('foo');
+					expect(req.form).to.have.property('client_secret').eql('bar');
+					expect(req.form).to.have.property('grant_type').eql('client_credentials');
+				});
+			});
+		});
+		describe('.createCustomer', () => {  
+			it('sends client ID and secret', () => {
+				let clientApi = new Particle({
+					clientId: 'foo',
+					clientSecret: 'bar'
+				});
+				clientApi.agent = new FakeAgent();
+				return clientApi.loginAsClientOwner({}).then(req => {
+					expect(req.form).to.have.property('client_id').eql('foo');
+					expect(req.form).to.have.property('client_secret').eql('bar');
+					expect(req.form).to.have.property('grant_type').eql('client_credentials');
+				});
+			});
+		});
 		describe('.createUser', () => {
 			it('sends credentials', () => {
 				return api.createUser(props).then(( results ) => {
@@ -168,15 +196,27 @@ describe('ParticleAPI', () => {
 			});
 		});
 		describe('.deleteAccessToken', () => {
-			it('sends credentials', () => {
-				return api.deleteAccessToken(props).then(({ auth }) => {
-					auth.username.should.equal(props.username);
-					auth.password.should.equal(props.password);
+			it('sends request', () => {
+				return api.deleteAccessToken(props).then((results) => {
+					results.should.match({
+						method: 'delete',
+						uri: `/v1/access_tokens/${props.token}`,
+						auth: {
+							username: props.username,
+							password: props.password
+						}
+					});
 				});
 			});
-			it('generates request', () => {
-				return api.deleteAccessToken(props).then((results) => {
-					results.uri.should.endWith(props.token);
+		});
+		describe('.deleteCurrentAccessToken', () => {
+			it('sends request', () => {
+				return api.deleteCurrentAccessToken(props).then((results) => {
+					results.should.match({
+						method: 'delete',
+						uri: '/v1/access_tokens/current',
+						auth: props.auth,
+					});
 				});
 			});
 		});
@@ -1668,6 +1708,18 @@ describe('ParticleAPI', () => {
 						method: 'delete',
 						uri: `/v1/products/${product}/team/${props.username}`,
 						auth: props.auth,
+					});
+				});
+			});
+		});
+
+		describe('.lookupSerialNumber', () => {
+			it('generates request', () => {
+				return api.lookupSerialNumber(props).then((results) => {
+					results.should.match({
+						method: 'get',
+						uri: `/v1/serial_numbers/${props.serialNumber}`,
+						auth: props.auth
 					});
 				});
 			});

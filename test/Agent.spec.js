@@ -204,19 +204,15 @@ describe('Agent', () => {
 			sut.prefix = undefined;
 			const req = sinon.stub();
 			const attach = sinon.stub();
-			req.returns({_getFormData: () => {
-				return {
-					append: attach
-				}
-			}});
+			req.returns({ attach: attach });
 			const files = {
 				file: {data: 'filedata', path: 'filepath'},
 				file2: {data: 'file2data', path: 'file2path'}
 			};
 			sut._buildRequest({uri: 'uri', method: 'get', files: files, makerequest: req});
 			expect(attach.callCount).to.be.equal(2);
-			expect(attach).to.be.calledWith('file', 'filedata', {filename: 'filepath', relativePath: '.'});
-			expect(attach).to.be.calledWith('file2', 'file2data', {filename: 'file2path', relativePath: '.'});
+			expect(attach).to.be.calledWith('file', 'filedata', {filepath: 'filepath'});
+			expect(attach).to.be.calledWith('file2', 'file2data', {filepath: 'file2path'});
 		});
 
 		it('should attach files and form data', () => {
@@ -225,11 +221,10 @@ describe('Agent', () => {
 			const req = sinon.stub();
 			const attach = sinon.stub();
 			const field = sinon.stub();
-			req.returns({_getFormData: () => {
-				return {
-					append: attach
-				}
-			}, field: field});
+			req.returns({
+				attach: attach,
+				field: field
+			});
 			const files = {
 				file: {data: 'filedata', path: 'filepath'},
 				file2: {data: 'file2data', path: 'file2path'}
@@ -237,12 +232,54 @@ describe('Agent', () => {
 			const form = {form1: 'value1', form2: 'value2'};
 			sut._buildRequest({uri: 'uri', method: 'get', files: files, form: form, makerequest: req});
 			expect(attach.callCount).to.be.equal(2);
-			expect(attach).to.be.calledWith('file', 'filedata', {filename: 'filepath', relativePath: '.'});
-			expect(attach).to.be.calledWith('file2', 'file2data', {filename: 'file2path', relativePath: '.'});
+			expect(attach).to.be.calledWith('file', 'filedata', {filepath: 'filepath'});
+			expect(attach).to.be.calledWith('file2', 'file2data', {filepath: 'file2path'});
 			expect(field.callCount).to.be.equal(2);
 			expect(field).to.be.calledWith('form1', 'value1');
 			expect(field).to.be.calledWith('form2', 'value2');
 		});
+
+		it('should handle nested dirs', () => {
+			const sut = new Agent();
+			const files = {
+				file: {data: makeFile('filedata'), path: 'filepath.ino'},
+				file2: {data: makeFile('file2data'), path: 'dir/file2path.cpp'}
+			}
+			const req = sut._buildRequest({uri: 'uri', method: 'get', files: files});
+			expect(extractFilename(req._formData, 'file', 0)).to.eql('filepath.ino');
+			expect(extractFilename(req._formData, 'file2', 3)).to.eql('dir/file2path.cpp');
+		});
+
+		if (!inBrowser()) {
+			it('should handle Windows nested dirs', () => {
+				const sut = new Agent();
+				const files = {
+					file: {data: makeFile('filedata'), path: 'dir\\windowsfilepath.cpp'}
+				}
+				const req = sut._buildRequest({uri: 'uri', method: 'get', files: files});
+				expect(extractFilename(req._formData, 'file', 0)).to.eql('dir/windowsfilepath.cpp');
+			});
+		}
+
+		function inBrowser() {
+			return typeof window !== 'undefined';
+		}
+
+		function makeFile(data) {
+			if (inBrowser()) {
+				return new Blob([data]);
+			} else {
+				return data;
+			}
+		}
+
+		function extractFilename(formData, fieldName, fieldIndex) {
+			if (inBrowser()) {
+				return formData.get(fieldName).name;
+			} else {
+				return /filename="([^"]*)"/.exec(formData._streams[fieldIndex])[1];
+			}
+		}
 	});
 
 	it('sanitizes files from a request', () => {
