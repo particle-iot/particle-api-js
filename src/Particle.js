@@ -71,13 +71,13 @@ class Particle {
 			expires_in: tokenDuration
 		}, method: 'post', context });
 	}
-	
+
 	/**
 	 * Create Customer for Product.
 	 * @param  {Object} options Options for this API call
 	 * @param  {String} options.username      Username for the Particle account
 	 * @param  {String} options.password      Password for the Particle account
-	 * @param  {String} options.product       List devices in this product ID or slug	 
+	 * @param  {String} options.product       List devices in this product ID or slug
 	 * @return {Promise}
 	 */
 	createCustomer({ email, password, product, context }) {
@@ -87,9 +87,9 @@ class Particle {
 			password,
 			grant_type: 'client_credentials',
 			client_id: this.clientId,
-			client_secret: this.clientSecret			
+			client_secret: this.clientSecret
 		}, method: 'post', context });
-	}	
+	}
 
 	/**
 	 * Login to Particle Cloud using an OAuth client.
@@ -104,7 +104,7 @@ class Particle {
 			client_secret: this.clientSecret
 		}, method: 'post', context });
 	}
-	
+
 	/**
 	 * Create a user account for the Particle Cloud
 	 * @param  {Object} options Options for this API call
@@ -120,7 +120,7 @@ class Particle {
 			account_info : accountInfo
 		}, undefined, context);
 	}
-	
+
 	/**
 	 * Verify new user account via verification email
 	 * @param  {Object} options Options for this API call
