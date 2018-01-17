@@ -1,7 +1,7 @@
 # particle-api-js
 JS Library for the Particle Cloud API for Node.js and the browser
 
-[![Build Status](https://travis-ci.org/spark/particle-api-js.svg?branch=master)](https://travis-ci.org/spark/particle-api-js)
+[![Build Status](https://travis-ci.org/particle-iot/particle-api-js.svg?branch=master)](https://travis-ci.org/particle-iot/particle-api-js)
 
 ## Installation
 
