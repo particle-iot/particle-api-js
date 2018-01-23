@@ -75,7 +75,7 @@ const props = {
 	title: 'prod',
 	description: 'ready for production',
 	file: new Buffer('ELF...'),
-	countryCode: 'RO',
+	country: 'RO',
 	iccid: '1234567890',
 	iccids: ['1234567890', '9876543210'],
 	serialNumber: 'PH-123456',
@@ -1129,7 +1129,7 @@ describe('ParticleAPI', () => {
 							uri: `/v1/sims/${props.iccid}`,
 							auth: props.auth,
 							data: {
-								countryCode: props.countryCode,
+								country: props.country,
 								action: 'activate'
 							}
 						});
@@ -1148,7 +1148,7 @@ describe('ParticleAPI', () => {
 								auth: props.auth,
 								data: {
 									sims: [props.iccid],
-									countryCode: props.countryCode,
+									country: props.country,
 								}
 							});
 						});
@@ -1163,7 +1163,7 @@ describe('ParticleAPI', () => {
 								auth: props.auth,
 								data: {
 									sims: props.iccids,
-									countryCode: props.countryCode,
+									country: props.country,
 								}
 							});
 						});
