@@ -803,18 +803,18 @@ class Particle {
 	 * @param  {Object} options Options for this API call
 	 * @param  {String} options.iccid        ICCID of the SIM card
 	 * @param  {Array<String>} options.iccids (Product only) ICCID of multiple SIM cards to import
-	 * @param  {String} options.countryCode The ISO country code for the SIM cards
+	 * @param  {String} options.country The ISO country code for the SIM cards
 	 * @param  {String} [options.product]  SIM cards for this product ID or slug
 	 * @param  {String} options.auth       Access Token
 	 * @return {Promise}
 	 */
-	activateSIM({ iccid, iccids, countryCode, promoCode, product, auth, context }) {
+	activateSIM({ iccid, iccids, country, promoCode, product, auth, context }) {
 		// promoCode is deprecated
 		iccids = iccids || [iccid];
 		const uri = product ? `/v1/products/${product}/sims` : `/v1/sims/${iccid}`;
 		const data = product ?
-			{ sims: iccids, countryCode } :
-			{ countryCode, promoCode, action: 'activate' };
+			{ sims: iccids, country } :
+			{ country, promoCode, action: 'activate' };
 		const method = product ? 'post' : 'put';
 
 		return this.request({ uri, method, data, auth, context });
