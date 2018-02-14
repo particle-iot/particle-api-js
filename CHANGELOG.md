@@ -1,5 +1,8 @@
 # changelog
 
+## 7.1.1 - 13 Feb 2018
+* Fix country parameter for activate sim [PR #81](https://github.com/particle-iot/particle-api-js/pull/81)
+
 ## 7.1.0 - 17 Jan 2018
 
 * Update jsDelivr link [PR #66](https://github.com/particle-iot/particle-api-js/pull/66). Thanks @LukasDrgon!
