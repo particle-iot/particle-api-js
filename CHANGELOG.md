@@ -1,5 +1,8 @@
 # changelog
 
+## 7.2.0 - 22 Mar 2018
+* Support changing user's username(i.e., email) and password [PR #84](https://github.com/particle-iot/particle-api-js/pull/84)
+
 ## 7.1.1 - 13 Feb 2018
 * Fix country parameter for activate sim [PR #81](https://github.com/particle-iot/particle-api-js/pull/81)
 
