@@ -7,7 +7,6 @@ API documentation. Before the command finishes, update `CHANGELOG.md`.
 
 - `git push && git push --tags`
 
-- `npm publish`
+- Travis will run `npm publish` if the build passes.
 
 - Create a release on GitHub with the notes from the `CHANGELOG.md`
-
