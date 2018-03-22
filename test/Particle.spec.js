@@ -157,7 +157,7 @@ describe('ParticleAPI', () => {
 				});
 			});
 		});
-		describe('.createCustomer', () => {  
+		describe('.createCustomer', () => {
 			it('sends client ID and secret', () => {
 				let clientApi = new Particle({
 					clientId: 'foo',
@@ -1083,6 +1083,40 @@ describe('ParticleAPI', () => {
 						data: {
 							stripe_token: '123ABCD',
 							account_info: {first_name: 'John', last_name: 'Scully'}
+						}
+					});
+
+				});
+			});
+		});
+		describe('.changeUsername', () => {
+			it('generates request', () => {
+				return api.changeUsername({ auth: 'X', currentPassword: 'blabla', username: 'john@skul.ly' }).then((results) => {
+					results.should.eql({
+						method: 'put',
+						uri: '/v1/user',
+						auth: 'X',
+						context: {},
+						data: {
+							current_password: 'blabla',
+							username: 'john@skul.ly'
+						}
+					});
+
+				});
+			});
+		});
+		describe('.changeUserPassword', () => {
+			it('generates request', () => {
+				return api.changeUserPassword({ auth: 'X', currentPassword: 'blabla', password: 'blabla2' }).then((results) => {
+					results.should.eql({
+						method: 'put',
+						uri: '/v1/user',
+						auth: 'X',
+						context: {},
+						data: {
+							current_password: 'blabla',
+							password: 'blabla2'
 						}
 					});
 
