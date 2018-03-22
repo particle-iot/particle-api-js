@@ -737,15 +737,47 @@ class Particle {
 	 * @param  {String} options.auth Access Token
 	 * @param  {String} options.stripeToken Set user's stripe token for payment
 	 * @param  {String} options.accountInfo Set user's extended info fields (name, business account, company name, etc)
-	 * @param  {String} options.password Change authenticated user password
 	 * @return {Promise}
 	 */
-	setUserInfo({ stripeToken, accountInfo, password, auth, context }) {
+	setUserInfo({ stripeToken, accountInfo, auth, context }) {
 		const bodyObj = {};
 
 		(stripeToken ? bodyObj.stripe_token = stripeToken : null);
 		(accountInfo ? bodyObj.account_info = accountInfo : null);
-		(password ? bodyObj.password = password : null);
+
+		return this.put('/v1/user', bodyObj, auth, context);
+	}
+
+	/**
+	 * Change username (i.e, email)
+	 * @param  {Object} options Options for this API call
+	 * @param  {String} options.auth Access Token
+	 * @param  {String} options.currentPassword Current password
+	 * @param  {String} options.username New email
+	 * @return {Promise}
+	 */
+	changeUsername({ currentPassword, username, auth, context }) {
+		const bodyObj = {
+			current_password: currentPassword,
+			username
+		};
+
+		return this.put('/v1/user', bodyObj, auth, context);
+	}
+
+	/**
+	 * Change user's password
+	 * @param  {Object} options Options for this API call
+	 * @param  {String} options.auth Access Token
+	 * @param  {String} options.currentPassword Current password
+	 * @param  {String} options.password New password
+	 * @return {Promise}
+	 */
+	changeUserPassword({ currentPassword, password, auth, context }) {
+		const bodyObj = {
+			current_password: currentPassword,
+			password
+		};
 
 		return this.put('/v1/user', bodyObj, auth, context);
 	}
