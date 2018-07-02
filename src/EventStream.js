@@ -73,8 +73,6 @@ class EventStream extends EventEmitter {
 
 				this.data = '';
 				this.buf = '';
-				this.eventName;
-				this.lastEventId;
 
 				res.on('data', this.parse.bind(this));
 				res.once('end', this.end.bind(this));
@@ -162,7 +160,6 @@ class EventStream extends EventEmitter {
 					const event = JSON.parse(this.data);
 					event.name = this.eventName || '';
 					try {
-
 						if (this.eventName !== 'event') {
 							this.emit(this.eventName, event);
 						}
@@ -170,12 +167,13 @@ class EventStream extends EventEmitter {
 					} catch (error) {
 						this.emit('error', error);
 					}
-					this.data = '';
 				}
-				this.eventName = undefined;
-				this.event = false;
 			} catch (e) {
 				// do nothing if JSON.parse fails
+			} finally {
+				this.data = '';
+				this.eventName = undefined;
+				this.event = false;
 			}
 		} else if (fieldLength > 0) {
 			const field = this.buf.slice(pos, pos + fieldLength);
