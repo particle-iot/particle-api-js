@@ -51,10 +51,15 @@ class EventStream extends EventEmitter {
 							// don't bother doing anything special if the JSON.parse fails
 							// since we are already about to reject the promise anyway
 						} finally {
-							this.emit('response', {
-								statusCode,
-								body
-							});
+							try {
+								this.emit('response', {
+									statusCode,
+									body
+								});
+							} catch (error) {
+								this.emit('error', error);
+							}
+
 							let errorDescription = `HTTP error ${statusCode} from ${this.uri}`;
 							if (body && body.error_description) {
 								errorDescription += ' - ' + body.error_description;
@@ -156,10 +161,15 @@ class EventStream extends EventEmitter {
 				if (this.data.length > 0 && this.event) {
 					const event = JSON.parse(this.data);
 					event.name = this.eventName || '';
-					if (this.eventName !== 'event') {
-						this.emit(this.eventName, event);
+					try {
+
+						if (this.eventName !== 'event') {
+							this.emit(this.eventName, event);
+						}
+						this.emit('event', event);
+					} catch (error) {
+						this.emit('error', error);
 					}
-					this.emit('event', event);
 					this.data = '';
 				}
 				this.eventName = undefined;
