@@ -1074,14 +1074,13 @@ describe('ParticleAPI', () => {
 		});
 		describe('.setUserInfo', () => {
 			it('generates request', () => {
-				return api.setUserInfo({ auth: 'X', stripeToken: '123ABCD', accountInfo: {first_name: 'John', last_name: 'Scully'} }).then((results) => {
+				return api.setUserInfo({ auth: 'X', accountInfo: {first_name: 'John', last_name: 'Scully'} }).then((results) => {
 					results.should.eql({
 						method: 'put',
 						uri: '/v1/user',
 						auth: 'X',
 						context: {},
 						data: {
-							stripe_token: '123ABCD',
 							account_info: {first_name: 'John', last_name: 'Scully'}
 						}
 					});
