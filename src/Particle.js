@@ -735,15 +735,13 @@ class Particle {
 	 * Set details on the current user
 	 * @param  {Object} options Options for this API call
 	 * @param  {String} options.auth Access Token
-	 * @param  {String} options.stripeToken Set user's stripe token for payment
 	 * @param  {String} options.accountInfo Set user's extended info fields (name, business account, company name, etc)
 	 * @return {Promise}
 	 */
-	setUserInfo({ stripeToken, accountInfo, auth, context }) {
-		const bodyObj = {};
-
-		(stripeToken ? bodyObj.stripe_token = stripeToken : null);
-		(accountInfo ? bodyObj.account_info = accountInfo : null);
+	setUserInfo({ accountInfo, auth, context }) {
+		const bodyObj = {
+			account_info: accountInfo
+		};
 
 		return this.put('/v1/user', bodyObj, auth, context);
 	}
