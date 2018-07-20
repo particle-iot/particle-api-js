@@ -73,6 +73,30 @@ class Particle {
 	}
 
 	/**
+	 * Enable MFA on the currently logged in user
+	 * @param {Object} options	Options for this API call
+	 * @param {Object} options.auth		access token
+	 * @param {Object} options.context	Request context
+	 * @return {Promise}
+	 */
+	enableMfa({ auth, context }) {
+		return this.get('/v1/user/mfa-enable', auth, undefined, context);
+	}
+
+	/**
+	 * Confirm MFA for the user. This must be called with current TOTP code, determined from the results of enableMfa, to confrim enrollment
+	 * @param {Object} options	Options for this API call
+	 * @param {Object} options.auth		access token
+	 * @param {Object} options.mfaToken	Token given from previous step to
+	 * @param {Object} options.otp		Current one-time-password generated from the authentication app
+	 * @param {Object} options.context	Request context
+	 * @return {Promise}
+	 */
+	confirmMfa({ auth, mfaToken: mfa_token, otp, context }) {
+		return this.post('/v1/user/mfa-enable', { mfa_token, otp }, auth, undefined, context);
+	}
+
+	/**
 	 * Create Customer for Product.
 	 * @param  {Object} options Options for this API call
 	 * @param  {String} options.username      Username for the Particle account
