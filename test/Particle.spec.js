@@ -10,6 +10,7 @@ import {sinon, expect} from './test-setup';
 
 let api;
 let server;
+let mfa;
 
 const props = {
 	url: 'http://www.zombo.com/',
@@ -154,6 +155,27 @@ describe('ParticleAPI', () => {
 					expect(req.form).to.have.property('client_id').eql('foo');
 					expect(req.form).to.have.property('client_secret').eql('bar');
 					expect(req.form).to.have.property('grant_type').eql('client_credentials');
+				});
+			});
+		});
+		describe('.enableMfa', () => {
+			it('sends request to begin mfa enrollment', () => {
+				return api.enableMfa(props).then((results) => {
+					results.auth.should.equal(props.auth);
+				});
+			});
+		});
+		describe('.confirmMfa', () => {
+			it('sends request to confirm mfa enrollment', () => {
+				const otp = '123456';
+				const mfaToken = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+				const params = Object.assign({}, props, { otp, mfaToken });
+
+				return api.confirmMfa(params).then((results) => {
+					results.data.should.be.instanceOf(Object);
+					results.data.otp.should.equal(otp);
+					results.data.mfa_token.should.equal(mfaToken);
+					results.auth.should.equal(props.auth);
 				});
 			});
 		});
