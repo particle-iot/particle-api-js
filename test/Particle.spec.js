@@ -179,6 +179,19 @@ describe('ParticleAPI', () => {
 				});
 			});
 		});
+		describe('.disableMfa', () => {
+			it('sends request to confirm mfa enrollment', () => {
+				const otp = '123456';
+				const mfaToken = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+				const params = Object.assign({}, props, { otp, mfaToken });
+
+				return api.disableMfa(params).then((results) => {
+					results.data.should.be.instanceOf(Object);
+					results.data.password.should.equal(props.password);
+					results.auth.should.equal(props.auth);
+				});
+			});
+		});
 		describe('.createCustomer', () => {
 			it('sends client ID and secret', () => {
 				let clientApi = new Particle({
