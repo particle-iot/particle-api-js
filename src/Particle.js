@@ -97,16 +97,15 @@ class Particle {
 	}
 
 	/**
-	 * Confirm MFA for the user. This must be called with current TOTP code, determined from the results of enableMfa, to confrim enrollment
+	 * Disable MFA for the user.
 	 * @param {Object} options	Options for this API call
-	 * @param {Object} options.auth		access token
-	 * @param {Object} options.mfaToken	Token given from previous step to
-	 * @param {Object} options.otp		Current one-time-password generated from the authentication app
-	 * @param {Object} options.context	Request context
+	 * @param {Object} options.auth				access token
+	 * @param {Object} options.currentPassword	User's current password
+	 * @param {Object} options.context			Request context
 	 * @return {Promise}
 	 */
-	disableMfa({ auth, password, context }) {
-		return this.put('/v1/user/mfa-disable', { password }, auth, context);
+	disableMfa({ auth, currentPassword: current_password, context }) {
+		return this.put('/v1/user/mfa-disable', { current_password }, auth, context);
 	}
 
 	/**
