@@ -10,11 +10,11 @@ import {sinon, expect} from './test-setup';
 
 let api;
 let server;
-let mfa;
 
 const props = {
 	url: 'http://www.zombo.com/',
 	password: 'test-password',
+	currentPassword: 'test-password',
 	data: { sentient: true },
 	isPrivate: true,
 	username: 'test-user',
@@ -83,6 +83,8 @@ const props = {
 	settings: {
 		url: 'http://example.com',
 	},
+	otp: '123456',
+	mfaToken: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
 };
 
 const product = 'ze-product-v1';
@@ -161,34 +163,44 @@ describe('ParticleAPI', () => {
 		describe('.enableMfa', () => {
 			it('sends request to begin mfa enrollment', () => {
 				return api.enableMfa(props).then((results) => {
-					results.auth.should.equal(props.auth);
+					results.should.eql({
+						method: 'get',
+						uri: '/v1/user/mfa-enable',
+						auth: props.auth,
+						query: undefined,
+						context: {},
+					});
 				});
 			});
 		});
 		describe('.confirmMfa', () => {
 			it('sends request to confirm mfa enrollment', () => {
-				const otp = '123456';
-				const mfaToken = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-				const params = Object.assign({}, props, { otp, mfaToken });
-
-				return api.confirmMfa(params).then((results) => {
-					results.data.should.be.instanceOf(Object);
-					results.data.otp.should.equal(otp);
-					results.data.mfa_token.should.equal(mfaToken);
-					results.auth.should.equal(props.auth);
+				return api.confirmMfa(props).then((results) => {
+					results.should.eql({
+						method: 'post',
+						uri: '/v1/user/mfa-enable',
+						auth: props.auth,
+						data: {
+							otp: props.otp,
+							mfa_token: props.mfaToken,
+						},
+						context: {},
+					});
 				});
 			});
 		});
 		describe('.disableMfa', () => {
 			it('sends request to confirm mfa enrollment', () => {
-				const otp = '123456';
-				const mfaToken = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-				const params = Object.assign({}, props, { otp, mfaToken });
-
-				return api.disableMfa(params).then((results) => {
-					results.data.should.be.instanceOf(Object);
-					results.data.password.should.equal(props.password);
-					results.auth.should.equal(props.auth);
+				return api.disableMfa(props).then((results) => {
+					results.should.eql({
+						method: 'put',
+						uri: '/v1/user/mfa-disable',
+						auth: props.auth,
+						data: {
+							current_password: props.password,
+						},
+						context: {},
+					});
 				});
 			});
 		});
