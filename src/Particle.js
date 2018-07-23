@@ -84,7 +84,7 @@ class Particle {
 	}
 
 	/**
-	 * Confirm MFA for the user. This must be called with current TOTP code, determined from the results of enableMfa, to confrim enrollment
+	 * Confirm MFA for the user. This must be called with current TOTP code, determined from the results of enableMfa(). You will be prompted to enter an OTP code every time you login after enrollment is confirmed. 
 	 * @param {Object} options	Options for this API call
 	 * @param {Object} options.auth		access token
 	 * @param {Object} options.mfaToken	Token given from previous step to
