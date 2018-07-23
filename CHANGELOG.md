@@ -1,5 +1,8 @@
 # changelog
 
+## 7.3.0 - 23 Jul 2018
+* Support enrolling user in MFA/Two-step authentication
+
 ## 7.2.0 - 22 Mar 2018
 * Support changing user's username(i.e., email) and password [PR #84](https://github.com/particle-iot/particle-api-js/pull/84)
 
