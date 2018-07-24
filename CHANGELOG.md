@@ -1,6 +1,9 @@
 # changelog
 
-## 7.3.0 - 23 Jul 2018
+## 7.2.2 - 23 Jul 2018
+* Fix npm api key for publishing to registry
+
+## 7.2.1 - 23 Jul 2018
 * Support enrolling user in MFA/Two-step authentication
 
 ## 7.2.0 - 22 Mar 2018
