@@ -73,6 +73,24 @@ class Particle {
 	}
 
 	/**
+	 * If login failed with an 'mfa_required' error, this must be called with a valid OTP code to login
+	 * @param  {Object} options Options for this API call
+	 * @param  {String} options.mfaToken Given as 'mfa_token' in the error body of `.login()`.
+	 * @param  {String} options.otp      Current one-time-password generated from the authentication application
+	 * @param  {Number} options.context  Request context
+	 * @return {Promise}
+	 */
+	sendOtp({ mfaToken: mfa_token, otp, context }) {
+		return this.request({ uri: '/oauth/token', form: {
+			grant_type: 'urn:custom:mfa-otp',
+			mfa_token,
+			otp,
+			client_id: this.clientId,
+			client_secret: this.clientSecret
+		}, method: 'post', context });
+	}
+
+	/**
 	 * Enable MFA on the currently logged in user
 	 * @param {Object} options	Options for this API call
 	 * @param {Object} options.auth		access token

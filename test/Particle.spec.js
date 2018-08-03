@@ -160,6 +160,16 @@ describe('ParticleAPI', () => {
 				});
 			});
 		});
+		describe('.sendOtp', () => {
+			it('sends request to oauth token endpoint to verify the user login', () => {
+				return api.sendOtp(props).then((results) => {
+					expect(results).to.have.property('method').eql('post');
+					expect(results).to.have.property('uri').eql('/oauth/token');
+					expect(results.form).to.have.property('otp').eql(props.otp);
+					expect(results.form).to.have.property('mfa_token').eql(props.mfaToken);
+				});
+			});
+		});
 		describe('.enableMfa', () => {
 			it('sends request to begin mfa enrollment', () => {
 				return api.enableMfa(props).then((results) => {
@@ -190,7 +200,7 @@ describe('ParticleAPI', () => {
 			});
 		});
 		describe('.disableMfa', () => {
-			it('sends request to confirm mfa enrollment', () => {
+			it('sends request to disable mfa', () => {
 				return api.disableMfa(props).then((results) => {
 					results.should.eql({
 						method: 'put',
