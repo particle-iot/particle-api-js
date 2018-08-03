@@ -1,5 +1,8 @@
 # changelog
 
+## 7.2.3 - 4 Aug 2018
+* Add sendOtp method to allow users enrolled in MFA/Two-Step Auth to login [PR #92](https://github.com/particle-iot/particle-api-js/pull/92)
+
 ## 7.2.2 - 23 Jul 2018
 * Fix npm api key for publishing to registry
 
