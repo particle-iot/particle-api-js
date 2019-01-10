@@ -1,5 +1,8 @@
 # changelog
 
+## 7.3.0 - 10 Jan 2019
+* Support flashing product devices [PR #97](https://github.com/particle-iot/particle-api-js/pull/97)
+
 ## 7.2.3 - 4 Aug 2018
 * Add sendOtp method to allow users enrolled in MFA/Two-Step Auth to login [PR #92](https://github.com/particle-iot/particle-api-js/pull/92)
 
