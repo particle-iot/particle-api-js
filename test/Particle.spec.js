@@ -659,15 +659,28 @@ describe('ParticleAPI', () => {
 			});
 		});
 		describe('.flashDevice', () => {
-			it('generates request', () => {
-				return api.flashDevice(props).then(Common.expectDeviceUrlAndToken);
+			describe('user scope', () => {
+				it('generates request', () => {
+					return api.flashDevice(props).then(Common.expectDeviceUrlAndToken);
+				});
+				it('sends proper data', () => {
+					return api.flashDevice(props).then(({ files, form }) => {
+						form.should.be.instanceOf(Object);
+						files.should.be.instanceOf(Object);
+						files.should.have.property('app.ino').and.be.ok;
+						form.build_target_version.should.equal(props.targetVersion);
+					});
+				});
 			});
-			it('sends proper data', () => {
-				return api.flashDevice(props).then(({ files, form }) => {
-					form.should.be.instanceOf(Object);
-					files.should.be.instanceOf(Object);
-					files.should.have.property('app.ino').and.be.ok;
-					form.build_target_version.should.equal(props.targetVersion);
+			describe('product scope', () => {
+				it('generates request', () => {
+					return api.flashDevice(propsWithProduct).then((results) => {
+						results.should.match({
+							method: 'put',
+							uri: `/v1/products/${product}/devices/${props.deviceId}`,
+							auth: props.auth
+						});
+					});
 				});
 			});
 		});

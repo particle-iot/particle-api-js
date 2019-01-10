@@ -492,20 +492,21 @@ class Particle {
 	 * Compile and flash application firmware to a device. Pass a pre-compiled binary to flash it directly to the device.
 	 * @param  {Object} options Options for this API call
 	 * @param  {String} options.deviceId      Device ID or Name
+	 * @param  {String} options.product       Flash device in this product ID or slug
 	 * @param  {Object} options.files         Object containing files to be compiled and flashed. Keys should be the filenames, including relative path, and the values should be a path or Buffer of the file contents in Node, or a File or Blob in the browser.
 	 * @param  {String} [options.targetVersion=latest] System firmware version to compile against
 	 * @param  {String} options.auth          String
 	 * @return {Promise}
 	 */
-	flashDevice({ deviceId, files, targetVersion, auth, context }) {
+	flashDevice({ deviceId, product, files, targetVersion, auth, context }) {
+		const uri = this.deviceUri({ deviceId, product });
 		const form = {};
 		if (targetVersion) {
 			form.build_target_version = targetVersion;
 		} else {
 			form.latest = 'true';
 		}
-		return this.request({ uri: `/v1/devices/${deviceId}`,
-			files, auth, form, context, method: 'put' });
+		return this.request({ uri, files, auth, form, context, method: 'put' });
 	}
 
 	/**
