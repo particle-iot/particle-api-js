@@ -1329,6 +1329,109 @@ class Particle {
 		return this.get(`/v1/serial_numbers/${serialNumber}`, auth, undefined, context);
 	}
 
+	/**
+	 * Create a mesh network
+	 * @param {Object} options Options for this API call
+	 * @param {String} options.name Network name
+	 * @param {String} options.deviceId Gateway device ID
+	 * @param {String} [options.iccid] ICCID of the active SIM card (only for cellular gateway devices)
+	 * @param {String} options.auth Access token
+	 * @param {Object} [options.context] Request context
+	 * @return {Promise<Object>}
+	 */
+	createMeshNetwork({ name, deviceId, iccid, auth, context }) {
+		return this.post('/v1/networks', { name, device_id: deviceId, iccid }, auth, context);
+	}
+
+	/**
+	 * Remove a mesh network.
+	 * @param {Object} options Options for this API call
+	 * @param {String} options.networkId Network ID or name
+	 * @param {String} options.auth Access token
+	 * @param {Object} [options.context] Request context
+	 * @return {Promise<Object>}
+	 */
+	removeMeshNetwork({ networkId, auth, context }) {
+		return this.delete(`/v1/networks/${networkId}`, undefined, auth, context);
+	}
+
+	/**
+	 * List all mesh networks
+	 * @param {Object} options Options for this API call
+	 * @param {String} options.auth Access token
+	 * @param {Object} [options.context] Request context
+	 * @return {Promise<Object>}
+	 */
+	listMeshNetworks({ auth, context }) {
+		// TODO: Pagination
+		return this.get('/v1/networks', auth, undefined, context);
+	}
+
+	/**
+	 * Get information about a mesh network.
+	 * @param {Object} options Options for this API call
+	 * @param {String} options.networkId Network ID or name
+	 * @param {String} options.auth Access token
+	 * @param {Object} [options.context] Request context
+	 * @return {Promise<Object>}
+	 */
+	getMeshNetwork({ networkId, auth, context }) {
+		return this.get(`/v1/networks/${networkId}`, auth, undefined, context);
+	}
+
+	/**
+	 * Modify a mesh network.
+	 * @param {Object} options Options for this API call
+	 * @param {String} options.networkId Network ID or name
+	 * @param {String} options.action 'add-device', 'remove-device', 'gateway-enable' or 'gateway-disable'
+	 * @param {String} options.deviceId Device ID
+	 * @param {String} options.auth Access token
+	 * @param {Object} [options.context] Request context
+	 * @return {Promise<Object>}
+	 */
+	updateMeshNetwork({ networkId, action, deviceId, auth, context }) {
+		return this.put(`/v1/networks/${networkId}`, { action, device_id: deviceId }, auth, context);
+	}
+
+	/**
+	 * Add a device to a mesh network.
+	 * @param {Object} options Options for this API call
+	 * @param {String} options.networkId Network ID or name
+	 * @param {String} options.deviceId Device ID
+	 * @param {String} options.auth Access token
+	 * @param {Object} [options.context] Request context
+	 * @return {Promise<Object>}
+	 */
+	addMeshNetworkDevice({ networkId, deviceId, auth, context }) {
+		return this.updateMeshNetwork({ action: 'add-device', networkId, deviceId, auth, context });
+	}
+
+	/**
+	 * Remove a device from a mesh network.
+	 * @param {Object} options Options for this API call
+	 * @param {String} options.networkId Network ID or name
+	 * @param {String} options.deviceId Device ID
+	 * @param {String} options.auth Access token
+	 * @param {Object} [options.context] Request context
+	 * @return {Promise<Object>}
+	 */
+	removeMeshNetworkDevice({ networkId, deviceId, auth, context }) {
+		return this.updateMeshNetwork({ action: 'remove-device', networkId, deviceId, auth, context });
+	}
+
+	/**
+	 * List all devices of a mesh network.
+	 * @param {Object} options Options for this API call
+	 * @param {String} options.networkId Network ID or name
+	 * @param {String} options.auth Access token
+	 * @param {Object} [options.context] Request context
+	 * @return {Promise<Object>}
+	 */
+	listMeshNetworkDevices({ networkId, auth, context }) {
+		// TODO: Pagination and filtering
+		return this.get(`/v1/networks/${networkId}/devices`, auth, undefined, context);
+	}
+
 
 	/**
 	 * API URI to access a device
