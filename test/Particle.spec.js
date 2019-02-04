@@ -85,6 +85,7 @@ const props = {
 	},
 	otp: '123456',
 	mfaToken: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+	networkId: '65535'
 };
 
 const product = 'ze-product-v1';
@@ -1822,6 +1823,120 @@ describe('ParticleAPI', () => {
 					results.should.match({
 						method: 'get',
 						uri: `/v1/serial_numbers/${props.serialNumber}`,
+						auth: props.auth
+					});
+				});
+			});
+		});
+
+		describe('.createMeshNetwork', () => {
+			it('generates request', () => {
+				return api.createMeshNetwork(props).then((results) => {
+					results.should.match({
+						method: 'post',
+						uri: '/v1/networks',
+						auth: props.auth,
+						data: {
+							name: props.name,
+							device_id: props.deviceId,
+							iccid: props.iccid
+						}
+					});
+				});
+			});
+		});
+
+		describe('.removeMeshNetwork', () => {
+			it('generates request', () => {
+				return api.removeMeshNetwork(props).then((results) => {
+					results.should.match({
+						method: 'delete',
+						uri: `/v1/networks/${props.networkId}`,
+						auth: props.auth
+					});
+				});
+			});
+		});
+
+		describe('.listMeshNetworks', () => {
+			it('generates request', () => {
+				return api.listMeshNetworks(props).then((results) => {
+					results.should.match({
+						method: 'get',
+						uri: '/v1/networks',
+						auth: props.auth
+					});
+				});
+			});
+		});
+
+		describe('.getMeshNetwork', () => {
+			it('generates request', () => {
+				return api.getMeshNetwork(props).then((results) => {
+					results.should.match({
+						method: 'get',
+						uri: `/v1/networks/${props.networkId}`,
+						auth: props.auth
+					});
+				});
+			});
+		});
+
+		describe('.updateMeshNetwork', () => {
+			it('generates request', () => {
+				const p = Object.assign(props, { action: 'test' });
+				return api.updateMeshNetwork(p).then((results) => {
+					results.should.match({
+						method: 'put',
+						uri: `/v1/networks/${p.networkId}`,
+						auth: p.auth,
+						data: {
+							action: p.action,
+							device_id: p.deviceId
+						}
+					});
+				});
+			});
+		});
+
+		describe('.addMeshNetworkDevice', () => {
+			it('generates request', () => {
+				return api.addMeshNetworkDevice(props).then((results) => {
+					results.should.match({
+						method: 'put',
+						uri: `/v1/networks/${props.networkId}`,
+						auth: props.auth,
+						data: {
+							action: 'add-device',
+							device_id: props.deviceId
+						}
+					});
+				});
+			});
+		});
+
+		describe('.removeMeshNetworkDevice', () => {
+			it('generates request', () => {
+				return api.removeMeshNetworkDevice(props).then((results) => {
+					results.should.match({
+						method: 'put',
+						uri: `/v1/networks/${props.networkId}`,
+						auth: props.auth,
+						data: {
+							action: 'remove-device',
+							device_id: props.deviceId
+						}
+					});
+				});
+			});
+		});
+
+		describe('.listMeshNetworkDevices', () => {
+			it('generates request', () => {
+				return api.listMeshNetworkDevices(props).then((results) => {
+					results.should.match({
+						method: 'get',
+						uri: `/v1/networks/${props.networkId}/devices`,
 						auth: props.auth
 					});
 				});
