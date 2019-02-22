@@ -1359,12 +1359,14 @@ class Particle {
 	 * List all mesh networks
 	 * @param {Object} options Options for this API call
 	 * @param {String} options.auth Access token
+	 * @param {Number} [options.page] Current page of results
+	 * @param {Number} [options.perPage] Records per page
 	 * @param {Object} [options.context] Request context
 	 * @return {Promise<Object>}
 	 */
-	listMeshNetworks({ auth, context }) {
-		// TODO: Pagination
-		return this.get('/v1/networks', auth, undefined, context);
+	listMeshNetworks({ auth, context, page, perPage }) {
+		const query = page ? { page, per_page: perPage } : undefined;
+		return this.get('/v1/networks', auth, query, context);
 	}
 
 	/**
@@ -1424,12 +1426,15 @@ class Particle {
 	 * @param {Object} options Options for this API call
 	 * @param {String} options.networkId Network ID or name
 	 * @param {String} options.auth Access token
+	 * @param {Number} [options.role] Device role: 'gateway' or 'node'
+	 * @param {Number} [options.page] Current page of results
+	 * @param {Number} [options.perPage] Records per page
 	 * @param {Object} [options.context] Request context
 	 * @return {Promise<Object>}
 	 */
-	listMeshNetworkDevices({ networkId, auth, context }) {
-		// TODO: Pagination and filtering
-		return this.get(`/v1/networks/${networkId}/devices`, auth, undefined, context);
+	listMeshNetworkDevices({ networkId, auth, role, page, perPage, context }) {
+		const query = (role || page) ? { role, page, per_page: perPage } : undefined;
+		return this.get(`/v1/networks/${networkId}/devices`, auth, query, context);
 	}
 
 

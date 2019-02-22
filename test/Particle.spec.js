@@ -1864,7 +1864,11 @@ describe('ParticleAPI', () => {
 					results.should.match({
 						method: 'get',
 						uri: '/v1/networks',
-						auth: props.auth
+						auth: props.auth,
+						query: {
+							page: props.page,
+							per_page: props.perPage
+						}
 					});
 				});
 			});
@@ -1933,11 +1937,17 @@ describe('ParticleAPI', () => {
 
 		describe('.listMeshNetworkDevices', () => {
 			it('generates request', () => {
-				return api.listMeshNetworkDevices(props).then((results) => {
+				const p = Object.assign({ role: 'node' }, props);
+				return api.listMeshNetworkDevices(p).then((results) => {
 					results.should.match({
 						method: 'get',
 						uri: `/v1/networks/${props.networkId}/devices`,
-						auth: props.auth
+						auth: p.auth,
+						query: {
+							role: p.role,
+							page: p.page,
+							per_page: p.perPage
+						}
 					});
 				});
 			});
