@@ -1,5 +1,8 @@
 # changelog
 
+## 7.4.0 - 27 Feb 2019
+* Add support for mesh network management [PR #98](https://github.com/particle-iot/particle-api-js/pull/98)
+
 ## 7.3.0 - 10 Jan 2019
 * Support flashing product devices [PR #97](https://github.com/particle-iot/particle-api-js/pull/97)
 
