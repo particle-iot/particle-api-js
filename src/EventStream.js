@@ -10,6 +10,7 @@ class EventStream extends EventEmitter {
 		this.uri = uri;
 		this.token = token;
 		this.reconnectInterval = 2000;
+		this.timeout = 13000; // keep alive can be sent up to 12 seconds after last event
 		this.data = '';
 		this.buf = '';
 		Object.assign(this, options);
@@ -36,6 +37,8 @@ class EventStream extends EventEmitter {
 			if (this.debug) {
 				this.debug(this);
 			}
+
+			req.setTimeout(this.timeout, this.idleTimeout.bind(this));
 
 			req.on('error', e => {
 				reject({ error: e, errorDescription: `Network error from ${this.uri}` });
@@ -92,6 +95,8 @@ class EventStream extends EventEmitter {
 		this.removeAllListeners();
 	}
 
+	/* Private methods */
+
 	end() {
 		if (!this.req) {
 			// request was ended intentionally by abort
@@ -106,6 +111,13 @@ class EventStream extends EventEmitter {
 				this.removeAllListeners();
 			});
 		}, this.reconnectInterval);
+	}
+
+	idleTimeout() {
+		if (this.req && this.req.socket) {
+			this.emit('timeout');
+			this.req.socket.destroy();
+		}
 	}
 
 	parse(chunk) {
@@ -162,7 +174,7 @@ class EventStream extends EventEmitter {
 					const event = JSON.parse(this.data);
 					event.name = this.eventName || '';
 					try {
-						if (['event', 'error', 'response'].indexOf(this.eventName) === -1) {
+						if (['event', 'error', 'response', 'timeout'].indexOf(this.eventName) === -1) {
 							this.emit(this.eventName, event);
 						}
 						this.emit('event', event);

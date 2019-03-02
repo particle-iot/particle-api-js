@@ -12,6 +12,7 @@ describe('EventStream', () => {
 	function makeRequest() {
 		const fakeRequest = new EventEmitter();
 		fakeRequest.end = sinon.spy();
+		fakeRequest.setTimeout = sinon.spy();
 		return fakeRequest;
 	}
 
