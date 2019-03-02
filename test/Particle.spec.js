@@ -3,7 +3,6 @@ import should from 'should'; // monkeypatch the world~!1
 import Particle from '../src/Particle';
 import Defaults from '../src/Defaults';
 import Client from '../src/Client';
-import { createServer } from 'http';
 import EventStream from '../src/EventStream';
 import FakeAgent from './FakeAgent';
 import {sinon, expect} from './test-setup';
@@ -755,11 +754,13 @@ describe('ParticleAPI', () => {
 		});
 		describe('.getEventStream', () => {
 			before(() => {
-				sinon.stub(EventStream.prototype, 'connect', function connect() {
-					return new Promise((resolve) => {
-						resolve({ uri: this.uri });
-					});
+				sinon.stub(EventStream.prototype, 'connect').callsFake(function connect() {
+					return Promise.resolve({ uri: this.uri });
 				});
+			});
+
+			after(() => {
+				sinon.restore();
 			});
 
 			it('requests public events', () => {
