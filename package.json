@@ -68,9 +68,9 @@
     "minifyify": "^7.3.1",
     "mocha": "^2.5.1",
     "should": "^9.0.0",
-    "sinon": "^1.17.4",
-    "sinon-as-promised": "^4.0.2",
-    "sinon-chai": "^2.8.0",
+    "sinon": "^7.2.5",
+    "sinon-as-promised": "^4.0.3",
+    "sinon-chai": "^3.3.0",
     "watchify": "^3.7.0"
   },
   "dependencies": {
