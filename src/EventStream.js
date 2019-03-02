@@ -10,6 +10,8 @@ class EventStream extends EventEmitter {
 		this.uri = uri;
 		this.token = token;
 		this.reconnectInterval = 2000;
+		this.data = '';
+		this.buf = '';
 		Object.assign(this, options);
 	}
 
@@ -23,9 +25,9 @@ class EventStream extends EventEmitter {
 			const req = requestor.request({
 				hostname,
 				protocol,
-				path: `${path}?history_limit=30&access_token=${this.token}`,
+				path: `${path}?access_token=${this.token}`,
 				method: 'get',
-				port: port || (isSecure ? 443 : 80),
+				port: parseInt(port, 10) || (isSecure ? 443 : 80),
 				avoidFetch: true,
 				mode: 'prefer-streaming'
 			});
@@ -193,13 +195,6 @@ class EventStream extends EventEmitter {
 			} else if (field === 'event') {
 				this.eventName = value;
 				this.event = true;
-			} else if (field === 'id') {
-				this.lastEventId = value;
-			} else if (field === 'retry') {
-				const retry = parseInt(value, 10);
-				if (!Number.isNaN(retry)) {
-					this.reconnectInterval = retry;
-				}
 			}
 		}
 	}
