@@ -131,7 +131,7 @@ class Particle {
 	 * @param  {Object} options Options for this API call
 	 * @param  {String} options.username      Username for the Particle account
 	 * @param  {String} options.password      Password for the Particle account
-	 * @param  {String} options.product       List devices in this product ID or slug
+	 * @param  {String} options.product       Create the customer in this product ID or slug
 	 * @return {Promise}
 	 */
 	createCustomer({ email, password, product, context }) {
