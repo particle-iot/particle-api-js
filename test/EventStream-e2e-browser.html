@@ -1,0 +1,40 @@
+<!--
+End-to-end test program for the event stream in the browser
+
+Steps:
+- npm run compile
+- npm run build
+- Replace the path to particle.min.js
+- Replace your access token in `auth`
+- Open this file in the browser
+- Follow the scenarios in EventStream.feature
+
+-->
+
+<html>
+<body>
+<p>Open the Javascript Console</p>
+<script type="text/javascript" src="file:///home/user/path/to/particle-api-js/dist/particle.min.js"></script>
+<script type="text/javascript">
+
+
+const baseUrl = 'http://localhost:9090';
+const auth = '<my-token>';
+const particle = new Particle({ baseUrl });
+
+particle.getEventStream({ deviceId: 'mine', auth }).then(stream => {
+	console.log('event stream connected');
+
+	['event', 'error', 'disconnect', 'reconnect', 'reconnect-success', 'reconnect-error'].forEach(eventName => {
+		stream.on(eventName, (arg) => {
+			console.log(eventName, arg);
+		});
+	});
+
+}).catch(function (err) {
+	console.log(err);
+});
+
+</script>
+</body>
+</html>
