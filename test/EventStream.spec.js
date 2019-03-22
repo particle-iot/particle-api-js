@@ -217,30 +217,6 @@ describe('EventStream', () => {
 			});
 		});
 
-		it('emits event by Particle event name', () => {
-			const handler = sinon.spy();
-			eventStream.event = true;
-			eventStream.eventName = 'myparticleevent';
-			eventStream.data = '{"data":"test"}\n';
-			eventStream.on('myparticleevent', handler);
-
-			eventStream.parseEventStreamLine(0, -1, 0);
-
-			expect(handler).to.have.been.called;
-		});
-
-		it('does not emits event by Particle event name for reserved names', () => {
-			const handler = sinon.spy();
-			eventStream.event = true;
-			eventStream.eventName = 'response';
-			eventStream.data = '{"data":"test"}\n';
-			eventStream.on('response', handler);
-
-			eventStream.parseEventStreamLine(0, -1, 0);
-
-			expect(handler).not.to.have.been.called;
-		});
-
 		it('emits error if the event handler crashes', () => {
 			const errorHandler = sinon.spy();
 			eventStream.event = true;

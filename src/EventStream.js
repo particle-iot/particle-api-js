@@ -5,7 +5,7 @@ import url from 'url';
 import { EventEmitter } from 'events';
 
 class EventStream extends EventEmitter {
-	constructor(uri, token, options) {
+	constructor(uri, token) {
 		super();
 		this.uri = uri;
 		this.token = token;
@@ -13,7 +13,6 @@ class EventStream extends EventEmitter {
 		this.timeout = 13000; // keep alive can be sent up to 12 seconds after last event
 		this.data = '';
 		this.buf = '';
-		Object.assign(this, options);
 	}
 
 	connect() {
@@ -34,9 +33,6 @@ class EventStream extends EventEmitter {
 			});
 
 			this.req = req;
-			if (this.debug) {
-				this.debug(this);
-			}
 
 			req.setTimeout(this.timeout, this.idleTimeout.bind(this));
 
@@ -56,14 +52,10 @@ class EventStream extends EventEmitter {
 							// don't bother doing anything special if the JSON.parse fails
 							// since we are already about to reject the promise anyway
 						} finally {
-							try {
-								this.emit('response', {
-									statusCode,
-									body
-								});
-							} catch (error) {
-								this.emit('error', error);
-							}
+							this.emitSafe('response', {
+								statusCode,
+								body
+							});
 
 							let errorDescription = `HTTP error ${statusCode} from ${this.uri}`;
 							if (body && body.error_description) {
@@ -97,6 +89,16 @@ class EventStream extends EventEmitter {
 
 	/* Private methods */
 
+	emitSafe(event, param) {
+		try {
+			this.emit(event, param);
+		} catch (error) {
+			if (event !== 'error') {
+				this.emitSafe('error', error);
+			}
+		}
+	}
+
 	end() {
 		if (!this.req) {
 			// request was ended intentionally by abort
@@ -105,17 +107,22 @@ class EventStream extends EventEmitter {
 		}
 
 		this.req = undefined;
+		this.emitSafe('disconnect');
+		this.reconnect();
+	}
+
+	reconnect() {
 		setTimeout(() => {
+			this.emitSafe('reconnect');
 			this.connect().catch(err => {
-				this.emit('error', err);
-				this.removeAllListeners();
+				this.emitSafe('reconnect-error', err);
+				this.reconnect();
 			});
 		}, this.reconnectInterval);
 	}
 
 	idleTimeout() {
 		if (this.req && this.req.socket) {
-			this.emit('timeout');
 			this.req.socket.destroy();
 		}
 	}
@@ -173,14 +180,7 @@ class EventStream extends EventEmitter {
 				if (this.data.length > 0 && this.event) {
 					const event = JSON.parse(this.data);
 					event.name = this.eventName || '';
-					try {
-						if (['event', 'error', 'response', 'timeout'].indexOf(this.eventName) === -1) {
-							this.emit(this.eventName, event);
-						}
-						this.emit('event', event);
-					} catch (error) {
-						this.emit('error', error);
-					}
+					this.emitSafe('event', event);
 				}
 			} catch (e) {
 				// do nothing if JSON.parse fails

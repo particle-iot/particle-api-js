@@ -559,9 +559,6 @@ class Particle {
 		const req = request('get', uri);
 		req.use(this.prefix);
 		this.headers(req, auth);
-		if (this.debug) {
-			this.debug(req);
-		}
 		return req;
 	}
 
@@ -610,7 +607,7 @@ class Particle {
 	 * @param  {String} [options.product] Events for this product ID or slug
 	 * @param  {String} options.auth     Access Token
 	 * @return {Promise} If the promise resolves, the resolution value will be an EventStream object that will
-	 * emit 'event' events, as well as the specific named event.
+	 * emit 'event' events.
 	 */
 	getEventStream({ deviceId, name, org, product, auth, context }) {
 		let uri = '/v1/';
@@ -635,7 +632,7 @@ class Particle {
 			uri += `/${encodeURIComponent(name)}`;
 		}
 
-		return new EventStream(`${this.baseUrl}${uri}`, auth, { debug: this.debug }).connect();
+		return new EventStream(`${this.baseUrl}${uri}`, auth).connect();
 	}
 
 	/**
@@ -1264,9 +1261,6 @@ class Particle {
 		const req = request('get', uri);
 		req.use(this.prefix);
 		this.headers(req, auth);
-		if (this.debug) {
-			this.debug(req);
-		}
 		return req;
 	}
 
