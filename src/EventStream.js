@@ -13,6 +13,10 @@ class EventStream extends EventEmitter {
 		this.timeout = 13000; // keep alive can be sent up to 12 seconds after last event
 		this.data = '';
 		this.buf = '';
+
+		this.parse = this.parse.bind(this);
+		this.end = this.end.bind(this);
+		this.idleTimeoutExpired = this.idleTimeoutExpired.bind(this);
 	}
 
 	connect() {
@@ -34,10 +38,14 @@ class EventStream extends EventEmitter {
 
 			this.req = req;
 
-			req.setTimeout(this.timeout, this.idleTimeout.bind(this));
+			let connected = false;
 
 			req.on('error', e => {
-				reject({ error: e, errorDescription: `Network error from ${this.uri}` });
+				if (connected) {
+					this.end();
+				} else {
+					reject({ error: e, errorDescription: `Network error from ${this.uri}` });
+				}
 			});
 
 			req.on('response', res => {
@@ -66,8 +74,10 @@ class EventStream extends EventEmitter {
 				this.data = '';
 				this.buf = '';
 
-				res.on('data', this.parse.bind(this));
-				res.once('end', this.end.bind(this));
+				connected = true;
+				res.on('data', this.parse);
+				res.once('end', this.end);
+				this.startIdleTimeout();
 				resolve(this);
 			});
 			req.end();
@@ -95,6 +105,8 @@ class EventStream extends EventEmitter {
 	}
 
 	end() {
+		this.stopIdleTimeout();
+
 		if (!this.req) {
 			// request was ended intentionally by abort
 			// do not auto reconnect.
@@ -118,13 +130,28 @@ class EventStream extends EventEmitter {
 		}, this.reconnectInterval);
 	}
 
-	idleTimeout() {
-		if (this.req && this.req.socket) {
-			this.req.socket.destroy();
+	startIdleTimeout() {
+		this.stopIdleTimeout();
+		this.idleTimeout = setTimeout(this.idleTimeoutExpired, this.timeout);
+	}
+
+	stopIdleTimeout() {
+		if (this.idleTimeout) {
+			clearTimeout(this.idleTimeout);
+			this.idleTimeout = null;
+		}
+	}
+
+	idleTimeoutExpired() {
+		if (this.req) {
+			this.req.abort();
+			this.end();
 		}
 	}
 
 	parse(chunk) {
+		this.startIdleTimeout();
+
 		this.buf += chunk;
 		let pos = 0;
 		let length = this.buf.length;
