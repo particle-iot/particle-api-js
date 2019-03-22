@@ -39,8 +39,16 @@ class EventStream extends EventEmitter {
 			this.req = req;
 
 			let connected = false;
+			let connectionTimeout = setTimeout(() => {
+				if (this.req) {
+					this.req.abort();
+				}
+				reject({ error: new Error('Timeout'), errorDescription: `Timeout connecting to ${this.uri}` });
+			}, this.timeout);
 
 			req.on('error', e => {
+				clearTimeout(connectionTimeout);
+
 				if (connected) {
 					this.end();
 				} else {
@@ -49,6 +57,8 @@ class EventStream extends EventEmitter {
 			});
 
 			req.on('response', res => {
+				clearTimeout(connectionTimeout);
+
 				const statusCode = res.statusCode;
 				if (statusCode !== 200) {
 					let body = '';
