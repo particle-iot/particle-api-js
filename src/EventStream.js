@@ -52,11 +52,6 @@ class EventStream extends EventEmitter {
 							// don't bother doing anything special if the JSON.parse fails
 							// since we are already about to reject the promise anyway
 						} finally {
-							this.emitSafe('response', {
-								statusCode,
-								body
-							});
-
 							let errorDescription = `HTTP error ${statusCode} from ${this.uri}`;
 							if (body && body.error_description) {
 								errorDescription += ' - ' + body.error_description;
@@ -114,7 +109,9 @@ class EventStream extends EventEmitter {
 	reconnect() {
 		setTimeout(() => {
 			this.emitSafe('reconnect');
-			this.connect().catch(err => {
+			this.connect().then(() => {
+				this.emitSafe('reconnect-success');
+			}).catch(err => {
 				this.emitSafe('reconnect-error', err);
 				this.reconnect();
 			});
