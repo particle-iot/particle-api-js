@@ -10,3 +10,5 @@ API documentation. Before the command finishes, update `CHANGELOG.md`.
 - Travis will run `npm publish` if the build passes.
 
 - Create a release on GitHub with the notes from the `CHANGELOG.md`
+
+- After updating major version, update the installation instructions in the [docs](https://github.com/particle-iot/docs/blob/master/src/content/reference/SDKs/javascript.md)
