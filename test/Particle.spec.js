@@ -1933,6 +1933,17 @@ describe('ParticleAPI', () => {
 					});
 				});
 			});
+			it('does not require the network ID argument', () => {
+				const p = Object.assign({}, props);
+				delete p.networkId;
+				return api.removeMeshNetworkDevice(p).then((results) => {
+					results.should.match({
+						method: 'delete',
+						uri: `/v1/devices/${props.deviceId}/network`,
+						auth: props.auth
+					});
+				});
+			});
 		});
 
 		describe('.listMeshNetworkDevices', () => {
