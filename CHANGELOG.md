@@ -1,5 +1,8 @@
 # changelog
 
+## 7.4.1 - 6 May 2019
+* Do not require network ID to remove a device from its network [PR #103](https://github.com/particle-iot/particle-api-js/pull/103)
+
 ## 7.4.0 - 27 Feb 2019
 * Add support for mesh network management [PR #98](https://github.com/particle-iot/particle-api-js/pull/98)
 
