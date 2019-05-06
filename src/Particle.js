@@ -1411,13 +1411,16 @@ class Particle {
 	/**
 	 * Remove a device from a mesh network.
 	 * @param {Object} options Options for this API call
-	 * @param {String} options.networkId Network ID or name
+	 * @param {String} [options.networkId] Network ID or name
 	 * @param {String} options.deviceId Device ID
 	 * @param {String} options.auth Access token
 	 * @param {Object} [options.context] Request context
 	 * @return {Promise<Object>}
 	 */
 	removeMeshNetworkDevice({ networkId, deviceId, auth, context }) {
+		if (!networkId) {
+			return this.delete(`/v1/devices/${deviceId}/network`, undefined, auth, context);
+		}
 		return this.updateMeshNetwork({ action: 'remove-device', networkId, deviceId, auth, context });
 	}
 
@@ -1436,7 +1439,6 @@ class Particle {
 		const query = (role || page) ? { role, page, per_page: perPage } : undefined;
 		return this.get(`/v1/networks/${networkId}/devices`, auth, query, context);
 	}
-
 
 	/**
 	 * API URI to access a device
