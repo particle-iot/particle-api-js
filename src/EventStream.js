@@ -130,6 +130,11 @@ class EventStream extends EventEmitter {
 
 	reconnect() {
 		setTimeout(() => {
+			if (this.isOffline()) {
+				this.reconnect();
+				return;
+			}
+
 			this.emitSafe('reconnect');
 			this.connect().then(() => {
 				this.emitSafe('reconnect-success');
@@ -138,6 +143,13 @@ class EventStream extends EventEmitter {
 				this.reconnect();
 			});
 		}, this.reconnectInterval);
+	}
+
+	isOffline() {
+		if (typeof navigator === 'undefined' || navigator.hasOwnProperty('onLine')) {
+			return false;
+		}
+		return !navigator.onLine;
 	}
 
 	startIdleTimeout() {
