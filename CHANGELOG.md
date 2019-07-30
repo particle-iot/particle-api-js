@@ -1,5 +1,12 @@
 # changelog
 
+## 8.0.0 - 30 July 2019
+
+* EventStream returned by getEventStream handles errors better [PR #99](https://github.com/particle-iot/particle-api-js/pull/99).
+  **Breaking changes for EventStream:**
+  - Only emits a single event named 'event' for each Particle event received instead of 2 events, one named 'event' and another named after the Particle event name. This behavior caused EventStream to disconnects if a Particle event named 'error' was published.
+  - Does not emit the 'error' event when a network error happens. Instead it emits 'disconnect' and automatically reconnects.
+
 ## 7.4.1 - 6 May 2019
 * Do not require network ID to remove a device from its network [PR #103](https://github.com/particle-iot/particle-api-js/pull/103)
 
