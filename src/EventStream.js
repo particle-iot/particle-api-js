@@ -5,12 +5,18 @@ import url from 'url';
 import { EventEmitter } from 'events';
 
 class EventStream extends EventEmitter {
-	constructor(uri, token, options) {
+	constructor(uri, token) {
 		super();
 		this.uri = uri;
 		this.token = token;
 		this.reconnectInterval = 2000;
-		Object.assign(this, options);
+		this.timeout = 13000; // keep alive can be sent up to 12 seconds after last event
+		this.data = '';
+		this.buf = '';
+
+		this.parse = this.parse.bind(this);
+		this.end = this.end.bind(this);
+		this.idleTimeoutExpired = this.idleTimeoutExpired.bind(this);
 	}
 
 	connect() {
@@ -23,23 +29,36 @@ class EventStream extends EventEmitter {
 			const req = requestor.request({
 				hostname,
 				protocol,
-				path: `${path}?history_limit=30&access_token=${this.token}`,
+				path: `${path}?access_token=${this.token}`,
 				method: 'get',
-				port: port || (isSecure ? 443 : 80),
+				port: parseInt(port, 10) || (isSecure ? 443 : 80),
 				avoidFetch: true,
 				mode: 'prefer-streaming'
 			});
 
 			this.req = req;
-			if (this.debug) {
-				this.debug(this);
-			}
+
+			let connected = false;
+			let connectionTimeout = setTimeout(() => {
+				if (this.req) {
+					this.req.abort();
+				}
+				reject({ error: new Error('Timeout'), errorDescription: `Timeout connecting to ${this.uri}` });
+			}, this.timeout);
 
 			req.on('error', e => {
-				reject({ error: e, errorDescription: `Network error from ${this.uri}` });
+				clearTimeout(connectionTimeout);
+
+				if (connected) {
+					this.end();
+				} else {
+					reject({ error: e, errorDescription: `Network error from ${this.uri}` });
+				}
 			});
 
 			req.on('response', res => {
+				clearTimeout(connectionTimeout);
+
 				const statusCode = res.statusCode;
 				if (statusCode !== 200) {
 					let body = '';
@@ -51,15 +70,6 @@ class EventStream extends EventEmitter {
 							// don't bother doing anything special if the JSON.parse fails
 							// since we are already about to reject the promise anyway
 						} finally {
-							try {
-								this.emit('response', {
-									statusCode,
-									body
-								});
-							} catch (error) {
-								this.emit('error', error);
-							}
-
 							let errorDescription = `HTTP error ${statusCode} from ${this.uri}`;
 							if (body && body.error_description) {
 								errorDescription += ' - ' + body.error_description;
@@ -74,8 +84,10 @@ class EventStream extends EventEmitter {
 				this.data = '';
 				this.buf = '';
 
-				res.on('data', this.parse.bind(this));
-				res.once('end', this.end.bind(this));
+				connected = true;
+				res.on('data', this.parse);
+				res.once('end', this.end);
+				this.startIdleTimeout();
 				resolve(this);
 			});
 			req.end();
@@ -90,7 +102,21 @@ class EventStream extends EventEmitter {
 		this.removeAllListeners();
 	}
 
+	/* Private methods */
+
+	emitSafe(event, param) {
+		try {
+			this.emit(event, param);
+		} catch (error) {
+			if (event !== 'error') {
+				this.emitSafe('error', error);
+			}
+		}
+	}
+
 	end() {
+		this.stopIdleTimeout();
+
 		if (!this.req) {
 			// request was ended intentionally by abort
 			// do not auto reconnect.
@@ -98,15 +124,56 @@ class EventStream extends EventEmitter {
 		}
 
 		this.req = undefined;
+		this.emitSafe('disconnect');
+		this.reconnect();
+	}
+
+	reconnect() {
 		setTimeout(() => {
-			this.connect().catch(err => {
-				this.emit('error', err);
-				this.removeAllListeners();
+			if (this.isOffline()) {
+				this.reconnect();
+				return;
+			}
+
+			this.emitSafe('reconnect');
+			this.connect().then(() => {
+				this.emitSafe('reconnect-success');
+			}).catch(err => {
+				this.emitSafe('reconnect-error', err);
+				this.reconnect();
 			});
 		}, this.reconnectInterval);
 	}
 
+	isOffline() {
+		if (typeof navigator === 'undefined' || navigator.hasOwnProperty('onLine')) {
+			return false;
+		}
+		return !navigator.onLine;
+	}
+
+	startIdleTimeout() {
+		this.stopIdleTimeout();
+		this.idleTimeout = setTimeout(this.idleTimeoutExpired, this.timeout);
+	}
+
+	stopIdleTimeout() {
+		if (this.idleTimeout) {
+			clearTimeout(this.idleTimeout);
+			this.idleTimeout = null;
+		}
+	}
+
+	idleTimeoutExpired() {
+		if (this.req) {
+			this.req.abort();
+			this.end();
+		}
+	}
+
 	parse(chunk) {
+		this.startIdleTimeout();
+
 		this.buf += chunk;
 		let pos = 0;
 		let length = this.buf.length;
@@ -159,14 +226,7 @@ class EventStream extends EventEmitter {
 				if (this.data.length > 0 && this.event) {
 					const event = JSON.parse(this.data);
 					event.name = this.eventName || '';
-					try {
-						if (['event', 'error', 'response'].indexOf(this.eventName) === -1) {
-							this.emit(this.eventName, event);
-						}
-						this.emit('event', event);
-					} catch (error) {
-						this.emit('error', error);
-					}
+					this.emitSafe('event', event);
 				}
 			} catch (e) {
 				// do nothing if JSON.parse fails
@@ -193,13 +253,6 @@ class EventStream extends EventEmitter {
 			} else if (field === 'event') {
 				this.eventName = value;
 				this.event = true;
-			} else if (field === 'id') {
-				this.lastEventId = value;
-			} else if (field === 'retry') {
-				const retry = parseInt(value, 10);
-				if (!Number.isNaN(retry)) {
-					this.reconnectInterval = retry;
-				}
 			}
 		}
 	}

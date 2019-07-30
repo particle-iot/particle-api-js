@@ -10,3 +10,4 @@ build/Release
 node_modules
 lib/
 /.idea
+*.tgz
