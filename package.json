@@ -75,9 +75,9 @@
   },
   "dependencies": {
     "babel-runtime": "^6.9.2",
-    "stream-http": "https://github.com/particle-iot/stream-http/archive/v2.2.1.tar.gz",
     "form-data": ">2.2.0",
-    "superagent": "^3.6.0",
+    "stream-http": "https://github.com/particle-iot/stream-http/archive/v2.2.1.tar.gz",
+    "superagent": "^5.1.2",
     "superagent-prefix": "0.0.2"
   },
   "browser": {
