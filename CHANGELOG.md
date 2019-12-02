@@ -1,5 +1,8 @@
 # changelog
 
+## 8.0.1 - 2 December 2019
+* Update to latest superagent to fix deprecation warnings in Node v12
+
 ## 8.0.0 - 30 July 2019
 
 * EventStream returned by getEventStream handles errors better [PR #99](https://github.com/particle-iot/particle-api-js/pull/99).
