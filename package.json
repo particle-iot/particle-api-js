@@ -58,7 +58,7 @@
     "coveralls": "^2.11.4",
     "documentation": "^4.0.0-rc.1",
     "eslint": "^5.16.0",
-    "eslint-config-particle": "^1.0.5",
+    "eslint-config-particle": "^2.2.1",
     "istanbul": "1.0.0-alpha.2",
     "karma": "^1.1.1",
     "karma-browserify": "^5.1.0",
