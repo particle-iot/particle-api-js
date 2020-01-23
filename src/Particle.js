@@ -428,7 +428,10 @@ class Particle {
 	 * @return {Promise}
 	 */
 	updateDevice({ deviceId, name, signal, notes, development, desiredFirmwareVersion, flash, product, auth, context }) {
-		signal = signal ? '1' : '0';
+		if (signal !== undefined) {
+			signal = signal ? '1' : '0';
+		}
+
 		const uri = this.deviceUri({ deviceId, product });
 		const data = product ?
 			{ name, signal, notes, development, desired_firmware_version: desiredFirmwareVersion, flash } :
