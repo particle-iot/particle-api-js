@@ -18,6 +18,7 @@
     "build": "browserify lib/Particle.js -s Particle -d -p [minifyify --map particle.min.js.map --output dist/particle.min.js.map] > dist/particle.min.js",
     "build-nomin": "browserify lib/Particle.js -s Particle > dist/particle.js",
     "preversion": "npm run test && npm run prepublish",
+    "reinstall": "rm -rf ./node_modules && npm i",
     "version": "npm run build && npm run docs && npm run update-changelog && git add dist/* docs/*",
     "update-changelog": "VERSION=`node -p -e \"require('./package.json').version\"` bash -c 'read -p \"Update CHANGELOG.md for version $VERSION and press ENTER when done.\"' && git add CHANGELOG.md"
   },
