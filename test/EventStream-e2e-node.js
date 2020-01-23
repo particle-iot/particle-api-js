@@ -10,20 +10,25 @@ Steps:
  */
 
 const Particle = require('../lib/Particle');
-
 const baseUrl = process.env.PARTICLE_API_BASE_URL || 'http://localhost:9090';
 const auth = process.env.PARTICLE_API_TOKEN;
-
 const particle = new Particle({ baseUrl });
 
-particle.getEventStream({ deviceId: 'mine', auth }).then(stream => {
-	console.log('event stream connected');
 
-	['event', 'error', 'disconnect', 'reconnect', 'reconnect-success', 'reconnect-error'].forEach(eventName => {
-		stream.on(eventName, (arg) => {
-			console.log(eventName, arg);
-		});
+/* eslint-disable no-console */
+particle.getEventStream({ deviceId: 'mine', auth })
+	.then(stream => {
+		console.log('event stream connected');
+
+		['event', 'error', 'disconnect', 'reconnect', 'reconnect-success', 'reconnect-error']
+			.forEach(eventName => {
+				stream.on(eventName, (arg) => {
+					console.log(eventName, arg);
+				});
+			});
+	})
+	.catch((err) => {
+		console.error(err);
 	});
-}).catch(function (err) {
-	console.error(err);
-});
+/* eslint-enable no-console */
+

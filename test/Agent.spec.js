@@ -1,5 +1,6 @@
-import {sinon, expect} from './test-setup';
+import { sinon, expect } from './test-setup';
 import Agent from '../src/Agent.js';
+
 
 describe('Agent', () => {
 	describe('sanitize files', () => {
@@ -10,7 +11,7 @@ describe('Agent', () => {
 
 		it('sanitizes file names', () => {
 			const sut = new Agent();
-			const original = {'one': 'content1', 'two': 'content2'};
+			const original = { one: 'content1', two: 'content2' };
 			const actual = sut._sanitizeFiles(original);
 			expect(actual).to.eql({
 				'file': {
@@ -27,8 +28,9 @@ describe('Agent', () => {
 
 	describe('resource operations', () => {
 		let context;
+
 		beforeEach(() => {
-			context = { blah: {}}
+			context = { blah: {} };
 		});
 
 		it('can get a resource', () => {
@@ -36,7 +38,7 @@ describe('Agent', () => {
 			sut.request = sinon.stub();
 			sut.request.returns('123');
 			expect(sut.get('abcd', 'auth', 'query', context)).to.be.equal('123');
-			expect(sut.request).to.be.calledWith({auth: 'auth', method: 'get', query: 'query', uri: 'abcd', context});
+			expect(sut.request).to.be.calledWith({ auth: 'auth', method: 'get', query: 'query', uri: 'abcd', context });
 		});
 
 		it('can head a resource', () => {
@@ -44,7 +46,7 @@ describe('Agent', () => {
 			sut.request = sinon.stub();
 			sut.request.returns('123');
 			expect(sut.head('abcd', 'auth', 'query', context)).to.be.equal('123');
-			expect(sut.request).to.be.calledWith({auth: 'auth', method: 'head', uri: 'abcd', query: 'query', context });
+			expect(sut.request).to.be.calledWith({ auth: 'auth', method: 'head', uri: 'abcd', query: 'query', context });
 		});
 
 		it('can post a resource', () => {
@@ -52,7 +54,7 @@ describe('Agent', () => {
 			sut.request = sinon.stub();
 			sut.request.returns('123');
 			expect(sut.post('abcd', 'data', 'auth', context)).to.be.equal('123');
-			expect(sut.request).to.be.calledWith({auth: 'auth', method: 'post', data: 'data', uri: 'abcd', context});
+			expect(sut.request).to.be.calledWith({ auth: 'auth', method: 'post', data: 'data', uri: 'abcd', context });
 		});
 
 		it('can put a resource', () => {
@@ -60,7 +62,7 @@ describe('Agent', () => {
 			sut.request = sinon.stub();
 			sut.request.returns('123');
 			expect(sut.put('abcd', 'data', 'auth', context)).to.be.equal('123');
-			expect(sut.request).to.be.calledWith({auth: 'auth', method: 'put', data:'data', uri: 'abcd', context});
+			expect(sut.request).to.be.calledWith({ auth: 'auth', method: 'put', data:'data', uri: 'abcd', context });
 		});
 
 		it('can delete a resource', () => {
@@ -68,7 +70,7 @@ describe('Agent', () => {
 			sut.request = sinon.stub();
 			sut.request.returns('123');
 			expect(sut.delete('abcd', 'data', 'auth', context)).to.be.equal('123');
-			expect(sut.request).to.be.calledWith({auth: 'auth', method: 'delete', data:'data', uri: 'abcd', context});
+			expect(sut.request).to.be.calledWith({ auth: 'auth', method: 'delete', data:'data', uri: 'abcd', context });
 		});
 	});
 
@@ -81,8 +83,8 @@ describe('Agent', () => {
 		it('authorize with credentials', () => {
 			const sut = new Agent();
 			const authfn = sinon.spy();
-			const req = {auth: authfn};
-			const auth = {username: 'me', password: 'pwd'};
+			const req = { auth: authfn };
+			const auth = { username: 'me', password: 'pwd' };
 			expect(sut._authorizationHeader(req, auth)).to.be.equal(req);
 			expect(authfn).to.have.been.calledWith('me', 'pwd');
 		});
@@ -92,9 +94,9 @@ describe('Agent', () => {
 			const bearer = 'Bearer 123';
 			const sut = new Agent();
 			const setfn = sinon.spy();
-			const req = {set: setfn};
+			const req = { set: setfn };
 			expect(sut._authorizationHeader(req, auth)).to.be.equal(req);
-			expect(setfn).to.have.been.calledWith({Authorization: bearer});
+			expect(setfn).to.have.been.calledWith({ Authorization: bearer });
 		});
 	});
 
@@ -105,8 +107,8 @@ describe('Agent', () => {
 			sut.prefix = 'abc';
 			const use = sinon.stub();
 			const req = sinon.stub();
-			req.returns({use: use});
-			const result = sut._buildRequest({uri: 'uri', method: 'get', makerequest: req});
+			req.returns({ use: use });
+			const result = sut._buildRequest({ uri: 'uri', method: 'get', makerequest: req });
 			expect(result).to.be.ok;
 			expect(req).to.be.calledWith('get', 'uri');
 			expect(use).to.be.calledWith('abc');
@@ -116,8 +118,8 @@ describe('Agent', () => {
 			const sut = new Agent();
 			const use = sinon.stub();
 			const req = sinon.stub();
-			req.returns({use: use});
-			const result = sut._buildRequest({uri: 'uri', method: 'get', makerequest: req});
+			req.returns({ use: use });
+			const result = sut._buildRequest({ uri: 'uri', method: 'get', makerequest: req });
 			expect(result).to.be.ok;
 			expect(req).to.be.calledWith('get', 'uri');
 			expect(use).to.be.notCalled;
@@ -128,9 +130,9 @@ describe('Agent', () => {
 			sut._applyContext = sinon.stub();
 			sut.prefix = undefined;
 			const request = {};
-			const context = { foo: {}};
+			const context = { foo: {} };
 			const req = sinon.stub().returns(request);
-			sut._buildRequest({uri: 'uri', method: 'get', context, makerequest: req});
+			sut._buildRequest({ uri: 'uri', method: 'get', context, makerequest: req });
 			expect(sut._applyContext).to.be.calledWith(sinon.match.same(request), sinon.match.same(context));
 		});
 
@@ -140,7 +142,7 @@ describe('Agent', () => {
 			sut.prefix = undefined;
 			const request = {};
 			const req = sinon.stub().returns(request);
-			sut._buildRequest({uri: 'uri', method: 'get', makerequest: req});
+			sut._buildRequest({ uri: 'uri', method: 'get', makerequest: req });
 			expect(sut._applyContext).to.not.be.called;
 		});
 
@@ -153,7 +155,7 @@ describe('Agent', () => {
 			req.returns(request);
 			const authorize = sinon.stub();
 			sut._authorizationHeader = authorize;
-			sut._buildRequest({uri: 'uri', method: 'get', auth: '123', makerequest: req});
+			sut._buildRequest({ uri: 'uri', method: 'get', auth: '123', makerequest: req });
 			expect(authorize).to.be.calledWith(sinon.match.same(request), '123');
 		});
 
@@ -162,8 +164,8 @@ describe('Agent', () => {
 			sut.prefix = undefined;
 			const query = sinon.stub();
 			const req = sinon.stub();
-			req.returns({query: query, authorize: sinon.stub()});
-			sut._buildRequest({uri: 'uri', method: 'get', query: '123', makerequest: req});
+			req.returns({ query: query, authorize: sinon.stub() });
+			sut._buildRequest({ uri: 'uri', method: 'get', query: '123', makerequest: req });
 			expect(query).to.be.calledWith('123');
 		});
 
@@ -172,8 +174,8 @@ describe('Agent', () => {
 			sut.prefix = undefined;
 			const query = sinon.stub();
 			const req = sinon.stub();
-			req.returns({query: query, _authorizationHeader: sinon.stub()});
-			sut._buildRequest({uri: 'uri', method: 'get', makerequest: req});
+			req.returns({ query: query, _authorizationHeader: sinon.stub() });
+			sut._buildRequest({ uri: 'uri', method: 'get', makerequest: req });
 			expect(query).to.be.notCalled;
 		});
 
@@ -182,8 +184,8 @@ describe('Agent', () => {
 			sut.prefix = undefined;
 			const req = sinon.stub();
 			const send = sinon.stub();
-			req.returns({send: send});
-			sut._buildRequest({uri: 'uri', method: 'get', data: 'abcd', makerequest: req});
+			req.returns({ send: send });
+			sut._buildRequest({ uri: 'uri', method: 'get', data: 'abcd', makerequest: req });
 			expect(send).to.be.calledWith('abcd');
 		});
 
@@ -193,8 +195,8 @@ describe('Agent', () => {
 			const req = sinon.stub();
 			const send = sinon.stub();
 			const type = sinon.stub();
-			req.returns({send: send, type: type});
-			sut._buildRequest({uri: 'uri', method: 'get', form: 'abcd', makerequest: req});
+			req.returns({ send: send, type: type });
+			sut._buildRequest({ uri: 'uri', method: 'get', form: 'abcd', makerequest: req });
 			expect(send).to.be.calledWith('abcd');
 			expect(type).to.be.calledWith('form');
 		});
@@ -206,13 +208,13 @@ describe('Agent', () => {
 			const attach = sinon.stub();
 			req.returns({ attach: attach });
 			const files = {
-				file: {data: 'filedata', path: 'filepath'},
-				file2: {data: 'file2data', path: 'file2path'}
+				file: { data: 'filedata', path: 'filepath' },
+				file2: { data: 'file2data', path: 'file2path' }
 			};
-			sut._buildRequest({uri: 'uri', method: 'get', files: files, makerequest: req});
+			sut._buildRequest({ uri: 'uri', method: 'get', files: files, makerequest: req });
 			expect(attach.callCount).to.be.equal(2);
-			expect(attach).to.be.calledWith('file', 'filedata', {filepath: 'filepath'});
-			expect(attach).to.be.calledWith('file2', 'file2data', {filepath: 'file2path'});
+			expect(attach).to.be.calledWith('file', 'filedata', { filepath: 'filepath' });
+			expect(attach).to.be.calledWith('file2', 'file2data', { filepath: 'file2path' });
 		});
 
 		it('should attach files and form data', () => {
@@ -226,14 +228,14 @@ describe('Agent', () => {
 				field: field
 			});
 			const files = {
-				file: {data: 'filedata', path: 'filepath'},
-				file2: {data: 'file2data', path: 'file2path'}
+				file: { data: 'filedata', path: 'filepath' },
+				file2: { data: 'file2data', path: 'file2path' }
 			};
-			const form = {form1: 'value1', form2: 'value2'};
-			sut._buildRequest({uri: 'uri', method: 'get', files: files, form: form, makerequest: req});
+			const form = { form1: 'value1', form2: 'value2' };
+			sut._buildRequest({ uri: 'uri', method: 'get', files: files, form: form, makerequest: req });
 			expect(attach.callCount).to.be.equal(2);
-			expect(attach).to.be.calledWith('file', 'filedata', {filepath: 'filepath'});
-			expect(attach).to.be.calledWith('file2', 'file2data', {filepath: 'file2path'});
+			expect(attach).to.be.calledWith('file', 'filedata', { filepath: 'filepath' });
+			expect(attach).to.be.calledWith('file2', 'file2data', { filepath: 'file2path' });
 			expect(field.callCount).to.be.equal(2);
 			expect(field).to.be.calledWith('form1', 'value1');
 			expect(field).to.be.calledWith('form2', 'value2');
@@ -242,39 +244,39 @@ describe('Agent', () => {
 		it('should handle nested dirs', () => {
 			const sut = new Agent();
 			const files = {
-				file: {data: makeFile('filedata'), path: 'filepath.ino'},
-				file2: {data: makeFile('file2data'), path: 'dir/file2path.cpp'}
-			}
-			const req = sut._buildRequest({uri: 'uri', method: 'get', files: files});
+				file: { data: makeFile('filedata'), path: 'filepath.ino' },
+				file2: { data: makeFile('file2data'), path: 'dir/file2path.cpp' }
+			};
+			const req = sut._buildRequest({ uri: 'uri', method: 'get', files: files });
 			expect(extractFilename(req._formData, 'file', 0)).to.eql('filepath.ino');
 			expect(extractFilename(req._formData, 'file2', 3)).to.eql('dir/file2path.cpp');
 		});
 
-		if (!inBrowser()) {
+		if (!inBrowser()){
 			it('should handle Windows nested dirs', () => {
 				const sut = new Agent();
 				const files = {
-					file: {data: makeFile('filedata'), path: 'dir\\windowsfilepath.cpp'}
-				}
-				const req = sut._buildRequest({uri: 'uri', method: 'get', files: files});
+					file: { data: makeFile('filedata'), path: 'dir\\windowsfilepath.cpp' }
+				};
+				const req = sut._buildRequest({ uri: 'uri', method: 'get', files: files });
 				expect(extractFilename(req._formData, 'file', 0)).to.eql('dir/windowsfilepath.cpp');
 			});
 		}
 
-		function inBrowser() {
+		function inBrowser(){
 			return typeof window !== 'undefined';
 		}
 
-		function makeFile(data) {
-			if (inBrowser()) {
+		function makeFile(data){
+			if (inBrowser()){
 				return new Blob([data]);
 			} else {
 				return data;
 			}
 		}
 
-		function extractFilename(formData, fieldName, fieldIndex) {
-			if (inBrowser()) {
+		function extractFilename(formData, fieldName, fieldIndex){
+			if (inBrowser()){
 				return formData.get(fieldName).name;
 			} else {
 				return /filename="([^"]*)"/.exec(formData._streams[fieldIndex])[1];
@@ -286,16 +288,24 @@ describe('Agent', () => {
 		const sut = new Agent();
 		sut._sanitizeFiles = sinon.stub();
 		sut._request = sinon.stub();
-		const sanitizedFiles = {a:'a'};
+		const sanitizedFiles = { a:'a' };
 		sut._sanitizeFiles.returns(sanitizedFiles);
 		sut._request.returns('request_result');
 		const files = {};
 		const form = {};
-		const result = sut.request({uri: 'abc', method:'post', data:'123', query:'all', form:form, files:files});
+		const result = sut.request({ uri: 'abc', method:'post', data:'123', query:'all', form:form, files:files });
 		expect(result).to.be.equal('request_result');
 		expect(sut._sanitizeFiles).calledOnce.calledWith(sinon.match.same(files));
-		expect(sut._request).calledOnce.calledWith({uri: 'abc', auth: undefined, method: 'post', data: '123', query: 'all', form:form,
-			files:sanitizedFiles, context: undefined});
+		expect(sut._request).calledOnce.calledWith({
+			uri: 'abc',
+			auth: undefined,
+			method: 'post',
+			data: '123',
+			query: 'all',
+			form:form,
+			files: sanitizedFiles,
+			context: undefined
+		});
 	});
 
 	it('uses default arguments for request', () => {
@@ -303,10 +313,18 @@ describe('Agent', () => {
 		sut._sanitizeFiles = sinon.stub();
 		sut._request = sinon.stub();
 		sut._request.returns('123');
-		const result = sut.request({uri: 'abc', method:'post'});
+		const result = sut.request({ uri: 'abc', method:'post' });
 		expect(result).to.equal('123');
-		expect(sut._request).calledOnce.calledWith({uri: 'abc', method:'post',
-			auth: undefined, data: undefined, files: undefined, form: undefined, query: undefined, context: undefined });
+		expect(sut._request).calledOnce.calledWith({
+			uri: 'abc',
+			method:'post',
+			auth: undefined,
+			data: undefined,
+			files: undefined,
+			form: undefined,
+			query: undefined,
+			context: undefined
+		});
 	});
 
 	it('builds and sends the request', () => {
@@ -318,8 +336,16 @@ describe('Agent', () => {
 		buildRequest.returns('arequest');
 		promiseResponse.returns('promise');
 
-		const requestArgs = {uri:'uri', method:'method', data:'data', auth:'auth', query: 'query',
-			form: 'form', files: 'files', context};
+		const requestArgs = {
+			uri:'uri',
+			method:'method',
+			data:'data',
+			auth:'auth',
+			query: 'query',
+			form: 'form',
+			files: 'files',
+			context
+		};
 		const result = sut._request(requestArgs);
 		expect(result).to.be.equal('promise');
 		expect(buildRequest).calledWith(requestArgs);
@@ -332,7 +358,7 @@ describe('Agent', () => {
 		const sut = new Agent();
 		const req = sinon.stub();
 		const response = 'response';
-		const sendRequest = sinon.spy((req, fulfill, reject)=>{
+		const sendRequest = sinon.spy((req, fulfill) => {
 			fulfill(response);
 		});
 		sut._sendRequest = sendRequest;
@@ -349,13 +375,15 @@ describe('Agent', () => {
 	describe('_sendRequest', () => {
 
 		it('can retrieve a success response', () => {
-			const response = { body: 'abc', statusCode:200};
+			const response = { body: 'abc', statusCode:200 };
 			const fulfill = sinon.stub();
 			const reject = sinon.stub();
 
-			const request = {end: function end(callback) {
-				callback(undefined, response);
-			}};
+			const request = {
+				end: function end(callback){
+					callback(undefined, response);
+				}
+			};
 			const end = sinon.spy(request, 'end');
 
 			const sut = new Agent();
@@ -370,37 +398,49 @@ describe('Agent', () => {
 		});
 
 		const failResponseData = [
-			{name: 'error text includes body error description',
-			response: { body: {error_description: 'file not found'}},
-			error: {status: 404},
-            errorDescription: 'HTTP error 404 from 123.url - file not found'},
+			{
+				name: 'error text includes body error description',
+				response: {
+					body: {
+						error_description: 'file not found'
+					}
+				},
+				error: { status: 404 },
+				errorDescription: 'HTTP error 404 from 123.url - file not found'
+			},
 
-			{name: 'error text with no body description',
-			response: { body: {}},
-			error: {status: 404},
-			errorDescription: 'HTTP error 404 from 123.url'},
+			{
+				name: 'error text with no body description',
+				response: { body: {} },
+				error: { status: 404 },
+				errorDescription: 'HTTP error 404 from 123.url'
+			},
 
-			{name: 'error text with no body',
-			response: { },
-			error: {status: 404},
-			errorDescription: 'HTTP error 404 from 123.url'},
+			{
+				name: 'error text with no body',
+				response: { },
+				error: { status: 404 },
+				errorDescription: 'HTTP error 404 from 123.url'
+			},
 
-			{name: 'error text with no response',
-			error: {status: 404},
-			errorDescription: 'HTTP error 404 from 123.url'},
+			{
+				name: 'error text with no response',
+				error: { status: 404 },
+				errorDescription: 'HTTP error 404 from 123.url' },
 
-			{name: 'error text with no status',
-			error: {},
-			errorDescription: 'Network error from 123.url'},
-
+			{
+				name: 'error text with no status',
+				error: {},
+				errorDescription: 'Network error from 123.url'
+			}
 		];
-		for (let failData of failResponseData) {
+		for (let failData of failResponseData){
 			it(`can retrieve an error response - ${failData.name}`, () => {
 				const fulfill = sinon.stub();
 				const reject = sinon.stub();
 
 				const request = {
-					url: '123.url', end: function end(callback) {
+					url: '123.url', end: function end(callback){
 						callback(failData.error, failData.response);
 					}
 				};
@@ -411,8 +451,12 @@ describe('Agent', () => {
 				expect(result).to.be.undefined;
 				expect(end).to.be.calledOnce;
 				expect(fulfill).to.not.be.called;
-				expect(reject).to.be.calledWithMatch({statusCode: failData.error.status, errorDescription:
-					failData.errorDescription, error:failData.error, body:failData.response ? failData.response.body : undefined});
+				expect(reject).to.be.calledWithMatch({
+					statusCode: failData.error.status,
+					errorDescription: failData.errorDescription,
+					error:failData.error,
+					body:failData.response ? failData.response.body : undefined
+				});
 			});
 		}
 	});
@@ -443,28 +487,28 @@ describe('Agent', () => {
 			beforeEach(() => {
 				req = { set: sinon.stub() };
 			});
-			it('applies the tool context when defined',() => {
-				const context = { tool: {name: 'spanner' }};
+			it('applies the tool context when defined', () => {
+				const context = { tool: { name: 'spanner' } };
 				sut._applyContext(req, context);
 				expect(req.set).to.have.been.calledOnce;
 				expect(req.set).to.have.been.calledWith('X-Particle-Tool', 'spanner');
 			});
 
 			it('does not apply the tool context when not defined',() => {
-				const context = { tool: {name2: 'spanner' }};
+				const context = { tool: { name2: 'spanner' } };
 				sut._applyContext(req, context);
 				expect(req.set).to.have.not.been.called;
 			});
 
 			it('applies the project context when defined',() => {
-				const context = { project: {name: 'blinky' }};
+				const context = { project: { name: 'blinky' } };
 				sut._applyContext(req, context);
 				expect(req.set).to.have.been.calledOnce;
 				expect(req.set).to.have.been.calledWith('X-Particle-Project', 'blinky');
 			});
 
 			it('does not apply the tool context when not defined',() => {
-				const context = { project: {name2: 'blinky' }};
+				const context = { project: { name2: 'blinky' } };
 				sut._applyContext(req, context);
 				expect(req.set).to.have.been.not.called;
 			});
@@ -487,10 +531,14 @@ describe('Agent', () => {
 
 			it('adds a header when the tool and components is defined', () => {
 				const req = { set: sinon.stub() };
-				const tool = { name: 'cli', version: '1.2.3', components: [
-					{ name: 'bar', version: 'a.b.c'},
-					{ name: 'foo', version: '0.0.1'}
-				]};
+				const tool = {
+					name: 'cli',
+					version: '1.2.3',
+					components: [
+						{ name: 'bar', version: 'a.b.c' },
+						{ name: 'foo', version: '0.0.1' }
+					]
+				};
 				sut._addToolContext(req, tool);
 				expect(req.set).to.have.been.calledWith('X-Particle-Tool', 'cli@1.2.3, bar@a.b.c, foo@0.0.1');
 			});
@@ -524,14 +572,12 @@ describe('Agent', () => {
 			});
 
 			it('returns the default property only', () => {
-				expect(sut._buildSemicolonSeparatedProperties({name:'fred'}, 'name')).eql('fred');
+				expect(sut._buildSemicolonSeparatedProperties({ name:'fred' }, 'name')).eql('fred');
 			});
 
 			it('returns the default property plus additional properties', () => {
 				expect(sut._buildSemicolonSeparatedProperties(obj, 'name')).eql('fred; color=pink');
 			});
 		});
-
-
 	});
 });
