@@ -1,5 +1,9 @@
 # changelog
 
+## 8.1.0 - 24 January 2020
+* Add support for `groups` query parameter when listing product devices via `.listDevices()` [PR #108](https://github.com/particle-iot/particle-api-js/pull/108)
+* Update `eslint` and related configuration [PR #107](https://github.com/particle-iot/particle-api-js/pull/107)
+
 ## 8.0.1 - 2 December 2019
 * Update to latest superagent to fix deprecation warnings in Node v12
 
