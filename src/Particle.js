@@ -251,6 +251,7 @@ class Particle {
 	 * @param  {Object} options Options for this API call
 	 * @param  {String} [options.deviceId]   (Product only) Filter results to devices with this ID (partial matching)
 	 * @param  {String} [options.deviceName] (Product only) Filter results to devices with this name (partial matching)
+	 * @param  {Array.<string>} [options.groups]   (Product only) A list of full group names to filter results to devices belonging to these groups only.
 	 * @param  {String} [options.sortAttr]   (Product only) The attribute by which to sort results. See API docs for options.
 	 * @param  {String} [options.sortDir]    (Product only) The direction of sorting. See API docs for options.
 	 * @param  {Number} [options.page]       (Product only) Current page of results
@@ -259,9 +260,17 @@ class Particle {
 	 * @param  {String} options.auth         Access Token
 	 * @returns {Promise} A promise
 	 */
-	listDevices({ deviceId, deviceName, sortAttr, sortDir, page, perPage, product, auth, context }){
-		const uri = product ? `/v1/products/${product}/devices` : '/v1/devices';
-		const query = product ? { deviceId, deviceName, sortAttr, sortDir, page, per_page: perPage } : undefined;
+	listDevices({ deviceId, deviceName, groups, sortAttr, sortDir, page, perPage, product, auth, context }){
+		let uri, query;
+
+		if (product){
+			uri = `/v1/products/${product}/devices`;
+			groups = Array.isArray(groups) ? groups.join(',') : undefined;
+			query = { deviceId, deviceName, groups, sortAttr, sortDir, page, per_page: perPage };
+		} else {
+			uri = '/v1/devices';
+		}
+
 		return this.get(uri, auth, query, context);
 	}
 
