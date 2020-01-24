@@ -96,7 +96,7 @@
 
 ## Particle
 
-[src/Particle.js:17-1482](https://github.com/particle-iot/particle-api-js/blob/c57e5edc1e063c4f74ea7260992ac95d373a51ba/src/Particle.js#L17-L1482 "Source code on GitHub")
+[src/Particle.js:18-1510](https://github.com/particle-iot/particle-api-js/blob/9f6aa66618378fd8c1d0a1012f5989cbda6783c3/src/Particle.js#L18-L1510 "Source code on GitHub")
 
 Particle Cloud API wrapper.
 
@@ -112,7 +112,7 @@ Most Particle methods take a single unnamed argument object documented as
 
 ### constructor
 
-[src/Particle.js:25-30](https://github.com/particle-iot/particle-api-js/blob/c57e5edc1e063c4f74ea7260992ac95d373a51ba/src/Particle.js#L25-L30 "Source code on GitHub")
+[src/Particle.js:26-31](https://github.com/particle-iot/particle-api-js/blob/9f6aa66618378fd8c1d0a1012f5989cbda6783c3/src/Particle.js#L26-L31 "Source code on GitHub")
 
 Contructor for the Cloud API wrapper.
 
@@ -124,7 +124,7 @@ Create a new Particle object and call methods below on it.
 
 ### login
 
-[src/Particle.js:64-73](https://github.com/particle-iot/particle-api-js/blob/c57e5edc1e063c4f74ea7260992ac95d373a51ba/src/Particle.js#L64-L73 "Source code on GitHub")
+[src/Particle.js:65-74](https://github.com/particle-iot/particle-api-js/blob/9f6aa66618378fd8c1d0a1012f5989cbda6783c3/src/Particle.js#L65-L74 "Source code on GitHub")
 
 Login to Particle Cloud using an existing Particle acccount.
 
@@ -136,11 +136,11 @@ Login to Particle Cloud using an existing Particle acccount.
     -   `options.tokenDuration` **[Number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number)** How long the access token should last in seconds (optional, default `this.tokenDuration`)
     -   `options.context`  
 
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** 
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** A promise
 
 ### sendOtp
 
-[src/Particle.js:83-91](https://github.com/particle-iot/particle-api-js/blob/c57e5edc1e063c4f74ea7260992ac95d373a51ba/src/Particle.js#L83-L91 "Source code on GitHub")
+[src/Particle.js:84-92](https://github.com/particle-iot/particle-api-js/blob/9f6aa66618378fd8c1d0a1012f5989cbda6783c3/src/Particle.js#L84-L92 "Source code on GitHub")
 
 If login failed with an 'mfa_required' error, this must be called with a valid OTP code to login
 
@@ -151,11 +151,11 @@ If login failed with an 'mfa_required' error, this must be called with a valid O
     -   `options.otp` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Current one-time-password generated from the authentication application
     -   `options.context` **[Number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number)** Request context
 
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** 
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** A promise
 
 ### enableMfa
 
-[src/Particle.js:100-102](https://github.com/particle-iot/particle-api-js/blob/c57e5edc1e063c4f74ea7260992ac95d373a51ba/src/Particle.js#L100-L102 "Source code on GitHub")
+[src/Particle.js:101-103](https://github.com/particle-iot/particle-api-js/blob/9f6aa66618378fd8c1d0a1012f5989cbda6783c3/src/Particle.js#L101-L103 "Source code on GitHub")
 
 Enable MFA on the currently logged in user
 
@@ -165,11 +165,11 @@ Enable MFA on the currently logged in user
     -   `options.auth` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** access token
     -   `options.context` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** Request context
 
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** 
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** A promise
 
 ### confirmMfa
 
-[src/Particle.js:113-115](https://github.com/particle-iot/particle-api-js/blob/c57e5edc1e063c4f74ea7260992ac95d373a51ba/src/Particle.js#L113-L115 "Source code on GitHub")
+[src/Particle.js:114-116](https://github.com/particle-iot/particle-api-js/blob/9f6aa66618378fd8c1d0a1012f5989cbda6783c3/src/Particle.js#L114-L116 "Source code on GitHub")
 
 Confirm MFA for the user. This must be called with current TOTP code, determined from the results of enableMfa(). You will be prompted to enter an OTP code every time you login after enrollment is confirmed.
 
@@ -181,11 +181,11 @@ Confirm MFA for the user. This must be called with current TOTP code, determined
     -   `options.otp` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** Current one-time-password generated from the authentication app
     -   `options.context` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** Request context
 
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** 
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** A promise
 
 ### disableMfa
 
-[src/Particle.js:125-127](https://github.com/particle-iot/particle-api-js/blob/c57e5edc1e063c4f74ea7260992ac95d373a51ba/src/Particle.js#L125-L127 "Source code on GitHub")
+[src/Particle.js:126-128](https://github.com/particle-iot/particle-api-js/blob/9f6aa66618378fd8c1d0a1012f5989cbda6783c3/src/Particle.js#L126-L128 "Source code on GitHub")
 
 Disable MFA for the user.
 
@@ -196,11 +196,11 @@ Disable MFA for the user.
     -   `options.currentPassword` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** User's current password
     -   `options.context` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** Request context
 
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** 
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** A promise
 
 ### createCustomer
 
-[src/Particle.js:137-146](https://github.com/particle-iot/particle-api-js/blob/c57e5edc1e063c4f74ea7260992ac95d373a51ba/src/Particle.js#L137-L146 "Source code on GitHub")
+[src/Particle.js:138-147](https://github.com/particle-iot/particle-api-js/blob/9f6aa66618378fd8c1d0a1012f5989cbda6783c3/src/Particle.js#L138-L147 "Source code on GitHub")
 
 Create Customer for Product.
 
@@ -212,11 +212,11 @@ Create Customer for Product.
     -   `options.product` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Create the customer in this product ID or slug
     -   `options.context`  
 
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** 
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** A promise
 
 ### loginAsClientOwner
 
-[src/Particle.js:154-160](https://github.com/particle-iot/particle-api-js/blob/c57e5edc1e063c4f74ea7260992ac95d373a51ba/src/Particle.js#L154-L160 "Source code on GitHub")
+[src/Particle.js:155-161](https://github.com/particle-iot/particle-api-js/blob/9f6aa66618378fd8c1d0a1012f5989cbda6783c3/src/Particle.js#L155-L161 "Source code on GitHub")
 
 Login to Particle Cloud using an OAuth client.
 
@@ -225,11 +225,11 @@ Login to Particle Cloud using an OAuth client.
 -   `options` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** Options for this API call
     -   `options.context` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** Context information.
 
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** 
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** A promise
 
 ### createUser
 
-[src/Particle.js:170-176](https://github.com/particle-iot/particle-api-js/blob/c57e5edc1e063c4f74ea7260992ac95d373a51ba/src/Particle.js#L170-L176 "Source code on GitHub")
+[src/Particle.js:171-177](https://github.com/particle-iot/particle-api-js/blob/9f6aa66618378fd8c1d0a1012f5989cbda6783c3/src/Particle.js#L171-L177 "Source code on GitHub")
 
 Create a user account for the Particle Cloud
 
@@ -241,11 +241,11 @@ Create a user account for the Particle Cloud
     -   `options.accountInfo` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Object that contains account information fields such as user real name, company name, business account flag etc
     -   `options.context`  
 
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** 
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** A promise
 
 ### verifyUser
 
-[src/Particle.js:184-188](https://github.com/particle-iot/particle-api-js/blob/c57e5edc1e063c4f74ea7260992ac95d373a51ba/src/Particle.js#L184-L188 "Source code on GitHub")
+[src/Particle.js:185-189](https://github.com/particle-iot/particle-api-js/blob/9f6aa66618378fd8c1d0a1012f5989cbda6783c3/src/Particle.js#L185-L189 "Source code on GitHub")
 
 Verify new user account via verification email
 
@@ -255,11 +255,11 @@ Verify new user account via verification email
     -   `options.token` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** the string token sent in the verification email
     -   `options.context`  
 
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** 
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** A promise
 
 ### resetPassword
 
-[src/Particle.js:196-198](https://github.com/particle-iot/particle-api-js/blob/c57e5edc1e063c4f74ea7260992ac95d373a51ba/src/Particle.js#L196-L198 "Source code on GitHub")
+[src/Particle.js:197-199](https://github.com/particle-iot/particle-api-js/blob/9f6aa66618378fd8c1d0a1012f5989cbda6783c3/src/Particle.js#L197-L199 "Source code on GitHub")
 
 Send reset password email for a Particle Cloud user account
 
@@ -269,11 +269,11 @@ Send reset password email for a Particle Cloud user account
     -   `options.username` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Email of the user
     -   `options.context`  
 
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** 
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** A promise
 
 ### deleteAccessToken
 
-[src/Particle.js:208-212](https://github.com/particle-iot/particle-api-js/blob/c57e5edc1e063c4f74ea7260992ac95d373a51ba/src/Particle.js#L208-L212 "Source code on GitHub")
+[src/Particle.js:209-213](https://github.com/particle-iot/particle-api-js/blob/9f6aa66618378fd8c1d0a1012f5989cbda6783c3/src/Particle.js#L209-L213 "Source code on GitHub")
 
 Revoke an access token
 
@@ -285,11 +285,11 @@ Revoke an access token
     -   `options.token` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Access token you wish to revoke
     -   `options.context`  
 
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** 
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** A promise
 
 ### deleteCurrentAccessToken
 
-[src/Particle.js:220-222](https://github.com/particle-iot/particle-api-js/blob/c57e5edc1e063c4f74ea7260992ac95d373a51ba/src/Particle.js#L220-L222 "Source code on GitHub")
+[src/Particle.js:221-223](https://github.com/particle-iot/particle-api-js/blob/9f6aa66618378fd8c1d0a1012f5989cbda6783c3/src/Particle.js#L221-L223 "Source code on GitHub")
 
 Revoke the current session access token
 
@@ -299,11 +299,11 @@ Revoke the current session access token
     -   `options.auth` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Access Token
     -   `options.context`  
 
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** 
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** A promise
 
 ### listAccessTokens
 
-[src/Particle.js:231-233](https://github.com/particle-iot/particle-api-js/blob/c57e5edc1e063c4f74ea7260992ac95d373a51ba/src/Particle.js#L231-L233 "Source code on GitHub")
+[src/Particle.js:232-234](https://github.com/particle-iot/particle-api-js/blob/9f6aa66618378fd8c1d0a1012f5989cbda6783c3/src/Particle.js#L232-L234 "Source code on GitHub")
 
 List all valid access tokens for a Particle Cloud account
 
@@ -314,11 +314,11 @@ List all valid access tokens for a Particle Cloud account
     -   `options.password` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Password
     -   `options.context`  
 
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** 
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** A promise
 
 ### trackingIdentity
 
-[src/Particle.js:244-246](https://github.com/particle-iot/particle-api-js/blob/c57e5edc1e063c4f74ea7260992ac95d373a51ba/src/Particle.js#L244-L246 "Source code on GitHub")
+[src/Particle.js:245-247](https://github.com/particle-iot/particle-api-js/blob/9f6aa66618378fd8c1d0a1012f5989cbda6783c3/src/Particle.js#L245-L247 "Source code on GitHub")
 
 Retrieves the information that is used to identify the current login for tracking.
 
@@ -334,7 +334,7 @@ Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Refe
 
 ### listDevices
 
-[src/Particle.js:261-265](https://github.com/particle-iot/particle-api-js/blob/c57e5edc1e063c4f74ea7260992ac95d373a51ba/src/Particle.js#L261-L265 "Source code on GitHub")
+[src/Particle.js:263-275](https://github.com/particle-iot/particle-api-js/blob/9f6aa66618378fd8c1d0a1012f5989cbda6783c3/src/Particle.js#L263-L275 "Source code on GitHub")
 
 List devices claimed to the account or product
 
@@ -343,6 +343,7 @@ List devices claimed to the account or product
 -   `options` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** Options for this API call
     -   `options.deviceId` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)?** (Product only) Filter results to devices with this ID (partial matching)
     -   `options.deviceName` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)?** (Product only) Filter results to devices with this name (partial matching)
+    -   `options.groups` **[Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)>?** (Product only) A list of full group names to filter results to devices belonging to these groups only.
     -   `options.sortAttr` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)?** (Product only) The attribute by which to sort results. See API docs for options.
     -   `options.sortDir` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)?** (Product only) The direction of sorting. See API docs for options.
     -   `options.page` **[Number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number)?** (Product only) Current page of results
@@ -351,11 +352,11 @@ List devices claimed to the account or product
     -   `options.auth` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Access Token
     -   `options.context`  
 
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** 
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** A promise
 
 ### getDevice
 
-[src/Particle.js:275-278](https://github.com/particle-iot/particle-api-js/blob/c57e5edc1e063c4f74ea7260992ac95d373a51ba/src/Particle.js#L275-L278 "Source code on GitHub")
+[src/Particle.js:285-288](https://github.com/particle-iot/particle-api-js/blob/9f6aa66618378fd8c1d0a1012f5989cbda6783c3/src/Particle.js#L285-L288 "Source code on GitHub")
 
 Get detailed informationa about a device
 
@@ -367,11 +368,11 @@ Get detailed informationa about a device
     -   `options.auth` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Access token
     -   `options.context`  
 
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** 
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** A promise
 
 ### claimDevice
 
-[src/Particle.js:287-292](https://github.com/particle-iot/particle-api-js/blob/c57e5edc1e063c4f74ea7260992ac95d373a51ba/src/Particle.js#L287-L292 "Source code on GitHub")
+[src/Particle.js:297-302](https://github.com/particle-iot/particle-api-js/blob/9f6aa66618378fd8c1d0a1012f5989cbda6783c3/src/Particle.js#L297-L302 "Source code on GitHub")
 
 Claim a device to the account. The device must be online and unclaimed.
 
@@ -383,11 +384,11 @@ Claim a device to the account. The device must be online and unclaimed.
     -   `options.requestTransfer`  
     -   `options.context`  
 
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** 
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** A promise
 
 ### addDeviceToProduct
 
-[src/Particle.js:302-307](https://github.com/particle-iot/particle-api-js/blob/c57e5edc1e063c4f74ea7260992ac95d373a51ba/src/Particle.js#L302-L307 "Source code on GitHub")
+[src/Particle.js:312-317](https://github.com/particle-iot/particle-api-js/blob/9f6aa66618378fd8c1d0a1012f5989cbda6783c3/src/Particle.js#L312-L317 "Source code on GitHub")
 
 Add a device to a product or move device out of quarantine.
 
@@ -399,11 +400,11 @@ Add a device to a product or move device out of quarantine.
     -   `options.auth` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Access Token
     -   `options.context`  
 
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** 
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** A promise
 
 ### removeDevice
 
-[src/Particle.js:318-322](https://github.com/particle-iot/particle-api-js/blob/c57e5edc1e063c4f74ea7260992ac95d373a51ba/src/Particle.js#L318-L322 "Source code on GitHub")
+[src/Particle.js:328-332](https://github.com/particle-iot/particle-api-js/blob/9f6aa66618378fd8c1d0a1012f5989cbda6783c3/src/Particle.js#L328-L332 "Source code on GitHub")
 
 Unclaim / Remove a device from your account or product, or deny quarantine
 
@@ -416,11 +417,11 @@ Unclaim / Remove a device from your account or product, or deny quarantine
     -   `options.auth` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Access Token
     -   `options.context`  
 
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** 
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** A promise
 
 ### removeDeviceOwner
 
-[src/Particle.js:332-335](https://github.com/particle-iot/particle-api-js/blob/c57e5edc1e063c4f74ea7260992ac95d373a51ba/src/Particle.js#L332-L335 "Source code on GitHub")
+[src/Particle.js:342-345](https://github.com/particle-iot/particle-api-js/blob/9f6aa66618378fd8c1d0a1012f5989cbda6783c3/src/Particle.js#L342-L345 "Source code on GitHub")
 
 Unclaim a product device its the owner, but keep it in the product
 
@@ -430,14 +431,13 @@ Unclaim a product device its the owner, but keep it in the product
     -   `options.deviceId` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Device ID or Name
     -   `options.product` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Remove from this product ID or slug
     -   `options.auth` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Access Token
-    -   `options.deny`  
     -   `options.context`  
 
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** 
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** A promise
 
 ### renameDevice
 
-[src/Particle.js:346-348](https://github.com/particle-iot/particle-api-js/blob/c57e5edc1e063c4f74ea7260992ac95d373a51ba/src/Particle.js#L346-L348 "Source code on GitHub")
+[src/Particle.js:356-358](https://github.com/particle-iot/particle-api-js/blob/9f6aa66618378fd8c1d0a1012f5989cbda6783c3/src/Particle.js#L356-L358 "Source code on GitHub")
 
 Rename a device
 
@@ -450,11 +450,11 @@ Rename a device
     -   `options.auth` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Access Token
     -   `options.context`  
 
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** 
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** A promise
 
 ### signalDevice
 
-[src/Particle.js:359-361](https://github.com/particle-iot/particle-api-js/blob/c57e5edc1e063c4f74ea7260992ac95d373a51ba/src/Particle.js#L359-L361 "Source code on GitHub")
+[src/Particle.js:369-371](https://github.com/particle-iot/particle-api-js/blob/9f6aa66618378fd8c1d0a1012f5989cbda6783c3/src/Particle.js#L369-L371 "Source code on GitHub")
 
 Instruct the device to turn on/off the LED in a rainbow pattern
 
@@ -467,11 +467,11 @@ Instruct the device to turn on/off the LED in a rainbow pattern
     -   `options.auth` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Access Token
     -   `options.context`  
 
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** 
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** A promise
 
 ### setDeviceNotes
 
-[src/Particle.js:372-374](https://github.com/particle-iot/particle-api-js/blob/c57e5edc1e063c4f74ea7260992ac95d373a51ba/src/Particle.js#L372-L374 "Source code on GitHub")
+[src/Particle.js:382-384](https://github.com/particle-iot/particle-api-js/blob/9f6aa66618378fd8c1d0a1012f5989cbda6783c3/src/Particle.js#L382-L384 "Source code on GitHub")
 
 Store some notes about device
 
@@ -484,11 +484,11 @@ Store some notes about device
     -   `options.notes`  
     -   `options.context`  
 
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** 
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** A promise
 
 ### markAsDevelopmentDevice
 
-[src/Particle.js:385-387](https://github.com/particle-iot/particle-api-js/blob/c57e5edc1e063c4f74ea7260992ac95d373a51ba/src/Particle.js#L385-L387 "Source code on GitHub")
+[src/Particle.js:395-397](https://github.com/particle-iot/particle-api-js/blob/9f6aa66618378fd8c1d0a1012f5989cbda6783c3/src/Particle.js#L395-L397 "Source code on GitHub")
 
 Mark device as being used in development of a product so it opts out of automatic firmware updates
 
@@ -501,11 +501,11 @@ Mark device as being used in development of a product so it opts out of automati
     -   `options.auth` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Access Token
     -   `options.context`  
 
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** 
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** A promise
 
 ### lockDeviceProductFirmware
 
-[src/Particle.js:399-401](https://github.com/particle-iot/particle-api-js/blob/c57e5edc1e063c4f74ea7260992ac95d373a51ba/src/Particle.js#L399-L401 "Source code on GitHub")
+[src/Particle.js:409-411](https://github.com/particle-iot/particle-api-js/blob/9f6aa66618378fd8c1d0a1012f5989cbda6783c3/src/Particle.js#L409-L411 "Source code on GitHub")
 
 Mark device as being used in development of a product so it opts out of automatic firmware updates
 
@@ -519,11 +519,11 @@ Mark device as being used in development of a product so it opts out of automati
     -   `options.flash`  
     -   `options.context`  
 
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** 
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** A promise
 
 ### unlockDeviceProductFirmware
 
-[src/Particle.js:411-413](https://github.com/particle-iot/particle-api-js/blob/c57e5edc1e063c4f74ea7260992ac95d373a51ba/src/Particle.js#L411-L413 "Source code on GitHub")
+[src/Particle.js:421-423](https://github.com/particle-iot/particle-api-js/blob/9f6aa66618378fd8c1d0a1012f5989cbda6783c3/src/Particle.js#L421-L423 "Source code on GitHub")
 
 Mark device as receiving automatic firmware updates
 
@@ -535,11 +535,11 @@ Mark device as receiving automatic firmware updates
     -   `options.auth` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Access Token
     -   `options.context`  
 
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** 
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** A promise
 
 ### updateDevice
 
-[src/Particle.js:430-437](https://github.com/particle-iot/particle-api-js/blob/c57e5edc1e063c4f74ea7260992ac95d373a51ba/src/Particle.js#L430-L437 "Source code on GitHub")
+[src/Particle.js:440-450](https://github.com/particle-iot/particle-api-js/blob/9f6aa66618378fd8c1d0a1012f5989cbda6783c3/src/Particle.js#L440-L450 "Source code on GitHub")
 
 Update multiple device attributes at the same time
 
@@ -557,11 +557,11 @@ Update multiple device attributes at the same time
     -   `options.flash`  
     -   `options.context`  
 
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** 
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** A promise
 
 ### provisionDevice
 
-[src/Particle.js:446-448](https://github.com/particle-iot/particle-api-js/blob/c57e5edc1e063c4f74ea7260992ac95d373a51ba/src/Particle.js#L446-L448 "Source code on GitHub")
+[src/Particle.js:459-461](https://github.com/particle-iot/particle-api-js/blob/9f6aa66618378fd8c1d0a1012f5989cbda6783c3/src/Particle.js#L459-L461 "Source code on GitHub")
 
 Provision a new device for products that allow self-provisioning
 
@@ -572,11 +572,11 @@ Provision a new device for products that allow self-provisioning
     -   `options.auth` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Access Token
     -   `options.context`  
 
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** 
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** A promise
 
 ### getClaimCode
 
-[src/Particle.js:460-463](https://github.com/particle-iot/particle-api-js/blob/c57e5edc1e063c4f74ea7260992ac95d373a51ba/src/Particle.js#L460-L463 "Source code on GitHub")
+[src/Particle.js:473-476](https://github.com/particle-iot/particle-api-js/blob/9f6aa66618378fd8c1d0a1012f5989cbda6783c3/src/Particle.js#L473-L476 "Source code on GitHub")
 
 Generate a claim code to use in the device claiming process.
 To generate a claim code for a product, the access token MUST belong to a
@@ -590,11 +590,11 @@ customer of the product.
     -   `options.auth` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Access Token
     -   `options.context`  
 
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** 
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** A promise
 
 ### getVariable
 
-[src/Particle.js:484-489](https://github.com/particle-iot/particle-api-js/blob/c57e5edc1e063c4f74ea7260992ac95d373a51ba/src/Particle.js#L484-L489 "Source code on GitHub")
+[src/Particle.js:497-502](https://github.com/particle-iot/particle-api-js/blob/9f6aa66618378fd8c1d0a1012f5989cbda6783c3/src/Particle.js#L497-L502 "Source code on GitHub")
 
 Get the value of a device variable
 
@@ -607,11 +607,11 @@ Get the value of a device variable
     -   `options.auth` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Access Token
     -   `options.context`  
 
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** 
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** A promise
 
 ### flashDevice
 
-[src/Particle.js:501-510](https://github.com/particle-iot/particle-api-js/blob/c57e5edc1e063c4f74ea7260992ac95d373a51ba/src/Particle.js#L501-L510 "Source code on GitHub")
+[src/Particle.js:514-523](https://github.com/particle-iot/particle-api-js/blob/9f6aa66618378fd8c1d0a1012f5989cbda6783c3/src/Particle.js#L514-L523 "Source code on GitHub")
 
 Compile and flash application firmware to a device. Pass a pre-compiled binary to flash it directly to the device.
 
@@ -625,11 +625,11 @@ Compile and flash application firmware to a device. Pass a pre-compiled binary t
     -   `options.auth` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** String
     -   `options.context`  
 
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** 
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** A promise
 
 ### flashTinker
 
-[src/Particle.js:519-528](https://github.com/particle-iot/particle-api-js/blob/c57e5edc1e063c4f74ea7260992ac95d373a51ba/src/Particle.js#L519-L528 "Source code on GitHub")
+[src/Particle.js:532-541](https://github.com/particle-iot/particle-api-js/blob/9f6aa66618378fd8c1d0a1012f5989cbda6783c3/src/Particle.js#L532-L541 "Source code on GitHub")
 
 DEPRECATED: Flash the Tinker application to a device. Instead compile and flash the Tinker source code.
 
@@ -640,11 +640,11 @@ DEPRECATED: Flash the Tinker application to a device. Instead compile and flash 
     -   `options.auth` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Access Token
     -   `options.context`  
 
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** 
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** A promise
 
 ### compileCode
 
-[src/Particle.js:539-548](https://github.com/particle-iot/particle-api-js/blob/c57e5edc1e063c4f74ea7260992ac95d373a51ba/src/Particle.js#L539-L548 "Source code on GitHub")
+[src/Particle.js:552-567](https://github.com/particle-iot/particle-api-js/blob/9f6aa66618378fd8c1d0a1012f5989cbda6783c3/src/Particle.js#L552-L567 "Source code on GitHub")
 
 Compile firmware using the Particle Cloud
 
@@ -657,11 +657,11 @@ Compile firmware using the Particle Cloud
     -   `options.auth` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Access Token
     -   `options.context`  
 
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** 
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** A promise
 
 ### downloadFirmwareBinary
 
-[src/Particle.js:557-563](https://github.com/particle-iot/particle-api-js/blob/c57e5edc1e063c4f74ea7260992ac95d373a51ba/src/Particle.js#L557-L563 "Source code on GitHub")
+[src/Particle.js:576-582](https://github.com/particle-iot/particle-api-js/blob/9f6aa66618378fd8c1d0a1012f5989cbda6783c3/src/Particle.js#L576-L582 "Source code on GitHub")
 
 Download a firmware binary
 
@@ -670,13 +670,12 @@ Download a firmware binary
 -   `options` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** Options for this API call
     -   `options.binaryId` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Binary ID received from a successful compile call
     -   `options.auth` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Access Token
-    -   `options.context`  
 
-Returns **[Request](https://developer.mozilla.org/en-US/Add-ons/SDK/High-Level_APIs/request)** 
+Returns **[Request](https://developer.mozilla.org/en-US/Add-ons/SDK/High-Level_APIs/request)** A promise
 
 ### sendPublicKey
 
-[src/Particle.js:574-582](https://github.com/particle-iot/particle-api-js/blob/c57e5edc1e063c4f74ea7260992ac95d373a51ba/src/Particle.js#L574-L582 "Source code on GitHub")
+[src/Particle.js:593-601](https://github.com/particle-iot/particle-api-js/blob/9f6aa66618378fd8c1d0a1012f5989cbda6783c3/src/Particle.js#L593-L601 "Source code on GitHub")
 
 Send a new device public key to the Particle Cloud
 
@@ -689,11 +688,11 @@ Send a new device public key to the Particle Cloud
     -   `options.auth` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Access Token
     -   `options.context`  
 
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** 
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** A promise
 
 ### callFunction
 
-[src/Particle.js:594-599](https://github.com/particle-iot/particle-api-js/blob/c57e5edc1e063c4f74ea7260992ac95d373a51ba/src/Particle.js#L594-L599 "Source code on GitHub")
+[src/Particle.js:613-618](https://github.com/particle-iot/particle-api-js/blob/9f6aa66618378fd8c1d0a1012f5989cbda6783c3/src/Particle.js#L613-L618 "Source code on GitHub")
 
 Call a device function
 
@@ -707,11 +706,11 @@ Call a device function
     -   `options.auth` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Access Token
     -   `options.context`  
 
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** 
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** A promise
 
 ### getEventStream
 
-[src/Particle.js:612-636](https://github.com/particle-iot/particle-api-js/blob/c57e5edc1e063c4f74ea7260992ac95d373a51ba/src/Particle.js#L612-L636 "Source code on GitHub")
+[src/Particle.js:631-655](https://github.com/particle-iot/particle-api-js/blob/9f6aa66618378fd8c1d0a1012f5989cbda6783c3/src/Particle.js#L631-L655 "Source code on GitHub")
 
 Get a stream of events
 
@@ -723,14 +722,13 @@ Get a stream of events
     -   `options.org` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)?** Organization Slug
     -   `options.product` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)?** Events for this product ID or slug
     -   `options.auth` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Access Token
-    -   `options.context`  
 
 Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** If the promise resolves, the resolution value will be an EventStream object that will
 emit 'event' events.
 
 ### publishEvent
 
-[src/Particle.js:648-652](https://github.com/particle-iot/particle-api-js/blob/c57e5edc1e063c4f74ea7260992ac95d373a51ba/src/Particle.js#L648-L652 "Source code on GitHub")
+[src/Particle.js:667-671](https://github.com/particle-iot/particle-api-js/blob/9f6aa66618378fd8c1d0a1012f5989cbda6783c3/src/Particle.js#L667-L671 "Source code on GitHub")
 
 Publish a event to the Particle Cloud
 
@@ -744,11 +742,11 @@ Publish a event to the Particle Cloud
     -   `options.auth` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Access Token
     -   `options.context`  
 
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** 
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** A promise
 
 ### createWebhook
 
-[src/Particle.js:675-683](https://github.com/particle-iot/particle-api-js/blob/c57e5edc1e063c4f74ea7260992ac95d373a51ba/src/Particle.js#L675-L683 "Source code on GitHub")
+[src/Particle.js:694-702](https://github.com/particle-iot/particle-api-js/blob/9f6aa66618378fd8c1d0a1012f5989cbda6783c3/src/Particle.js#L694-L702 "Source code on GitHub")
 
 Create a webhook
 
@@ -773,11 +771,11 @@ Create a webhook
     -   `options.noDefaults`  
     -   `options.context`  
 
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** 
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** A promise
 
 ### deleteWebhook
 
-[src/Particle.js:693-696](https://github.com/particle-iot/particle-api-js/blob/c57e5edc1e063c4f74ea7260992ac95d373a51ba/src/Particle.js#L693-L696 "Source code on GitHub")
+[src/Particle.js:712-715](https://github.com/particle-iot/particle-api-js/blob/9f6aa66618378fd8c1d0a1012f5989cbda6783c3/src/Particle.js#L712-L715 "Source code on GitHub")
 
 Delete a webhook
 
@@ -789,11 +787,11 @@ Delete a webhook
     -   `options.auth` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Access Token
     -   `options.context`  
 
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** 
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** A promise
 
 ### listWebhooks
 
-[src/Particle.js:705-708](https://github.com/particle-iot/particle-api-js/blob/c57e5edc1e063c4f74ea7260992ac95d373a51ba/src/Particle.js#L705-L708 "Source code on GitHub")
+[src/Particle.js:724-727](https://github.com/particle-iot/particle-api-js/blob/9f6aa66618378fd8c1d0a1012f5989cbda6783c3/src/Particle.js#L724-L727 "Source code on GitHub")
 
 List all webhooks owned by the account or product
 
@@ -804,11 +802,11 @@ List all webhooks owned by the account or product
     -   `options.auth` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Access Token
     -   `options.context`  
 
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** 
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** A promise
 
 ### createIntegration
 
-[src/Particle.js:724-728](https://github.com/particle-iot/particle-api-js/blob/c57e5edc1e063c4f74ea7260992ac95d373a51ba/src/Particle.js#L724-L728 "Source code on GitHub")
+[src/Particle.js:742-746](https://github.com/particle-iot/particle-api-js/blob/9f6aa66618378fd8c1d0a1012f5989cbda6783c3/src/Particle.js#L742-L746 "Source code on GitHub")
 
 Create an integration to send events to an external service
 
@@ -817,7 +815,6 @@ See the API docs for details <https://docs.particle.io/reference/api/#integratio
 **Parameters**
 
 -   `options` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** Options for this API call
-    -   `options.integrationType` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** The kind of external integration. One of Webhook, AzureIotHub, GoogleCloudPubSub, GoogleMaps
     -   `options.event` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Event that triggers the integration
     -   `options.deviceId` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)?** Trigger integration only for this device ID or Name
     -   `options.product` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)?** Integration for this product ID or slug
@@ -825,11 +822,11 @@ See the API docs for details <https://docs.particle.io/reference/api/#integratio
     -   `options.settings`  
     -   `options.context`  
 
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** 
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** A promise
 
 ### editIntegration
 
-[src/Particle.js:744-748](https://github.com/particle-iot/particle-api-js/blob/c57e5edc1e063c4f74ea7260992ac95d373a51ba/src/Particle.js#L744-L748 "Source code on GitHub")
+[src/Particle.js:762-766](https://github.com/particle-iot/particle-api-js/blob/9f6aa66618378fd8c1d0a1012f5989cbda6783c3/src/Particle.js#L762-L766 "Source code on GitHub")
 
 Edit an integration to send events to an external service
 
@@ -846,11 +843,11 @@ See the API docs for details <https://docs.particle.io/reference/api/#integratio
     -   `options.settings`  
     -   `options.context`  
 
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** 
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** A promise
 
 ### deleteIntegration
 
-[src/Particle.js:759-762](https://github.com/particle-iot/particle-api-js/blob/c57e5edc1e063c4f74ea7260992ac95d373a51ba/src/Particle.js#L759-L762 "Source code on GitHub")
+[src/Particle.js:777-780](https://github.com/particle-iot/particle-api-js/blob/9f6aa66618378fd8c1d0a1012f5989cbda6783c3/src/Particle.js#L777-L780 "Source code on GitHub")
 
 Delete an integration to send events to an external service
 
@@ -862,11 +859,11 @@ Delete an integration to send events to an external service
     -   `options.auth` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Access Token
     -   `options.context`  
 
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** 
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** A promise
 
 ### listIntegrations
 
-[src/Particle.js:771-774](https://github.com/particle-iot/particle-api-js/blob/c57e5edc1e063c4f74ea7260992ac95d373a51ba/src/Particle.js#L771-L774 "Source code on GitHub")
+[src/Particle.js:789-792](https://github.com/particle-iot/particle-api-js/blob/9f6aa66618378fd8c1d0a1012f5989cbda6783c3/src/Particle.js#L789-L792 "Source code on GitHub")
 
 List all integrations owned by the account or product
 
@@ -877,11 +874,11 @@ List all integrations owned by the account or product
     -   `options.auth` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Access Token
     -   `options.context`  
 
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** 
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** A promise
 
 ### getUserInfo
 
-[src/Particle.js:782-784](https://github.com/particle-iot/particle-api-js/blob/c57e5edc1e063c4f74ea7260992ac95d373a51ba/src/Particle.js#L782-L784 "Source code on GitHub")
+[src/Particle.js:800-802](https://github.com/particle-iot/particle-api-js/blob/9f6aa66618378fd8c1d0a1012f5989cbda6783c3/src/Particle.js#L800-L802 "Source code on GitHub")
 
 Get details about the current user
 
@@ -891,11 +888,11 @@ Get details about the current user
     -   `options.auth` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Access Token
     -   `options.context`  
 
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** 
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** A promise
 
 ### setUserInfo
 
-[src/Particle.js:793-799](https://github.com/particle-iot/particle-api-js/blob/c57e5edc1e063c4f74ea7260992ac95d373a51ba/src/Particle.js#L793-L799 "Source code on GitHub")
+[src/Particle.js:811-817](https://github.com/particle-iot/particle-api-js/blob/9f6aa66618378fd8c1d0a1012f5989cbda6783c3/src/Particle.js#L811-L817 "Source code on GitHub")
 
 Set details on the current user
 
@@ -906,11 +903,11 @@ Set details on the current user
     -   `options.auth` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Access Token
     -   `options.context`  
 
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** 
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** A promise
 
 ### changeUsername
 
-[src/Particle.js:809-816](https://github.com/particle-iot/particle-api-js/blob/c57e5edc1e063c4f74ea7260992ac95d373a51ba/src/Particle.js#L809-L816 "Source code on GitHub")
+[src/Particle.js:827-834](https://github.com/particle-iot/particle-api-js/blob/9f6aa66618378fd8c1d0a1012f5989cbda6783c3/src/Particle.js#L827-L834 "Source code on GitHub")
 
 Change username (i.e, email)
 
@@ -922,11 +919,11 @@ Change username (i.e, email)
     -   `options.auth` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Access Token
     -   `options.context`  
 
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** 
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** A promise
 
 ### changeUserPassword
 
-[src/Particle.js:826-833](https://github.com/particle-iot/particle-api-js/blob/c57e5edc1e063c4f74ea7260992ac95d373a51ba/src/Particle.js#L826-L833 "Source code on GitHub")
+[src/Particle.js:844-851](https://github.com/particle-iot/particle-api-js/blob/9f6aa66618378fd8c1d0a1012f5989cbda6783c3/src/Particle.js#L844-L851 "Source code on GitHub")
 
 Change user's password
 
@@ -938,11 +935,11 @@ Change user's password
     -   `options.auth` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Access Token
     -   `options.context`  
 
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** 
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** A promise
 
 ### listSIMs
 
-[src/Particle.js:847-851](https://github.com/particle-iot/particle-api-js/blob/c57e5edc1e063c4f74ea7260992ac95d373a51ba/src/Particle.js#L847-L851 "Source code on GitHub")
+[src/Particle.js:865-869](https://github.com/particle-iot/particle-api-js/blob/9f6aa66618378fd8c1d0a1012f5989cbda6783c3/src/Particle.js#L865-L869 "Source code on GitHub")
 
 List SIM cards owned by a user or product
 
@@ -958,11 +955,11 @@ List SIM cards owned by a user or product
     -   `options.auth` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Access Token
     -   `options.context`  
 
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** 
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** A promise
 
 ### getSIMDataUsage
 
-[src/Particle.js:861-866](https://github.com/particle-iot/particle-api-js/blob/c57e5edc1e063c4f74ea7260992ac95d373a51ba/src/Particle.js#L861-L866 "Source code on GitHub")
+[src/Particle.js:879-884](https://github.com/particle-iot/particle-api-js/blob/9f6aa66618378fd8c1d0a1012f5989cbda6783c3/src/Particle.js#L879-L884 "Source code on GitHub")
 
 Get data usage for one SIM card for the current billing period
 
@@ -974,11 +971,11 @@ Get data usage for one SIM card for the current billing period
     -   `options.auth` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Access Token
     -   `options.context`  
 
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** 
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** A promise
 
 ### getFleetDataUsage
 
-[src/Particle.js:875-877](https://github.com/particle-iot/particle-api-js/blob/c57e5edc1e063c4f74ea7260992ac95d373a51ba/src/Particle.js#L875-L877 "Source code on GitHub")
+[src/Particle.js:893-895](https://github.com/particle-iot/particle-api-js/blob/9f6aa66618378fd8c1d0a1012f5989cbda6783c3/src/Particle.js#L893-L895 "Source code on GitHub")
 
 Get data usage for all SIM cards in a product the current billing period
 
@@ -989,11 +986,11 @@ Get data usage for all SIM cards in a product the current billing period
     -   `options.auth` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Access Token
     -   `options.context`  
 
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** 
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** A promise
 
 ### activateSIM
 
-[src/Particle.js:893-903](https://github.com/particle-iot/particle-api-js/blob/c57e5edc1e063c4f74ea7260992ac95d373a51ba/src/Particle.js#L893-L903 "Source code on GitHub")
+[src/Particle.js:911-921](https://github.com/particle-iot/particle-api-js/blob/9f6aa66618378fd8c1d0a1012f5989cbda6783c3/src/Particle.js#L911-L921 "Source code on GitHub")
 
 Activate and add SIM cards to an account or product
 
@@ -1008,11 +1005,11 @@ Activate and add SIM cards to an account or product
     -   `options.promoCode`  
     -   `options.context`  
 
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** 
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** A promise
 
 ### deactivateSIM
 
-[src/Particle.js:913-917](https://github.com/particle-iot/particle-api-js/blob/c57e5edc1e063c4f74ea7260992ac95d373a51ba/src/Particle.js#L913-L917 "Source code on GitHub")
+[src/Particle.js:931-935](https://github.com/particle-iot/particle-api-js/blob/9f6aa66618378fd8c1d0a1012f5989cbda6783c3/src/Particle.js#L931-L935 "Source code on GitHub")
 
 Deactivate a SIM card so it doesn't incur data usage in future months.
 
@@ -1024,11 +1021,11 @@ Deactivate a SIM card so it doesn't incur data usage in future months.
     -   `options.auth` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Access Token
     -   `options.context`  
 
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** 
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** A promise
 
 ### reactivateSIM
 
-[src/Particle.js:928-932](https://github.com/particle-iot/particle-api-js/blob/c57e5edc1e063c4f74ea7260992ac95d373a51ba/src/Particle.js#L928-L932 "Source code on GitHub")
+[src/Particle.js:946-950](https://github.com/particle-iot/particle-api-js/blob/9f6aa66618378fd8c1d0a1012f5989cbda6783c3/src/Particle.js#L946-L950 "Source code on GitHub")
 
 Reactivate a SIM card the was deactivated or unpause a SIM card that was automatically paused
 
@@ -1041,11 +1038,11 @@ Reactivate a SIM card the was deactivated or unpause a SIM card that was automat
     -   `options.auth` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Access Token
     -   `options.context`  
 
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** 
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** A promise
 
 ### updateSIM
 
-[src/Particle.js:943-947](https://github.com/particle-iot/particle-api-js/blob/c57e5edc1e063c4f74ea7260992ac95d373a51ba/src/Particle.js#L943-L947 "Source code on GitHub")
+[src/Particle.js:961-965](https://github.com/particle-iot/particle-api-js/blob/9f6aa66618378fd8c1d0a1012f5989cbda6783c3/src/Particle.js#L961-L965 "Source code on GitHub")
 
 Update SIM card data limit
 
@@ -1058,11 +1055,11 @@ Update SIM card data limit
     -   `options.auth` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Access Token
     -   `options.context`  
 
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** 
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** A promise
 
 ### removeSIM
 
-[src/Particle.js:957-960](https://github.com/particle-iot/particle-api-js/blob/c57e5edc1e063c4f74ea7260992ac95d373a51ba/src/Particle.js#L957-L960 "Source code on GitHub")
+[src/Particle.js:975-978](https://github.com/particle-iot/particle-api-js/blob/9f6aa66618378fd8c1d0a1012f5989cbda6783c3/src/Particle.js#L975-L978 "Source code on GitHub")
 
 Remove a SIM card from an account so it can be activated by a different account
 
@@ -1074,11 +1071,11 @@ Remove a SIM card from an account so it can be activated by a different account
     -   `options.auth` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Access Token
     -   `options.context`  
 
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** 
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** A promise
 
 ### listBuildTargets
 
-[src/Particle.js:969-975](https://github.com/particle-iot/particle-api-js/blob/c57e5edc1e063c4f74ea7260992ac95d373a51ba/src/Particle.js#L969-L975 "Source code on GitHub")
+[src/Particle.js:987-993](https://github.com/particle-iot/particle-api-js/blob/9f6aa66618378fd8c1d0a1012f5989cbda6783c3/src/Particle.js#L987-L993 "Source code on GitHub")
 
 List valid build targets to be used for compiling
 
@@ -1089,11 +1086,11 @@ List valid build targets to be used for compiling
     -   `options.auth` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Access Token
     -   `options.context`  
 
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** 
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** A promise
 
 ### listLibraries
 
-[src/Particle.js:999-1010](https://github.com/particle-iot/particle-api-js/blob/c57e5edc1e063c4f74ea7260992ac95d373a51ba/src/Particle.js#L999-L1010 "Source code on GitHub")
+[src/Particle.js:1017-1028](https://github.com/particle-iot/particle-api-js/blob/9f6aa66618378fd8c1d0a1012f5989cbda6783c3/src/Particle.js#L1017-L1028 "Source code on GitHub")
 
 List firmware libraries
 
@@ -1117,11 +1114,11 @@ List firmware libraries
     -   `options.auth` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Access Token
     -   `options.context`  
 
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** 
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** A promise
 
 ### getLibrary
 
-[src/Particle.js:1024-1026](https://github.com/particle-iot/particle-api-js/blob/c57e5edc1e063c4f74ea7260992ac95d373a51ba/src/Particle.js#L1024-L1026 "Source code on GitHub")
+[src/Particle.js:1042-1044](https://github.com/particle-iot/particle-api-js/blob/9f6aa66618378fd8c1d0a1012f5989cbda6783c3/src/Particle.js#L1042-L1044 "Source code on GitHub")
 
 Get firmware library details
 
@@ -1133,11 +1130,11 @@ Get firmware library details
     -   `options.auth` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Access Token
     -   `options.context`  
 
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** 
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** A promise
 
 ### getLibraryVersions
 
-[src/Particle.js:1037-1042](https://github.com/particle-iot/particle-api-js/blob/c57e5edc1e063c4f74ea7260992ac95d373a51ba/src/Particle.js#L1037-L1042 "Source code on GitHub")
+[src/Particle.js:1055-1060](https://github.com/particle-iot/particle-api-js/blob/9f6aa66618378fd8c1d0a1012f5989cbda6783c3/src/Particle.js#L1055-L1060 "Source code on GitHub")
 
 Firmware library details for each version
 
@@ -1150,11 +1147,11 @@ Firmware library details for each version
     -   `options.auth` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Access Token
     -   `options.context`  
 
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** 
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** A promise
 
 ### contributeLibrary
 
-[src/Particle.js:1052-1059](https://github.com/particle-iot/particle-api-js/blob/c57e5edc1e063c4f74ea7260992ac95d373a51ba/src/Particle.js#L1052-L1059 "Source code on GitHub")
+[src/Particle.js:1070-1082](https://github.com/particle-iot/particle-api-js/blob/9f6aa66618378fd8c1d0a1012f5989cbda6783c3/src/Particle.js#L1070-L1082 "Source code on GitHub")
 
 Contribute a new library version from a compressed archive
 
@@ -1166,11 +1163,11 @@ Contribute a new library version from a compressed archive
     -   `options.auth` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Access Token
     -   `options.context`  
 
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** 
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** A promise
 
 ### publishLibrary
 
-[src/Particle.js:1068-1071](https://github.com/particle-iot/particle-api-js/blob/c57e5edc1e063c4f74ea7260992ac95d373a51ba/src/Particle.js#L1068-L1071 "Source code on GitHub")
+[src/Particle.js:1091-1099](https://github.com/particle-iot/particle-api-js/blob/9f6aa66618378fd8c1d0a1012f5989cbda6783c3/src/Particle.js#L1091-L1099 "Source code on GitHub")
 
 Publish the latest version of a library to the public
 
@@ -1181,11 +1178,11 @@ Publish the latest version of a library to the public
     -   `options.auth` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Access Token
     -   `options.context`  
 
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** 
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** A promise
 
 ### deleteLibrary
 
-[src/Particle.js:1081-1083](https://github.com/particle-iot/particle-api-js/blob/c57e5edc1e063c4f74ea7260992ac95d373a51ba/src/Particle.js#L1081-L1083 "Source code on GitHub")
+[src/Particle.js:1109-1111](https://github.com/particle-iot/particle-api-js/blob/9f6aa66618378fd8c1d0a1012f5989cbda6783c3/src/Particle.js#L1109-L1111 "Source code on GitHub")
 
 Delete one version of a library or an entire private library
 
@@ -1197,11 +1194,11 @@ Delete one version of a library or an entire private library
     -   `options.auth` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Access Token
     -   `options.context`  
 
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** 
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** A promise
 
 ### downloadFile
 
-[src/Particle.js:1091-1103](https://github.com/particle-iot/particle-api-js/blob/c57e5edc1e063c4f74ea7260992ac95d373a51ba/src/Particle.js#L1091-L1103 "Source code on GitHub")
+[src/Particle.js:1119-1131](https://github.com/particle-iot/particle-api-js/blob/9f6aa66618378fd8c1d0a1012f5989cbda6783c3/src/Particle.js#L1119-L1131 "Source code on GitHub")
 
 Download an external file that may not be on the API
 
@@ -1214,7 +1211,7 @@ Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Refe
 
 ### listOAuthClients
 
-[src/Particle.js:1112-1115](https://github.com/particle-iot/particle-api-js/blob/c57e5edc1e063c4f74ea7260992ac95d373a51ba/src/Particle.js#L1112-L1115 "Source code on GitHub")
+[src/Particle.js:1140-1143](https://github.com/particle-iot/particle-api-js/blob/9f6aa66618378fd8c1d0a1012f5989cbda6783c3/src/Particle.js#L1140-L1143 "Source code on GitHub")
 
 List OAuth client created by the account
 
@@ -1225,11 +1222,11 @@ List OAuth client created by the account
     -   `options.auth` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Access Token
     -   `options.context`  
 
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** 
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** A promise
 
 ### createOAuthClient
 
-[src/Particle.js:1128-1132](https://github.com/particle-iot/particle-api-js/blob/c57e5edc1e063c4f74ea7260992ac95d373a51ba/src/Particle.js#L1128-L1132 "Source code on GitHub")
+[src/Particle.js:1156-1160](https://github.com/particle-iot/particle-api-js/blob/9f6aa66618378fd8c1d0a1012f5989cbda6783c3/src/Particle.js#L1156-L1160 "Source code on GitHub")
 
 Create an OAuth client
 
@@ -1244,11 +1241,11 @@ Create an OAuth client
     -   `options.auth` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Access Token
     -   `options.context`  
 
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** 
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** A promise
 
 ### updateOAuthClient
 
-[src/Particle.js:1144-1148](https://github.com/particle-iot/particle-api-js/blob/c57e5edc1e063c4f74ea7260992ac95d373a51ba/src/Particle.js#L1144-L1148 "Source code on GitHub")
+[src/Particle.js:1172-1176](https://github.com/particle-iot/particle-api-js/blob/9f6aa66618378fd8c1d0a1012f5989cbda6783c3/src/Particle.js#L1172-L1176 "Source code on GitHub")
 
 Update an OAuth client
 
@@ -1262,11 +1259,11 @@ Update an OAuth client
     -   `options.auth` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Access Token
     -   `options.context`  
 
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** 
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** A promise
 
 ### deleteOAuthClient
 
-[src/Particle.js:1158-1161](https://github.com/particle-iot/particle-api-js/blob/c57e5edc1e063c4f74ea7260992ac95d373a51ba/src/Particle.js#L1158-L1161 "Source code on GitHub")
+[src/Particle.js:1186-1189](https://github.com/particle-iot/particle-api-js/blob/9f6aa66618378fd8c1d0a1012f5989cbda6783c3/src/Particle.js#L1186-L1189 "Source code on GitHub")
 
 Delete an OAuth client
 
@@ -1278,11 +1275,11 @@ Delete an OAuth client
     -   `options.auth` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Access Token
     -   `options.context`  
 
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** 
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** A promise
 
 ### listProducts
 
-[src/Particle.js:1169-1171](https://github.com/particle-iot/particle-api-js/blob/c57e5edc1e063c4f74ea7260992ac95d373a51ba/src/Particle.js#L1169-L1171 "Source code on GitHub")
+[src/Particle.js:1197-1199](https://github.com/particle-iot/particle-api-js/blob/9f6aa66618378fd8c1d0a1012f5989cbda6783c3/src/Particle.js#L1197-L1199 "Source code on GitHub")
 
 List products the account has access to
 
@@ -1292,11 +1289,11 @@ List products the account has access to
     -   `options.auth` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Access Token
     -   `options.context`  
 
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** 
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** A promise
 
 ### getProduct
 
-[src/Particle.js:1180-1182](https://github.com/particle-iot/particle-api-js/blob/c57e5edc1e063c4f74ea7260992ac95d373a51ba/src/Particle.js#L1180-L1182 "Source code on GitHub")
+[src/Particle.js:1208-1210](https://github.com/particle-iot/particle-api-js/blob/9f6aa66618378fd8c1d0a1012f5989cbda6783c3/src/Particle.js#L1208-L1210 "Source code on GitHub")
 
 Get detailed information about a product
 
@@ -1307,11 +1304,11 @@ Get detailed information about a product
     -   `options.auth` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Access token
     -   `options.context`  
 
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** 
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** A promise
 
 ### listProductFirmware
 
-[src/Particle.js:1191-1193](https://github.com/particle-iot/particle-api-js/blob/c57e5edc1e063c4f74ea7260992ac95d373a51ba/src/Particle.js#L1191-L1193 "Source code on GitHub")
+[src/Particle.js:1219-1221](https://github.com/particle-iot/particle-api-js/blob/9f6aa66618378fd8c1d0a1012f5989cbda6783c3/src/Particle.js#L1219-L1221 "Source code on GitHub")
 
 List product firmware versions
 
@@ -1322,11 +1319,11 @@ List product firmware versions
     -   `options.auth` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Access Token
     -   `options.context`  
 
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** 
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** A promise
 
 ### uploadProductFirmware
 
-[src/Particle.js:1207-1222](https://github.com/particle-iot/particle-api-js/blob/c57e5edc1e063c4f74ea7260992ac95d373a51ba/src/Particle.js#L1207-L1222 "Source code on GitHub")
+[src/Particle.js:1235-1250](https://github.com/particle-iot/particle-api-js/blob/9f6aa66618378fd8c1d0a1012f5989cbda6783c3/src/Particle.js#L1235-L1250 "Source code on GitHub")
 
 List product firmware versions
 
@@ -1342,11 +1339,11 @@ List product firmware versions
     -   `options.auth` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Access Token
     -   `options.context`  
 
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** 
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** A promise
 
 ### getProductFirmware
 
-[src/Particle.js:1232-1234](https://github.com/particle-iot/particle-api-js/blob/c57e5edc1e063c4f74ea7260992ac95d373a51ba/src/Particle.js#L1232-L1234 "Source code on GitHub")
+[src/Particle.js:1260-1262](https://github.com/particle-iot/particle-api-js/blob/9f6aa66618378fd8c1d0a1012f5989cbda6783c3/src/Particle.js#L1260-L1262 "Source code on GitHub")
 
 Get information about a product firmware version
 
@@ -1358,11 +1355,11 @@ Get information about a product firmware version
     -   `options.auth` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Access token
     -   `options.context`  
 
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** 
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** A promise
 
 ### updateProductFirmware
 
-[src/Particle.js:1246-1249](https://github.com/particle-iot/particle-api-js/blob/c57e5edc1e063c4f74ea7260992ac95d373a51ba/src/Particle.js#L1246-L1249 "Source code on GitHub")
+[src/Particle.js:1274-1277](https://github.com/particle-iot/particle-api-js/blob/9f6aa66618378fd8c1d0a1012f5989cbda6783c3/src/Particle.js#L1274-L1277 "Source code on GitHub")
 
 Update information for a product firmware version
 
@@ -1376,11 +1373,11 @@ Update information for a product firmware version
     -   `options.auth` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Access Token
     -   `options.context`  
 
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** 
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** A promise
 
 ### downloadProductFirmware
 
-[src/Particle.js:1259-1265](https://github.com/particle-iot/particle-api-js/blob/c57e5edc1e063c4f74ea7260992ac95d373a51ba/src/Particle.js#L1259-L1265 "Source code on GitHub")
+[src/Particle.js:1287-1293](https://github.com/particle-iot/particle-api-js/blob/9f6aa66618378fd8c1d0a1012f5989cbda6783c3/src/Particle.js#L1287-L1293 "Source code on GitHub")
 
 Download a product firmware binary
 
@@ -1390,13 +1387,12 @@ Download a product firmware binary
     -   `options.version` **[Number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number)** Version number of new firmware
     -   `options.product` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Firmware for this product ID or slug
     -   `options.auth` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Access Token
-    -   `options.context`  
 
-Returns **[Request](https://developer.mozilla.org/en-US/Add-ons/SDK/High-Level_APIs/request)** 
+Returns **[Request](https://developer.mozilla.org/en-US/Add-ons/SDK/High-Level_APIs/request)** A promise
 
 ### releaseProductFirmware
 
-[src/Particle.js:1275-1278](https://github.com/particle-iot/particle-api-js/blob/c57e5edc1e063c4f74ea7260992ac95d373a51ba/src/Particle.js#L1275-L1278 "Source code on GitHub")
+[src/Particle.js:1303-1306](https://github.com/particle-iot/particle-api-js/blob/9f6aa66618378fd8c1d0a1012f5989cbda6783c3/src/Particle.js#L1303-L1306 "Source code on GitHub")
 
 Release a product firmware version as the default version
 
@@ -1408,11 +1404,11 @@ Release a product firmware version as the default version
     -   `options.auth` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Access Token
     -   `options.context`  
 
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** 
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** A promise
 
 ### listTeamMembers
 
-[src/Particle.js:1287-1289](https://github.com/particle-iot/particle-api-js/blob/c57e5edc1e063c4f74ea7260992ac95d373a51ba/src/Particle.js#L1287-L1289 "Source code on GitHub")
+[src/Particle.js:1315-1317](https://github.com/particle-iot/particle-api-js/blob/9f6aa66618378fd8c1d0a1012f5989cbda6783c3/src/Particle.js#L1315-L1317 "Source code on GitHub")
 
 List product team members
 
@@ -1423,11 +1419,11 @@ List product team members
     -   `options.auth` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Access Token
     -   `options.context`  
 
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** 
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** A promise
 
 ### inviteTeamMember
 
-[src/Particle.js:1299-1301](https://github.com/particle-iot/particle-api-js/blob/c57e5edc1e063c4f74ea7260992ac95d373a51ba/src/Particle.js#L1299-L1301 "Source code on GitHub")
+[src/Particle.js:1327-1329](https://github.com/particle-iot/particle-api-js/blob/9f6aa66618378fd8c1d0a1012f5989cbda6783c3/src/Particle.js#L1327-L1329 "Source code on GitHub")
 
 Invite Particle user to a product team
 
@@ -1439,11 +1435,11 @@ Invite Particle user to a product team
     -   `options.auth` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Access Token
     -   `options.context`  
 
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** 
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** A promise
 
 ### removeTeamMember
 
-[src/Particle.js:1311-1313](https://github.com/particle-iot/particle-api-js/blob/c57e5edc1e063c4f74ea7260992ac95d373a51ba/src/Particle.js#L1311-L1313 "Source code on GitHub")
+[src/Particle.js:1339-1341](https://github.com/particle-iot/particle-api-js/blob/9f6aa66618378fd8c1d0a1012f5989cbda6783c3/src/Particle.js#L1339-L1341 "Source code on GitHub")
 
 Remove Particle user to a product team
 
@@ -1455,11 +1451,11 @@ Remove Particle user to a product team
     -   `options.auth` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Access Token
     -   `options.context`  
 
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** 
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** A promise
 
 ### lookupSerialNumber
 
-[src/Particle.js:1322-1324](https://github.com/particle-iot/particle-api-js/blob/c57e5edc1e063c4f74ea7260992ac95d373a51ba/src/Particle.js#L1322-L1324 "Source code on GitHub")
+[src/Particle.js:1350-1352](https://github.com/particle-iot/particle-api-js/blob/9f6aa66618378fd8c1d0a1012f5989cbda6783c3/src/Particle.js#L1350-L1352 "Source code on GitHub")
 
 Fetch details about a serial number
 
@@ -1470,11 +1466,11 @@ Fetch details about a serial number
     -   `options.auth` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Access Token
     -   `options.context`  
 
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** 
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** A promise
 
 ### createMeshNetwork
 
-[src/Particle.js:1336-1338](https://github.com/particle-iot/particle-api-js/blob/c57e5edc1e063c4f74ea7260992ac95d373a51ba/src/Particle.js#L1336-L1338 "Source code on GitHub")
+[src/Particle.js:1364-1366](https://github.com/particle-iot/particle-api-js/blob/9f6aa66618378fd8c1d0a1012f5989cbda6783c3/src/Particle.js#L1364-L1366 "Source code on GitHub")
 
 Create a mesh network
 
@@ -1487,11 +1483,11 @@ Create a mesh network
     -   `options.auth` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Access token
     -   `options.context` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)?** Request context
 
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)&lt;[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)>** 
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)&lt;[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)>** A promise
 
 ### removeMeshNetwork
 
-[src/Particle.js:1348-1350](https://github.com/particle-iot/particle-api-js/blob/c57e5edc1e063c4f74ea7260992ac95d373a51ba/src/Particle.js#L1348-L1350 "Source code on GitHub")
+[src/Particle.js:1376-1378](https://github.com/particle-iot/particle-api-js/blob/9f6aa66618378fd8c1d0a1012f5989cbda6783c3/src/Particle.js#L1376-L1378 "Source code on GitHub")
 
 Remove a mesh network.
 
@@ -1502,11 +1498,11 @@ Remove a mesh network.
     -   `options.auth` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Access token
     -   `options.context` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)?** Request context
 
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)&lt;[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)>** 
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)&lt;[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)>** A promise
 
 ### listMeshNetworks
 
-[src/Particle.js:1361-1364](https://github.com/particle-iot/particle-api-js/blob/c57e5edc1e063c4f74ea7260992ac95d373a51ba/src/Particle.js#L1361-L1364 "Source code on GitHub")
+[src/Particle.js:1389-1392](https://github.com/particle-iot/particle-api-js/blob/9f6aa66618378fd8c1d0a1012f5989cbda6783c3/src/Particle.js#L1389-L1392 "Source code on GitHub")
 
 List all mesh networks
 
@@ -1518,11 +1514,11 @@ List all mesh networks
     -   `options.page` **[Number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number)?** Current page of results
     -   `options.perPage` **[Number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number)?** Records per page
 
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)&lt;[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)>** 
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)&lt;[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)>** A promise
 
 ### getMeshNetwork
 
-[src/Particle.js:1374-1376](https://github.com/particle-iot/particle-api-js/blob/c57e5edc1e063c4f74ea7260992ac95d373a51ba/src/Particle.js#L1374-L1376 "Source code on GitHub")
+[src/Particle.js:1402-1404](https://github.com/particle-iot/particle-api-js/blob/9f6aa66618378fd8c1d0a1012f5989cbda6783c3/src/Particle.js#L1402-L1404 "Source code on GitHub")
 
 Get information about a mesh network.
 
@@ -1533,11 +1529,11 @@ Get information about a mesh network.
     -   `options.auth` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Access token
     -   `options.context` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)?** Request context
 
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)&lt;[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)>** 
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)&lt;[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)>** A promise
 
 ### updateMeshNetwork
 
-[src/Particle.js:1388-1390](https://github.com/particle-iot/particle-api-js/blob/c57e5edc1e063c4f74ea7260992ac95d373a51ba/src/Particle.js#L1388-L1390 "Source code on GitHub")
+[src/Particle.js:1416-1418](https://github.com/particle-iot/particle-api-js/blob/9f6aa66618378fd8c1d0a1012f5989cbda6783c3/src/Particle.js#L1416-L1418 "Source code on GitHub")
 
 Modify a mesh network.
 
@@ -1550,11 +1546,11 @@ Modify a mesh network.
     -   `options.auth` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Access token
     -   `options.context` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)?** Request context
 
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)&lt;[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)>** 
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)&lt;[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)>** A promise
 
 ### addMeshNetworkDevice
 
-[src/Particle.js:1401-1403](https://github.com/particle-iot/particle-api-js/blob/c57e5edc1e063c4f74ea7260992ac95d373a51ba/src/Particle.js#L1401-L1403 "Source code on GitHub")
+[src/Particle.js:1429-1431](https://github.com/particle-iot/particle-api-js/blob/9f6aa66618378fd8c1d0a1012f5989cbda6783c3/src/Particle.js#L1429-L1431 "Source code on GitHub")
 
 Add a device to a mesh network.
 
@@ -1566,11 +1562,11 @@ Add a device to a mesh network.
     -   `options.auth` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Access token
     -   `options.context` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)?** Request context
 
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)&lt;[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)>** 
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)&lt;[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)>** A promise
 
 ### removeMeshNetworkDevice
 
-[src/Particle.js:1414-1419](https://github.com/particle-iot/particle-api-js/blob/c57e5edc1e063c4f74ea7260992ac95d373a51ba/src/Particle.js#L1414-L1419 "Source code on GitHub")
+[src/Particle.js:1442-1447](https://github.com/particle-iot/particle-api-js/blob/9f6aa66618378fd8c1d0a1012f5989cbda6783c3/src/Particle.js#L1442-L1447 "Source code on GitHub")
 
 Remove a device from a mesh network.
 
@@ -1582,11 +1578,11 @@ Remove a device from a mesh network.
     -   `options.auth` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Access token
     -   `options.context` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)?** Request context
 
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)&lt;[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)>** 
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)&lt;[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)>** A promise
 
 ### listMeshNetworkDevices
 
-[src/Particle.js:1432-1435](https://github.com/particle-iot/particle-api-js/blob/c57e5edc1e063c4f74ea7260992ac95d373a51ba/src/Particle.js#L1432-L1435 "Source code on GitHub")
+[src/Particle.js:1460-1463](https://github.com/particle-iot/particle-api-js/blob/9f6aa66618378fd8c1d0a1012f5989cbda6783c3/src/Particle.js#L1460-L1463 "Source code on GitHub")
 
 List all devices of a mesh network.
 
@@ -1600,4 +1596,4 @@ List all devices of a mesh network.
     -   `options.perPage` **[Number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number)?** Records per page
     -   `options.context` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)?** Request context
 
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)&lt;[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)>** 
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)&lt;[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)>** A promise
