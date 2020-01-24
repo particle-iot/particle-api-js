@@ -82,15 +82,14 @@ const props = {
 	},
 	otp: '123456',
 	mfaToken: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
-	networkId: '65535'
+	networkId: '65535',
+	groups: ['foo', 'bar']
 };
 
 const product = 'ze-product-v1';
-
 const propsWithProduct = Object.assign({ product }, props);
 
 class Common {
-
 	static expectCredentials({ form }){
 		form.username.should.equal(props.username);
 		form.password.should.equal(props.password);
@@ -308,6 +307,7 @@ describe('ParticleAPI', () => {
 								deviceName: props.deviceName,
 								page: props.page,
 								per_page: props.perPage,
+								groups: props.groups.join(','),
 								sortAttr: props.sortAttr,
 								sortDir: props.sortDir
 							}
