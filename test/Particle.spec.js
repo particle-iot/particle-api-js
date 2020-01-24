@@ -1,14 +1,12 @@
 import should from 'should'; // monkeypatch the world~!1
-
 import Particle from '../src/Particle';
 import Defaults from '../src/Defaults';
 import Client from '../src/Client';
 import EventStream from '../src/EventStream';
 import FakeAgent from './FakeAgent';
-import {sinon, expect} from './test-setup';
+import { sinon, expect } from './test-setup';
 
 let api;
-let server;
 
 const props = {
 	url: 'http://www.zombo.com/',
@@ -29,7 +27,7 @@ const props = {
 	auth: 'X',
 	accountInfo : { first_name: 'John', last_name: 'Scully', business_account: true, company_name: 'Apple Inc.' },
 	files: {
-		'app.ino': new Buffer('void() {}\nsetup() {}\n')
+		'app.ino': new Buffer('void(){}\nsetup(){}\n')
 	},
 	targetVersion: '0.4.7',
 	requestType: 'GET',
@@ -80,7 +78,7 @@ const props = {
 	iccids: ['1234567890', '9876543210'],
 	serialNumber: 'PH-123456',
 	settings: {
-		url: 'http://example.com',
+		url: 'http://example.com'
 	},
 	otp: '123456',
 	mfaToken: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
@@ -93,11 +91,11 @@ const propsWithProduct = Object.assign({ product }, props);
 
 class Common {
 
-	static expectCredentials({ form }) {
+	static expectCredentials({ form }){
 		form.username.should.equal(props.username);
 		form.password.should.equal(props.password);
 	}
-	static expectDeviceUrlAndToken(results) {
+	static expectDeviceUrlAndToken(results){
 		results.uri.should.containEql(props.deviceId);
 		results.auth.should.equal(props.auth);
 	}
@@ -108,6 +106,7 @@ describe('ParticleAPI', () => {
 		api = new Particle();
 	});
 
+	// eslint-disable-next-line max-statements
 	describe('operations', () => {
 		beforeEach(() => {
 			api.agent = new FakeAgent();
@@ -123,7 +122,7 @@ describe('ParticleAPI', () => {
 		describe('trackingIdentity', () => {
 			const context = { tool: { name: 'cli', version:'1.2.3' } };
 			it('full', () => {
-				return api.trackingIdentity({auth: 'X', full: true, context})
+				return api.trackingIdentity({ auth: 'X', full: true, context })
 					.then((req) => {
 						expect(req).to.have.property('uri').eql('/v1/user/identify');
 						expect(req).to.have.property('method').eql('get');
@@ -137,7 +136,7 @@ describe('ParticleAPI', () => {
 					expect(req).to.have.property('uri').eql('/v1/user/identify');
 					expect(req).to.have.property('method').eql('get');
 					expect(req).to.have.property('context').eql({});
-					expect(req).to.have.property('query').eql({tracking:1});
+					expect(req).to.have.property('query').eql({ tracking: 1 });
 				});
 			});
 		});
@@ -178,7 +177,7 @@ describe('ParticleAPI', () => {
 						uri: '/v1/user/mfa-enable',
 						auth: props.auth,
 						query: undefined,
-						context: {},
+						context: {}
 					});
 				});
 			});
@@ -192,9 +191,9 @@ describe('ParticleAPI', () => {
 						auth: props.auth,
 						data: {
 							otp: props.otp,
-							mfa_token: props.mfaToken,
+							mfa_token: props.mfaToken
 						},
-						context: {},
+						context: {}
 					});
 				});
 			});
@@ -754,7 +753,7 @@ describe('ParticleAPI', () => {
 		});
 		describe('.getEventStream', () => {
 			before(() => {
-				sinon.stub(EventStream.prototype, 'connect').callsFake(function connect() {
+				sinon.stub(EventStream.prototype, 'connect').callsFake(function connect(){
 					return Promise.resolve({ uri: this.uri });
 				});
 			});
@@ -822,14 +821,16 @@ describe('ParticleAPI', () => {
 				});
 			});
 			it('requests a product\'s event without an org provided', () => {
-				return api.getEventStream({ product: 'test-product'}).then(({ uri }) => {
-					uri.should.endWith('v1/products/test-product/events');
-				});
+				return api.getEventStream({ product: 'test-product' })
+					.then(({ uri }) => {
+						uri.should.endWith('v1/products/test-product/events');
+					});
 			});
 			it('requests a product\'s named event without an org provided', () => {
-				return api.getEventStream({ product: 'test-product', name: 'foo'}).then(({ uri }) => {
-					uri.should.endWith('v1/products/test-product/events/foo');
-				});
+				return api.getEventStream({ product: 'test-product', name: 'foo' })
+					.then(({ uri }) => {
+						uri.should.endWith('v1/products/test-product/events/foo');
+					});
 			});
 			it('requests product\'s device events', () => {
 				return api.getEventStream({ product: 'test-product', deviceId: props.deviceId }).then(({ uri }) => {
@@ -1146,52 +1147,52 @@ describe('ParticleAPI', () => {
 		});
 		describe('.setUserInfo', () => {
 			it('generates request', () => {
-				return api.setUserInfo({ auth: 'X', accountInfo: {first_name: 'John', last_name: 'Scully'} }).then((results) => {
-					results.should.eql({
-						method: 'put',
-						uri: '/v1/user',
-						auth: 'X',
-						context: {},
-						data: {
-							account_info: {first_name: 'John', last_name: 'Scully'}
-						}
+				return api.setUserInfo({ auth: 'X', accountInfo: { first_name: 'John', last_name: 'Scully' } })
+					.then((results) => {
+						results.should.eql({
+							method: 'put',
+							uri: '/v1/user',
+							auth: 'X',
+							context: {},
+							data: {
+								account_info: { first_name: 'John', last_name: 'Scully' }
+							}
+						});
 					});
-
-				});
 			});
 		});
 		describe('.changeUsername', () => {
 			it('generates request', () => {
-				return api.changeUsername({ auth: 'X', currentPassword: 'blabla', username: 'john@skul.ly' }).then((results) => {
-					results.should.eql({
-						method: 'put',
-						uri: '/v1/user',
-						auth: 'X',
-						context: {},
-						data: {
-							current_password: 'blabla',
-							username: 'john@skul.ly'
-						}
+				return api.changeUsername({ auth: 'X', currentPassword: 'blabla', username: 'john@skul.ly' })
+					.then((results) => {
+						results.should.eql({
+							method: 'put',
+							uri: '/v1/user',
+							auth: 'X',
+							context: {},
+							data: {
+								current_password: 'blabla',
+								username: 'john@skul.ly'
+							}
+						});
 					});
-
-				});
 			});
 		});
 		describe('.changeUserPassword', () => {
 			it('generates request', () => {
-				return api.changeUserPassword({ auth: 'X', currentPassword: 'blabla', password: 'blabla2' }).then((results) => {
-					results.should.eql({
-						method: 'put',
-						uri: '/v1/user',
-						auth: 'X',
-						context: {},
-						data: {
-							current_password: 'blabla',
-							password: 'blabla2'
-						}
+				return api.changeUserPassword({ auth: 'X', currentPassword: 'blabla', password: 'blabla2' })
+					.then((results) => {
+						results.should.eql({
+							method: 'put',
+							uri: '/v1/user',
+							auth: 'X',
+							context: {},
+							data: {
+								current_password: 'blabla',
+								password: 'blabla2'
+							}
+						});
 					});
-
-				});
 			});
 		});
 		describe('.listSIMs', () => {
@@ -1448,7 +1449,7 @@ describe('ParticleAPI', () => {
 					page: 3,
 					filter: 'abc',
 					sort: 'name',
-					architectures:[ 'spark-core', 'particle-photon' ],
+					architectures: ['spark-core', 'particle-photon'],
 					category: 'Other'
 				}).then((results) => {
 					results.query.should.eql({
@@ -2006,12 +2007,12 @@ describe('ParticleAPI', () => {
 				api.should.have.property('context').eql({});
 			});
 			it('is valid for known types and non-empty object', () => {
-				api._isValidContext('tool', {abc:'123'}).should.be.ok;
-				api._isValidContext('project', {abc:'123'}).should.be.ok;
+				api._isValidContext('tool', { abc:'123' }).should.be.ok;
+				api._isValidContext('project', { abc:'123' }).should.be.ok;
 			});
 			it('is not valid for unknown types and non-empty object', () => {
-				api._isValidContext('tool1', {abc:'123'}).should.not.be.ok;
-				api._isValidContext('project1', {abc:'123'}).should.not.be.ok;
+				api._isValidContext('tool1', { abc:'123' }).should.not.be.ok;
+				api._isValidContext('project1', { abc:'123' }).should.not.be.ok;
 			});
 			it('is not valid for known types and falsey object', () => {
 				api._isValidContext('tool', {}).should.not.be.ok;
@@ -2020,22 +2021,22 @@ describe('ParticleAPI', () => {
 				api._isValidContext('tool').should.not.be.ok;
 			});
 			it('sets a valid context', () => {
-				api.setContext('tool', {name:'spanner'});
+				api.setContext('tool', { name:'spanner' });
 				api.context.should.have.property('tool').property('name').equal('spanner');
 			});
 		});
 
 		describe('_buildContext', () => {
 			it('uses the api context when no context provided', () => {
-				const tool = {name:'spanner'};
+				const tool = { name:'spanner' };
 				api.setContext('tool', tool);
-				api._buildContext().should.eql({tool});
+				api._buildContext().should.eql({ tool });
 			});
 			it('overrides the api context completely for a given context item', () => {
-				const tool = {name:'spanner', version:'1.2.3'};
+				const tool = { name:'spanner', version:'1.2.3' };
 				api.setContext('tool', tool);
-				const newTool = {name:'pliers'};
-				api._buildContext({tool:newTool}).should.eql({tool:newTool});
+				const newTool = { name:'pliers' };
+				api._buildContext({ tool:newTool }).should.eql({ tool:newTool });
 			});
 		});
 
@@ -2086,10 +2087,9 @@ describe('ParticleAPI', () => {
 
 			it('calls _buildContext from request', () => {
 				api.agent.request = sinon.stub().returns(result);
-				api.request({context}).should.eql(result);
-				expect(api.agent.request).to.have.been.calledWith({context:contextResult});
+				api.request({ context }).should.eql(result);
+				expect(api.agent.request).to.have.been.calledWith({ context:contextResult });
 			});
 		});
 	});
-
 });

@@ -1,5 +1,6 @@
-import {expect, sinon} from './test-setup';
+import { expect, sinon } from './test-setup';
 import Particle from '../src/Particle';
+
 
 describe('Particle', () => {
 	describe('downloadFile', () => {
@@ -8,17 +9,17 @@ describe('Particle', () => {
 			const url = 'https://s3.amazonaws.com/binaries.particle.io/libraries/neopixel/neopixel-0.0.10.tar.gz';
 			const fileSize = 25505;
 			return sut.downloadFile({ url })
-			.then(contents => {
-				expect(contents.length || contents.byteLength).to.equal(fileSize);
-			});
+				.then(contents => {
+					expect(contents.length || contents.byteLength).to.equal(fileSize);
+				});
 		});
 	});
 
 	describe('context', () => {
 		it('adds headers for the context', () => {
 			const sut = new Particle();
-			sut.setContext('tool', {name:'cli', version:'1.2.3'});
-			sut.setContext('project', {name:'blinky', version:'0.0.1'});
+			sut.setContext('tool', { name:'cli', version:'1.2.3' });
+			sut.setContext('project', { name:'blinky', version:'0.0.1' });
 			sut.agent._promiseResponse = sinon.stub().returns(Promise.resolve());
 			return sut.flashTinker('deviceID', 'auth').then(() => {
 				expect(sut.agent._promiseResponse).to.have.been.calledOnce;

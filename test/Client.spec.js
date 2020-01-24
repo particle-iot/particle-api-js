@@ -1,5 +1,4 @@
-import {expect, sinon} from './test-setup';
-
+import { expect, sinon } from './test-setup';
 import Client from '../src/Client';
 import * as fixtures from './fixtures';
 import Library from '../src/Library';
@@ -7,6 +6,8 @@ import Library from '../src/Library';
 let api;
 const token = 'tok';
 let client;
+
+
 describe('Client', () => {
 	beforeEach(() => {
 		api = {};
@@ -62,7 +63,7 @@ describe('Client', () => {
 
 	describe('compileCode', () => {
 		it('delegates to api', () => {
-			api.compileCode = ({files, platformId, targetVersion, auth}) => {
+			api.compileCode = ({ files, platformId, targetVersion, auth }) => {
 				return Promise.resolve([files, platformId, targetVersion, auth]);
 			};
 			return expect(client.compileCode('a', 'b', 'c')).to.eventually.eql(['a', 'b', 'c', client.auth]);
@@ -71,29 +72,29 @@ describe('Client', () => {
 
 	describe('signalDevice', () => {
 		it('delegates to api', () => {
-			api.signalDevice = ({ deviceId, signal }) => {
+			api.signalDevice = () => {
 				return Promise.resolve([true, client.auth]);
 			};
 			return expect(client.signalDevice({ deviceId: 'testid', signal: true }))
-			.to.eventually.eql([true, client.auth]);
+				.to.eventually.eql([true, client.auth]);
 		});
 	});
 
 	describe('publishLibrary', () => {
 		it('delegates to api and returns the library metadata on success', () => {
 			const name = 'fred';
-			const metadata = {name};
+			const metadata = { name };
 			const library = new Library(client, metadata);
-			api.publishLibrary = sinon.stub().resolves({body: {data: metadata}});
-			return client.publishLibrary(name).
-			then(actual => {
-				expect(actual).to.eql(library);
-				expect(api.publishLibrary).to.have.been.calledWith({name, auth:token});
-			});
+			api.publishLibrary = sinon.stub().resolves({ body: { data: metadata } });
+			return client.publishLibrary(name)
+				.then(actual => {
+					expect(actual).to.eql(library);
+					expect(api.publishLibrary).to.have.been.calledWith({ name, auth:token });
+				});
 		});
 
 		it('delegates to api and calls _throwError to handle the error', () => {
-			const error = {message:'I don\'t like vegetables'};
+			const error = { message:'I don\'t like vegetables' };
 			api.publishLibrary = sinon.stub().rejects(error);
 			const name = 'notused';
 			return client.publishLibrary(name)
@@ -102,43 +103,42 @@ describe('Client', () => {
 				})
 				.catch(actual => {
 					expect(actual).to.eql(error);
-					expect(api.publishLibrary).to.have.been.calledWith({name, auth:token});
+					expect(api.publishLibrary).to.have.been.calledWith({ name, auth:token });
 				});
 		});
-
 	});
 
 	describe('contributeLibrary', () => {
 		it('delegates to api and returns the library metadata on success', () => {
 			const archive = {};
-			const metadata = {name:''};
+			const metadata = { name:'' };
 			const library = new Library(client, metadata);
-			api.contributeLibrary = sinon.stub().resolves({body: { data: metadata}});
-			return client.contributeLibrary(archive).
-			then(actual => {
-				expect(actual).to.eql(library);
-				expect(api.contributeLibrary).to.have.been.calledWith({archive, auth:token});
-			});
+			api.contributeLibrary = sinon.stub().resolves({ body: { data: metadata } });
+			return client.contributeLibrary(archive)
+				.then(actual => {
+					expect(actual).to.eql(library);
+					expect(api.contributeLibrary).to.have.been.calledWith({ archive, auth:token });
+				});
 		});
 
 		it('delegates to api and calls _throwError to handle the error', () => {
 			const archive = {};
-			const error = {message:'I don\'t like vegetables'};
+			const error = { message:'I don\'t like vegetables' };
 			api.contributeLibrary = sinon.stub().rejects(error);
 			return client.contributeLibrary(archive)
-			.then(() => {
-				throw new Error('expected an exception');
-			})
-			.catch(actual => {
-				expect(actual).to.eql(error);
-				expect(api.contributeLibrary).to.have.been.calledWith({archive, auth:token});
-			});
+				.then(() => {
+					throw new Error('expected an exception');
+				})
+				.catch(actual => {
+					expect(actual).to.eql(error);
+					expect(api.contributeLibrary).to.have.been.calledWith({ archive, auth:token });
+				});
 		});
 	});
 
 	describe('listDevices', () => {
 		it('delegates to api', () => {
-			api.listDevices = ({auth}) => {
+			api.listDevices = ({ auth }) => {
 				return Promise.resolve([auth]);
 			};
 			return expect(client.listDevices()).to.eventually.eql([client.auth]);
@@ -186,8 +186,8 @@ describe('Client', () => {
 					firmware_vendor: 'Bar'
 				},
 			];
-			api.listBuildTargets = ({auth}) => {
-				return Promise.resolve({body: response});
+			api.listBuildTargets = () => {
+				return Promise.resolve({ body: response });
 			};
 			return expect(client.listBuildTargets()).to.eventually.eql(expected);
 		});
@@ -195,23 +195,21 @@ describe('Client', () => {
 
 	describe('trackingIdentity', () => {
 		it('delegates to api and unpacks the body', () => {
-			api.trackingIdentity = ({auth, full, context}) => {
-				return Promise.resolve({body: {auth, full, context}});
+			api.trackingIdentity = ({ auth, full, context }) => {
+				return Promise.resolve({ body: { auth, full, context } });
 			};
-			const context = {abd:123};
+			const context = { abd:123 };
 			const full = 456;
-			return expect(client.trackingIdentity({full, context})).to.eventually.eql({auth:client.auth, full, context});
+			return expect(client.trackingIdentity({ full, context })).to.eventually.eql({ auth: client.auth, full, context });
 		});
 
 		it('delegates to api with default parameters and unpacks the body', () => {
-			api.trackingIdentity = ({auth, full, context}) => {
-				return Promise.resolve({body: {auth, full, context}});
+			api.trackingIdentity = ({ auth, full, context }) => {
+				return Promise.resolve({ body: { auth, full, context } });
 			};
 			const context = undefined;
 			const full = false;
-			return expect(client.trackingIdentity()).to.eventually.eql({auth:client.auth, full, context});
+			return expect(client.trackingIdentity()).to.eventually.eql({ auth:client.auth, full, context });
 		});
-
 	});
-
 });

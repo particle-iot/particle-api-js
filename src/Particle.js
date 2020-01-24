@@ -5,6 +5,7 @@ import EventStream from './EventStream';
 import Agent from './Agent';
 import Client from './Client';
 
+
 /**
  * Particle Cloud API wrapper.
  *
@@ -22,20 +23,20 @@ class Particle {
 	 *
 	 * @param  {Object} options Options for this API call Options to be used for all requests (see [Defaults](../src/Defaults.js))
 	 */
-	constructor(options = {}) {
+	constructor(options = {}){
 		// todo - this seems a bit dangerous - would be better to put all options/context in a contained object
 		Object.assign(this, Defaults, options);
 		this.context = {};
 		this.agent = new Agent(this.baseUrl);
 	}
 
-	_isValidContext(name, context) {
+	_isValidContext(name, context){
 		return (name==='tool' || name==='project') && context!==undefined;
 	}
 
-	setContext(name, context) {
-		if (context!==undefined) {
-			if (this._isValidContext(name, context)) {
+	setContext(name, context){
+		if (context!==undefined){
+			if (this._isValidContext(name, context)){
 				this.context[name] = context;
 			} else {
 				throw Error('uknown context name or undefined context: '+name);
@@ -46,10 +47,10 @@ class Particle {
 	/**
 	 * Builds the final context from the context parameter and the context items in the api.
 	 * @param  {Object} context       The invocation context, this takes precedence over the local context.
-	 * @return {Object} The context to use.
+	 * @returns {Object} The context to use.
 	 * @private
 	 */
-	_buildContext(context) {
+	_buildContext(context){
 		return Object.assign(this.context, context);
 	}
 
@@ -59,9 +60,9 @@ class Particle {
 	 * @param  {String} options.username      Username for the Particle account
 	 * @param  {String} options.password      Password for the Particle account
 	 * @param  {Number} options.tokenDuration How long the access token should last in seconds
-	 * @return {Promise}
+	 * @returns {Promise} A promise
 	 */
-	login({ username, password, tokenDuration = this.tokenDuration, context }) {
+	login({ username, password, tokenDuration = this.tokenDuration, context }){
 		return this.request({ uri: '/oauth/token', form: {
 			username,
 			password,
@@ -78,12 +79,12 @@ class Particle {
 	 * @param  {String} options.mfaToken Given as 'mfa_token' in the error body of `.login()`.
 	 * @param  {String} options.otp      Current one-time-password generated from the authentication application
 	 * @param  {Number} options.context  Request context
-	 * @return {Promise}
+	 * @returns {Promise} A promise
 	 */
-	sendOtp({ mfaToken: mfa_token, otp, context }) {
+	sendOtp({ mfaToken, otp, context }){
 		return this.request({ uri: '/oauth/token', form: {
 			grant_type: 'urn:custom:mfa-otp',
-			mfa_token,
+			mfa_token: mfaToken,
 			otp,
 			client_id: this.clientId,
 			client_secret: this.clientSecret
@@ -95,9 +96,9 @@ class Particle {
 	 * @param {Object} options	Options for this API call
 	 * @param {Object} options.auth		access token
 	 * @param {Object} options.context	Request context
-	 * @return {Promise}
+	 * @returns {Promise} A promise
 	 */
-	enableMfa({ auth, context }) {
+	enableMfa({ auth, context }){
 		return this.get('/v1/user/mfa-enable', auth, undefined, context);
 	}
 
@@ -108,10 +109,10 @@ class Particle {
 	 * @param {Object} options.mfaToken	Token given from previous step to
 	 * @param {Object} options.otp		Current one-time-password generated from the authentication app
 	 * @param {Object} options.context	Request context
-	 * @return {Promise}
+	 * @returns {Promise} A promise
 	 */
-	confirmMfa({ auth, mfaToken: mfa_token, otp, context }) {
-		return this.post('/v1/user/mfa-enable', { mfa_token, otp }, auth, context);
+	confirmMfa({ auth, mfaToken, otp, context }){
+		return this.post('/v1/user/mfa-enable', { mfa_token: mfaToken, otp }, auth, context);
 	}
 
 	/**
@@ -120,10 +121,10 @@ class Particle {
 	 * @param {Object} options.auth				access token
 	 * @param {Object} options.currentPassword	User's current password
 	 * @param {Object} options.context			Request context
-	 * @return {Promise}
+	 * @returns {Promise} A promise
 	 */
-	disableMfa({ auth, currentPassword: current_password, context }) {
-		return this.put('/v1/user/mfa-disable', { current_password }, auth, context);
+	disableMfa({ auth, currentPassword, context }){
+		return this.put('/v1/user/mfa-disable', { current_password: currentPassword }, auth, context);
 	}
 
 	/**
@@ -132,9 +133,9 @@ class Particle {
 	 * @param  {String} options.email         Username for the Particle account
 	 * @param  {String} options.password      Password for the Particle account
 	 * @param  {String} options.product       Create the customer in this product ID or slug
-	 * @return {Promise}
+	 * @returns {Promise} A promise
 	 */
-	createCustomer({ email, password, product, context }) {
+	createCustomer({ email, password, product, context }){
 		const uri =`/v1/products/${product}/customers`;
 		return this.request({ uri: uri, form: {
 			email,
@@ -149,9 +150,9 @@ class Particle {
 	 * Login to Particle Cloud using an OAuth client.
 	 * @param  {Object} options Options for this API call
 	 * @param  {Object} options.context   Context information.
-	 * @return {Promise}
+	 * @returns {Promise} A promise
 	 */
-	loginAsClientOwner({ context }) {
+	loginAsClientOwner({ context }){
 		return this.request({ uri: '/oauth/token', form: {
 			grant_type: 'client_credentials',
 			client_id: this.clientId,
@@ -165,9 +166,9 @@ class Particle {
 	 * @param  {String} options.username Email of the new user
 	 * @param  {String} options.password Password
 	 * @param  {String} options.accountInfo Object that contains account information fields such as user real name, company name, business account flag etc
-	 * @return {Promise}
+	 * @returns {Promise} A promise
 	 */
-	createUser({ username, password, accountInfo, context }) {
+	createUser({ username, password, accountInfo, context }){
 		return this.post('/v1/users', {
 			username,
 			password,
@@ -179,9 +180,9 @@ class Particle {
 	 * Verify new user account via verification email
 	 * @param  {Object} options Options for this API call
 	 * @param  {String} options.token the string token sent in the verification email
-	 * @return {Promise}
+	 * @returns {Promise} A promise
 	 */
-	verifyUser({ token, context }) {
+	verifyUser({ token, context }){
 		return this.post('/v1/user/verify', {
 			token
 		}, undefined, context);
@@ -191,9 +192,9 @@ class Particle {
 	 * Send reset password email for a Particle Cloud user account
 	 * @param  {Object} options Options for this API call
 	 * @param  {String} options.username Email of the user
-	 * @return {Promise}
+	 * @returns {Promise} A promise
 	 */
-	resetPassword({ username, context }) {
+	resetPassword({ username, context }){
 		return this.post('/v1/user/password-reset', { username }, undefined, context);
 	}
 
@@ -203,9 +204,9 @@ class Particle {
 	 * @param  {String} options.username Username of the Particle cloud account that the token belongs to.
 	 * @param  {String} options.password Password for the account
 	 * @param  {String} options.token    Access token you wish to revoke
-	 * @return {Promise}
+	 * @returns {Promise} A promise
 	 */
-	deleteAccessToken({ username, password, token, context }) {
+	deleteAccessToken({ username, password, token, context }){
 		return this.delete(`/v1/access_tokens/${token}`, {
 			access_token: token
 		}, { username, password }, context);
@@ -215,9 +216,9 @@ class Particle {
 	 * Revoke the current session access token
 	 * @param  {Object} options Options for this API call
 	 * @param  {String} options.auth         Access Token
-	 * @return {Promise}
+	 * @returns {Promise} A promise
 	 */
-	deleteCurrentAccessToken({ auth, context }) {
+	deleteCurrentAccessToken({ auth, context }){
 		return this.delete('/v1/access_tokens/current', undefined, auth, context);
 	}
 
@@ -226,9 +227,9 @@ class Particle {
 	 * @param  {Object} options Options for this API call
 	 * @param  {String} options.username Username
 	 * @param  {String} options.password Password
-	 * @return {Promise}
+	 * @returns {Promise} A promise
 	 */
-	listAccessTokens({ username, password, context }) {
+	listAccessTokens({ username, password, context }){
 		return this.get('/v1/access_tokens', { username, password }, undefined, context);
 	}
 
@@ -241,7 +242,7 @@ class Particle {
 	 * @param  {Object} options.context   Context information.
 	 * @returns {Promise<Object>} Resolve the tracking identify of the current login
 	 */
-	trackingIdentity({ auth, full = false, context } = {}) {
+	trackingIdentity({ auth, full = false, context } = {}){
 		return this.get('/v1/user/identify', auth, (full ? undefined : { tracking: 1 }), context);
 	}
 
@@ -256,9 +257,9 @@ class Particle {
 	 * @param  {Number} [options.perPage]    (Product only) Records per page
 	 * @param  {String} [options.product]    List devices in this product ID or slug
 	 * @param  {String} options.auth         Access Token
-	 * @return {Promise}
+	 * @returns {Promise} A promise
 	 */
-	listDevices({ deviceId, deviceName, sortAttr, sortDir, page, perPage, product, auth, context }) {
+	listDevices({ deviceId, deviceName, sortAttr, sortDir, page, perPage, product, auth, context }){
 		const uri = product ? `/v1/products/${product}/devices` : '/v1/devices';
 		const query = product ? { deviceId, deviceName, sortAttr, sortDir, page, per_page: perPage } : undefined;
 		return this.get(uri, auth, query, context);
@@ -270,9 +271,9 @@ class Particle {
 	 * @param  {String} options.deviceId  Device ID or Name
 	 * @param  {String} [options.product] Device in this product ID or slug
 	 * @param  {String} options.auth      Access token
-	 * @return {Promise}
+	 * @returns {Promise} A promise
 	 */
-	getDevice({ deviceId, product, auth, context }) {
+	getDevice({ deviceId, product, auth, context }){
 		const uri = this.deviceUri({ deviceId, product });
 		return this.get(uri, auth, undefined, context);
 	}
@@ -282,9 +283,9 @@ class Particle {
 	 * @param  {Object} options Options for this API call
 	 * @param  {String} options.deviceId Device ID
 	 * @param  {String} options.auth     Access Token
-	 * @return {Promise}
+	 * @returns {Promise} A promise
 	 */
-	claimDevice({ deviceId, requestTransfer, auth, context }) {
+	claimDevice({ deviceId, requestTransfer, auth, context }){
 		return this.post('/v1/devices', {
 			id: deviceId,
 			request_transfer: !!requestTransfer
@@ -297,9 +298,9 @@ class Particle {
 	 * @param  {String} options.deviceId Device ID
 	 * @param  {String} options.product  Add to this product ID or slug
 	 * @param  {String} options.auth     Access Token
-	 * @return {Promise}
+	 * @returns {Promise} A promise
 	 */
-	addDeviceToProduct({ deviceId, product, auth, context }) {
+	addDeviceToProduct({ deviceId, product, auth, context }){
 		const uri = `/v1/products/${product}/devices`;
 		return this.post(uri, {
 			id: deviceId
@@ -313,9 +314,9 @@ class Particle {
 	 * @param  {Boolean} [options.deny]  (Product only) Deny this quarantined device, instead of removing an already approved device
 	 * @param  {String} options.product  Remove from this product ID or slug
 	 * @param  {String} options.auth     Access Token
-	 * @return {Promise}
+	 * @returns {Promise} A promise
 	 */
-	removeDevice({ deviceId, deny, product, auth, context }) {
+	removeDevice({ deviceId, deny, product, auth, context }){
 		const uri = this.deviceUri({ deviceId, product });
 		const data = product ? { deny } : undefined;
 		return this.delete(uri, data, auth, context);
@@ -327,9 +328,9 @@ class Particle {
 	 * @param  {String} options.deviceId Device ID or Name
 	 * @param  {String} options.product  Remove from this product ID or slug
 	 * @param  {String} options.auth     Access Token
-	 * @return {Promise}
+	 * @returns {Promise} A promise
 	 */
-	removeDeviceOwner({ deviceId, deny, product, auth, context }) {
+	removeDeviceOwner({ deviceId, product, auth, context }){
 		const uri = `/v1/products/${product}/devices/${deviceId}/owner`;
 		return this.delete(uri, undefined, auth, context);
 	}
@@ -341,9 +342,9 @@ class Particle {
 	 * @param  {String} options.name     Desired Name
 	 * @param  {String} [options.product] Rename device in this product ID or slug
 	 * @param  {String} options.auth     Access Token
-	 * @return {Promise}
+	 * @returns {Promise} A promise
 	 */
-	renameDevice({ deviceId, name, product, auth, context }) {
+	renameDevice({ deviceId, name, product, auth, context }){
 		return this.updateDevice({ deviceId, name, product, auth, context });
 	}
 
@@ -354,9 +355,9 @@ class Particle {
 	 * @param  {Boolean} options.signal   Signal on or off
 	 * @param  {String} [options.product] Device in this product ID or slug
 	 * @param  {String} options.auth     Access Token
-	 * @return {Promise}
+	 * @returns {Promise} A promise
 	 */
-	signalDevice({ deviceId, signal, product, auth, context }) {
+	signalDevice({ deviceId, signal, product, auth, context }){
 		return this.updateDevice({ deviceId, signal, product, auth, context });
 	}
 
@@ -367,9 +368,9 @@ class Particle {
 	 * @params {String} options.notes     Your notes about this device
 	 * @param  {String} [options.product] Device in this product ID or slug
 	 * @param  {String} options.auth      Access Token
-	 * @return {Promise}
+	 * @returns {Promise} A promise
 	 */
-	setDeviceNotes({ deviceId, notes, product, auth, context }) {
+	setDeviceNotes({ deviceId, notes, product, auth, context }){
 		return this.updateDevice({ deviceId, notes, product, auth, context });
 	}
 
@@ -380,9 +381,9 @@ class Particle {
 	 * @param  {Boolean} options.development  Set to true to mark as development, false to return to product fleet
 	 * @param  {String} options.product       Device in this product ID or slug
 	 * @param  {String} options.auth          Access Token
-	 * @return {Promise}
+	 * @returns {Promise} A promise
 	 */
-	markAsDevelopmentDevice({ deviceId, development = true, product, auth, context }) {
+	markAsDevelopmentDevice({ deviceId, development = true, product, auth, context }){
 		return this.updateDevice({ deviceId, development, product, auth, context });
 	}
 
@@ -394,9 +395,9 @@ class Particle {
 	 * @params {Boolean} [options.flash]      Immediately flash firmware indicated by desiredFirmwareVersion
 	 * @param  {String} options.product       Device in this product ID or slug
 	 * @param  {String} options.auth          Access Token
-	 * @return {Promise}
+	 * @returns {Promise} A promise
 	 */
-	lockDeviceProductFirmware({ deviceId, desiredFirmwareVersion, flash, product, auth, context }) {
+	lockDeviceProductFirmware({ deviceId, desiredFirmwareVersion, flash, product, auth, context }){
 		return this.updateDevice({ deviceId, desiredFirmwareVersion, flash, product, auth, context });
 	}
 
@@ -406,9 +407,9 @@ class Particle {
 	 * @param  {String} options.deviceId      Device ID or Name
 	 * @param  {String} options.product       Device in this product ID or slug
 	 * @param  {String} options.auth          Access Token
-	 * @return {Promise}
+	 * @returns {Promise} A promise
 	 */
-	unlockDeviceProductFirmware({ deviceId, product, auth, context }) {
+	unlockDeviceProductFirmware({ deviceId, product, auth, context }){
 		return this.updateDevice({ deviceId, desiredFirmwareVersion: null, product, auth, context });
 	}
 
@@ -425,10 +426,10 @@ class Particle {
 	 * @params {Boolean} [options.flash]       (Product only) Immediately flash firmware indicated by desiredFirmwareVersion
 	 * @param  {String} [options.product]      Device in this product ID or slug
 	 * @param  {String} options.auth           Access Token
-	 * @return {Promise}
+	 * @returns {Promise} A promise
 	 */
-	updateDevice({ deviceId, name, signal, notes, development, desiredFirmwareVersion, flash, product, auth, context }) {
-		if (signal !== undefined) {
+	updateDevice({ deviceId, name, signal, notes, development, desiredFirmwareVersion, flash, product, auth, context }){
+		if (signal !== undefined){
 			signal = signal ? '1' : '0';
 		}
 
@@ -444,9 +445,9 @@ class Particle {
 	 * @param  {Object} options Options for this API call
 	 * @param  {String} options.productId Product ID where to create this device
 	 * @param  {String} options.auth      Access Token
-	 * @return {Promise}
+	 * @returns {Promise} A promise
 	 */
-	provisionDevice({ productId, auth, context }) {
+	provisionDevice({ productId, auth, context }){
 		return this.post('/v1/devices', { product_id: productId }, auth, context);
 	}
 
@@ -458,18 +459,18 @@ class Particle {
 	 * @param  {String} [options.iccid] ICCID of the SIM card used in the Electron
 	 * @param  {String} [options.product] Device in this product ID or slug
 	 * @param  {String} options.auth  Access Token
-	 * @return {Promise}
+	 * @returns {Promise} A promise
 	 */
-	getClaimCode({ iccid, product, auth, context }) {
+	getClaimCode({ iccid, product, auth, context }){
 		const uri = product ? `/v1/products/${product}/device_claims` : '/v1/device_claims';
 		return this.post(uri, { iccid }, auth, context);
 	}
 
-	validatePromoCode({ auth, promoCode, context }) {
+	validatePromoCode({ auth, promoCode, context }){
 		return this.get(`/v1/promo_code/${promoCode}`, auth, undefined, context);
 	}
 
-	changeProduct({ deviceId, productId, auth, context }) {
+	changeProduct({ deviceId, productId, auth, context }){
 		return this.put(`/v1/devices/${deviceId}`, {
 			product_id: productId
 		}, auth, context);
@@ -482,9 +483,9 @@ class Particle {
 	 * @param  {String} options.name     Variable name
 	 * @param  {String} [options.product] Device in this product ID or slug
 	 * @param  {String} options.auth     Access Token
-	 * @return {Promise}
+	 * @returns {Promise} A promise
 	 */
-	getVariable({ deviceId, name, product, auth, context }) {
+	getVariable({ deviceId, name, product, auth, context }){
 		const uri = product ?
 			`/v1/products/${product}/devices/${deviceId}/${name}` :
 			`/v1/devices/${deviceId}/${name}`;
@@ -499,12 +500,12 @@ class Particle {
 	 * @param  {Object} options.files         Object containing files to be compiled and flashed. Keys should be the filenames, including relative path, and the values should be a path or Buffer of the file contents in Node, or a File or Blob in the browser.
 	 * @param  {String} [options.targetVersion=latest] System firmware version to compile against
 	 * @param  {String} options.auth          String
-	 * @return {Promise}
+	 * @returns {Promise} A promise
 	 */
-	flashDevice({ deviceId, product, files, targetVersion, auth, context }) {
+	flashDevice({ deviceId, product, files, targetVersion, auth, context }){
 		const uri = this.deviceUri({ deviceId, product });
 		const form = {};
-		if (targetVersion) {
+		if (targetVersion){
 			form.build_target_version = targetVersion;
 		} else {
 			form.latest = 'true';
@@ -517,11 +518,11 @@ class Particle {
 	 * @param  {Object} options Options for this API call
 	 * @param  {String} options.deviceId Device ID or Name
 	 * @param  {String} options.auth     Access Token
-	 * @return {Promise}
+	 * @returns {Promise} A promise
 	 */
-	flashTinker({ deviceId, auth, context }) {
+	flashTinker({ deviceId, auth, context }){
 		/* eslint-disable no-console */
-		if (console && console.warning) {
+		if (console && console.warning){
 			console.warning('Particle.flashTinker is deprecated');
 		}
 		/* eslint-enable no-console */
@@ -537,17 +538,23 @@ class Particle {
 	 * @param  {Number} [options.platformId]    Platform id number of the device you are compiling for. Common values are 0=Core, 6=Photon, 10=Electron.
 	 * @param  {String} [options.targetVersion=latest] System firmware version to compile against
 	 * @param  {String} options.auth          Access Token
-	 * @return {Promise}
+	 * @returns {Promise} A promise
 	 */
-	compileCode({ files, platformId, targetVersion, auth, context }) {
+	compileCode({ files, platformId, targetVersion, auth, context }){
 		const form = { platform_id: platformId };
-		if (targetVersion) {
+		if (targetVersion){
 			form.build_target_version = targetVersion;
 		} else {
 			form.latest = 'true';
 		}
-		return this.request({ uri: '/v1/binaries',
-			files, auth, form, context, method: 'post' });
+		return this.request({
+			uri: '/v1/binaries',
+			method: 'post',
+			files,
+			auth,
+			form,
+			context
+		});
 	}
 
 	/**
@@ -555,9 +562,9 @@ class Particle {
 	 * @param  {Object} options Options for this API call
 	 * @param  {String} options.binaryId Binary ID received from a successful compile call
 	 * @param  {String} options.auth     Access Token
-	 * @return {Request}
+	 * @returns {Request} A promise
 	 */
-	downloadFirmwareBinary({ binaryId, auth, context }) {
+	downloadFirmwareBinary({ binaryId, auth }){
 		const uri = `/v1/binaries/${binaryId}`;
 		const req = request('get', uri);
 		req.use(this.prefix);
@@ -572,9 +579,9 @@ class Particle {
 	 * @param  {(String|Buffer)} options.key       Public key contents
 	 * @param  {String} [options.algorithm=rsa] Algorithm used to generate the public key. Valid values are `rsa` or `ecc`.
 	 * @param  {String} options.auth      Access Token
-	 * @return {Promise}
+	 * @returns {Promise} A promise
 	 */
-	sendPublicKey({ deviceId, key, algorithm, auth, context }) {
+	sendPublicKey({ deviceId, key, algorithm, auth, context }){
 		return this.post(`/v1/provisioning/${deviceId}`, {
 			deviceID: deviceId,
 			publicKey: ( typeof key === 'string' ? key : key.toString() ),
@@ -592,9 +599,9 @@ class Particle {
 	 * @param  {String} options.argument Function argument
 	 * @param  {String} [options.product] Device in this product ID or slug
 	 * @param  {String} options.auth     Access Token
-	 * @return {Promise}
+	 * @returns {Promise} A promise
 	 */
-	callFunction({ deviceId, name, argument, product, auth, context }) {
+	callFunction({ deviceId, name, argument, product, auth, context }){
 		const uri = product ?
 			`/v1/products/${product}/devices/${deviceId}/${name}` :
 			`/v1/devices/${deviceId}/${name}`;
@@ -609,29 +616,29 @@ class Particle {
 	 * @param  {String} [options.org]     Organization Slug
 	 * @param  {String} [options.product] Events for this product ID or slug
 	 * @param  {String} options.auth     Access Token
-	 * @return {Promise} If the promise resolves, the resolution value will be an EventStream object that will
+	 * @returns {Promise} If the promise resolves, the resolution value will be an EventStream object that will
 	 * emit 'event' events.
 	 */
-	getEventStream({ deviceId, name, org, product, auth, context }) {
+	getEventStream({ deviceId, name, org, product, auth }){
 		let uri = '/v1/';
-		if (org) {
+		if (org){
 			uri += `orgs/${org}/`;
 		}
 
-		if (product) {
+		if (product){
 			uri += `products/${product}/`;
 		}
 
-		if (deviceId) {
+		if (deviceId){
 			uri += 'devices/';
-			if (!(deviceId.toLowerCase() === 'mine')) {
+			if (!(deviceId.toLowerCase() === 'mine')){
 				uri += `${deviceId}/`;
 			}
 		}
 
 		uri += 'events';
 
-		if (name) {
+		if (name){
 			uri += `/${encodeURIComponent(name)}`;
 		}
 
@@ -646,9 +653,9 @@ class Particle {
 	 * @param  {Boolean} options.isPrivate Should the event be publicly available?
 	 * @param  {String} [options.product]  Event for this product ID or slug
 	 * @param  {String} options.auth      Access Token
-	 * @return {Promise}
+	 * @returns {Promise} A promise
 	 */
-	publishEvent({ name, data, isPrivate, product, auth, context }) {
+	publishEvent({ name, data, isPrivate, product, auth, context }){
 		const uri = product ? `/v1/products/${product}/events` : '/v1/devices/events';
 		const postData = { name, data, private: isPrivate };
 		return this.post(uri, postData, auth, context);
@@ -673,11 +680,11 @@ class Particle {
 	 * @param  {Object} [options.form]               Form data
 	 * @param  {String} [options.product]          Webhook for this product ID or slug
 	 * @param  {String} options.auth               Access Token
-	 * @return {Promise}
+	 * @returns {Promise} A promise
 	 */
-	createWebhook({ deviceId, name, url, requestType, headers, json, query, body, responseTemplate, responseTopic, rejectUnauthorized, webhookAuth, noDefaults, form, product, auth, context }) {
+	createWebhook({ deviceId, name, url, requestType, headers, json, query, body, responseTemplate, responseTopic, rejectUnauthorized, webhookAuth, noDefaults, form, product, auth, context }){
 		// deviceId: 'mine' is deprecated since webhooks only trigger on your device anyways
-		if (deviceId === 'mine') {
+		if (deviceId === 'mine'){
 			deviceId = undefined;
 		}
 		const uri = product ? `/v1/products/${product}/webhooks` : '/v1/webhooks';
@@ -691,9 +698,9 @@ class Particle {
 	 * @param  {String} options.hookId Webhook ID
 	 * @param  {String} [options.product]          Webhook for this product ID or slug
 	 * @param  {String} options.auth   Access Token
-	 * @return {Promise}
+	 * @returns {Promise} A promise
 	 */
-	deleteWebhook({ hookId, product, auth, context }) {
+	deleteWebhook({ hookId, product, auth, context }){
 		const uri = product ? `/v1/products/${product}/webhooks/${hookId}` : `/v1/webhooks/${hookId}`;
 		return this.delete(uri, undefined, auth, context);
 	}
@@ -703,9 +710,9 @@ class Particle {
 	 * @param  {Object} options Options for this API call
 	 * @param  {String} [options.product]          Webhooks for this product ID or slug
 	 * @param  {String} options.auth Access Token
-	 * @return {Promise}
+	 * @returns {Promise} A promise
 	 */
-	listWebhooks({ product, auth, context }) {
+	listWebhooks({ product, auth, context }){
 		const uri = product ? `/v1/products/${product}/webhooks` : '/v1/webhooks';
 		return this.get(uri, auth, undefined, context);
 	}
@@ -716,15 +723,14 @@ class Particle {
 	 * See the API docs for details https://docs.particle.io/reference/api/#integrations-webhooks-
 	 *
 	 * @param  {Object} options Options for this API call
-	 * @param  {String} options.integrationType  The kind of external integration. One of Webhook, AzureIotHub, GoogleCloudPubSub, GoogleMaps
 	 * @param  {String} options.event            Event that triggers the integration
 	 * @params {Object} options.settings         Settings specific to that integration type
 	 * @param  {String} [options.deviceId]       Trigger integration only for this device ID or Name
 	 * @param  {String} [options.product]        Integration for this product ID or slug
 	 * @param  {String} options.auth             Access Token
-	 * @return {Promise}
+	 * @returns {Promise} A promise
 	 */
-	createIntegration({ integrationType, event, settings, deviceId, product, auth, context }) {
+	createIntegration({ event, settings, deviceId, product, auth, context }){
 		const uri = product ? `/v1/products/${product}/integrations` : '/v1/integrations';
 		const data = Object.assign({ event, deviceid: deviceId }, settings);
 		return this.post(uri, data, auth, context);
@@ -742,9 +748,9 @@ class Particle {
 	 * @param  {String} [options.deviceId]       Trigger integration only for this device ID or Name
 	 * @param  {String} [options.product]        Integration for this product ID or slug
 	 * @param  {String} options.auth             Access Token
-	 * @return {Promise}
+	 * @returns {Promise} A promise
 	 */
-	editIntegration({ integrationId, event, settings, deviceId, product, auth, context }) {
+	editIntegration({ integrationId, event, settings, deviceId, product, auth, context }){
 		const uri = product ? `/v1/products/${product}/integrations/${integrationId}` : `/v1/integrations/${integrationId}`;
 		const data = Object.assign({ event, deviceid: deviceId }, settings);
 		return this.put(uri, data, auth, context);
@@ -757,9 +763,9 @@ class Particle {
 	 * @param  {String} options.integrationId    The integration to remove
 	 * @param  {String} [options.product]        Integration for this product ID or slug
 	 * @param  {String} options.auth             Access Token
-	 * @return {Promise}
+	 * @returns {Promise} A promise
 	 */
-	deleteIntegration({ integrationId, product, auth, context }) {
+	deleteIntegration({ integrationId, product, auth, context }){
 		const uri = product ? `/v1/products/${product}/integrations/${integrationId}` : `/v1/integrations/${integrationId}`;
 		return this.delete(uri, undefined, auth, context);
 	}
@@ -769,9 +775,9 @@ class Particle {
 	 * @param  {Object} options Options for this API call
 	 * @param  {String} [options.product]        Integrations for this product ID or slug
 	 * @param  {String} options.auth Access Token
-	 * @return {Promise}
+	 * @returns {Promise} A promise
 	 */
-	listIntegrations({ product, auth, context }) {
+	listIntegrations({ product, auth, context }){
 		const uri = product ? `/v1/products/${product}/integrations` : '/v1/integrations';
 		return this.get(uri, auth, undefined, context);
 	}
@@ -780,9 +786,9 @@ class Particle {
 	 * Get details about the current user
 	 * @param  {Object} options Options for this API call
 	 * @param  {String} options.auth Access Token
-	 * @return {Promise}
+	 * @returns {Promise} A promise
 	 */
-	getUserInfo({ auth, context }) {
+	getUserInfo({ auth, context }){
 		return this.get('/v1/user', auth, undefined, context);
 	}
 
@@ -791,9 +797,9 @@ class Particle {
 	 * @param  {Object} options Options for this API call
 	 * @param  {String} options.auth Access Token
 	 * @param  {String} options.accountInfo Set user's extended info fields (name, business account, company name, etc)
-	 * @return {Promise}
+	 * @returns {Promise} A promise
 	 */
-	setUserInfo({ accountInfo, auth, context }) {
+	setUserInfo({ accountInfo, auth, context }){
 		const bodyObj = {
 			account_info: accountInfo
 		};
@@ -807,9 +813,9 @@ class Particle {
 	 * @param  {String} options.auth Access Token
 	 * @param  {String} options.currentPassword Current password
 	 * @param  {String} options.username New email
-	 * @return {Promise}
+	 * @returns {Promise} A promise
 	 */
-	changeUsername({ currentPassword, username, auth, context }) {
+	changeUsername({ currentPassword, username, auth, context }){
 		const bodyObj = {
 			current_password: currentPassword,
 			username
@@ -824,9 +830,9 @@ class Particle {
 	 * @param  {String} options.auth Access Token
 	 * @param  {String} options.currentPassword Current password
 	 * @param  {String} options.password New password
-	 * @return {Promise}
+	 * @returns {Promise} A promise
 	 */
-	changeUserPassword({ currentPassword, password, auth, context }) {
+	changeUserPassword({ currentPassword, password, auth, context }){
 		const bodyObj = {
 			current_password: currentPassword,
 			password
@@ -845,9 +851,9 @@ class Particle {
 	 * @param  {Number} [options.perPage]  (Product only) Records per page
 	 * @param  {String} [options.product]  SIM cards for this product ID or slug
 	 * @param  {String} options.auth       Access Token
-	 * @return {Promise}
+	 * @returns {Promise} A promise
 	 */
-	listSIMs({ iccid, deviceId, deviceName, page, perPage, product, auth, context }) {
+	listSIMs({ iccid, deviceId, deviceName, page, perPage, product, auth, context }){
 		const uri = product ? `/v1/products/${product}/sims` : '/v1/sims';
 		const query = product ? { iccid, deviceId, deviceName, page, per_page: perPage } : undefined;
 		return this.get(uri, auth, query, context);
@@ -859,9 +865,9 @@ class Particle {
 	 * @param  {String} options.iccid      ICCID of the SIM card
 	 * @param  {String} [options.product]  SIM card for this product ID or slug
 	 * @param  {String} options.auth       Access Token
-	 * @return {Promise}
+	 * @returns {Promise} A promise
 	 */
-	getSIMDataUsage({ iccid, product, auth, context }) {
+	getSIMDataUsage({ iccid, product, auth, context }){
 		const uri = product ?
 			`/v1/products/${product}/sims/${iccid}/data_usage` :
 			`/v1/sims/${iccid}/data_usage`;
@@ -873,13 +879,13 @@ class Particle {
 	 * @param  {Object} options Options for this API call
 	 * @param  {String} options.product  SIM cards for this product ID or slug
 	 * @param  {String} options.auth     Access Token
-	 * @return {Promise}
+	 * @returns {Promise} A promise
 	 */
-	getFleetDataUsage({ product, auth, context }) {
+	getFleetDataUsage({ product, auth, context }){
 		return this.get(`/v1/products/${product}/sims/data_usage`, auth, undefined, context);
 	}
 
-	checkSIM({ iccid, auth, context }) {
+	checkSIM({ iccid, auth, context }){
 		return this.head(`/v1/sims/${iccid}`, auth, undefined, context);
 	}
 
@@ -891,9 +897,9 @@ class Particle {
 	 * @param  {String} options.country The ISO country code for the SIM cards
 	 * @param  {String} [options.product]  SIM cards for this product ID or slug
 	 * @param  {String} options.auth       Access Token
-	 * @return {Promise}
+	 * @returns {Promise} A promise
 	 */
-	activateSIM({ iccid, iccids, country, promoCode, product, auth, context }) {
+	activateSIM({ iccid, iccids, country, promoCode, product, auth, context }){
 		// promoCode is deprecated
 		iccids = iccids || [iccid];
 		const uri = product ? `/v1/products/${product}/sims` : `/v1/sims/${iccid}`;
@@ -911,9 +917,9 @@ class Particle {
 	 * @param  {String} options.iccid      ICCID of the SIM card
 	 * @param  {String} [options.product]  SIM cards for this product ID or slug
 	 * @param  {String} options.auth       Access Token
-	 * @return {Promise}
+	 * @returns {Promise} A promise
 	 */
-	deactivateSIM({ iccid, product, auth, context }) {
+	deactivateSIM({ iccid, product, auth, context }){
 		const uri = product ? `/v1/products/${product}/sims/${iccid}` : `/v1/sims/${iccid}`;
 		const data = { action: 'deactivate' };
 		return this.put(uri, data, auth, context);
@@ -926,9 +932,9 @@ class Particle {
 	 * @param  {Number} [options.mbLimit]  New monthly data limit. Necessary if unpausing a SIM card
 	 * @param  {String} [options.product]  SIM cards for this product ID or slug
 	 * @param  {String} options.auth       Access Token
-	 * @return {Promise}
+	 * @returns {Promise} A promise
 	 */
-	reactivateSIM({ iccid, mbLimit, product, auth, context }) {
+	reactivateSIM({ iccid, mbLimit, product, auth, context }){
 		const uri = product ? `/v1/products/${product}/sims/${iccid}` : `/v1/sims/${iccid}`;
 		const data = { mb_limit: mbLimit, action: 'reactivate' };
 		return this.put(uri, data, auth, context);
@@ -941,9 +947,9 @@ class Particle {
 	 * @param  {Array}  options.mbLimit     Data limit in megabyte for the SIM card
 	 * @param  {String} [options.product]  SIM cards for this product ID or slug
 	 * @param  {String} options.auth       Access Token
-	 * @return {Promise}
+	 * @returns {Promise} A promise
 	 */
-	updateSIM({ iccid, mbLimit, product, auth, context }) {
+	updateSIM({ iccid, mbLimit, product, auth, context }){
 		const uri = product ? `/v1/products/${product}/sims/${iccid}` : `/v1/sims/${iccid}`;
 		const data = { mb_limit: mbLimit };
 		return this.put(uri, data, auth, context);
@@ -955,9 +961,9 @@ class Particle {
 	 * @param  {String} options.iccid      ICCID of the SIM card
 	 * @param  {String} [options.product]  SIM cards for this product ID or slug
 	 * @param  {String} options.auth       Access Token
-	 * @return {Promise}
+	 * @returns {Promise} A promise
 	 */
-	removeSIM({ iccid, product, auth, context }) {
+	removeSIM({ iccid, product, auth, context }){
 		const uri = product ? `/v1/products/${product}/sims/${iccid}` : `/v1/sims/${iccid}`;
 		return this.delete(uri, undefined, auth, context);
 	}
@@ -967,11 +973,11 @@ class Particle {
 	 * @param  {Object} options Options for this API call
 	 * @param  {Boolean} [options.onlyFeatured=false] Only list featured build targets
 	 * @param  {String} options.auth       Access Token
-	 * @return {Promise}
+	 * @returns {Promise} A promise
 	 */
-	listBuildTargets({ onlyFeatured, auth, context }) {
+	listBuildTargets({ onlyFeatured, auth, context }){
 		let query;
-		if (onlyFeatured !== undefined) {
+		if (onlyFeatured !== undefined){
 			query = { featured: !!onlyFeatured };
 		}
 		return this.get('/v1/build_targets', auth, query, context);
@@ -997,9 +1003,9 @@ class Particle {
 	 * @param  {String} options.excludeScopes  list of scopes to exclude
 	 * @param  {String} options.category Category to filter
 	 * @param  {String} options.auth Access Token
-	 * @return {Promise}
+	 * @returns {Promise} A promise
 	 */
-	listLibraries({ page, limit, filter, sort, architectures, category, scope, excludeScopes, auth, context }) {
+	listLibraries({ page, limit, filter, sort, architectures, category, scope, excludeScopes, auth, context }){
 		return this.get('/v1/libraries', auth, {
 			page,
 			filter,
@@ -1012,7 +1018,7 @@ class Particle {
 		}, context);
 	}
 
-	_asList(value) {
+	_asList(value){
 		return (Array.isArray(value) ? value.join(',') : value);
 	}
 
@@ -1022,9 +1028,9 @@ class Particle {
 	 * @param  {String} options.name Name of the library to fetch
 	 * @param  {String} options.version Version of the library to fetch (default: latest)
 	 * @param  {String} options.auth Access Token
-	 * @return {Promise}
+	 * @returns {Promise} A promise
 	 */
-	getLibrary({ name, version, auth, context }) {
+	getLibrary({ name, version, auth, context }){
 		return this.get(`/v1/libraries/${name}`, auth, { version }, context);
 	}
 
@@ -1035,9 +1041,9 @@ class Particle {
 	 * @param  {Number} options.page Page index (default, first page)
 	 * @param  {Number} options.limit Number of items per page
 	 * @param  {String} options.auth Access Token
-	 * @return {Promise}
+	 * @returns {Promise} A promise
 	 */
-	getLibraryVersions({ name, page, limit, auth, context }) {
+	getLibraryVersions({ name, page, limit, auth, context }){
 		return this.get(`/v1/libraries/${name}/versions`, auth, {
 			page,
 			limit
@@ -1050,15 +1056,20 @@ class Particle {
 	 * @param  {String} options.archive Compressed archive file containing the library sources
 	 *                                  Either a path or Buffer of the file contents in Node, or a File or Blob in the browser.
 	 * @param  {String} options.auth Access Token
-	 * @return {Promise}
+	 * @returns {Promise} A promise
 	 */
-	contributeLibrary({ archive, auth, context }) {
+	contributeLibrary({ archive, auth, context }){
 		const files = {
 			'archive.tar.gz': archive
 		};
 
-		return this.request({ uri: '/v1/libraries',
-			files, auth, context, method: 'post' });
+		return this.request({
+			uri: '/v1/libraries',
+			method: 'post',
+			files,
+			auth,
+			context
+		});
 	}
 
 	/**
@@ -1066,11 +1077,16 @@ class Particle {
 	 * @param  {Object} options Options for this API call
 	 * @param  {String} options.name Name of the library to publish
 	 * @param  {String} options.auth Access Token
-	 * @return {Promise}
+	 * @returns {Promise} A promise
 	 */
-	publishLibrary({ name, auth, context }) {
-		return this.request({ uri: `/v1/libraries/${name}`,
-			auth, context, method: 'patch', data: { visibility: 'public' } });
+	publishLibrary({ name, auth, context }){
+		return this.request({
+			uri: `/v1/libraries/${name}`,
+			method: 'patch',
+			data: { visibility: 'public' },
+			auth,
+			context
+		});
 	}
 
 	/**
@@ -1079,9 +1095,9 @@ class Particle {
 	 * @param  {String} options.name Name of the library to remove
 	 * @param  {String} options.force Key to force deleting a public library
 	 * @param  {String} options.auth Access Token
-	 * @return {Promise}
+	 * @returns {Promise} A promise
 	 */
-	deleteLibrary({ name, force, auth, context }) {
+	deleteLibrary({ name, force, auth, context }){
 		return this.delete(`/v1/libraries/${name}`, { force }, auth, context);
 	}
 
@@ -1089,14 +1105,14 @@ class Particle {
 	 * Download an external file that may not be on the API
 	 * @param  {Object} options Options for this API call
 	 * @param  {String} options.url URL of the file.
-	 * @return {Promise} Resolves to a buffer with the file data
+	 * @returns {Promise} Resolves to a buffer with the file data
 	 */
-	downloadFile({ url }) {
+	downloadFile({ url }){
 		let req = request.get(url);
 		// Different API in Node and browser
-		if (!request.getXHR) {
+		if (!request.getXHR){
 			req = req.buffer(true).parse(binaryParser);
-		} else if (req.responseType) {
+		} else if (req.responseType){
 			req = req.responseType('arraybuffer').then(res => {
 				res.body = res.xhr.response;
 				return res;
@@ -1110,9 +1126,9 @@ class Particle {
 	 * @param  {Object} options Options for this API call
 	 * @param  {String} [options.product] List clients for this product ID or slug
 	 * @param  {String} options.auth Access Token
-	 * @return {Promise}
+	 * @returns {Promise} A promise
 	 */
-	listOAuthClients({ product, auth, context }) {
+	listOAuthClients({ product, auth, context }){
 		const uri = product ? `/v1/products/${product}/clients` : '/v1/clients';
 		return this.get(uri, auth, undefined, context);
 	}
@@ -1126,9 +1142,9 @@ class Particle {
 	 * @param  {Object} [options.scope]            Limits what the access tokens created by this client can do.
 	 * @param  {String} [options.product]          Create client for this product ID or slug
 	 * @param  {String} options.auth               Access Token
-	 * @return {Promise}
+	 * @returns {Promise} A promise
 	 */
-	createOAuthClient({ name, type, redirect_uri, scope, product, auth, context }) {
+	createOAuthClient({ name, type, redirect_uri, scope, product, auth, context }){
 		const uri = product ? `/v1/products/${product}/clients` : '/v1/clients';
 		const data = { name, type, redirect_uri, scope };
 		return this.post(uri, data, auth, context);
@@ -1142,9 +1158,9 @@ class Particle {
 	 * @param  {Object} [options.scope]            New scope of the OAuth client
 	 * @param  {String} [options.product]          Update client linked to this product ID or slug
 	 * @param  {String} options.auth               Access Token
-	 * @return {Promise}
+	 * @returns {Promise} A promise
 	 */
-	updateOAuthClient({ clientId, name, scope, product, auth, context }) {
+	updateOAuthClient({ clientId, name, scope, product, auth, context }){
 		const uri = product ? `/v1/products/${product}/clients/${clientId}` : `/v1/clients/${clientId}`;
 		const data = { name, scope };
 		return this.put(uri, data, auth, context);
@@ -1156,9 +1172,9 @@ class Particle {
 	 * @param  {String} options.clientId           The OAuth client to update
 	 * @param  {String} [options.product]          OAuth client linked to this product ID or slug
 	 * @param  {String} options.auth               Access Token
-	 * @return {Promise}
+	 * @returns {Promise} A promise
 	 */
-	deleteOAuthClient({ clientId, product, auth, context }) {
+	deleteOAuthClient({ clientId, product, auth, context }){
 		const uri = product ? `/v1/products/${product}/clients/${clientId}` : `/v1/clients/${clientId}`;
 		return this.delete(uri, undefined, auth, context);
 	}
@@ -1167,9 +1183,9 @@ class Particle {
 	 * List products the account has access to
 	 * @param  {Object} options Options for this API call
 	 * @param  {String} options.auth Access Token
-	 * @return {Promise}
+	 * @returns {Promise} A promise
 	 */
-	listProducts({ auth, context }) {
+	listProducts({ auth, context }){
 		return this.get('/v1/products', auth, undefined, context);
 	}
 
@@ -1178,9 +1194,9 @@ class Particle {
 	 * @param  {Object} options Options for this API call
 	 * @param  {String} options.product  Product ID or slug
 	 * @param  {String} options.auth     Access token
-	 * @return {Promise}
+	 * @returns {Promise} A promise
 	 */
-	getProduct({ product, auth, context }) {
+	getProduct({ product, auth, context }){
 		return this.get(`/v1/products/${product}`, auth, undefined, context);
 	}
 
@@ -1189,9 +1205,9 @@ class Particle {
 	 * @param  {Object} options Options for this API call
 	 * @param  {String} options.product Firmware for this product ID or slug
 	 * @param  {String} options.auth Access Token
-	 * @return {Promise}
+	 * @returns {Promise} A promise
 	 */
-	listProductFirmware({ product, auth, context }) {
+	listProductFirmware({ product, auth, context }){
 		return this.get(`/v1/products/${product}/firmware`, auth, undefined, context);
 	}
 
@@ -1205,9 +1221,9 @@ class Particle {
 	 * @param  {String} [options.description] Longer description for the new firmware
 	 * @param  {String} options.product Firmware for this product ID or slug
 	 * @param  {String} options.auth Access Token
-	 * @return {Promise}
+	 * @returns {Promise} A promise
 	 */
-	uploadProductFirmware({ file, version, title, description, product, auth, context }) {
+	uploadProductFirmware({ file, version, title, description, product, auth, context }){
 		return this.request({
 			uri: `/v1/products/${product}/firmware`,
 			method: 'post',
@@ -1230,9 +1246,9 @@ class Particle {
 	 * @param  {Number} options.version Version number of firmware
 	 * @param  {String} options.product Firmware for this product ID or slug
 	 * @param  {String} options.auth    Access token
-	 * @return {Promise}
+	 * @returns {Promise} A promise
 	 */
-	getProductFirmware({ version, product, auth, context }) {
+	getProductFirmware({ version, product, auth, context }){
 		return this.get(`/v1/products/${product}/firmware/${version}`, auth, undefined, context);
 	}
 
@@ -1244,9 +1260,9 @@ class Particle {
 	 * @param  {String} [options.description] New description
 	 * @param  {String} options.product Firmware for this product ID or slug
 	 * @param  {String} options.auth Access Token
-	 * @return {Promise}
+	 * @returns {Promise} A promise
 	 */
-	updateProductFirmware({ version, title, description, product, auth, context }) {
+	updateProductFirmware({ version, title, description, product, auth, context }){
 		const uri = `/v1/products/${product}/firmware/${version}`;
 		return this.put(uri, { title, description }, auth, context);
 	}
@@ -1257,9 +1273,9 @@ class Particle {
 	 * @param  {Number} options.version Version number of new firmware
 	 * @param  {String} options.product Firmware for this product ID or slug
 	 * @param  {String} options.auth    Access Token
-	 * @return {Request}
+	 * @returns {Request} A promise
 	 */
-	downloadProductFirmware({ version, product, auth, context }) {
+	downloadProductFirmware({ version, product, auth }){
 		const uri = `/v1/products/${product}/firmware/${version}/binary`;
 		const req = request('get', uri);
 		req.use(this.prefix);
@@ -1273,9 +1289,9 @@ class Particle {
 	 * @param  {Number} options.version Version number of new firmware
 	 * @param  {String} options.product Firmware for this product ID or slug
 	 * @param  {String} options.auth Access Token
-	 * @return {Promise}
+	 * @returns {Promise} A promise
 	 */
-	releaseProductFirmware({ version, product, auth, context }) {
+	releaseProductFirmware({ version, product, auth, context }){
 		const uri = `/v1/products/${product}/firmware/release`;
 		return this.put(uri, { version }, auth, context);
 	}
@@ -1285,9 +1301,9 @@ class Particle {
 	 * @param  {Object} options Options for this API call
 	 * @param  {String} options.product Team for this product ID or slug
 	 * @param  {String} options.auth Access Token
-	 * @return {Promise}
+	 * @returns {Promise} A promise
 	 */
-	listTeamMembers({ product, auth, context }) {
+	listTeamMembers({ product, auth, context }){
 		return this.get(`/v1/products/${product}/team`, auth, undefined, context);
 	}
 
@@ -1297,9 +1313,9 @@ class Particle {
 	 * @param  {String} options.username  Username for the Particle account
 	 * @param  {String} options.product Team for this product ID or slug
 	 * @param  {String} options.auth Access Token
-	 * @return {Promise}
+	 * @returns {Promise} A promise
 	 */
-	inviteTeamMember({ username, product, auth, context }) {
+	inviteTeamMember({ username, product, auth, context }){
 		return this.post(`/v1/products/${product}/team`, { username }, auth, context);
 	}
 
@@ -1309,9 +1325,9 @@ class Particle {
 	 * @param  {String} options.username  Username for the Particle account
 	 * @param  {String} options.product Team for this product ID or slug
 	 * @param  {String} options.auth Access Token
-	 * @return {Promise}
+	 * @returns {Promise} A promise
 	 */
-	removeTeamMember({ username, product, auth, context }) {
+	removeTeamMember({ username, product, auth, context }){
 		return this.delete(`/v1/products/${product}/team/${username}`, undefined, auth, context);
 	}
 
@@ -1320,9 +1336,9 @@ class Particle {
 	 * @param  {Object} options Options for this API call
 	 * @param  {String} options.serialNumber The serial number printed on the barcode of the device packaging
 	 * @param  {String} options.auth Access Token
-	 * @return {Promise}
+	 * @returns {Promise} A promise
 	 */
-	lookupSerialNumber({ serialNumber, auth, context }) {
+	lookupSerialNumber({ serialNumber, auth, context }){
 		return this.get(`/v1/serial_numbers/${serialNumber}`, auth, undefined, context);
 	}
 
@@ -1334,9 +1350,9 @@ class Particle {
 	 * @param {String} [options.iccid] ICCID of the active SIM card (only for cellular gateway devices)
 	 * @param {String} options.auth Access token
 	 * @param {Object} [options.context] Request context
-	 * @return {Promise<Object>}
+	 * @returns {Promise<Object>} A promise
 	 */
-	createMeshNetwork({ name, deviceId, iccid, auth, context }) {
+	createMeshNetwork({ name, deviceId, iccid, auth, context }){
 		return this.post('/v1/networks', { name, device_id: deviceId, iccid }, auth, context);
 	}
 
@@ -1346,9 +1362,9 @@ class Particle {
 	 * @param {String} options.networkId Network ID or name
 	 * @param {String} options.auth Access token
 	 * @param {Object} [options.context] Request context
-	 * @return {Promise<Object>}
+	 * @returns {Promise<Object>} A promise
 	 */
-	removeMeshNetwork({ networkId, auth, context }) {
+	removeMeshNetwork({ networkId, auth, context }){
 		return this.delete(`/v1/networks/${networkId}`, undefined, auth, context);
 	}
 
@@ -1359,9 +1375,9 @@ class Particle {
 	 * @param {Number} [options.page] Current page of results
 	 * @param {Number} [options.perPage] Records per page
 	 * @param {Object} [options.context] Request context
-	 * @return {Promise<Object>}
+	 * @returns {Promise<Object>} A promise
 	 */
-	listMeshNetworks({ auth, context, page, perPage }) {
+	listMeshNetworks({ auth, context, page, perPage }){
 		const query = page ? { page, per_page: perPage } : undefined;
 		return this.get('/v1/networks', auth, query, context);
 	}
@@ -1372,9 +1388,9 @@ class Particle {
 	 * @param {String} options.networkId Network ID or name
 	 * @param {String} options.auth Access token
 	 * @param {Object} [options.context] Request context
-	 * @return {Promise<Object>}
+	 * @returns {Promise<Object>} A promise
 	 */
-	getMeshNetwork({ networkId, auth, context }) {
+	getMeshNetwork({ networkId, auth, context }){
 		return this.get(`/v1/networks/${networkId}`, auth, undefined, context);
 	}
 
@@ -1386,9 +1402,9 @@ class Particle {
 	 * @param {String} options.deviceId Device ID
 	 * @param {String} options.auth Access token
 	 * @param {Object} [options.context] Request context
-	 * @return {Promise<Object>}
+	 * @returns {Promise<Object>} A promise
 	 */
-	updateMeshNetwork({ networkId, action, deviceId, auth, context }) {
+	updateMeshNetwork({ networkId, action, deviceId, auth, context }){
 		return this.put(`/v1/networks/${networkId}`, { action, device_id: deviceId }, auth, context);
 	}
 
@@ -1399,9 +1415,9 @@ class Particle {
 	 * @param {String} options.deviceId Device ID
 	 * @param {String} options.auth Access token
 	 * @param {Object} [options.context] Request context
-	 * @return {Promise<Object>}
+	 * @returns {Promise<Object>} A promise
 	 */
-	addMeshNetworkDevice({ networkId, deviceId, auth, context }) {
+	addMeshNetworkDevice({ networkId, deviceId, auth, context }){
 		return this.updateMeshNetwork({ action: 'add-device', networkId, deviceId, auth, context });
 	}
 
@@ -1412,10 +1428,10 @@ class Particle {
 	 * @param {String} options.deviceId Device ID
 	 * @param {String} options.auth Access token
 	 * @param {Object} [options.context] Request context
-	 * @return {Promise<Object>}
+	 * @returns {Promise<Object>} A promise
 	 */
-	removeMeshNetworkDevice({ networkId, deviceId, auth, context }) {
-		if (!networkId) {
+	removeMeshNetworkDevice({ networkId, deviceId, auth, context }){
+		if (!networkId){
 			return this.delete(`/v1/devices/${deviceId}/network`, undefined, auth, context);
 		}
 		return this.updateMeshNetwork({ action: 'remove-device', networkId, deviceId, auth, context });
@@ -1430,9 +1446,9 @@ class Particle {
 	 * @param {Number} [options.page] Current page of results
 	 * @param {Number} [options.perPage] Records per page
 	 * @param {Object} [options.context] Request context
-	 * @return {Promise<Object>}
+	 * @returns {Promise<Object>} A promise
 	 */
-	listMeshNetworkDevices({ networkId, auth, role, page, perPage, context }) {
+	listMeshNetworkDevices({ networkId, auth, role, page, perPage, context }){
 		const query = (role || page) ? { role, page, per_page: perPage } : undefined;
 		return this.get(`/v1/networks/${networkId}/devices`, auth, query, context);
 	}
@@ -1443,43 +1459,43 @@ class Particle {
 	 * @param  {String} options.deviceId  Device ID to access
 	 * @param  {String} [options.product] Device only in this product ID or slug
 	 * @private
-	 * @returns {string}
+	 * @returns {string} URI
 	 */
-	deviceUri({ deviceId, product }) {
+	deviceUri({ deviceId, product }){
 		return product ? `/v1/products/${product}/devices/${deviceId}` : `/v1/devices/${deviceId}`;
 	}
 
-	get(uri, auth, query, context) {
+	get(uri, auth, query, context){
 		context = this._buildContext(context);
 		return this.agent.get(uri, auth, query, context);
 	}
 
-	head(uri, auth, query, context) {
+	head(uri, auth, query, context){
 		context = this._buildContext(context);
 		return this.agent.head(uri, auth, query, context);
 	}
 
-	post(uri, data, auth, context) {
+	post(uri, data, auth, context){
 		context = this._buildContext(context);
 		return this.agent.post(uri, data, auth, context);
 	}
 
-	put(uri, data, auth, context) {
+	put(uri, data, auth, context){
 		context = this._buildContext(context);
 		return this.agent.put(uri, data, auth, context);
 	}
 
-	delete(uri, data, auth, context) {
+	delete(uri, data, auth, context){
 		context = this._buildContext(context);
 		return this.agent.delete(uri, data, auth, context);
 	}
 
-	request(args) {
+	request(args){
 		args.context = this._buildContext(args.context);
 		return this.agent.request(args);
 	}
 
-	client(options = {}) {
+	client(options = {}){
 		return new Client(Object.assign({ api: this }, options));
 	}
 }

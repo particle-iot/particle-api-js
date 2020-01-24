@@ -1,7 +1,9 @@
-import {expect} from './test-setup';
+import { expect } from './test-setup';
 import Library from '../src/Library';
 
 let client = {};
+
+
 describe('Library', () => {
 	describe('constructor', () => {
 		it('sets attributes', () => {
