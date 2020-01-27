@@ -350,14 +350,28 @@ describe('ParticleAPI', () => {
 			});
 		});
 		describe('.addDeviceToProduct', () => {
-			it('sends request', () => {
-				return api.addDeviceToProduct(propsWithProduct).then((results) => {
+			it('sends request to add a single device by id', () => {
+				const prodProps = Object.assign({}, propsWithProduct);
+				delete prodProps.file;
+				return api.addDeviceToProduct(prodProps).then((results) => {
 					results.should.match({
 						method: 'post',
 						uri: `/v1/products/${product}/devices`,
 						auth: props.auth,
 						data: {
 							id: props.deviceId
+						}
+					});
+				});
+			});
+			it('sends request to add multiple devices using a file', () => {
+				return api.addDeviceToProduct(propsWithProduct).then((results) => {
+					results.should.match({
+						method: 'post',
+						uri: `/v1/products/${product}/devices`,
+						auth: props.auth,
+						files: {
+							file: props.file,
 						}
 					});
 				});
