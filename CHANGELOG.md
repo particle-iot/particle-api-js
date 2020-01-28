@@ -1,5 +1,8 @@
 # changelog
 
+## 8.2.0 - 28 January 2020
+* `.addDeviceToProduct()` accepts `file` option to facillitate bulk importing of devices [PR #109](https://github.com/particle-iot/particle-api-js/pull/109)
+
 ## 8.1.0 - 24 January 2020
 * Add support for `groups` query parameter when listing product devices via `.listDevices()` [PR #108](https://github.com/particle-iot/particle-api-js/pull/108)
 * Update `eslint` and related configuration [PR #107](https://github.com/particle-iot/particle-api-js/pull/107)
