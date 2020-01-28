@@ -305,15 +305,29 @@ class Particle {
 	 * Add a device to a product or move device out of quarantine.
 	 * @param  {Object} options Options for this API call
 	 * @param  {String} options.deviceId Device ID
+	 * @param  {Object} options.file    A file that contains a single-column list of device IDs, device serial numbers, device IMEIs, or devie ICCIDs.
+	 *                                  Node: Either a path or Buffer. Browser: a File or Blob.
 	 * @param  {String} options.product  Add to this product ID or slug
 	 * @param  {String} options.auth     Access Token
 	 * @returns {Promise} A promise
 	 */
-	addDeviceToProduct({ deviceId, product, auth, context }){
-		const uri = `/v1/products/${product}/devices`;
-		return this.post(uri, {
-			id: deviceId
-		}, auth, context);
+	addDeviceToProduct({ deviceId, product, file, auth, context }){
+		let files, data;
+
+		if (file){
+			files = { file };
+		} else if (deviceId){
+			data = { id: deviceId };
+		}
+
+		return this.request({
+			uri: `/v1/products/${product}/devices`,
+			method: 'post',
+			data,
+			files,
+			auth,
+			context
+		});
 	}
 
 	/**
