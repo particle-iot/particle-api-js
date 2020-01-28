@@ -305,8 +305,8 @@ class Particle {
 	 * Add a device to a product or move device out of quarantine.
 	 * @param  {Object} options Options for this API call
 	 * @param  {String} options.deviceId Device ID
-	 * @param  {Object} options.file    Path to or Buffer of a single-column list of device IDs, device serial numbers, device IMEIs or device ICCIDs
-	 *                                  Either a path or Buffer of the file contents in Node, or a File or Blob in the browser.
+	 * @param  {Object} options.file    A file that contains a single-column list of device IDs, device serial numbers, device IMEIs, or devie ICCIDs.
+	 *                                  Node: Either a path or Buffer. Browser: a File or Blob.
 	 * @param  {String} options.product  Add to this product ID or slug
 	 * @param  {String} options.auth     Access Token
 	 * @returns {Promise} A promise
