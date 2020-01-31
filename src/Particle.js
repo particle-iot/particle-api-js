@@ -1,4 +1,3 @@
-import request from 'superagent';
 import binaryParser from './superagent-binary-parser';
 import Defaults from './Defaults';
 import EventStream from './EventStream';
@@ -588,11 +587,14 @@ class Particle {
 	 * @returns {Request} A promise
 	 */
 	downloadFirmwareBinary({ binaryId, auth }){
-		const uri = `/v1/binaries/${binaryId}`;
-		const req = request('get', uri);
-		req.use(this.prefix);
-		this.headers(req, auth);
-		return req;
+		let req = this.request({
+			uri: `/v1/binaries/${binaryId}`,
+			method: 'get',
+			raw: true,
+			auth
+		});
+
+		return this._provideFileData(req);
 	}
 
 	/**
@@ -1131,17 +1133,8 @@ class Particle {
 	 * @returns {Promise} Resolves to a buffer with the file data
 	 */
 	downloadFile({ url }){
-		let req = request.get(url);
-		// Different API in Node and browser
-		if (!request.getXHR){
-			req = req.buffer(true).parse(binaryParser);
-		} else if (req.responseType){
-			req = req.responseType('arraybuffer').then(res => {
-				res.body = res.xhr.response;
-				return res;
-			});
-		}
-		return req.then(res => res.body);
+		let req = this.request({ uri: url, method: 'get', raw: true });
+		return this._provideFileData(req);
 	}
 
 	/**
@@ -1299,11 +1292,26 @@ class Particle {
 	 * @returns {Request} A promise
 	 */
 	downloadProductFirmware({ version, product, auth }){
-		const uri = `/v1/products/${product}/firmware/${version}/binary`;
-		const req = request('get', uri);
-		req.use(this.prefix);
-		this.headers(req, auth);
-		return req;
+		let req = this.request({
+			uri: `/v1/products/${product}/firmware/${version}/binary`,
+			method: 'get',
+			raw: true,
+			auth
+		});
+
+		return this._provideFileData(req);
+	}
+
+	_provideFileData(req){
+		if (this.agent.isForBrowser()){
+			req = req.responseType('arraybuffer').then(res => {
+				res.body = res.xhr.response;
+				return res;
+			});
+		} else {
+			req = req.buffer(true).parse(binaryParser);
+		}
+		return req.then(res => res.body);
 	}
 
 	/**

@@ -29,6 +29,7 @@ const props = {
 	files: {
 		'app.ino': new Buffer('void(){}\nsetup(){}\n')
 	},
+	binaryId: '123456',
 	targetVersion: '0.4.7',
 	requestType: 'GET',
 	headers: {
@@ -709,6 +710,21 @@ describe('ParticleAPI', () => {
 					files.should.be.instanceOf(Object);
 					files.should.have.property('app.ino').and.be.ok;
 					form.build_target_version.should.equal(props.targetVersion);
+				});
+			});
+		});
+		describe('.downloadFirmwareBinary', () => {
+			it('generates request', () => {
+				sinon.stub(api, '_provideFileData').callsFake(x => Promise.resolve(x));
+				const req = api.downloadFirmwareBinary(propsWithProduct);
+				api._provideFileData.callCount.should.equal(1);
+				return req.then((results) => {
+					results.should.match({
+						uri: `/v1/binaries/${props.binaryId}`,
+						method: 'get',
+						auth: props.auth,
+						raw: true
+					});
 				});
 			});
 		});
@@ -1574,7 +1590,17 @@ describe('ParticleAPI', () => {
 				});
 			});
 		});
-
+		describe('.downloadFile', () => {
+			it('generates request', () => {
+				sinon.stub(api, '_provideFileData').callsFake(x => Promise.resolve(x));
+				const uri = 'http://example.com/path/to/file.png';
+				const req = api.downloadFile({ url: uri });
+				api._provideFileData.callCount.should.equal(1);
+				return req.then((results) => {
+					results.should.match({ uri, method: 'get', raw: true });
+				});
+			});
+		});
 		describe('.listOAuthClients', () => {
 			describe('user scope', () => {
 				it('generates request', () => {
@@ -1746,6 +1772,22 @@ describe('ParticleAPI', () => {
 							title: props.title,
 							description: props.description
 						}
+					});
+				});
+			});
+		});
+
+		describe('.downloadProductFirmware', () => {
+			it('generates request', () => {
+				sinon.stub(api, '_provideFileData').callsFake(x => Promise.resolve(x));
+				const req = api.downloadProductFirmware(propsWithProduct);
+				api._provideFileData.callCount.should.equal(1);
+				return req.then((results) => {
+					results.should.match({
+						uri: `/v1/products/${product}/firmware/${props.version}/binary`,
+						method: 'get',
+						auth: props.auth,
+						raw: true
 					});
 				});
 			});
