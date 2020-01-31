@@ -304,7 +304,8 @@ describe('Agent', () => {
 			query: 'all',
 			form:form,
 			files: sanitizedFiles,
-			context: undefined
+			context: undefined,
+			raw: false
 		});
 	});
 
@@ -323,7 +324,8 @@ describe('Agent', () => {
 			files: undefined,
 			form: undefined,
 			query: undefined,
-			context: undefined
+			context: undefined,
+			raw: false
 		});
 	});
 
