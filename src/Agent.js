@@ -59,9 +59,19 @@ export default class Agent {
 	 * @parma {Object} context       the invocation context, describing the tool and project.
 	 * @return {Promise} A promise. fulfilled with {body, statusCode}, rejected with { statusCode, errorDescription, error, body }
 	 */
-	request({ uri, method, data = undefined, auth, query = undefined, form = undefined, files = undefined, context = undefined }) {
+	request({
+		uri,
+		method,
+		data = undefined,
+		auth,
+		query = undefined,
+		form = undefined,
+		files = undefined,
+		context = undefined,
+		raw = false
+	}) {
 		const requestFiles = this._sanitizeFiles(files);
-		return this._request({ uri, method, data, auth, query, form, context, files: requestFiles });
+		return this._request({ uri, method, data, auth, query, form, context, files: requestFiles, raw });
 	}
 
 	/**
@@ -76,8 +86,12 @@ export default class Agent {
 	 * @param {Object} context       the invocation context
 	 * @return {Promise} A promise. fulfilled with {body, statusCode}, rejected with { statusCode, errorDescription, error, body }
 	 */
-	_request({ uri, method, data, auth, query, form, files, context }) {
+	_request({ uri, method, data, auth, query, form, files, context, raw }) {
 		const req = this._buildRequest({ uri, method, data, auth, query, form, context, files });
+
+		if (raw){
+			return req;
+		}
 		return this._promiseResponse(req);
 	}
 
@@ -123,7 +137,7 @@ export default class Agent {
 		});
 	}
 
-	_buildRequest({ uri, method, data, auth, query, form, files, context, makerequest=request }) {
+	_buildRequest({ uri, method, data, auth, query, form, files, context, makerequest = request }) {
 		const req = makerequest(method, uri);
 		if (this.prefix) {
 			req.use(this.prefix);
@@ -141,7 +155,7 @@ export default class Agent {
 				let options = {
 					filepath: file.path
 				};
-				if (this._inBrowser(makerequest)) {
+				if (this.isForBrowser(makerequest)) {
 					options = file.path;
 				}
 				req.attach(name, file.data, options);
@@ -160,7 +174,7 @@ export default class Agent {
 		return req;
 	}
 
-	_inBrowser(makerequest) {
+	isForBrowser(makerequest = request) {
 		// superagent only has the getXHR method in the browser version
 		return !!makerequest.getXHR;
 	}
