@@ -884,34 +884,51 @@ class Particle {
 
 	/**
 	 * Create a webhook
-	 * @param {Object} options                        Options for this API call
-	 * @param {String} options.deviceId               Trigger webhook only for this device ID or Name
-	 * @param {String} options.name                   Webhook name
-	 * @param {String} options.url                    URL the webhook should hit
-	 * @param {String} [options.requestType=POST]     HTTP method to use
-	 * @param {Object} [options.headers]              Additional headers to add to the webhook
-	 * @param {Object} [options.json]                 JSON data
-	 * @param {Object} [options.query]                Query string data
-	 * @param {String} [options.body]                 Custom webhook request body
-	 * @param {Object} [options.responseTemplate]     Webhook response template
-	 * @param {Object} [options.responseTopic]        Webhook response topic
-	 * @param {Boolean} [options.rejectUnauthorized]  Reject invalid HTTPS certificates
-	 * @param {Boolean} [options.noDefaults]          Don't include default event data in the webhook request
-	 * @param {Object} [options.webhookAuth]          HTTP Basic Auth information
-	 * @param {Object} [options.form]                 Form data
-	 * @param {String} [options.product]              Webhook for this product ID or slug
-	 * @param {String} options.auth                   Access Token
-	 * @param {Object} [options.context]              Request context
+	 * @param {Object} options                            Options for this API call
+	 * @param {String} options.event                      The name of the Particle event that should trigger the Webhook
+	 * @param {String} options.url                        The web address that will be targeted when the Webhook is triggered
+	 * @param {String} [options.device]                   Trigger Webhook only for this device ID or Name
+	 * @param {Boolean} [options.rejectUnauthorized]      Set to `false` to skip SSL certificate validation of the target URL
+	 * @param {Boolean} [options.noDefaults]              Don't include default event data in the webhook request
+	 * @param {Object} [options.hook]                     Webhook configuration settings
+	 * @param {String} [options.hook.method=POST]         Type of web request triggered by the Webhook (GET, POST, PUT, or DELETE)
+	 * @param {Object} [options.hook.auth]                Auth data like `{ username: 'me', password: '1234' }` to send via basic auth header with the Webhook request
+	 * @param {Object} [options.hook.headers]             Additional headers to add to the Webhook like `{ 'X-ONE': '1', X-TWO: '2' }`
+	 * @param {Object} [options.hook.query]               Query params to add to the Webhook request like `{ foo: 'foo', bar: 'bar' }`
+	 * @param {Object} [options.hook.json]                JSON data to send with the Webhook request - sets `Content-Type` to `application/json`
+	 * @param {Object} [options.hook.form]                Form data to send with the Webhook request - sets `Content-Type` to `application/x-www-form-urlencoded`
+	 * @param {String} [options.hook.body]                Custom body to send with the Webhook request
+	 * @param {Object} [options.hook.responseTemplate]    Template to use to customize the Webhook response body
+	 * @param {Object} [options.hook.responseEvent]       The Webhook response event name that your devices can subscribe to
+	 * @param {Object} [options.hook.errorResponseEvent]  The Webhook error response event name that your devices can subscribe to
+	 * @param {String} [options.product]                  Webhook for this product ID or slug
+	 * @param {String} options.auth                       Access Token
+	 * @param {Object} [options.headers]                  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {Object} [options.context]                  Request context
 	 * @returns {Promise} A promise
 	 */
-	createWebhook({ deviceId, name, url, requestType, headers, json, query, body, responseTemplate, responseTopic, rejectUnauthorized, webhookAuth, noDefaults, form, product, auth, context }){
-		// deviceId: 'mine' is deprecated since webhooks only trigger on your device anyways
-		if (deviceId === 'mine'){
-			deviceId = undefined;
-		}
+	createWebhook({ event, url, device, rejectUnauthorized, noDefaults, hook, product, auth, headers, context }){
 		const uri = product ? `/v1/products/${product}/webhooks` : '/v1/webhooks';
-		const data = { event: name, deviceid: deviceId, url, requestType, headers, json, query, body, responseTemplate, responseTopic, rejectUnauthorized, auth: webhookAuth, noDefaults, form };
-		return this.post({ uri, data, auth, context });
+		const data = { event, url, deviceId: device, rejectUnauthorized, noDefaults };
+
+		if (hook){
+			data.requestType = hook.method;
+			data.auth = hook.auth;
+			data.headers = hook.headers;
+			data.query = hook.query;
+			data.json = hook.json;
+			data.form = hook.form;
+			data.body = hook.body;
+			data.responseTemplate = hook.responseTemplate;
+			data.responseTopic = hook.responseEvent;
+			data.errorResponseTopic = hook.errorResponseEvent;
+		}
+
+		if (!data.requestType){
+			data.requestType = 'POST';
+		}
+
+		return this.post({ uri, auth, headers, data, context });
 	}
 
 	/**

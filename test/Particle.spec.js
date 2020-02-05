@@ -20,6 +20,7 @@ const props = {
 	name: 'specialName',
 	productId: '9001',
 	deviceId: '1337',
+	device: 'my-device',
 	key: 'c1a55e5',
 	event: 'main',
 	token: 'Y',
@@ -31,28 +32,35 @@ const props = {
 	},
 	binaryId: '123456',
 	targetVersion: '0.4.7',
-	requestType: 'GET',
 	headers: {
 		test: 'header'
 	},
-	query: {
-		q: 'p'
-	},
-	form: {
-		f: 'd'
-	},
-	json: {
-		j: 'd'
-	},
-	body: '{{data}}',
-	responseTopic: 'topic',
-	responseTemplate: 'template',
-	webhookAuth: {
-		username: 'u',
-		password: 'p'
-	},
 	rejectUnauthorized: true,
 	noDefaults: true,
+	hook: {
+		method: 'PUT',
+		auth: {
+			username: 'u',
+			password: 'p'
+		},
+		headers: {
+			one: '1',
+			two: '2'
+		},
+		query: {
+			q: 'p'
+		},
+		json: {
+			j: 'd'
+		},
+		form: {
+			f: 'd'
+		},
+		body: '{{data}}',
+		responseTemplate: 'template',
+		responseEvent: 'res-event',
+		errorResponseEvent: 'res-err-event'
+	},
 	hookId: 'hook-1234567890',
 	integrationId: 'integration-1234567890',
 	clientId: 'client-123',
@@ -991,50 +999,86 @@ describe('ParticleAPI', () => {
 				it('creates for a single device', () => {
 					return api.createWebhook(props).then((results) => {
 						results.should.match({
-							method: 'post',
 							uri: '/v1/webhooks',
+							method: 'post',
 							auth: props.auth,
+							headers: props.headers,
 							data: {
-								event: props.name,
+								event: props.event,
 								url: props.url,
-								deviceid: props.deviceId,
-								responseTemplate: props.responseTemplate,
-								responseTopic: props.responseTopic,
-								query: props.query,
-								form: props.form,
-								json: props.json,
-								headers: props.headers,
-								auth: props.webhookAuth,
-								requestType: props.requestType,
+								deviceId: props.device,
 								rejectUnauthorized: props.rejectUnauthorized,
-							}
+								noDefaults: props.noDefaults,
+								requestType: props.hook.method,
+								auth: props.hook.auth,
+								headers: props.hook.headers,
+								query: props.hook.query,
+								json: props.hook.json,
+								form: props.hook.form,
+								body: props.hook.body,
+								responseTemplate: props.hook.responseTemplate,
+								responseTopic: props.hook.responseEvent,
+								errorResponseTopic: props.hook.errorResponseEvent,
+							},
+							context: {}
 						});
 					});
 				});
 
 				it('creates for user\'s devices', () => {
-					const params = Object.assign({}, props, { deviceId: 'mine' });
+					const params = Object.assign({}, props);
+					delete params.device;
 					return api.createWebhook(params).then((results) => {
 						results.should.match({
-							method: 'post',
 							uri: '/v1/webhooks',
+							method: 'post',
 							auth: props.auth,
+							headers: props.headers,
 							data: {
-								event: props.name,
+								event: props.event,
 								url: props.url,
-								deviceid: undefined,
-								responseTemplate: props.responseTemplate,
-								responseTopic: props.responseTopic,
-								query: props.query,
-								form: props.form,
-								json: props.json,
-								body: props.body,
-								headers: props.headers,
-								auth: props.webhookAuth,
-								requestType: props.requestType,
+								deviceId: undefined,
 								rejectUnauthorized: props.rejectUnauthorized,
-								noDefaults: props.noDefaults
-							}
+								noDefaults: props.noDefaults,
+								requestType: props.hook.method,
+								auth: props.hook.auth,
+								headers: props.hook.headers,
+								query: props.hook.query,
+								json: props.hook.json,
+								form: props.hook.form,
+								body: props.hook.body,
+								responseTemplate: props.hook.responseTemplate,
+								responseTopic: props.hook.responseEvent,
+								errorResponseTopic: props.hook.errorResponseEvent,
+							},
+							context: {}
+						});
+					});
+				});
+
+				it('creates using defaults', () => {
+					const params = Object.assign({}, props);
+					delete params.device;
+					delete params.rejectUnauthorized;
+					delete params.noDefaults;
+					delete params.hook;
+					delete params.headers;
+					delete params.context;
+					return api.createWebhook(params).then((results) => {
+						results.should.match({
+							uri: '/v1/webhooks',
+							method: 'post',
+							auth: props.auth,
+							headers: undefined,
+							data: {
+								event: props.event,
+								url: props.url,
+								deviceId: undefined,
+								rejectUnauthorized: undefined,
+								noDefaults: undefined,
+								requestType: 'POST'
+							},
+							context: {}
 						});
 					});
 				});
@@ -1044,25 +1088,28 @@ describe('ParticleAPI', () => {
 				it('generates request', () => {
 					return api.createWebhook(propsWithProduct).then((results) => {
 						results.should.match({
-							method: 'post',
 							uri: `/v1/products/${product}/webhooks`,
+							method: 'post',
 							auth: props.auth,
+							headers: props.headers,
 							data: {
-								event: props.name,
+								event: props.event,
 								url: props.url,
-								deviceid: props.deviceId,
-								responseTemplate: props.responseTemplate,
-								responseTopic: props.responseTopic,
-								query: props.query,
-								form: props.form,
-								json: props.json,
-								body: props.body,
-								headers: props.headers,
-								auth: props.webhookAuth,
-								requestType: props.requestType,
+								deviceId: props.device,
 								rejectUnauthorized: props.rejectUnauthorized,
-								noDefaults: props.noDefaults
-							}
+								noDefaults: props.noDefaults,
+								requestType: props.hook.method,
+								auth: props.hook.auth,
+								headers: props.hook.headers,
+								query: props.hook.query,
+								json: props.hook.json,
+								form: props.hook.form,
+								body: props.hook.body,
+								responseTemplate: props.hook.responseTemplate,
+								responseTopic: props.hook.responseEvent,
+								errorResponseTopic: props.hook.errorResponseEvent,
+							},
+							context: {}
 						});
 					});
 				});
