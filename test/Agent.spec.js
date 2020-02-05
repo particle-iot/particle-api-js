@@ -5,14 +5,14 @@ import Agent from '../src/Agent.js';
 describe('Agent', () => {
 	describe('sanitize files', () => {
 		it('can call sanitize will falsy value', () => {
-			const sut = new Agent();
-			expect(sut._sanitizeFiles(undefined)).to.be.falsy;
+			const agent = new Agent();
+			expect(agent._sanitizeFiles(undefined)).to.be.falsy;
 		});
 
 		it('sanitizes file names', () => {
-			const sut = new Agent();
+			const agent = new Agent();
 			const original = { one: 'content1', two: 'content2' };
-			const actual = sut._sanitizeFiles(original);
+			const actual = agent._sanitizeFiles(original);
 			expect(actual).to.eql({
 				'file': {
 					'data': 'content1',
@@ -27,183 +27,284 @@ describe('Agent', () => {
 	});
 
 	describe('resource operations', () => {
-		let context;
+		let uri, method, auth, headers, query, data, context, agent;
 
 		beforeEach(() => {
+			uri = 'http://example.com/v1';
+			method = 'get';
+			auth = 'fake-token';
+			headers = { 'X-FOO': 'foo', 'X-BAR': 'bar' };
+			query = 'foo=1&bar=2';
+			data = { foo: true, bar: false };
 			context = { blah: {} };
+			agent = new Agent();
+			agent.request = sinon.stub();
+			agent.request.resolves('fake-response');
 		});
 
-		it('can get a resource', () => {
-			const sut = new Agent();
-			sut.request = sinon.stub();
-			sut.request.returns('123');
-			expect(sut.get('abcd', 'auth', 'query', context)).to.be.equal('123');
-			expect(sut.request).to.be.calledWith({ auth: 'auth', method: 'get', query: 'query', uri: 'abcd', context });
+		it('can GET a resource', () => {
+			return agent.get({ uri, auth, headers, query, context }).then(() => {
+				expect(agent.request).to.be.calledWith({ uri, method, auth, headers, query, context });
+			});
 		});
 
-		it('can head a resource', () => {
-			const sut = new Agent();
-			sut.request = sinon.stub();
-			sut.request.returns('123');
-			expect(sut.head('abcd', 'auth', 'query', context)).to.be.equal('123');
-			expect(sut.request).to.be.calledWith({ auth: 'auth', method: 'head', uri: 'abcd', query: 'query', context });
+		it('can HEAD a resource', () => {
+			method = 'head';
+			return agent.head({ uri, auth, headers, query, context }).then(() => {
+				expect(agent.request).to.be.calledWith({ uri, method, auth, headers, query, context });
+			});
 		});
 
-		it('can post a resource', () => {
-			const sut = new Agent();
-			sut.request = sinon.stub();
-			sut.request.returns('123');
-			expect(sut.post('abcd', 'data', 'auth', context)).to.be.equal('123');
-			expect(sut.request).to.be.calledWith({ auth: 'auth', method: 'post', data: 'data', uri: 'abcd', context });
+		it('can POST a resource', () => {
+			method = 'post';
+			return agent.post({ uri, auth, headers, data, context }).then(() => {
+				expect(agent.request).to.be.calledWith({ uri, method, auth, headers, data, context });
+			});
 		});
 
-		it('can put a resource', () => {
-			const sut = new Agent();
-			sut.request = sinon.stub();
-			sut.request.returns('123');
-			expect(sut.put('abcd', 'data', 'auth', context)).to.be.equal('123');
-			expect(sut.request).to.be.calledWith({ auth: 'auth', method: 'put', data:'data', uri: 'abcd', context });
+		it('can PUT a resource', () => {
+			method = 'put';
+			return agent.put({ uri, auth, headers, data, context }).then(() => {
+				expect(agent.request).to.be.calledWith({ uri, method, auth, headers, data, context });
+			});
 		});
 
-		it('can delete a resource', () => {
-			const sut = new Agent();
-			sut.request = sinon.stub();
-			sut.request.returns('123');
-			expect(sut.delete('abcd', 'data', 'auth', context)).to.be.equal('123');
-			expect(sut.request).to.be.calledWith({ auth: 'auth', method: 'delete', data:'data', uri: 'abcd', context });
+		it('can DELETE a resource', () => {
+			method = 'delete';
+			return agent.delete({ uri, auth, headers, data, context }).then(() => {
+				expect(agent.request).to.be.calledWith({ uri, method, auth, headers, data, context });
+			});
 		});
 	});
 
 	describe('authorize', () => {
+		let agent;
+
+		beforeEach(() => {
+			agent = new Agent();
+		});
+
 		it('authorize no auth is unchanged', () => {
-			const sut = new Agent();
-			expect(sut._authorizationHeader(undefined)).to.be.undefined;
+			expect(agent._authorizationHeader(undefined)).to.be.undefined;
 		});
 
 		it('authorize with credentials', () => {
-			const sut = new Agent();
 			const authfn = sinon.spy();
 			const req = { auth: authfn };
 			const auth = { username: 'me', password: 'pwd' };
-			expect(sut._authorizationHeader(req, auth)).to.be.equal(req);
+			expect(agent._authorizationHeader(req, auth)).to.be.equal(req);
 			expect(authfn).to.have.been.calledWith('me', 'pwd');
 		});
 
 		it('authorize with bearer', () => {
 			const auth = '123';
 			const bearer = 'Bearer 123';
-			const sut = new Agent();
 			const setfn = sinon.spy();
 			const req = { set: setfn };
-			expect(sut._authorizationHeader(req, auth)).to.be.equal(req);
+			expect(agent._authorizationHeader(req, auth)).to.be.equal(req);
 			expect(setfn).to.have.been.calledWith({ Authorization: bearer });
 		});
 	});
 
+	describe('request', () => {
+		let agent;
+
+		beforeEach(() => {
+			agent = new Agent();
+			agent._request = sinon.stub();
+			agent._request.resolves('fake-response');
+			agent._sanitizeFiles = sinon.stub();
+		});
+
+		it('sanitizes files from a request', () => {
+			const sanitizedFiles = { a:'a' };
+			const files = {};
+			const form = {};
+			agent._sanitizeFiles.returns(sanitizedFiles);
+
+			return agent.request({ uri: 'abc', method: 'post', data: '123', query: 'all', form, files })
+				.then((res) => {
+					expect(res).to.be.equal('fake-response');
+					expect(agent._sanitizeFiles).calledOnce.calledWith(sinon.match.same(files));
+					expect(agent._request).calledOnce.calledWith({
+						uri: 'abc',
+						method: 'post',
+						auth: undefined,
+						headers: undefined,
+						query: 'all',
+						data: '123',
+						files: sanitizedFiles,
+						context: undefined,
+						raw: false,
+						form
+					});
+				});
+		});
+
+		it('uses default arguments for request', () => {
+			return agent.request({ uri: 'abc', method:'post' })
+				.then((res) => {
+					expect(res).to.be.equal('fake-response');
+					expect(agent._request).calledOnce.calledWith({
+						uri: 'abc',
+						method:'post',
+						auth: undefined,
+						headers: undefined,
+						data: undefined,
+						files: undefined,
+						form: undefined,
+						query: undefined,
+						context: undefined,
+						raw: false
+					});
+				});
+		});
+
+		it('builds and sends the request', () => {
+			const agent = new Agent();
+			const options = {
+				uri: 'http://example.com/v1',
+				method: 'get',
+				auth: 'fake-token',
+				headers: { 'X-FOO': 'foo', 'X-BAR': 'bar' },
+				query: 'foo=1&bar=2',
+				data: { foo: true, bar: false },
+				files: undefined,
+				form: undefined,
+				context
+			};
+			agent._buildRequest = sinon.stub();
+			agent._buildRequest.returns('fake-request');
+			agent._promiseResponse = sinon.stub();
+			agent._promiseResponse.resolves('fake-response');
+
+			return agent._request(options).then((res) => {
+				expect(res).to.be.equal('fake-response');
+				expect(agent._buildRequest).calledOnce;
+				expect(agent._buildRequest).calledWith(options);
+				expect(agent._promiseResponse).calledOnce;
+				expect(agent._promiseResponse).calledWith('fake-request');
+			});
+		});
+
+		it('builds a promise to call _sendRequest from _promiseResponse', () => {
+			const agent = new Agent();
+			const req = sinon.stub();
+			const response = 'response';
+			const sendRequest = sinon.spy((req, fulfill) => {
+				fulfill(response);
+			});
+			agent._sendRequest = sendRequest;
+			const promise = agent._promiseResponse(req);
+			expect(promise).has.property('then');
+			return promise.then((response) => {
+				expect(sendRequest).calledOnce;
+				// how to verify that fulfill/reject arguments are correctly passed to the promised function?
+				//expect(sendRequest).calledWith(req, fulfill, reject);
+				expect(response).to.be.equal('response');
+			});
+		});
+	});
+
 	describe('build request', () => {
+		let agent;
+
+		beforeEach(() => {
+			agent = new Agent();
+		});
 
 		it('uses prefix if provided', () => {
-			const sut = new Agent();
-			sut.prefix = 'abc';
+			agent.prefix = 'abc';
 			const use = sinon.stub();
 			const req = sinon.stub();
 			req.returns({ use: use });
-			const result = sut._buildRequest({ uri: 'uri', method: 'get', makerequest: req });
+			const result = agent._buildRequest({ uri: 'uri', method: 'get', makerequest: req });
 			expect(result).to.be.ok;
 			expect(req).to.be.calledWith('get', 'uri');
 			expect(use).to.be.calledWith('abc');
 		});
 
 		it('does not call used if no prefix provided', () => {
-			const sut = new Agent();
 			const use = sinon.stub();
 			const req = sinon.stub();
 			req.returns({ use: use });
-			const result = sut._buildRequest({ uri: 'uri', method: 'get', makerequest: req });
+			const result = agent._buildRequest({ uri: 'uri', method: 'get', makerequest: req });
 			expect(result).to.be.ok;
 			expect(req).to.be.calledWith('get', 'uri');
 			expect(use).to.be.notCalled;
 		});
 
 		it('should invoke _applyContext with the request and context when provided', () => {
-			const sut = new Agent();
-			sut._applyContext = sinon.stub();
-			sut.prefix = undefined;
+			agent._applyContext = sinon.stub();
+			agent.prefix = undefined;
 			const request = {};
 			const context = { foo: {} };
 			const req = sinon.stub().returns(request);
-			sut._buildRequest({ uri: 'uri', method: 'get', context, makerequest: req });
-			expect(sut._applyContext).to.be.calledWith(sinon.match.same(request), sinon.match.same(context));
+			agent._buildRequest({ uri: 'uri', method: 'get', context, makerequest: req });
+			expect(agent._applyContext).to.be.calledWith(sinon.match.same(request), sinon.match.same(context));
 		});
 
 		it('should not invoke _applyContext when no context is provided', () => {
-			const sut = new Agent();
-			sut._applyContext = sinon.stub();
-			sut.prefix = undefined;
+			agent._applyContext = sinon.stub();
+			agent.prefix = undefined;
 			const request = {};
 			const req = sinon.stub().returns(request);
-			sut._buildRequest({ uri: 'uri', method: 'get', makerequest: req });
-			expect(sut._applyContext).to.not.be.called;
+			agent._buildRequest({ uri: 'uri', method: 'get', makerequest: req });
+			expect(agent._applyContext).to.not.be.called;
 		});
 
 
 		it('should invoke authorize with the request and auth', () => {
-			const sut = new Agent();
-			sut.prefix = undefined;
+			agent.prefix = undefined;
 			const request = {};
 			const req = sinon.stub();
 			req.returns(request);
 			const authorize = sinon.stub();
-			sut._authorizationHeader = authorize;
-			sut._buildRequest({ uri: 'uri', method: 'get', auth: '123', makerequest: req });
+			agent._authorizationHeader = authorize;
+			agent._buildRequest({ uri: 'uri', method: 'get', auth: '123', makerequest: req });
 			expect(authorize).to.be.calledWith(sinon.match.same(request), '123');
 		});
 
 		it('should invoke query with the given query', () => {
-			const sut = new Agent();
-			sut.prefix = undefined;
+			agent.prefix = undefined;
 			const query = sinon.stub();
 			const req = sinon.stub();
 			req.returns({ query: query, authorize: sinon.stub() });
-			sut._buildRequest({ uri: 'uri', method: 'get', query: '123', makerequest: req });
+			agent._buildRequest({ uri: 'uri', method: 'get', query: '123', makerequest: req });
 			expect(query).to.be.calledWith('123');
 		});
 
 		it('should not query when no query given', () => {
-			const sut = new Agent();
-			sut.prefix = undefined;
+			agent.prefix = undefined;
 			const query = sinon.stub();
 			const req = sinon.stub();
 			req.returns({ query: query, _authorizationHeader: sinon.stub() });
-			sut._buildRequest({ uri: 'uri', method: 'get', makerequest: req });
+			agent._buildRequest({ uri: 'uri', method: 'get', makerequest: req });
 			expect(query).to.be.notCalled;
 		});
 
 		it('should invoke send when data given', () => {
-			const sut = new Agent();
-			sut.prefix = undefined;
+			agent.prefix = undefined;
 			const req = sinon.stub();
 			const send = sinon.stub();
 			req.returns({ send: send });
-			sut._buildRequest({ uri: 'uri', method: 'get', data: 'abcd', makerequest: req });
+			agent._buildRequest({ uri: 'uri', method: 'get', data: 'abcd', makerequest: req });
 			expect(send).to.be.calledWith('abcd');
 		});
 
 		it('should setup form send when form data is given', () => {
-			const sut = new Agent();
-			sut.prefix = undefined;
+			agent.prefix = undefined;
 			const req = sinon.stub();
 			const send = sinon.stub();
 			const type = sinon.stub();
 			req.returns({ send: send, type: type });
-			sut._buildRequest({ uri: 'uri', method: 'get', form: 'abcd', makerequest: req });
+			agent._buildRequest({ uri: 'uri', method: 'get', form: 'abcd', makerequest: req });
 			expect(send).to.be.calledWith('abcd');
 			expect(type).to.be.calledWith('form');
 		});
 
 		it('should attach files', () => {
-			const sut = new Agent();
-			sut.prefix = undefined;
+			agent.prefix = undefined;
 			const req = sinon.stub();
 			const attach = sinon.stub();
 			req.returns({ attach: attach });
@@ -211,15 +312,14 @@ describe('Agent', () => {
 				file: { data: 'filedata', path: 'filepath' },
 				file2: { data: 'file2data', path: 'file2path' }
 			};
-			sut._buildRequest({ uri: 'uri', method: 'get', files: files, makerequest: req });
+			agent._buildRequest({ uri: 'uri', method: 'get', files: files, makerequest: req });
 			expect(attach.callCount).to.be.equal(2);
 			expect(attach).to.be.calledWith('file', 'filedata', { filepath: 'filepath' });
 			expect(attach).to.be.calledWith('file2', 'file2data', { filepath: 'file2path' });
 		});
 
 		it('should attach files and form data', () => {
-			const sut = new Agent();
-			sut.prefix = undefined;
+			agent.prefix = undefined;
 			const req = sinon.stub();
 			const attach = sinon.stub();
 			const field = sinon.stub();
@@ -232,7 +332,7 @@ describe('Agent', () => {
 				file2: { data: 'file2data', path: 'file2path' }
 			};
 			const form = { form1: 'value1', form2: 'value2' };
-			sut._buildRequest({ uri: 'uri', method: 'get', files: files, form: form, makerequest: req });
+			agent._buildRequest({ uri: 'uri', method: 'get', files: files, form: form, makerequest: req });
 			expect(attach.callCount).to.be.equal(2);
 			expect(attach).to.be.calledWith('file', 'filedata', { filepath: 'filepath' });
 			expect(attach).to.be.calledWith('file2', 'file2data', { filepath: 'file2path' });
@@ -242,23 +342,21 @@ describe('Agent', () => {
 		});
 
 		it('should handle nested dirs', () => {
-			const sut = new Agent();
 			const files = {
 				file: { data: makeFile('filedata'), path: 'filepath.ino' },
 				file2: { data: makeFile('file2data'), path: 'dir/file2path.cpp' }
 			};
-			const req = sut._buildRequest({ uri: 'uri', method: 'get', files: files });
+			const req = agent._buildRequest({ uri: 'uri', method: 'get', files: files });
 			expect(extractFilename(req._formData, 'file', 0)).to.eql('filepath.ino');
 			expect(extractFilename(req._formData, 'file2', 3)).to.eql('dir/file2path.cpp');
 		});
 
 		if (!inBrowser()){
 			it('should handle Windows nested dirs', () => {
-				const sut = new Agent();
 				const files = {
 					file: { data: makeFile('filedata'), path: 'dir\\windowsfilepath.cpp' }
 				};
-				const req = sut._buildRequest({ uri: 'uri', method: 'get', files: files });
+				const req = agent._buildRequest({ uri: 'uri', method: 'get', files: files });
 				expect(extractFilename(req._formData, 'file', 0)).to.eql('dir/windowsfilepath.cpp');
 			});
 		}
@@ -284,98 +382,7 @@ describe('Agent', () => {
 		}
 	});
 
-	it('sanitizes files from a request', () => {
-		const sut = new Agent();
-		sut._sanitizeFiles = sinon.stub();
-		sut._request = sinon.stub();
-		const sanitizedFiles = { a:'a' };
-		sut._sanitizeFiles.returns(sanitizedFiles);
-		sut._request.returns('request_result');
-		const files = {};
-		const form = {};
-		const result = sut.request({ uri: 'abc', method:'post', data:'123', query:'all', form:form, files:files });
-		expect(result).to.be.equal('request_result');
-		expect(sut._sanitizeFiles).calledOnce.calledWith(sinon.match.same(files));
-		expect(sut._request).calledOnce.calledWith({
-			uri: 'abc',
-			auth: undefined,
-			method: 'post',
-			data: '123',
-			query: 'all',
-			form:form,
-			files: sanitizedFiles,
-			context: undefined,
-			raw: false
-		});
-	});
-
-	it('uses default arguments for request', () => {
-		const sut = new Agent();
-		sut._sanitizeFiles = sinon.stub();
-		sut._request = sinon.stub();
-		sut._request.returns('123');
-		const result = sut.request({ uri: 'abc', method:'post' });
-		expect(result).to.equal('123');
-		expect(sut._request).calledOnce.calledWith({
-			uri: 'abc',
-			method:'post',
-			auth: undefined,
-			data: undefined,
-			files: undefined,
-			form: undefined,
-			query: undefined,
-			context: undefined,
-			raw: false
-		});
-	});
-
-	it('builds and sends the request', () => {
-		const sut = new Agent();
-		const buildRequest = sinon.stub();
-		const promiseResponse = sinon.stub();
-		sut._buildRequest = buildRequest;
-		sut._promiseResponse = promiseResponse;
-		buildRequest.returns('arequest');
-		promiseResponse.returns('promise');
-
-		const requestArgs = {
-			uri:'uri',
-			method:'method',
-			data:'data',
-			auth:'auth',
-			query: 'query',
-			form: 'form',
-			files: 'files',
-			context
-		};
-		const result = sut._request(requestArgs);
-		expect(result).to.be.equal('promise');
-		expect(buildRequest).calledWith(requestArgs);
-		expect(promiseResponse).calledWith('arequest');
-		expect(buildRequest).calledOnce;
-		expect(promiseResponse).calledOnce;
-	});
-
-	it('builds a promise to call _sendRequest from _promiseResponse', () => {
-		const sut = new Agent();
-		const req = sinon.stub();
-		const response = 'response';
-		const sendRequest = sinon.spy((req, fulfill) => {
-			fulfill(response);
-		});
-		sut._sendRequest = sendRequest;
-		const promise = sut._promiseResponse(req);
-		expect(promise).has.property('then');
-		return promise.then((response) => {
-			expect(sendRequest).calledOnce;
-			// how to verify that fulfill/reject arguments are correctly passed to the promised function?
-			//expect(sendRequest).calledWith(req, fulfill, reject);
-			expect(response).to.be.equal('response');
-		});
-	});
-
 	describe('_sendRequest', () => {
-
 		it('can retrieve a success response', () => {
 			const response = { body: 'abc', statusCode:200 };
 			const fulfill = sinon.stub();
@@ -388,8 +395,8 @@ describe('Agent', () => {
 			};
 			const end = sinon.spy(request, 'end');
 
-			const sut = new Agent();
-			const result = sut._sendRequest(request, fulfill, reject);
+			const agent = new Agent();
+			const result = agent._sendRequest(request, fulfill, reject);
 			expect(result).to.be.undefined;
 			expect(end).to.be.calledOnce;
 
@@ -448,8 +455,8 @@ describe('Agent', () => {
 				};
 				const end = sinon.spy(request, 'end');
 
-				const sut = new Agent();
-				const result = sut._sendRequest(request, fulfill, reject);
+				const agent = new Agent();
+				const result = agent._sendRequest(request, fulfill, reject);
 				expect(result).to.be.undefined;
 				expect(end).to.be.calledOnce;
 				expect(fulfill).to.not.be.called;
@@ -464,54 +471,56 @@ describe('Agent', () => {
 	});
 
 	describe('context', () => {
-		let sut;
+		let agent;
 
 		beforeEach(() => {
-			sut = new Agent();
+			agent = new Agent();
 		});
 
 		describe('_nameAtVersion', () => {
 			it('returns empty string when no name given', () => {
-				expect(sut._nameAtVersion('', '1.2.3')).to.eql('');
+				expect(agent._nameAtVersion('', '1.2.3')).to.eql('');
 			});
 
 			it('returns just the name when no version given', () => {
-				expect(sut._nameAtVersion('fred')).to.eql('fred');
+				expect(agent._nameAtVersion('fred')).to.eql('fred');
 			});
 
 			it('returns name@version when both are given', () => {
-				expect(sut._nameAtVersion('fred', '1.2.3')).to.eql('fred@1.2.3');
+				expect(agent._nameAtVersion('fred', '1.2.3')).to.eql('fred@1.2.3');
 			});
 		});
 
 		describe('_applyContext', () => {
 			let req;
+
 			beforeEach(() => {
 				req = { set: sinon.stub() };
 			});
+
 			it('applies the tool context when defined', () => {
 				const context = { tool: { name: 'spanner' } };
-				sut._applyContext(req, context);
+				agent._applyContext(req, context);
 				expect(req.set).to.have.been.calledOnce;
 				expect(req.set).to.have.been.calledWith('X-Particle-Tool', 'spanner');
 			});
 
 			it('does not apply the tool context when not defined',() => {
 				const context = { tool: { name2: 'spanner' } };
-				sut._applyContext(req, context);
+				agent._applyContext(req, context);
 				expect(req.set).to.have.not.been.called;
 			});
 
 			it('applies the project context when defined',() => {
 				const context = { project: { name: 'blinky' } };
-				sut._applyContext(req, context);
+				agent._applyContext(req, context);
 				expect(req.set).to.have.been.calledOnce;
 				expect(req.set).to.have.been.calledWith('X-Particle-Project', 'blinky');
 			});
 
 			it('does not apply the tool context when not defined',() => {
 				const context = { project: { name2: 'blinky' } };
-				sut._applyContext(req, context);
+				agent._applyContext(req, context);
 				expect(req.set).to.have.been.not.called;
 			});
 		});
@@ -520,14 +529,14 @@ describe('Agent', () => {
 			it('does not add a header when the tool name is not defined', () => {
 				const req = { set: sinon.stub() };
 				const tool = { noname: 'cli' };
-				sut._addToolContext(req, tool);
+				agent._addToolContext(req, tool);
 				expect(req.set).to.have.not.been.called;
 			});
 
 			it('adds a header when the tool is defined', () => {
 				const req = { set: sinon.stub() };
 				const tool = { name: 'cli' };
-				sut._addToolContext(req, tool);
+				agent._addToolContext(req, tool);
 				expect(req.set).to.have.been.calledWith('X-Particle-Tool', 'cli');
 			});
 
@@ -541,44 +550,44 @@ describe('Agent', () => {
 						{ name: 'foo', version: '0.0.1' }
 					]
 				};
-				sut._addToolContext(req, tool);
+				agent._addToolContext(req, tool);
 				expect(req.set).to.have.been.calledWith('X-Particle-Tool', 'cli@1.2.3, bar@a.b.c, foo@0.0.1');
 			});
-
 		});
 
 		describe('_addProjectContext', () => {
 			it('adds a header when the project is defined', () => {
 				const req = { set: sinon.stub() };
 				const project = { name: 'blinky' };
-				sut._addProjectContext(req, project);
+				agent._addProjectContext(req, project);
 				expect(req.set).to.have.been.calledWith('X-Particle-Project', 'blinky');
 			});
 
 			it('does not set the header when the project has no name', () => {
 				const req = { set: sinon.stub() };
 				const project = { noname: 'blinky' };
-				sut._addProjectContext(req, project);
+				agent._addProjectContext(req, project);
 				expect(req.set).to.have.not.been.called;
 			});
 		});
 
 		describe('_buildSemicolonSeparatedProperties', () => {
 			const obj = { name: 'fred', color: 'pink' };
+
 			it('returns empty string when no default property', () => {
-				expect(sut._buildSemicolonSeparatedProperties(obj)).to.be.eql('');
+				expect(agent._buildSemicolonSeparatedProperties(obj)).to.be.eql('');
 			});
 
 			it('returns empty string when default property does not exist', () => {
-				expect(sut._buildSemicolonSeparatedProperties(obj, 'job')).to.be.eql('');
+				expect(agent._buildSemicolonSeparatedProperties(obj, 'job')).to.be.eql('');
 			});
 
 			it('returns the default property only', () => {
-				expect(sut._buildSemicolonSeparatedProperties({ name:'fred' }, 'name')).eql('fred');
+				expect(agent._buildSemicolonSeparatedProperties({ name:'fred' }, 'name')).eql('fred');
 			});
 
 			it('returns the default property plus additional properties', () => {
-				expect(sut._buildSemicolonSeparatedProperties(obj, 'name')).eql('fred; color=pink');
+				expect(agent._buildSemicolonSeparatedProperties(obj, 'name')).eql('fred; color=pink');
 			});
 		});
 	});

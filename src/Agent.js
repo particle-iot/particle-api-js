@@ -21,29 +21,28 @@ import request from 'superagent';
 import prefix from 'superagent-prefix';
 
 export default class Agent {
-
-	constructor(baseUrl) {
+	constructor(baseUrl){
 		this.prefix = prefix(baseUrl);
 	}
 
-	get(uri, auth, query, context) {
-		return this.request({ uri, auth, method: 'get', query, context });
+	get({ uri, auth, headers, query, context }){
+		return this.request({ uri, method: 'get', auth, headers, query, context });
 	}
 
-	head(uri, auth, query, context) {
-		return this.request({ uri, auth, method: 'head', query, context });
+	head({ uri, auth, headers, query, context }){
+		return this.request({ uri, method: 'head', auth, headers, query, context });
 	}
 
-	post(uri, data, auth, context) {
-		return this.request({ uri, data, auth, method: 'post', context });
+	post({ uri, headers, data, auth, context }){
+		return this.request({ uri, method: 'post', auth, headers, data, context });
 	}
 
-	put(uri, data, auth, context) {
-		return this.request({ uri, data, auth, method: 'put', context });
+	put({ uri, auth, headers, data, context }){
+		return this.request({ uri, method: 'put', auth, headers, data, context });
 	}
 
-	delete(uri, data, auth, context) {
-		return this.request({ uri, data, auth, method: 'delete', context });
+	delete({ uri, auth, headers, data, context }){
+		return this.request({ uri, method: 'delete', auth, headers, data, context });
 	}
 
 
@@ -51,6 +50,7 @@ export default class Agent {
 	 *
 	 * @param {String} uri           The URI to request
 	 * @param {String} method        The method used to request the URI, should be in uppercase.
+	 * @param {Object} headers       Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {String} data          Arbitrary data to send as the body.
 	 * @param {Object} auth          Authorization
 	 * @param {String} query         Query parameters
@@ -62,6 +62,7 @@ export default class Agent {
 	request({
 		uri,
 		method,
+		headers = undefined,
 		data = undefined,
 		auth,
 		query = undefined,
@@ -69,15 +70,16 @@ export default class Agent {
 		files = undefined,
 		context = undefined,
 		raw = false
-	}) {
+	}){
 		const requestFiles = this._sanitizeFiles(files);
-		return this._request({ uri, method, data, auth, query, form, context, files: requestFiles, raw });
+		return this._request({ uri, method, headers, data, auth, query, form, context, files: requestFiles, raw });
 	}
 
 	/**
 	 *
 	 * @param {String} uri           The URI to request
 	 * @param {String} method        The method used to request the URI, should be in uppercase.
+	 * @param {Object} headers       Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {String} data          Arbitrary data to send as the body.
 	 * @param {Object} auth          Authorization
 	 * @param {String} query         Query parameters
@@ -86,8 +88,8 @@ export default class Agent {
 	 * @param {Object} context       the invocation context
 	 * @return {Promise} A promise. fulfilled with {body, statusCode}, rejected with { statusCode, errorDescription, error, body }
 	 */
-	_request({ uri, method, data, auth, query, form, files, context, raw }) {
-		const req = this._buildRequest({ uri, method, data, auth, query, form, context, files });
+	_request({ uri, method, headers, data, auth, query, form, files, context, raw }){
+		const req = this._buildRequest({ uri, method, headers, data, auth, query, form, context, files });
 
 		if (raw){
 			return req;
@@ -101,7 +103,7 @@ export default class Agent {
 	 * @returns {Promise}   The promise to send the request and retrieve the response.
 	 * @private
 	 */
-	_promiseResponse(req) {
+	_promiseResponse(req){
 		return new Promise((fulfill, reject) => this._sendRequest(req, fulfill, reject));
 	}
 
@@ -113,15 +115,15 @@ export default class Agent {
 	 * @private
 	 * @returns {undefined} Nothing
 	 */
-	_sendRequest(request, fulfill, reject) {
+	_sendRequest(request, fulfill, reject){
 		request.end((error, res) => {
 			const body = res && res.body;
-			if (error) {
+			if (error){
 				const uri = request.url;
 				const statusCode = error.status;
 				let errorDescription = `${statusCode ? 'HTTP error ' + statusCode : 'Network error'} from ${uri}`;
 				let shortErrorDescription;
-				if (body && body.error_description) {
+				if (body && body.error_description){
 					errorDescription += ' - ' + body.error_description;
 					shortErrorDescription = body.error_description;
 				}
@@ -137,90 +139,93 @@ export default class Agent {
 		});
 	}
 
-	_buildRequest({ uri, method, data, auth, query, form, files, context, makerequest = request }) {
+	_buildRequest({ uri, method, headers, data, auth, query, form, files, context, makerequest = request }){
 		const req = makerequest(method, uri);
-		if (this.prefix) {
+		if (this.prefix){
 			req.use(this.prefix);
 		}
 		this._authorizationHeader(req, auth);
-		if (context) {
+		if (context){
 			this._applyContext(req, context);
 		}
-		if (query) {
+		if (query){
 			req.query(query);
 		}
-		if (files) {
-			for (let [name, file] of Object.entries(files)) {
+		if (headers){
+			req.set(headers);
+		}
+		if (files){
+			for (let [name, file] of Object.entries(files)){
 				// API for Form Data is different in Node and in browser
 				let options = {
 					filepath: file.path
 				};
-				if (this.isForBrowser(makerequest)) {
+				if (this.isForBrowser(makerequest)){
 					options = file.path;
 				}
 				req.attach(name, file.data, options);
 			}
-			if (form) {
-				for (let [name, value] of Object.entries(form)) {
+			if (form){
+				for (let [name, value] of Object.entries(form)){
 					req.field(name, value);
 				}
 			}
-		} else if (form) {
+		} else if (form){
 			req.type('form');
 			req.send(form);
-		} else if (data) {
+		} else if (data){
 			req.send(data);
 		}
 		return req;
 	}
 
-	isForBrowser(makerequest = request) {
+	isForBrowser(makerequest = request){
 		// superagent only has the getXHR method in the browser version
 		return !!makerequest.getXHR;
 	}
 
-	_applyContext(req, context) {
-		if (context.tool) {
+	_applyContext(req, context){
+		if (context.tool){
 			this._addToolContext(req, context.tool);
 		}
-		if (context.project) {
+		if (context.project){
 			this._addProjectContext(req, context.project);
 		}
 	}
 
-	_addToolContext(req, tool) {
+	_addToolContext(req, tool){
 		let value = '';
-		if (tool.name) {
+		if (tool.name){
 			value += this._toolIdent(tool);
-			if (tool.components) {
-				for (let component of tool.components) {
+			if (tool.components){
+				for (let component of tool.components){
 					value += ', '+this._toolIdent(component);
 				}
 			}
 		}
-		if (value) {
+		if (value){
 			req.set('X-Particle-Tool', value);
 		}
 	}
 
-	_toolIdent(tool) {
+	_toolIdent(tool){
 		return this._nameAtVersion(tool.name, tool.version);
 	}
 
-	_nameAtVersion(name, version) {
+	_nameAtVersion(name, version){
 		let value = '';
-		if (name) {
+		if (name){
 			value += name;
-			if (version) {
+			if (version){
 				value += '@'+version;
 			}
 		}
 		return value;
 	}
 
-	_addProjectContext(req, project) {
+	_addProjectContext(req, project){
 		let value = this._buildSemicolonSeparatedProperties(project, 'name');
-		if (value) {
+		if (value){
 			req.set('X-Particle-Project', value);
 		}
 	}
@@ -233,12 +238,12 @@ export default class Agent {
 	 * @private
 	 * @return {string} The formatted string representing the object properties and the default property.
 	 */
-	_buildSemicolonSeparatedProperties(obj, primaryProperty) {
+	_buildSemicolonSeparatedProperties(obj, primaryProperty){
 		let value = '';
-		if (obj[primaryProperty]) {
+		if (obj[primaryProperty]){
 			value += obj[primaryProperty];
-			for (let prop in obj) {
-				if (prop!==primaryProperty && obj.hasOwnProperty(prop)) {
+			for (let prop in obj){
+				if (prop!==primaryProperty && obj.hasOwnProperty(prop)){
 					value += '; '+prop+'='+obj[prop];
 				}
 			}
@@ -253,9 +258,9 @@ export default class Agent {
 	 *  or a username/password object.
 	 * @returns {Request} req   The original request.
 	 */
-	_authorizationHeader(req, auth) {
-		if (auth) {
-			if (auth.username !== undefined) {
+	_authorizationHeader(req, auth){
+		if (auth){
+			if (auth.username !== undefined){
 				req.auth(auth.username, auth.password);
 			} else {
 				req.set({ Authorization: `Bearer ${auth}` });
@@ -269,9 +274,9 @@ export default class Agent {
 	 * @param {Array} files converts the file names to file, file1, file2.
 	 * @returns {object} the renamed files.
 	 */
-	_sanitizeFiles(files) {
+	_sanitizeFiles(files){
 		let requestFiles;
-		if (files) {
+		if (files){
 			requestFiles = {};
 			Object.keys(files).forEach((k, i) => {
 				const name = i ? `file${i + 1}` : 'file';
