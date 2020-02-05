@@ -1,5 +1,8 @@
 # changelog
 
+## 8.2.1 - 4 February 2020
+* fix file download methods `.downloadFile()`, `.downloadFirmwareBinary()`, and `.downloadProductFirmware()` [PR #112](https://github.com/particle-iot/particle-api-js/pull/112)
+
 ## 8.2.0 - 28 January 2020
 * `.addDeviceToProduct()` accepts `file` option to facillitate bulk importing of devices [PR #109](https://github.com/particle-iot/particle-api-js/pull/109)
 
