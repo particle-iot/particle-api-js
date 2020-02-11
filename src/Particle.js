@@ -222,6 +222,17 @@ class Particle {
 	}
 
 	/**
+	 * Delete the current user
+	 * @param {Object} options Options for this API call
+	 * @param {String} options.auth Access token
+	 * @param {String} options.password Password
+	 * @returns {Promise} A promise
+	 */
+	deleteUser({ auth, context, password }) {
+		return this.delete('/v1/user', { password }, auth, context);
+	}
+
+	/**
 	 * List all valid access tokens for a Particle Cloud account
 	 * @param  {Object} options Options for this API call
 	 * @param  {String} options.username Username

@@ -2021,6 +2021,20 @@ describe('ParticleAPI', () => {
 				});
 			});
 		});
+
+		describe('.deleteUser', () => {
+			it('sends request to delete the current user', () => {
+				return api.deleteUser(props).then(result => {
+					result.should.match({
+						context: {},
+						data: { password: props.password },
+						method: 'delete',
+						uri: '/v1/user',
+						auth: props.auth
+					});
+				});
+			});
+		});
 	});
 
 	describe('backwards-compatibility function aliases', () => {
