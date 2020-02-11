@@ -11,6 +11,8 @@ cache:
   directories:
   - node_modules
 sudo: false
+services:
+  - xvfb
 install:
 - npm -g install npm@5.10
 - npm install
