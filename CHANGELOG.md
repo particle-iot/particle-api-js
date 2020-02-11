@@ -1,5 +1,8 @@
 # changelog
 
+## 8.3.0 - 11 February 2020
+* Add delete user
+
 ## 8.2.1 - 4 February 2020
 * fix file download methods `.downloadFile()`, `.downloadFirmwareBinary()`, and `.downloadProductFirmware()` [PR #112](https://github.com/particle-iot/particle-api-js/pull/112)
 
