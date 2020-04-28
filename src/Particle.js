@@ -866,13 +866,18 @@ class Particle {
 	 * @param  {String} options.auth Access Token
 	 * @param  {String} options.currentPassword Current password
 	 * @param  {String} options.password New password
+	 * @param  {Boolean} options.invalidateTokens Should all tokens be invalidated
 	 * @returns {Promise} A promise
 	 */
-	changeUserPassword({ currentPassword, password, auth, context }){
+	changeUserPassword({ currentPassword, password, invalidateTokens=false, auth, context }){
 		const bodyObj = {
 			current_password: currentPassword,
 			password
 		};
+
+		if (invalidateTokens) {
+			bodyObj.invalidate_tokens = true;
+		}
 
 		return this.put('/v1/user', bodyObj, auth, context);
 	}

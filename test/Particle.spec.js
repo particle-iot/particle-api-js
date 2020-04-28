@@ -1224,6 +1224,22 @@ describe('ParticleAPI', () => {
 						});
 					});
 			});
+			it('allows invalidating tokens', () => {
+				return api.changeUserPassword({ auth: 'X', currentPassword: 'blabla', password: 'blabla2', invalidateTokens: true })
+					.then((results) => {
+						results.should.eql({
+							method: 'put',
+							uri: '/v1/user',
+							auth: 'X',
+							context: {},
+							data: {
+								current_password: 'blabla',
+								password: 'blabla2',
+								invalidate_tokens: true
+							}
+						});
+					});
+			});
 		});
 		describe('.listSIMs', () => {
 			describe('user scope', () => {
