@@ -1,5 +1,8 @@
 # changelog
 
+## 8.4.0 - 28 April 2020
+* Allow invalidating access tokens when changing password
+
 ## 8.3.0 - 11 February 2020
 * Add delete user
 
