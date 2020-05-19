@@ -1501,6 +1501,55 @@ class Particle {
 	}
 
 	/**
+	 * Get product configuration
+	 * @param  {Object} options Options for this API call
+	 * @param  {String} options.product Team for this product ID or slug
+	 * @param  {String} options.auth Access Token
+	 * @returns {Promise} A promise
+	 */
+	getProductConfiguration({ auth, product, context }){
+		return this.get(`/v1/products/${product}/config`, auth, undefined, context);
+	}
+
+	/**
+	 * Get product configuration schema
+	 * @param  {Object} options Options for this API call
+	 * @param  {String} options.product Team for this product ID or slug
+	 * @param  {String} options.auth Access Token
+	 * @returns {Promise} A promise
+	 */
+	getProductConfigurationSchema({ auth, product, context }){
+		return this.get(`/v1/products/${product}/config`, auth, undefined, context, {
+			'accept': 'application/schema+json'
+		});
+	}
+
+	/**
+	 * Set product configuration
+	 * @param  {Object} options Options for this API call
+	 * @param  {String} options.product Team for this product ID or slug
+	 * @param  {String} options.auth Access Token
+	 * @param  {Object} opitons.config Product configuration to update
+	 * @returns {Promise} A promise
+	 */
+	setProductConfiguration({ auth, product, context, config }){
+		return this.put(`/v1/products/${product}/config`, config, auth, context);
+	}
+
+	/**
+	 * Set product configuration for a specific device within the product
+	 * @param  {Object} options Options for this API call
+	 * @param  {String} options.product Team for this product ID or slug
+	 * @param  {String} options.auth Access Token
+	 * @param  {Object} opitons.config Product configuration to update
+	 * @param  {String} options.deviceId  Device ID to access
+	 * @returns {Promise} A promise
+	 */
+	setProductDeviceConfiguration({ auth, product, deviceId, context, config }){
+		return this.put(`/v1/products/${product}/config/${deviceId}`, config, auth, context);
+	}
+
+	/**
 	 * API URI to access a device
 	 * @param  {Object} options Options for this API call
 	 * @param  {String} options.deviceId  Device ID to access
@@ -1512,29 +1561,29 @@ class Particle {
 		return product ? `/v1/products/${product}/devices/${deviceId}` : `/v1/devices/${deviceId}`;
 	}
 
-	get(uri, auth, query, context){
+	get(uri, auth, query, context, headers){
 		context = this._buildContext(context);
-		return this.agent.get(uri, auth, query, context);
+		return this.agent.get(uri, auth, query, context, headers);
 	}
 
-	head(uri, auth, query, context){
+	head(uri, auth, query, context, headers){
 		context = this._buildContext(context);
-		return this.agent.head(uri, auth, query, context);
+		return this.agent.head(uri, auth, query, context, headers);
 	}
 
-	post(uri, data, auth, context){
+	post(uri, data, auth, context, headers){
 		context = this._buildContext(context);
-		return this.agent.post(uri, data, auth, context);
+		return this.agent.post(uri, data, auth, context, headers);
 	}
 
-	put(uri, data, auth, context){
+	put(uri, data, auth, context, headers){
 		context = this._buildContext(context);
-		return this.agent.put(uri, data, auth, context);
+		return this.agent.put(uri, data, auth, context, headers);
 	}
 
-	delete(uri, data, auth, context){
+	delete(uri, data, auth, context, headers){
 		context = this._buildContext(context);
-		return this.agent.delete(uri, data, auth, context);
+		return this.agent.delete(uri, data, auth, context, headers);
 	}
 
 	request(args){

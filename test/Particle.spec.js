@@ -2031,6 +2031,67 @@ describe('ParticleAPI', () => {
 			});
 		});
 
+		describe('.getProductConfiguration', () => {
+			it('generates request', () => {
+				return api.getProductConfiguration(propsWithProduct).then((results) => {
+					results.should.match({
+						method: 'get',
+						uri: `/v1/products/${product}/config`,
+						auth: props.auth
+					});
+				});
+			});
+		});
+
+		describe('.getProductConfigurationSchema', () => {
+			it('generates request', () => {
+				return api.getProductConfigurationSchema(propsWithProduct).then((results) => {
+					results.should.match({
+						method: 'get',
+						uri: `/v1/products/${product}/config`,
+						auth: props.auth,
+						headers: { 'accept': 'application/schema+json' }
+					});
+				});
+			});
+		});
+
+		describe('.setProductConfiguration', () => {
+			it('generates request', () => {
+				const p = Object.assign({ config: {
+					foo: 'bar'
+				} }, propsWithProduct);
+				return api.setProductConfiguration(p).then((results) => {
+					results.should.match({
+						method: 'put',
+						uri: `/v1/products/${product}/config`,
+						auth: props.auth,
+						data: {
+							foo: 'bar'
+						}
+					});
+				});
+			});
+		});
+
+		describe('.setProductDeviceConfiguration', () => {
+			it('generates request', () => {
+				const p = Object.assign({ config: {
+					foo: 'bar'
+				} }, propsWithProduct);
+				return api.setProductDeviceConfiguration(p).then((results) => {
+					results.should.match({
+						method: 'put',
+						uri: `/v1/products/${product}/config/${props.deviceId}`,
+						auth: props.auth,
+						data: {
+							foo: 'bar'
+						}
+					});
+				});
+			});
+		});
+
 		describe('.deleteUser', () => {
 			it('sends request to delete the current user', () => {
 				return api.deleteUser(props).then(result => {
