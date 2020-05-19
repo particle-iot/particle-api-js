@@ -1550,6 +1550,53 @@ class Particle {
 	}
 
 	/**
+	 * Query location for devices within a product
+	 * @param  {Object} options Options for this API call
+	 * @param  {String} options.product Team for this product ID or slug
+	 * @param  {String} options.auth Access Token
+	 * @param  {String} options.dateRange Start and end date in ISO8601 format, separated by comma, to query
+	 * @param  {String} options.rectBl Bottom left of the rectangular bounding box to query. Latitude and longitude separated by comma
+	 * @param  {String} options.rectTr Top right of the rectangular bounding box to query. Latitude and longitude separated by comma
+	 * @param  {String} options.deviceId Device ID prefix to include in the query
+	 * @param  {String} options.deviceName Device name prefix to include in the query
+	 * @param  {String} options.groups Array of group names to include in the query
+	 * @param  {String} options.page Page of results to display. Defaults to 1
+	 * @param  {String} options.perPage Number of results per page. Defaults to 20. Maximum of 100
+	 * @returns {Promise} A promise
+	 */
+	getProductLocations({ auth, product, context, dateRange, rectBl, rectTr, deviceId, deviceName, groups, page, perPage }){
+		return this.get(`/v1/products/${product}/locations`, auth, {
+			date_range: dateRange,
+			rect_bl: rectBl,
+			rect_tr: rectTr,
+			device_id: deviceId,
+			device_name: deviceName,
+			groups,
+			page,
+			per_page: perPage
+		}, context);
+	}
+
+	/**
+	 * Query location for one device within a product
+	 * @param  {Object} options Options for this API call
+	 * @param  {String} options.product Team for this product ID or slug
+	 * @param  {String} options.auth Access Token
+	 * @param  {String} options.dateRange Start and end date in ISO8601 format, separated by comma, to query
+	 * @param  {String} options.rectBl Bottom left of the rectangular bounding box to query. Latitude and longitude separated by comma
+	 * @param  {String} options.rectTr Top right of the rectangular bounding box to query. Latitude and longitude separated by comma
+	 * @param  {String} options.deviceId Device ID to query
+	 * @returns {Promise} A promise
+	 */
+	getProductDeviceLocations({ auth, product, context, dateRange, rectBl, rectTr, deviceId }){
+		return this.get(`/v1/products/${product}/locations/${deviceId}`, auth, {
+			date_range: dateRange,
+			rect_bl: rectBl,
+			rect_tr: rectTr
+		}, context);
+	}
+
+	/**
 	 * API URI to access a device
 	 * @param  {Object} options Options for this API call
 	 * @param  {String} options.deviceId  Device ID to access
