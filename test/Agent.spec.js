@@ -27,7 +27,7 @@ describe('Agent', () => {
 	});
 
 	describe('resource operations', () => {
-		let context;
+		let context, headers;
 
 		beforeEach(() => {
 			context = { blah: {} };
@@ -38,7 +38,7 @@ describe('Agent', () => {
 			sut.request = sinon.stub();
 			sut.request.returns('123');
 			expect(sut.get('abcd', 'auth', 'query', context)).to.be.equal('123');
-			expect(sut.request).to.be.calledWith({ auth: 'auth', method: 'get', query: 'query', uri: 'abcd', context });
+			expect(sut.request).to.be.calledWith({ auth: 'auth', method: 'get', query: 'query', uri: 'abcd', context, headers });
 		});
 
 		it('can head a resource', () => {
@@ -46,7 +46,7 @@ describe('Agent', () => {
 			sut.request = sinon.stub();
 			sut.request.returns('123');
 			expect(sut.head('abcd', 'auth', 'query', context)).to.be.equal('123');
-			expect(sut.request).to.be.calledWith({ auth: 'auth', method: 'head', uri: 'abcd', query: 'query', context });
+			expect(sut.request).to.be.calledWith({ auth: 'auth', method: 'head', uri: 'abcd', query: 'query', context, headers });
 		});
 
 		it('can post a resource', () => {
@@ -54,7 +54,7 @@ describe('Agent', () => {
 			sut.request = sinon.stub();
 			sut.request.returns('123');
 			expect(sut.post('abcd', 'data', 'auth', context)).to.be.equal('123');
-			expect(sut.request).to.be.calledWith({ auth: 'auth', method: 'post', data: 'data', uri: 'abcd', context });
+			expect(sut.request).to.be.calledWith({ auth: 'auth', method: 'post', data: 'data', uri: 'abcd', context, headers });
 		});
 
 		it('can put a resource', () => {
@@ -62,7 +62,7 @@ describe('Agent', () => {
 			sut.request = sinon.stub();
 			sut.request.returns('123');
 			expect(sut.put('abcd', 'data', 'auth', context)).to.be.equal('123');
-			expect(sut.request).to.be.calledWith({ auth: 'auth', method: 'put', data:'data', uri: 'abcd', context });
+			expect(sut.request).to.be.calledWith({ auth: 'auth', method: 'put', data:'data', uri: 'abcd', context, headers });
 		});
 
 		it('can delete a resource', () => {
@@ -70,7 +70,7 @@ describe('Agent', () => {
 			sut.request = sinon.stub();
 			sut.request.returns('123');
 			expect(sut.delete('abcd', 'data', 'auth', context)).to.be.equal('123');
-			expect(sut.request).to.be.calledWith({ auth: 'auth', method: 'delete', data:'data', uri: 'abcd', context });
+			expect(sut.request).to.be.calledWith({ auth: 'auth', method: 'delete', data:'data', uri: 'abcd', context, headers });
 		});
 	});
 
@@ -252,6 +252,17 @@ describe('Agent', () => {
 			expect(extractFilename(req._formData, 'file2', 3)).to.eql('dir/file2path.cpp');
 		});
 
+		it('should set headers', () => {
+			const sut = new Agent();
+			const headers = {
+				'foo': 'bar',
+				'baz': 1
+			};
+			const req = sut._buildRequest({ uri: 'uri', method: 'get', headers });
+			expect(req.header.foo).to.eql(headers.foo);
+			expect(req.header.baz).to.eql(headers.baz);
+		});
+
 		if (!inBrowser()){
 			it('should handle Windows nested dirs', () => {
 				const sut = new Agent();
@@ -299,6 +310,7 @@ describe('Agent', () => {
 		expect(sut._request).calledOnce.calledWith({
 			uri: 'abc',
 			auth: undefined,
+			headers: {},
 			method: 'post',
 			data: '123',
 			query: 'all',
@@ -320,6 +332,7 @@ describe('Agent', () => {
 			uri: 'abc',
 			method:'post',
 			auth: undefined,
+			headers: {},
 			data: undefined,
 			files: undefined,
 			form: undefined,
@@ -345,6 +358,7 @@ describe('Agent', () => {
 			auth:'auth',
 			query: 'query',
 			form: 'form',
+			headers: undefined,
 			files: 'files',
 			context
 		};

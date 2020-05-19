@@ -172,12 +172,10 @@ describe('ParticleAPI', () => {
 		describe('.enableMfa', () => {
 			it('sends request to begin mfa enrollment', () => {
 				return api.enableMfa(props).then((results) => {
-					results.should.eql({
+					results.should.match({
 						method: 'get',
 						uri: '/v1/user/mfa-enable',
-						auth: props.auth,
-						query: undefined,
-						context: {}
+						auth: props.auth
 					});
 				});
 			});
@@ -185,15 +183,14 @@ describe('ParticleAPI', () => {
 		describe('.confirmMfa', () => {
 			it('sends request to confirm mfa enrollment', () => {
 				return api.confirmMfa(props).then((results) => {
-					results.should.eql({
+					results.should.match({
 						method: 'post',
 						uri: '/v1/user/mfa-enable',
 						auth: props.auth,
 						data: {
 							otp: props.otp,
 							mfa_token: props.mfaToken
-						},
-						context: {}
+						}
 					});
 				});
 			});
@@ -201,14 +198,13 @@ describe('ParticleAPI', () => {
 		describe('.disableMfa', () => {
 			it('sends request to disable mfa', () => {
 				return api.disableMfa(props).then((results) => {
-					results.should.eql({
+					results.should.match({
 						method: 'put',
 						uri: '/v1/user/mfa-disable',
 						auth: props.auth,
 						data: {
 							current_password: props.password,
-						},
-						context: {},
+						}
 					});
 				});
 			});
@@ -230,11 +226,10 @@ describe('ParticleAPI', () => {
 		describe('.createUser', () => {
 			it('sends credentials', () => {
 				return api.createUser(props).then(( results ) => {
-					results.should.eql({
+					results.should.match({
 						method: 'post',
 						uri: '/v1/users',
 						auth: undefined,
-						context: {},
 						data: {
 							username: props.username,
 							password: props.password,
@@ -1186,7 +1181,8 @@ describe('ParticleAPI', () => {
 							context: {},
 							data: {
 								account_info: { first_name: 'John', last_name: 'Scully' }
-							}
+							},
+							headers: undefined
 						});
 					});
 			});
@@ -1195,11 +1191,10 @@ describe('ParticleAPI', () => {
 			it('generates request', () => {
 				return api.changeUsername({ auth: 'X', currentPassword: 'blabla', username: 'john@skul.ly' })
 					.then((results) => {
-						results.should.eql({
+						results.should.match({
 							method: 'put',
 							uri: '/v1/user',
 							auth: 'X',
-							context: {},
 							data: {
 								current_password: 'blabla',
 								username: 'john@skul.ly'
@@ -1212,11 +1207,10 @@ describe('ParticleAPI', () => {
 			it('generates request', () => {
 				return api.changeUserPassword({ auth: 'X', currentPassword: 'blabla', password: 'blabla2' })
 					.then((results) => {
-						results.should.eql({
+						results.should.match({
 							method: 'put',
 							uri: '/v1/user',
 							auth: 'X',
-							context: {},
 							data: {
 								current_password: 'blabla',
 								password: 'blabla2'
@@ -1227,11 +1221,10 @@ describe('ParticleAPI', () => {
 			it('allows invalidating tokens', () => {
 				return api.changeUserPassword({ auth: 'X', currentPassword: 'blabla', password: 'blabla2', invalidateTokens: true })
 					.then((results) => {
-						results.should.eql({
+						results.should.match({
 							method: 'put',
 							uri: '/v1/user',
 							auth: 'X',
-							context: {},
 							data: {
 								current_password: 'blabla',
 								password: 'blabla2',

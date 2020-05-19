@@ -26,24 +26,24 @@ export default class Agent {
 		this.prefix = prefix(baseUrl);
 	}
 
-	get(uri, auth, query, context) {
-		return this.request({ uri, auth, method: 'get', query, context });
+	get(uri, auth, query, context, headers) {
+		return this.request({ uri, auth, method: 'get', query, context, headers });
 	}
 
-	head(uri, auth, query, context) {
-		return this.request({ uri, auth, method: 'head', query, context });
+	head(uri, auth, query, context, headers) {
+		return this.request({ uri, auth, method: 'head', query, context, headers });
 	}
 
-	post(uri, data, auth, context) {
-		return this.request({ uri, data, auth, method: 'post', context });
+	post(uri, data, auth, context, headers) {
+		return this.request({ uri, data, auth, method: 'post', context, headers });
 	}
 
-	put(uri, data, auth, context) {
-		return this.request({ uri, data, auth, method: 'put', context });
+	put(uri, data, auth, context, headers) {
+		return this.request({ uri, data, auth, method: 'put', context, headers });
 	}
 
-	delete(uri, data, auth, context) {
-		return this.request({ uri, data, auth, method: 'delete', context });
+	delete(uri, data, auth, context, headers) {
+		return this.request({ uri, data, auth, method: 'delete', context, headers });
 	}
 
 
@@ -56,7 +56,8 @@ export default class Agent {
 	 * @param {String} query         Query parameters
 	 * @param {Object} form          Form fields
 	 * @param {Object} files         array of file names and file content
-	 * @parma {Object} context       the invocation context, describing the tool and project.
+	 * @param {Object} context       the invocation context, describing the tool and project.
+	 * @param {Object} headers       request headers to set
 	 * @return {Promise} A promise. fulfilled with {body, statusCode}, rejected with { statusCode, errorDescription, error, body }
 	 */
 	request({
@@ -68,10 +69,11 @@ export default class Agent {
 		form = undefined,
 		files = undefined,
 		context = undefined,
-		raw = false
+		raw = false,
+		headers = {}
 	}) {
 		const requestFiles = this._sanitizeFiles(files);
-		return this._request({ uri, method, data, auth, query, form, context, files: requestFiles, raw });
+		return this._request({ uri, method, data, auth, query, form, context, files: requestFiles, raw, headers });
 	}
 
 	/**
@@ -84,10 +86,11 @@ export default class Agent {
 	 * @param {Object} form          Form fields
 	 * @param {Object} files         array of file names and file content
 	 * @param {Object} context       the invocation context
+	 * @param {Object} headers       Request headers to set
 	 * @return {Promise} A promise. fulfilled with {body, statusCode}, rejected with { statusCode, errorDescription, error, body }
 	 */
-	_request({ uri, method, data, auth, query, form, files, context, raw }) {
-		const req = this._buildRequest({ uri, method, data, auth, query, form, context, files });
+	_request({ uri, method, data, auth, query, form, files, context, raw, headers }) {
+		const req = this._buildRequest({ uri, method, data, auth, query, form, context, files, headers });
 
 		if (raw){
 			return req;
@@ -137,7 +140,7 @@ export default class Agent {
 		});
 	}
 
-	_buildRequest({ uri, method, data, auth, query, form, files, context, makerequest = request }) {
+	_buildRequest({ uri, method, data, auth, query, form, files, context, headers={}, makerequest = request }) {
 		const req = makerequest(method, uri);
 		if (this.prefix) {
 			req.use(this.prefix);
@@ -145,6 +148,11 @@ export default class Agent {
 		this._authorizationHeader(req, auth);
 		if (context) {
 			this._applyContext(req, context);
+		}
+		if (Object.keys(headers).length) {
+			for (const key of Object.keys(headers)) {
+				req.set(key, headers[key]);
+			}
 		}
 		if (query) {
 			req.query(query);

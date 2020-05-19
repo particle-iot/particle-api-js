@@ -1,22 +1,22 @@
 export default class FakeAgent {
-	get(uri, auth, query = undefined, context) {
-		return this.request({ method: 'get', uri, auth, query, context });
+	get(uri, auth, query = undefined, context, headers) {
+		return this.request({ method: 'get', uri, auth, query, context, headers });
 	}
 
-	head(uri, auth, query, context) {
-		return this.request({ method: 'head', uri, auth, query, context });
+	head(uri, auth, query, context, headers) {
+		return this.request({ method: 'head', uri, auth, query, context, headers });
 	}
 
-	post(uri, data, auth, context) {
-		return this.request({ method: 'post', uri, data, auth, context });
+	post(uri, data, auth, context, headers) {
+		return this.request({ method: 'post', uri, data, auth, context, headers });
 	}
 
-	put(uri, data, auth, context) {
-		return this.request({ method: 'put', uri, data, auth, context });
+	put(uri, data, auth, context, headers) {
+		return this.request({ method: 'put', uri, data, auth, context, headers });
 	}
 
-	delete(uri, data, auth, context) {
-		return this.request({ method: 'delete', uri, data, auth, context });
+	delete(uri, data, auth, context, headers) {
+		return this.request({ method: 'delete', uri, data, auth, context, headers });
 	}
 
 	request(opts) {
