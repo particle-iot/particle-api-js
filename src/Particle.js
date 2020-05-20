@@ -1964,6 +1964,71 @@ class Particle {
 	}
 
 	/**
+	 * Query location for devices within a product
+	 * @param  {Object} options            Options for this API call
+	 * @param  {String} options.product    Locations for this product ID or slug
+	 * @param  {String} options.auth       Access Token
+	 * @param  {String} options.dateRange  Start and end date in ISO8601 format, separated by comma, to query
+	 * @param  {String} options.rectBl     Bottom left of the rectangular bounding box to query. Latitude and longitude separated by comma
+	 * @param  {String} options.rectTr     Top right of the rectangular bounding box to query. Latitude and longitude separated by comma
+	 * @param  {String} options.deviceId   Device ID prefix to include in the query
+	 * @param  {String} options.deviceName Device name prefix to include in the query
+	 * @param  {String} options.groups     Array of group names to include in the query
+	 * @param  {String} options.page       Page of results to display. Defaults to 1
+	 * @param  {String} options.perPage    Number of results per page. Defaults to 20. Maximum of 100
+	 * @param {Object} [options.headers]   Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {Object} [options.context]   Request context
+	 * @returns {Promise} A promise
+	 */
+	getProductLocations({ auth, product, dateRange, rectBl, rectTr, deviceId, deviceName, groups, page, perPage, headers, context }){
+		return this.get({
+			uri: `/v1/products/${product}/locations`,
+			query: {
+				date_range: dateRange,
+				rect_bl: rectBl,
+				rect_tr: rectTr,
+				device_id: deviceId,
+				device_name: deviceName,
+				groups,
+				page,
+				per_page: perPage
+			},
+			auth,
+			headers,
+			context
+		});
+	}
+
+	/**
+	 * Query location for one device within a product
+	 * @param  {Object} options           Options for this API call
+	 * @param  {String} options.product   Locations for this product ID or slug
+	 * @param  {String} options.auth      Access Token
+	 * @param  {String} options.dateRange Start and end date in ISO8601 format, separated by comma, to query
+	 * @param  {String} options.rectBl    Bottom left of the rectangular bounding box to query. Latitude and longitude separated by comma
+	 * @param  {String} options.rectTr    Top right of the rectangular bounding box to query. Latitude and longitude separated by comma
+	 * @param  {String} options.deviceId  Device ID to query
+	 * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {Object} [options.context]  Request context
+	 * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {Object} [options.context]  Request context
+	 * @returns {Promise} A promise
+	 */
+	getProductDeviceLocations({ auth, product, dateRange, rectBl, rectTr, deviceId, headers, context }){
+		return this.get({
+			uri: `/v1/products/${product}/locations/${deviceId}`,
+			query: {
+				date_range: dateRange,
+				rect_bl: rectBl,
+				rect_tr: rectTr
+			},
+			auth,
+			headers,
+			context
+		});
+	}
+
+	/**
 	 * API URI to access a device
 	 * @param  {Object} options Options for this API call
 	 * @param  {String} options.deviceId  Device ID to access
