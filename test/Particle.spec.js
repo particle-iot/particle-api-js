@@ -92,7 +92,10 @@ const props = {
 	otp: '123456',
 	mfaToken: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
 	networkId: '65535',
-	groups: ['foo', 'bar']
+	groups: ['foo', 'bar'],
+	dateRange: '2020-05-15T18:29:45.000Z,2020-05-19T18:29:45.000Z',
+	rectBl: '56.185412,-4.049868',
+	rectTr: '56.571537,-5.385920'
 };
 
 const product = 'ze-product-v1';
@@ -2307,6 +2310,106 @@ describe('ParticleAPI', () => {
 							role: p.role,
 							page: p.page,
 							per_page: p.perPage
+						}
+					});
+				});
+			});
+		});
+
+		describe('.getProductConfiguration', () => {
+			it('generates request', () => {
+				return api.getProductConfiguration(propsWithProduct).then((results) => {
+					results.should.match({
+						method: 'get',
+						uri: `/v1/products/${product}/config`,
+						auth: props.auth
+					});
+				});
+			});
+		});
+
+		describe('.getProductConfigurationSchema', () => {
+			it('generates request', () => {
+				return api.getProductConfigurationSchema(propsWithProduct).then((results) => {
+					results.should.match({
+						method: 'get',
+						uri: `/v1/products/${product}/config`,
+						auth: props.auth,
+						headers: { 'accept': 'application/schema+json' }
+					});
+				});
+			});
+		});
+
+		describe('.setProductConfiguration', () => {
+			it('generates request', () => {
+				const p = Object.assign({ config: {
+					foo: 'bar'
+				} }, propsWithProduct);
+				return api.setProductConfiguration(p).then((results) => {
+					results.should.match({
+						method: 'put',
+						uri: `/v1/products/${product}/config`,
+						auth: props.auth,
+						data: {
+							foo: 'bar'
+						}
+					});
+				});
+			});
+		});
+
+		describe('.setProductDeviceConfiguration', () => {
+			it('generates request', () => {
+				const p = Object.assign({ config: {
+					foo: 'bar'
+				} }, propsWithProduct);
+				return api.setProductDeviceConfiguration(p).then((results) => {
+					results.should.match({
+						method: 'put',
+						uri: `/v1/products/${product}/config/${props.deviceId}`,
+						auth: props.auth,
+						data: {
+							foo: 'bar'
+						}
+					});
+				});
+			});
+		});
+
+		describe('.getProductLocations', () => {
+			it('generates request', () => {
+				return api.getProductLocations(propsWithProduct).then((results) => {
+					results.should.match({
+						method: 'get',
+						uri: `/v1/products/${product}/locations`,
+						auth: props.auth,
+						query: {
+							date_range: props.dateRange,
+							rect_bl: props.rectBl,
+							rect_tr: props.rectTr,
+							device_id: props.deviceId,
+							device_name: props.deviceName,
+							groups: props.groups,
+							page: props.page,
+							per_page: props.perPage
+						}
+					});
+				});
+			});
+		});
+
+		describe('.getProductDeviceLocations', () => {
+			it('generates request', () => {
+				return api.getProductDeviceLocations(propsWithProduct).then((results) => {
+					results.should.match({
+						method: 'get',
+						uri: `/v1/products/${product}/locations/${props.deviceId}`,
+						auth: props.auth,
+						query: {
+							date_range: props.dateRange,
+							rect_bl: props.rectBl,
+							rect_tr: props.rectTr
 						}
 					});
 				});
