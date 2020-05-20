@@ -1,5 +1,8 @@
 # changelog
 
+## 9.0.0 - 20 May 2020
+* Add support for configuration and location services
+
 ## 8.4.0 - 28 April 2020
 * Allow invalidating access tokens when changing password
 
