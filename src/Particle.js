@@ -1886,6 +1886,84 @@ class Particle {
 	}
 
 	/**
+	 * Get product configuration
+	 * @param  {Object} options          Options for this API call
+	 * @param  {String} options.product  Config for this product ID or slug
+	 * @param  {String} options.auth     Access Token
+	 * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {Object} [options.context] Request context
+	 * @returns {Promise} A promise
+	 */
+	getProductConfiguration({ auth, product, headers, context }){
+		return this.get({
+			uri: `/v1/products/${product}/config`,
+			auth,
+			headers,
+			context
+		});
+	}
+
+	/**
+	 * Get product configuration schema
+	 * @param  {Object} options          Options for this API call
+	 * @param  {String} options.product  Config for this product ID or slug
+	 * @param  {String} options.auth     Access Token
+	 * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {Object} [options.context] Request context
+	 * @returns {Promise} A promise
+	 */
+	getProductConfigurationSchema({ auth, product, headers = {}, context }){
+		headers.accept = 'application/schema+json';
+		return this.get({
+			uri: `/v1/products/${product}/config`,
+			auth,
+			headers,
+			context
+		});
+	}
+
+	/**
+	 * Set product configuration
+	 * @param  {Object} options          Options for this API call
+	 * @param  {String} options.product  Config for this product ID or slug
+	 * @param  {String} options.auth     Access Token
+	 * @param  {Object} opitons.config   Product configuration to update
+	 * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {Object} [options.context] Request context
+	 * @returns {Promise} A promise
+	 */
+	setProductConfiguration({ auth, product, config, headers, context }){
+		return this.put({
+			uri: `/v1/products/${product}/config`,
+			auth,
+			data: config,
+			headers,
+			context
+		});
+	}
+
+	/**
+	 * Set product configuration for a specific device within the product
+	 * @param  {Object} options          Options for this API call
+	 * @param  {String} options.product  Config for this product ID or slug
+	 * @param  {String} options.auth     Access Token
+	 * @param  {Object} opitons.config   Product configuration to update
+	 * @param  {String} options.deviceId Device ID to access
+	 * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {Object} [options.context] Request context
+	 * @returns {Promise} A promise
+	 */
+	setProductDeviceConfiguration({ auth, product, deviceId, config, headers, context }){
+		return this.put({
+			uri: `/v1/products/${product}/config/${deviceId}`,
+			data: config,
+			auth,
+			headers,
+			context
+		});
+	}
+
+	/**
 	 * API URI to access a device
 	 * @param  {Object} options Options for this API call
 	 * @param  {String} options.deviceId  Device ID to access
