@@ -1923,6 +1923,45 @@ class Particle {
 	}
 
 	/**
+	 * Get product device's configuration
+	 * @param  {Object} options          Options for this API call
+	 * @param  {String} options.product  Config for this product ID or slug
+	 * @param  {String} options.auth     Access Token
+	 * @param  {String} options.deviceId Device ID to access
+	 * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {Object} [options.context] Request context
+	 * @returns {Promise} A promise
+	 */
+	getProductDeviceConfiguration({ auth, product, deviceId, headers, context }){
+		return this.get({
+			uri: `/v1/products/${product}/config/${deviceId}`,
+			auth,
+			headers,
+			context
+		});
+	}
+
+	/**
+	 * Get product device's configuration schema
+	 * @param  {Object} options          Options for this API call
+	 * @param  {String} options.product  Config for this product ID or slug
+	 * @param  {String} options.auth     Access Token
+	 * @param  {String} options.deviceId Device ID to access
+	 * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {Object} [options.context] Request context
+	 * @returns {Promise} A promise
+	 */
+	getProductDeviceConfigurationSchema({ auth, product, deviceId, headers = {}, context }){
+		headers.accept = 'application/schema+json';
+		return this.get({
+			uri: `/v1/products/${product}/config/${deviceId}`,
+			auth,
+			headers,
+			context
+		});
+	}
+
+	/**
 	 * Set product configuration
 	 * @param  {Object} options          Options for this API call
 	 * @param  {String} options.product  Config for this product ID or slug
