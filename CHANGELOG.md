@@ -1,5 +1,8 @@
 # changelog
 
+## 9.0.1 - 1 June 2020
+* Add `.getProductDeviceConfiguration()` and `.getProductDeviceConfigurationSchema()` methods
+
 ## 9.0.0 - 20 May 2020
 * Add support for configuration and location services
 
