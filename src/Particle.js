@@ -1951,7 +1951,7 @@ class Particle {
 	 * @param {Object} [options.context] Request context
 	 * @returns {Promise} A promise
 	 */
-	getProductDeviceConfigurationSchema({ auth, product, deviceId, headers = {}, context }){
+	getProductDeviceConfigurationSchema({ auth, product, deviceId, headers, context }){
 		headers.accept = 'application/schema+json';
 		return this.get({
 			uri: `/v1/products/${product}/config/${deviceId}`,
