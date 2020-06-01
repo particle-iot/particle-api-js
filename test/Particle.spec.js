@@ -2341,6 +2341,31 @@ describe('ParticleAPI', () => {
 			});
 		});
 
+		describe('.getProductDeviceConfiguration', () => {
+			it('generates request', () => {
+				return api.getProductDeviceConfiguration(propsWithProduct).then((results) => {
+					results.should.match({
+						method: 'get',
+						uri: `/v1/products/${product}/config/${props.deviceId}`,
+						auth: props.auth
+					});
+				});
+			});
+		});
+
+		describe('.getProductDeviceConfigurationSchema', () => {
+			it('generates request', () => {
+				return api.getProductDeviceConfigurationSchema(propsWithProduct).then((results) => {
+					results.should.match({
+						method: 'get',
+						uri: `/v1/products/${product}/config/${props.deviceId}`,
+						auth: props.auth,
+						headers: { 'accept': 'application/schema+json' }
+					});
+				});
+			});
+		});
+
 		describe('.setProductConfiguration', () => {
 			it('generates request', () => {
 				const p = Object.assign({ config: {
