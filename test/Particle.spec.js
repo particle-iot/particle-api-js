@@ -322,6 +322,18 @@ describe('ParticleAPI', () => {
 			});
 		});
 
+		describe('.deleteActiveAccessTokens', () => {
+			it('sends request', () => {
+				return api.deleteActiveAccessTokens(props).then((results) => {
+					results.should.match({
+						method: 'delete',
+						uri: '/v1/access_tokens',
+						auth: props.auth,
+					});
+				});
+			});
+		});
+
 		describe('.listAccessTokens', () => {
 			it('sends credentials', () => {
 				return api.listAccessTokens(props).then(({ auth }) => {

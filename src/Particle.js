@@ -305,6 +305,23 @@ class Particle {
 	}
 
 	/**
+	 * Revoke all active access tokens
+	 * @param {Object} options            Options for this API call
+	 * @param {String} options.auth       Access Token
+	 * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {Object} [options.context]  Request context
+	 * @returns {Promise} A promise
+	 */
+	deleteActiveAccessTokens({ auth, headers, context }){
+		return this.delete({
+			uri: '/v1/access_tokens',
+			auth,
+			headers,
+			context
+		});
+	}
+
+	/**
 	 * Delete the current user
 	 * @param {Object} options            Options for this API call
 	 * @param {String} options.auth       Access Token
