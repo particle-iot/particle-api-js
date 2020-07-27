@@ -1065,12 +1065,18 @@ class Particle {
 	 * @param {String} options.auth             Access Token
 	 * @param {String} options.currentPassword  Current password
 	 * @param {String} options.username         New email
+	 * @param {Boolean} options.invalidateTokens Should all tokens be invalidated
 	 * @param {Object} [options.headers]        Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context]        Request context
 	 * @returns {Promise} A promise
 	 */
-	changeUsername({ currentPassword, username, auth, headers, context }){
+	changeUsername({ currentPassword, username, invalidateTokens = false, auth, headers, context }){
 		const data = { username, current_password: currentPassword };
+
+		if (invalidateTokens) {
+			data.invalidate_tokens = true;
+		}
+
 		return this.put({ uri: '/v1/user', auth, headers, data, context });
 	}
 

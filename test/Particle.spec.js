@@ -1356,6 +1356,23 @@ describe('ParticleAPI', () => {
 						});
 					});
 			});
+			it('allows invalidating tokens', () => {
+				return api.changeUsername({ auth: 'X', currentPassword: 'blabla', username: 'john@skul.ly', invalidateTokens: true })
+					.then((results) => {
+						results.should.eql({
+							uri: '/v1/user',
+							method: 'put',
+							auth: 'X',
+							headers: undefined,
+							data: {
+								current_password: 'blabla',
+								username: 'john@skul.ly',
+								invalidate_tokens: true
+							},
+							context: {}
+						});
+					});
+			});
 		});
 
 		describe('.changeUserPassword', () => {
