@@ -218,6 +218,22 @@ describe('ParticleAPI', () => {
 					});
 				});
 			});
+			it('allows invalidating tokens', () => {
+				return api.confirmMfa(Object.assign({ invalidateTokens: true }, props)).then((results) => {
+					results.should.eql({
+						uri: '/v1/user/mfa-enable',
+						method: 'post',
+						auth: props.auth,
+						headers: props.headers,
+						data: {
+							otp: props.otp,
+							mfa_token: props.mfaToken,
+							invalidate_tokens: true
+						},
+						context: {}
+					});
+				});
+			});
 		});
 
 		describe('.disableMfa', () => {

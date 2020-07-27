@@ -123,16 +123,23 @@ class Particle {
 	 * @param {Object} options.auth       Access token
 	 * @param {Object} options.mfaToken   Token given from previous step to
 	 * @param {Object} options.otp        Current one-time-password generated from the authentication app
+	 * @param {Boolean} options.invalidateTokens Should all tokens be invalidated
 	 * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context]  Request context
 	 * @returns {Promise} A promise
 	 */
-	confirmMfa({ mfaToken, otp, auth, headers, context }){
+	confirmMfa({ mfaToken, otp, invalidateTokens = false, auth, headers, context }){
+		let data =  { mfa_token: mfaToken, otp };
+
+		if (invalidateTokens) {
+			data.invalidate_tokens = true;
+		}
+
 		return this.post({
 			uri: '/v1/user/mfa-enable',
 			auth,
 			headers,
-			data: { mfa_token: mfaToken, otp },
+			data,
 			context
 		});
 	}
