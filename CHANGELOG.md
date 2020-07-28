@@ -1,5 +1,9 @@
 # changelog
 
+## 9.0.2 - 28 July 2020
+* Add `.deleteActiveAccessTokens()` method
+* Add `invalidateTokens` arguments to `.confirmMfa()` and `.changeUsername()` methods
+
 ## 9.0.1 - 1 June 2020
 * Add `.getProductDeviceConfiguration()` and `.getProductDeviceConfigurationSchema()` methods
 
