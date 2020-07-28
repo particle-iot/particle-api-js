@@ -123,16 +123,23 @@ class Particle {
 	 * @param {Object} options.auth       Access token
 	 * @param {Object} options.mfaToken   Token given from previous step to
 	 * @param {Object} options.otp        Current one-time-password generated from the authentication app
+	 * @param {Boolean} options.invalidateTokens Should all tokens be invalidated
 	 * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context]  Request context
 	 * @returns {Promise} A promise
 	 */
-	confirmMfa({ mfaToken, otp, auth, headers, context }){
+	confirmMfa({ mfaToken, otp, invalidateTokens = false, auth, headers, context }){
+		let data =  { mfa_token: mfaToken, otp };
+
+		if (invalidateTokens) {
+			data.invalidate_tokens = true;
+		}
+
 		return this.post({
 			uri: '/v1/user/mfa-enable',
 			auth,
 			headers,
-			data: { mfa_token: mfaToken, otp },
+			data,
 			context
 		});
 	}
@@ -291,6 +298,23 @@ class Particle {
 	deleteCurrentAccessToken({ auth, headers, context }){
 		return this.delete({
 			uri: '/v1/access_tokens/current',
+			auth,
+			headers,
+			context
+		});
+	}
+
+	/**
+	 * Revoke all active access tokens
+	 * @param {Object} options            Options for this API call
+	 * @param {String} options.auth       Access Token
+	 * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {Object} [options.context]  Request context
+	 * @returns {Promise} A promise
+	 */
+	deleteActiveAccessTokens({ auth, headers, context }){
+		return this.delete({
+			uri: '/v1/access_tokens',
 			auth,
 			headers,
 			context
@@ -1065,12 +1089,18 @@ class Particle {
 	 * @param {String} options.auth             Access Token
 	 * @param {String} options.currentPassword  Current password
 	 * @param {String} options.username         New email
+	 * @param {Boolean} options.invalidateTokens Should all tokens be invalidated
 	 * @param {Object} [options.headers]        Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context]        Request context
 	 * @returns {Promise} A promise
 	 */
-	changeUsername({ currentPassword, username, auth, headers, context }){
+	changeUsername({ currentPassword, username, invalidateTokens = false, auth, headers, context }){
 		const data = { username, current_password: currentPassword };
+
+		if (invalidateTokens) {
+			data.invalidate_tokens = true;
+		}
+
 		return this.put({ uri: '/v1/user', auth, headers, data, context });
 	}
 

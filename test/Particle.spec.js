@@ -218,6 +218,22 @@ describe('ParticleAPI', () => {
 					});
 				});
 			});
+			it('allows invalidating tokens', () => {
+				return api.confirmMfa(Object.assign({ invalidateTokens: true }, props)).then((results) => {
+					results.should.eql({
+						uri: '/v1/user/mfa-enable',
+						method: 'post',
+						auth: props.auth,
+						headers: props.headers,
+						data: {
+							otp: props.otp,
+							mfa_token: props.mfaToken,
+							invalidate_tokens: true
+						},
+						context: {}
+					});
+				});
+			});
 		});
 
 		describe('.disableMfa', () => {
@@ -300,6 +316,18 @@ describe('ParticleAPI', () => {
 					results.should.match({
 						method: 'delete',
 						uri: '/v1/access_tokens/current',
+						auth: props.auth,
+					});
+				});
+			});
+		});
+
+		describe('.deleteActiveAccessTokens', () => {
+			it('sends request', () => {
+				return api.deleteActiveAccessTokens(props).then((results) => {
+					results.should.match({
+						method: 'delete',
+						uri: '/v1/access_tokens',
 						auth: props.auth,
 					});
 				});
@@ -1351,6 +1379,23 @@ describe('ParticleAPI', () => {
 							data: {
 								current_password: 'blabla',
 								username: 'john@skul.ly'
+							},
+							context: {}
+						});
+					});
+			});
+			it('allows invalidating tokens', () => {
+				return api.changeUsername({ auth: 'X', currentPassword: 'blabla', username: 'john@skul.ly', invalidateTokens: true })
+					.then((results) => {
+						results.should.eql({
+							uri: '/v1/user',
+							method: 'put',
+							auth: 'X',
+							headers: undefined,
+							data: {
+								current_password: 'blabla',
+								username: 'john@skul.ly',
+								invalidate_tokens: true
 							},
 							context: {}
 						});
