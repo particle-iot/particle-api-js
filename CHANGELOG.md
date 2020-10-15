@@ -9,6 +9,10 @@
 
 ## 9.0.0 - 20 May 2020
 * Add support for configuration and location services
+* All top-level api methods optionally accept a `headers` option object
+* Breaking: Base http methods (`.get()`, `.put()`, etc) on agent and particle classes accept options object vs. positional arguments ([see here](https://github.com/particle-iot/particle-api-js/pull/115/commits/c209a43ebcda53b9dc6857e1b54228906f506feb))
+* Breaking: `.downloadFile()` method uses `uri` option (vs. `url`) ([docs](https://github.com/particle-iot/particle-api-js/blob/master/docs/api.md#downloadfile))
+* Breaking: Refactored options object for the `.createWebhook()` method - hook-related options are now passed in via `options.hook` ([docs](https://github.com/particle-iot/particle-api-js/blob/master/docs/api.md#createwebhook))
 
 ## 8.4.0 - 28 April 2020
 * Allow invalidating access tokens when changing password
