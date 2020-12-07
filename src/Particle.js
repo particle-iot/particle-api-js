@@ -345,14 +345,16 @@ class Particle {
 	 * @param {Object} options            Options for this API call
 	 * @param {String} options.username   Username
 	 * @param {String} options.password   Password
+	 * @param {String} options.otp        Current one-time-password generated from the authentication application
 	 * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context]  Request context
 	 * @returns {Promise} A promise
 	 */
-	listAccessTokens({ username, password, headers, context }){
+	listAccessTokens({ username, password, otp, headers, context }){
 		return this.get({
 			uri: '/v1/access_tokens',
 			auth: { username, password },
+			query: otp ? { otp } : undefined,
 			headers,
 			context
 		});
