@@ -335,11 +335,37 @@ describe('ParticleAPI', () => {
 		});
 
 		describe('.listAccessTokens', () => {
+			let options;
+
+			beforeEach(() => {
+				options = {
+					username: props.username,
+					password: props.password,
+					otp: props.otp
+				};
+			});
+
 			it('sends credentials', () => {
-				return api.listAccessTokens(props).then(({ auth }) => {
-					auth.username.should.equal(props.username);
-					auth.password.should.equal(props.password);
-				});
+				delete options.otp;
+				return api.listAccessTokens(options)
+					.then(({ auth, query }) => {
+						expect(auth).to.be.an('object');
+						expect(auth).to.have.property('username', options.username);
+						expect(auth).to.have.property('password', options.password);
+						expect(query).to.equal(undefined);
+					});
+			});
+
+			it('includes otp when provided', () => {
+				return api.listAccessTokens(options)
+					.then(({ auth, query }) => {
+						expect(auth).to.be.an('object');
+						expect(auth).to.have.property('username', options.username);
+						expect(auth).to.have.property('password', options.password);
+						expect(query).to.be.an('object');
+						expect(query).to.have.property('otp', props.otp);
+						expect(props.otp).to.be.a('string').with.lengthOf(6);
+					});
 			});
 		});
 
