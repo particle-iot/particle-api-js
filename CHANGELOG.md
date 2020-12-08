@@ -1,5 +1,8 @@
 # changelog
 
+## 9.1.0 - 8 December 2020
+* `.listAccessTokens()` accepts `otp` option to support users with MFA enabled
+
 ## 9.0.2 - 28 July 2020
 * Add `.deleteActiveAccessTokens()` method
 * Add `invalidateTokens` arguments to `.confirmMfa()` and `.changeUsername()` methods
