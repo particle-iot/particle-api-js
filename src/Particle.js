@@ -191,12 +191,13 @@ class Particle {
 
 	/**
 	 * Login to Particle Cloud using an OAuth client.
-	 * @param {Object} options            Options for this API call
-	 * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-	 * @param {Object} [options.context]  Request context
+	 * @param {Object} options                Options for this API call
+	 * @param {Number} options.tokenDuration  How long the access token should last in seconds
+	 * @param {Object} [options.headers]      Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {Object} [options.context]      Request context
 	 * @returns {Promise} A promise
 	 */
-	loginAsClientOwner({ headers, context }){
+	loginAsClientOwner({ tokenDuration = this.tokenDuration, headers, context }){
 		return this.request({
 			uri: '/oauth/token',
 			method: 'post',
@@ -204,7 +205,8 @@ class Particle {
 			form: {
 				grant_type: 'client_credentials',
 				client_id: this.clientId,
-				client_secret: this.clientSecret
+				client_secret: this.clientSecret,
+				expires_in: tokenDuration
 			},
 			context
 		});
