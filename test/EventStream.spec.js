@@ -51,7 +51,6 @@ describe('EventStream', () => {
 					path: '/path?access_token=token',
 					method: 'get',
 					port: 8080,
-					avoidFetch: true,
 					mode: 'prefer-streaming'
 				});
 			});
