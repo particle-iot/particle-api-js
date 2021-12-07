@@ -1,5 +1,8 @@
 # changelog
 
+## 9.1.1 - 7 December 2021
+* Use unforked copy of `stream-http` dependency
+
 ## 9.1.0 - 8 December 2020
 * `.listAccessTokens()` accepts `otp` option to support users with MFA enabled
 
