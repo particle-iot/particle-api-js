@@ -56,8 +56,8 @@ describe('Client', () => {
 
 	describe('downloadFile', () => {
 		it('delegates to api', () => {
-			api.downloadFile = () => Promise.resolve('delegated');
-			return expect(client.downloadFile('url')).to.eventually.equal('delegated');
+			api.downloadFile = ({ uri }) => Promise.resolve(`${uri} delegated`);
+			return expect(client.downloadFile('uri')).to.eventually.equal('uri delegated');
 		});
 	});
 
