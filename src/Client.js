@@ -101,8 +101,8 @@ export default class Client {
 		throw error;
 	}
 
-	downloadFile(url){
-		return this.api.downloadFile({ url });
+	downloadFile(uri){
+		return this.api.downloadFile({ uri });
 	}
 
 	/**
