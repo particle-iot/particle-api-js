@@ -1,5 +1,8 @@
 # changelog
 
+## 9.1.2 - 9 December 2021
+* Fix library download
+
 ## 9.1.1 - 7 December 2021
 * Use unforked copy of `stream-http` dependency
 
