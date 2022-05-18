@@ -11,7 +11,7 @@
     "test:node": "mocha test/ -R spec --compilers js:babel-register",
     "test:browser": "karma start --single-run",
     "test:watch": "npm run test:node -- --watch",
-    "cover": "istanbul cover ./node_modules/.bin/_mocha test/ -- -R spec --compilers js:babel-register",
+    "coverage": "istanbul cover ./node_modules/.bin/_mocha test/ -- -R spec --compilers js:babel-register",
     "lint": "eslint . --ext .js --format unix --ignore-path .gitignore --ignore-pattern \"dist/*\"",
     "lint:fix": "npm run lint -- --fix",
     "docs": "documentation build src/Particle.js --shallow -g -f md -o docs/api.md",
@@ -84,5 +84,9 @@
   "browser": {
     "http": "stream-http",
     "https": "stream-http"
+  }, 
+  "engines": {
+    "node": ">=12.x",
+    "npm": "8.x"
   }
 }
