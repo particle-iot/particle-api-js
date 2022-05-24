@@ -14,7 +14,6 @@ jobs:
           username: $DOCKERHUB_USERNAME
           password: $DOCKERHUB_PASSWORD
     steps:
-      - browser-tools/install-browser-tools
       - checkout
       - run:
           name: NPM install
@@ -22,8 +21,14 @@ jobs:
       - run:
           name: Run tests with coverage
           command: npm run test:ci
-      - store_artifacts:
-          path: coverage
+      - when:
+          condition:
+            equal: ["16.15.0", << parameters.node-version >>]
+          steps:
+            - browser-tools/install-browser-tools
+            - run:
+                name: Run tests with browser
+                command: npm run test:browser
   publish-npm:
     docker:
       - image: cimg/node:16.15.0 # Primary execution image
