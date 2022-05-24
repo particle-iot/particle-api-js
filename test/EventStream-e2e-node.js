@@ -29,6 +29,7 @@ particle.getEventStream({ deviceId: 'mine', auth })
 	})
 	.catch((err) => {
 		console.error(err);
+		process.exit(1);
 	});
 /* eslint-enable no-console */
 

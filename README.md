@@ -1,7 +1,7 @@
 # particle-api-js
 JS Library for the Particle Cloud API for Node.js and the browser
 
-[![Build Status](https://circleci.com/gh/particle-iot/particle-api-js.svg?style=shield&circle-token=e41d6332462903a16e5e172ae045909281c60736)](https://app.circleci.com/pipelines/github/particle-iot/particle-api-js)
+[![Build Status](https://circleci.com/gh/particle-iot/particle-api-js.svg?style=shield)](https://app.circleci.com/pipelines/github/particle-iot/particle-api-js)
 
 ## Installation
 

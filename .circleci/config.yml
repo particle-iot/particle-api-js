@@ -13,10 +13,6 @@ jobs:
         auth:
           username: $DOCKERHUB_USERNAME
           password: $DOCKERHUB_PASSWORD
-      - image: mongo:4.2
-        auth:
-          username: $DOCKERHUB_USERNAME
-          password: $DOCKERHUB_PASSWORD
     steps:
       - browser-tools/install-browser-tools
       - checkout
@@ -24,11 +20,8 @@ jobs:
           name: NPM install
           command: npm ci
       - run:
-          name: Run linting
-          command: npm run lint
-      - run:
-          name: Run tests with browser
-          command: npm run test:browser
+          name: Run tests with coverage
+          command: npm run test:ci
       - store_artifacts:
           path: coverage
   publish-npm:
