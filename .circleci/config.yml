@@ -1,0 +1,79 @@
+version: 2.1
+
+orbs:
+  browser-tools: circleci/browser-tools@1.1.0
+
+jobs:
+  run-tests:
+    parameters:
+      node-version:
+        type: string
+    docker:
+      - image: cimg/node:<< parameters.node-version >>-browsers # Primary execution image
+        auth:
+          username: $DOCKERHUB_USERNAME
+          password: $DOCKERHUB_PASSWORD
+    steps:
+      - checkout
+      - run:
+          name: NPM install
+          command: npm ci
+      - run:
+          name: Run tests with coverage
+          command: npm run test:ci
+      - when:
+          condition:
+            equal: ["16.15.0", << parameters.node-version >>]
+          steps:
+            - browser-tools/install-browser-tools
+            - run:
+                name: Run tests with browser
+                command: npm run test:browser
+  publish-npm:
+    docker:
+      - image: cimg/node:16.15.0 # Primary execution image
+        auth:
+          username: $DOCKERHUB_USERNAME
+          password: $DOCKERHUB_PASSWORD
+    steps:
+      - checkout
+      - run:
+          name: NPM install
+          command: npm ci
+      - run:
+          name: Authenticate with NPM
+          command: npm config set '//registry.npmjs.org/:_authToken' "${NPM_TOKEN}"
+      - run:
+          name: Publish package
+          command: |
+            # Publish as beta for pre-release tags like v1.2.3-pre.1
+            [[ $CIRCLE_TAG =~ ^v.*- ]] && NPM_TAG=--tag=beta
+            npm publish $NPM_TAG
+
+workflows:
+  version: 2
+  test-and-publish:
+    jobs:
+      - run-tests:
+          context:
+            - particle-ci-private
+          matrix:
+            parameters:
+              node-version: ["12.22.12", "14.19.2", "16.15.0"]
+          # run tests for all branches and tags
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              only: /.*/
+      - publish-npm:
+          requires:
+            - run-tests
+          context:
+            - particle-ci-private
+          # publish for tags only
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/

@@ -7,11 +7,13 @@
     "babel-watch": "babel src -d lib --watch --source-maps",
     "prepublish": "npm run lint && npm run compile",
     "compile": "babel src -sd lib",
-    "test": "npm run lint && npm run test:node",
-    "test:node": "mocha test/ -R spec --compilers js:babel-register",
+    "test": "npm run lint && npm run test:unit",
+    "test:ci": "npm run lint && npm run test:unit -- --forbid-only && npm run coverage",
+    "test:unit": "mocha test/ -R spec --compilers js:babel-register",
+    "test:unit:silent": "npm run test:unit > tmp/test-unit-log.txt 2>&1",
     "test:browser": "karma start --single-run",
-    "test:watch": "npm run test:node -- --watch",
-    "cover": "istanbul cover ./node_modules/.bin/_mocha test/ -- -R spec --compilers js:babel-register",
+    "test:watch": "npm run test:unit -- --watch",
+    "coverage": "nyc --reporter=text --include='src/**/*.js' --temp-dir=./tmp/ --check-coverage --lines 50 npm run test:unit:silent",
     "lint": "eslint . --ext .js --format unix --ignore-path .gitignore --ignore-pattern \"dist/*\"",
     "lint:fix": "npm run lint -- --fix",
     "docs": "documentation build src/Particle.js --shallow -g -f md -o docs/api.md",
@@ -58,7 +60,6 @@
     "documentation": "^4.0.0-rc.1",
     "eslint": "^5.16.0",
     "eslint-config-particle": "^2.2.1",
-    "istanbul": "1.0.0-alpha.2",
     "karma": "^1.1.1",
     "karma-browserify": "^5.1.0",
     "karma-chai": "^0.1.0",
@@ -68,6 +69,7 @@
     "karma-mocha": "^1.1.1",
     "minifyify": "^7.3.1",
     "mocha": "^2.5.1",
+    "nyc": "^15.1.0",
     "should": "^9.0.0",
     "sinon": "^7.2.5",
     "sinon-as-promised": "^4.0.3",
@@ -84,5 +86,9 @@
   "browser": {
     "http": "stream-http",
     "https": "stream-http"
+  },
+  "engines": {
+    "node": ">=12.x",
+    "npm": "8.x"
   }
 }
