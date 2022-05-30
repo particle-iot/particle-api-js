@@ -1,5 +1,8 @@
 # changelog
 
+## 9.2.0 - 30 May 2022
+* Move to `node@16` and `npm@8` for local development
+
 ## 9.1.2 - 9 December 2021
 * Fix library download
 
