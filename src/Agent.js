@@ -22,6 +22,10 @@ import prefix from 'superagent-prefix';
 
 export default class Agent {
 	constructor(baseUrl){
+		this.setBaseUrl(baseUrl);
+	}
+
+	setBaseUrl(baseUrl) {
 		this.prefix = prefix(baseUrl);
 	}
 

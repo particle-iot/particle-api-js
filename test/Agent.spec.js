@@ -1,8 +1,30 @@
 import { sinon, expect } from './test-setup';
 import Agent from '../src/Agent.js';
 
-
 describe('Agent', () => {
+	beforeEach(() => {
+		sinon.restore();
+	});
+
+	describe('constructor', () => {
+		it('calls setBaseUrl', () => {
+			const baseUrl = 'https://foo.com';
+			sinon.stub(Agent.prototype, 'setBaseUrl');
+			const agent = new Agent(baseUrl);
+			expect(agent.setBaseUrl).to.have.property('callCount', 1);
+			expect(agent.setBaseUrl.firstCall.args).to.have.lengthOf(1);
+			expect(agent.setBaseUrl.firstCall.args[0]).to.eql(baseUrl);
+		});
+
+		it('creates a prefix function instance property from the supplied baseUrl (via setBaseUrl)', () => {
+			const agent = new Agent();
+			expect(agent.prefix).to.be.a('Function');
+			// Note: validating specific .prefix function behavior seems hard without proxyquire
+			// and this test seems sufficient
+			// and redundant with the 'build request uses prefix if provided' test below
+		});
+	});
+
 	describe('sanitize files', () => {
 		it('can call sanitize will falsy value', () => {
 			const agent = new Agent();
