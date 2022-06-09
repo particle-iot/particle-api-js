@@ -27,23 +27,22 @@ $ bower install particle-api-js
 
 ## Development
 
+
 All essential commands are available at the root via `npm run <script name>` - e.g. `npm run lint`. To view the available commands, run: `npm run`
 
 <details id="develop-run-tests">
 <summary><b>How to run your tests</b></summary>
 <p>
 
-to run the tests:
+Some of the tests depend on a real HTTP api backend and a valid access token. Be sure to set relevant environment variables to avoid test failures. You can prefix commands test commands like this `PARTICLE_API_BASE_URL=foo PARTICLE_API_TOKEN=bar npm test`
 
-`npm test`
+`npm test` runs the tests.
 
-to run the coverage:
+`npm run coverage` shows code coverage 
 
-`npm run coverage`
+`npm run test:browser` runs browser tests with [karma](https://karma-runner.github.io/latest/index.html) (make sure you have the [Firefox launcher](https://npmjs.org/browse/keyword/karma-launcher) installed.
 
-to run browser tests with [karma](https://karma-runner.github.io/latest/index.html) (make sure you have the [Firefox launcher](https://npmjs.org/browse/keyword/karma-launcher) installed):
-
-`npm run test:browser`
+`npm run test:ci` runs tests in the exact same way CI system does
 
 </p>
 </details>
