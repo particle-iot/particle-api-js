@@ -47,6 +47,29 @@ Some of the tests depend on a real HTTP api backend and a valid access token. Be
 </p>
 </details>
 
+<details id="develop-run-locally">
+<summary><b>How to write scripts that execute against local code changes?</b></summary>
+<p>
+
+Changes to source code happens in `src` directory. However, executable code that eventually ends up in a release gets compiled into `lib`.
+
+You can compile code via `npm run compile`.
+
+Node.js scripts that run against compiled code, typically start out like this:
+
+```js
+const Particle = require('./lib/Particle');
+const username = 'TBD';
+const password = 'TBD';
+const particle = new Particle();
+// Put specific api calls against `particle` here...
+```
+
+After you make a change to files in `src`, be sure to run the compile command again before re-executing your script
+
+</p>
+</details>
+
 
 <details id="develop-npm-scripts">
 <summary><b>How to name npm scripts</b></summary>
