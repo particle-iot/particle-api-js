@@ -1,5 +1,8 @@
 # changelog
 
+## 9.3.0 - 8 June 2022
+* Adds `.setBaseUrl(baseUrl)` to override backend api endpoint
+
 ## 9.2.0 - 30 May 2022
 * Move to `node@16` and `npm@8` for local development
 
