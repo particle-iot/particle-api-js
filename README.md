@@ -40,7 +40,7 @@ The `Agent` integration tests ([source](./test/Agent.integration.js)) depend on 
 
 `npm run coverage` shows code coverage 
 
-`npm run test:browser` runs browser tests with [karma](https://karma-runner.github.io/latest/index.html) (make sure you have the [Firefox launcher](https://npmjs.org/browse/keyword/karma-launcher) installed.
+`npm run test:browser` runs tests in a browser via [karma](https://karma-runner.github.io/latest/index.html).
 
 `npm run test:ci` runs tests in the exact same way CI system does
 
