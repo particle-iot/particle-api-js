@@ -2701,4 +2701,19 @@ describe('ParticleAPI', () => {
 			});
 		});
 	});
+
+	describe('setBaseUrl(baseUrl)', () => {
+		afterEach(() => {
+			sinon.restore();
+		});
+
+		it('calls agent.setBaseUrl', () => {
+			const baseUrl = 'foo';
+			sinon.stub(api.agent, 'setBaseUrl');
+			api.setBaseUrl(baseUrl);
+			expect(api.agent.setBaseUrl).to.have.property('callCount', 1);
+			expect(api.agent.setBaseUrl.firstCall.args).to.have.lengthOf(1);
+			expect(api.agent.setBaseUrl.firstCall.args[0]).to.eql(baseUrl);
+		});
+	});
 });

@@ -2144,6 +2144,11 @@ class Particle {
 	client(options = {}){
 		return new Client(Object.assign({ api: this }, options));
 	}
+
+	// Internal method used to target Particle's APIs other than the default
+	setBaseUrl(baseUrl){
+		this.agent.setBaseUrl(baseUrl);
+	}
 }
 
 // Aliases for backwards compatibility
