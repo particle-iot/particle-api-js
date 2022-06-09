@@ -51,21 +51,27 @@ The `Agent` integration tests ([source](./test/Agent.integration.js)) depend on 
 <summary><b>How to write scripts that execute against local code changes?</b></summary>
 <p>
 
-Changes to source code happens in `src` directory. However, executable code that eventually ends up in a release gets compiled into `lib`.
+Source code lives in the `./src` directory and is built for release via the `npm run compile` command. To create a simple script file to test your changes, follow these steps:
 
-You can compile code via `npm run compile`.
-
-Node.js scripts that run against compiled code, typically start out like this:
+1. create a `js` file on your local machine: `touch my-api-test.js` (somewhere outside of the root of this repo)
+2. within your test `js` file, init the api client like so:
 
 ```js
-const Particle = require('./lib/Particle');
-const username = 'TBD';
-const password = 'TBD';
-const particle = new Particle();
-// Put specific api calls against `particle` here...
+const ParticleAPI = require('./path/to/particle-api-js'); // Make sure to substitute to correct path
+const api = new ParticleAPI();
 ```
 
-After you make a change to files in `src`, be sure to run the compile command again before re-executing your script
+3. add in any api calls, etc required to validate you changes
+
+```js
+const devices = await api.listDevices({ auth: '<particle-auth-token>' });
+console.log('MY DEVICES:', devices);
+```
+
+4. run it: `node ./path/to/my-api-test.js`
+
+_NOTE: Requiring the root directory works via the `main` field specified in Particle API JS' `package.json` file ([docs](https://docs.npmjs.com/cli/v8/configuring-npm/package-json#main))_ 
+
 
 </p>
 </details>
