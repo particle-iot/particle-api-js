@@ -34,7 +34,7 @@ All essential commands are available at the root via `npm run <script name>` - e
 <summary><b>How to run your tests</b></summary>
 <p>
 
-Some of the tests depend on a real HTTP api backend and a valid access token. Be sure to set relevant environment variables to avoid test failures. You can prefix commands test commands like this `PARTICLE_API_BASE_URL=foo PARTICLE_API_TOKEN=bar npm test`
+The `Agent` integration tests ([source](./test/Agent.integration.js)) depend on a real HTTP api backend and a valid Particle access token. Be sure to set relevant environment variables to avoid test failures. You can prefix commands test commands like this `PARTICLE_API_BASE_URL=<url> PARTICLE_API_TOKEN=<token> npm test`
 
 `npm test` runs the tests.
 
