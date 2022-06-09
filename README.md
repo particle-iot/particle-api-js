@@ -27,23 +27,51 @@ $ bower install particle-api-js
 
 ## Development
 
+
 All essential commands are available at the root via `npm run <script name>` - e.g. `npm run lint`. To view the available commands, run: `npm run`
 
 <details id="develop-run-tests">
 <summary><b>How to run your tests</b></summary>
 <p>
 
-to run the tests:
+The `Agent` integration tests ([source](./test/Agent.integration.js)) depend on a real HTTP api backend and a valid Particle access token. Be sure to set relevant environment variables to avoid test failures. You can prefix commands test commands like this `PARTICLE_API_BASE_URL=<url> PARTICLE_API_TOKEN=<token> npm test`
 
-`npm test`
+`npm test` runs the tests.
 
-to run the coverage:
+`npm run coverage` shows code coverage 
 
-`npm run coverage`
+`npm run test:browser` runs tests in a browser via [karma](https://karma-runner.github.io/latest/index.html).
 
-to run browser tests with [karma](https://karma-runner.github.io/latest/index.html) (make sure you have the [Firefox launcher](https://npmjs.org/browse/keyword/karma-launcher) installed):
+`npm run test:ci` runs tests in the exact same way CI system does
 
-`npm run test:browser`
+</p>
+</details>
+
+<details id="develop-run-locally">
+<summary><b>How to write scripts that execute against local code changes?</b></summary>
+<p>
+
+Source code lives in the `./src` directory and is built for release via the `npm run compile` command. To create a simple script file to test your changes, follow these steps:
+
+1. create a `js` file on your local machine: `touch my-api-test.js` (somewhere outside of the root of this repo)
+2. within your test `js` file, init the api client like so:
+
+```js
+const ParticleAPI = require('./path/to/particle-api-js'); // Make sure to substitute to correct path
+const api = new ParticleAPI();
+```
+
+3. add in any api calls, etc required to validate you changes
+
+```js
+const devices = await api.listDevices({ auth: '<particle-auth-token>' });
+console.log('MY DEVICES:', devices);
+```
+
+4. run it: `node ./path/to/my-api-test.js`
+
+_NOTE: Requiring the root directory works via the `main` field specified in Particle API JS' `package.json` file ([docs](https://docs.npmjs.com/cli/v8/configuring-npm/package-json#main))_ 
+
 
 </p>
 </details>
