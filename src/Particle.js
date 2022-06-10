@@ -2100,6 +2100,15 @@ class Particle {
 	}
 
 	/**
+	 * Set default auth token that will be used in each method if `auth` is not provided
+	 * @param  {String} auth A Particle access token
+	 * @returns {undefined}
+	 */
+	setDefaultAuth(auth){
+		this._defaultAuth = auth;
+	}
+
+	/**
 	 * API URI to access a device
 	 * @param  {Object} options Options for this API call
 	 * @param  {String} options.deviceId  Device ID to access

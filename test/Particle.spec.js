@@ -2716,4 +2716,16 @@ describe('ParticleAPI', () => {
 			expect(api.agent.setBaseUrl.firstCall.args[0]).to.eql(baseUrl);
 		});
 	});
+
+	describe('setDefaultAuth(auth)', () => {
+		afterEach(() => {
+			sinon.restore();
+		});
+
+		it('sets ._defaultAuth', () => {
+			const auth = 'foo';
+			api.setDefaultAuth(auth);
+			expect(api._defaultAuth).to.eql(auth);
+		});
+	});
 });
