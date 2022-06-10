@@ -26,7 +26,7 @@ describe('EventStream', () => {
 		it('creates an EventStream objects', () => {
 			const eventStream = new EventStream('uri', 'token');
 
-			expect(eventStream).to.be.obj;
+			expect(eventStream).to.own.include({ uri: 'uri', token: 'token' });
 		});
 	});
 

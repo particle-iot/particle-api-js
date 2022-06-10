@@ -55,8 +55,8 @@
     "babelify": "^7.3.0",
     "brfs": "^1.4.3",
     "browserify": "^13.0.0",
-    "chai": "^3.5.0",
-    "chai-as-promised": "^5.3.0",
+    "chai": "^4.3.6",
+    "chai-as-promised": "^7.1.1",
     "documentation": "^4.0.0-rc.1",
     "eslint": "^5.16.0",
     "eslint-config-particle": "^2.2.1",
@@ -72,8 +72,7 @@
     "nyc": "^15.1.0",
     "should": "^9.0.0",
     "sinon": "^7.2.5",
-    "sinon-as-promised": "^4.0.3",
-    "sinon-chai": "^3.3.0",
+    "sinon-chai": "^3.7.0",
     "watchify": "^3.7.0"
   },
   "dependencies": {
