@@ -411,7 +411,6 @@ class Particle {
 			uri = '/v1/devices';
 		}
 
-		auth = this._getEffectiveAuth(auth);
 		return this.get({ uri, auth, headers, query, context });
 	}
 
@@ -2141,31 +2140,37 @@ class Particle {
 
 	get({ uri, auth, headers, query, context }){
 		context = this._buildContext(context);
+		auth = this._getEffectiveAuth(auth);
 		return this.agent.get({ uri, auth, headers, query, context });
 	}
 
 	head({ uri, auth, headers, query, context }){
 		context = this._buildContext(context);
+		auth = this._getEffectiveAuth(auth);
 		return this.agent.head({ uri, auth, headers, query, context });
 	}
 
 	post({ uri, auth, headers, data, context }){
 		context = this._buildContext(context);
+		auth = this._getEffectiveAuth(auth);
 		return this.agent.post({ uri, auth, headers, data, context });
 	}
 
 	put({ uri, auth, headers, data, context }){
 		context = this._buildContext(context);
+		auth = this._getEffectiveAuth(auth);
 		return this.agent.put({ uri, auth, headers, data, context });
 	}
 
 	delete({ uri, auth, headers, data, context }){
 		context = this._buildContext(context);
+		auth = this._getEffectiveAuth(auth);
 		return this.agent.delete({ uri, auth, headers, data, context });
 	}
 
 	request(args){
 		args.context = this._buildContext(args.context);
+		args.auth = this._getEffectiveAuth(args.auth);
 		return this.agent.request(args);
 	}
 
