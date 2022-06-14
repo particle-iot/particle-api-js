@@ -124,11 +124,12 @@ describe('ParticleAPI', () => {
 		});
 
 		describe('constructor', () => {
-			it('sets the defaults', () => {
+			it('sets maps defaults to instance properties', () => {
 				Object.keys(Defaults).forEach((setting) => {
-					api[setting].should.equal(Defaults[setting]);
+					expect(api[setting]).to.eql(Defaults[setting]);
 				});
 			});
+
 		});
 
 		describe('trackingIdentity', () => {
