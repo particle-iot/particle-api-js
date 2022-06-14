@@ -1,5 +1,11 @@
 # changelog
 
+## 9.4.0 - 14 June 2022
+
+* Adds `.setDefaultAuth(auth)` so token authenticated methods don't need to pass their own auth token.
+* Adds support for `auth` option in Particle constructor, calls `.setDefaultAuth()` if provided
+* Fixes bug where `.setBaseUrl(baseUrl)` was not honored for `.getEventStream()` method (sc-105035)
+
 ## 9.3.0 - 8 June 2022
 * Adds `.setBaseUrl(baseUrl)` to override backend api endpoint
 
