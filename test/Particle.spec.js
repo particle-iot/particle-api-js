@@ -2747,6 +2747,17 @@ describe('ParticleAPI', () => {
 			api.setDefaultAuth(auth);
 			expect(api._defaultAuth).to.eql(auth);
 		});
+
+		it('throws error unless given a non-empty string', () => {
+			let error;
+			try {
+				api.setDefaultAuth(undefined);
+			} catch (e) {
+				error = e;
+			}
+			expect(error).to.be.an.instanceOf(Error);
+			expect(error.message).to.eql('Must pass a non-empty string');
+		});
 	});
 
 	describe('_getActiveAuthToken(auth)', () => {
@@ -2769,7 +2780,7 @@ describe('ParticleAPI', () => {
 		it('returns undefined when both provided value and _defaultAuth are NOT truthy', () => {
 			const providedValue = undefined;
 			const expectedReturnValue = undefined;
-			api.setDefaultAuth(undefined);
+			api._defaultAuth = undefined;
 			expect(api._getActiveAuthToken(providedValue)).to.eql(expectedReturnValue);
 		});
 	});

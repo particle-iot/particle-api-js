@@ -2109,7 +2109,11 @@ class Particle {
 	 * @returns {undefined}
 	 */
 	setDefaultAuth(auth){
-		this._defaultAuth = auth;
+		if (typeof auth === 'string' && auth.length !== 0) {
+			this._defaultAuth = auth;
+		} else {
+			throw new Error('Must pass a non-empty string');
+		}
 	}
 	/**
 	 * Return provided token if truthy else use default auth if truthy else undefined
