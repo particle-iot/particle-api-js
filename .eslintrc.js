@@ -1,7 +1,6 @@
 module.exports = {
 	extends: ['eslint-config-particle'],
 	parserOptions: {
-		ecmaVersion: 8,
 		sourceType: 'module'
 	},
 	env: {
@@ -14,8 +13,9 @@ module.exports = {
 		serviceworker: true
 	},
 	rules: {
-		'no-control-regex': 'off',
-		camelcase: ["error", {
+		'no-prototype-builtins': 'off',
+		'no-redeclare': 'off',
+		camelcase: ['error', {
 			properties: 'never',
 			allow: ['redirect_uri']
 		}]
