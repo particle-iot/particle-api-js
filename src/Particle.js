@@ -2118,13 +2118,7 @@ class Particle {
 	 * @returns {String|undefined} a Particle auth token or undefined
 	 */
 	_getEffectiveAuth(auth) {
-		if (auth) {
-			return auth;
-		} else if (this._defaultAuth) {
-			return this._defaultAuth;
-		} else {
-			return undefined;
-		}
+		return auth || this._defaultAuth
 	}
 	/**
 	 * API URI to access a device
