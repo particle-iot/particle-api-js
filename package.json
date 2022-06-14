@@ -13,7 +13,7 @@
     "test:unit:silent": "npm run test:unit > tmp/test-unit-log.txt 2>&1",
     "test:browser": "karma start --single-run",
     "test:watch": "npm run test:unit -- --watch",
-    "coverage": "nyc --reporter=text --include='src/**/*.js' --temp-dir=./tmp/ --check-coverage --lines 50 npm run test:unit:silent",
+    "coverage": "nyc --reporter=text --include='src/**/*.js' --temp-dir=./tmp/ --check-coverage --lines 91 npm run test:unit:silent",
     "lint": "eslint . --ext .js --format unix --ignore-path .gitignore --ignore-pattern \"dist/*\"",
     "lint:fix": "npm run lint -- --fix",
     "docs": "documentation build src/Particle.js --shallow -g -f md -o docs/api.md",

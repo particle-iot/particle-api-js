@@ -124,9 +124,27 @@ describe('ParticleAPI', () => {
 		});
 
 		describe('constructor', () => {
-			it('sets the defaults', () => {
+			it('sets maps defaults to instance properties', () => {
 				Object.keys(Defaults).forEach((setting) => {
-					api[setting].should.equal(Defaults[setting]);
+					expect(api[setting]).to.eql(Defaults[setting]);
+				});
+			});
+
+			describe('without defaultAuth', () => {
+				it('does NOT call .setDefaultAuth(defaultAuth) unless provided value is truthy', () => {
+					sinon.stub(api, 'setDefaultAuth');
+					expect(api.setDefaultAuth).to.have.property('callCount', 0);
+				});
+			});
+
+			describe('with defaultAuth', () => {
+				it('calls .setDefaultAuth(defaultAuth) when provided defaultAuth value is truthy', () => {
+					const fakeAuthToken = 'foo';
+					sinon.stub(Particle.prototype, 'setDefaultAuth');
+					api = new Particle({ auth: fakeAuthToken });
+					expect(api.setDefaultAuth).to.have.property('callCount', 1);
+					expect(api.setDefaultAuth.firstCall.args).to.have.lengthOf(1);
+					expect(api.setDefaultAuth.firstCall.args[0]).to.eql(fakeAuthToken);
 				});
 			});
 		});
@@ -1012,6 +1030,13 @@ describe('ParticleAPI', () => {
 				return api.getEventStream({ product: 'test-product', deviceId: props.deviceId, name: 'foo' }).then(({ uri }) => {
 					uri.should.endWith(`v1/products/test-product/devices/${props.deviceId}/events/foo`);
 				});
+			});
+
+			it('calls _getActiveAuthToken(auth)', () => {
+				const fakeToken = 'abc123';
+				sinon.stub(api, '_getActiveAuthToken').returns(fakeToken);
+				api.getEventStream({});
+				expect(api._getActiveAuthToken).to.have.property('callCount', 1);
 			});
 		});
 
@@ -2618,13 +2643,15 @@ describe('ParticleAPI', () => {
 				contextResult = { def: 456 };
 				result = 'fake-result';
 				api._buildContext = sinon.stub().returns(contextResult);
+				api._getActiveAuthToken = sinon.stub().returns(auth);
 			});
 
 			afterEach(() => {
 				expect(api._buildContext).to.have.been.calledWith(context);
+				expect(api._getActiveAuthToken).to.have.been.calledWith(auth);
 			});
 
-			it('calls _buildContext from get', () => {
+			it('calls _buildContext and _getActiveAuthToken from get', () => {
 				api.agent.get = sinon.stub().returns(result);
 				const options = { uri, auth, headers, query, context };
 				const res = api.get(options);
@@ -2638,7 +2665,7 @@ describe('ParticleAPI', () => {
 				});
 			});
 
-			it('calls _buildContext from head', () => {
+			it('calls _buildContext and _getActiveAuthToken from head', () => {
 				api.agent.head = sinon.stub().returns(result);
 				const options = { uri, auth, headers, query, context };
 				const res = api.head(options);
@@ -2652,7 +2679,7 @@ describe('ParticleAPI', () => {
 				});
 			});
 
-			it('calls _buildContext from post', () => {
+			it('calls _buildContext and _getActiveAuthToken from post', () => {
 				api.agent.post = sinon.stub().returns(result);
 				const options = { uri, auth, headers, data, context };
 				const res = api.post(options);
@@ -2666,7 +2693,7 @@ describe('ParticleAPI', () => {
 				});
 			});
 
-			it('calls _buildContext from put', () => {
+			it('calls _buildContext and _getActiveAuthToken from put', () => {
 				api.agent.put = sinon.stub().returns(result);
 				const options = { uri, auth, headers, data, context };
 				const res = api.put(options);
@@ -2680,7 +2707,7 @@ describe('ParticleAPI', () => {
 				});
 			});
 
-			it('calls _buildContext from delete', () => {
+			it('calls _buildContext and _getActiveAuthToken from delete', () => {
 				api.agent.delete = sinon.stub().returns(result);
 				const options = { uri, auth, headers, data, context };
 				const res = api.delete(options);
@@ -2694,10 +2721,10 @@ describe('ParticleAPI', () => {
 				});
 			});
 
-			it('calls _buildContext from request', () => {
+			it('calls _buildContext and _getActiveAuthToken from request', () => {
 				api.agent.request = sinon.stub().returns(result);
-				api.request({ context }).should.eql(result);
-				expect(api.agent.request).to.have.been.calledWith({ context:contextResult });
+				api.request({ context, auth }).should.eql(result);
+				expect(api.agent.request).to.have.been.calledWith({ context:contextResult, auth });
 			});
 		});
 	});
@@ -2707,6 +2734,12 @@ describe('ParticleAPI', () => {
 			sinon.restore();
 		});
 
+		it('sets baseUrl instance property', () => {
+			const baseUrl = 'foo';
+			api.setBaseUrl(baseUrl);
+			expect(api.baseUrl).to.eql(baseUrl);
+		});
+
 		it('calls agent.setBaseUrl', () => {
 			const baseUrl = 'foo';
 			sinon.stub(api.agent, 'setBaseUrl');
@@ -2714,6 +2747,54 @@ describe('ParticleAPI', () => {
 			expect(api.agent.setBaseUrl).to.have.property('callCount', 1);
 			expect(api.agent.setBaseUrl.firstCall.args).to.have.lengthOf(1);
 			expect(api.agent.setBaseUrl.firstCall.args[0]).to.eql(baseUrl);
+		});
+	});
+
+	describe('setDefaultAuth(auth)', () => {
+		afterEach(() => {
+			sinon.restore();
+		});
+
+		it('sets ._defaultAuth', () => {
+			const auth = 'foo';
+			api.setDefaultAuth(auth);
+			expect(api._defaultAuth).to.eql(auth);
+		});
+
+		it('throws error unless given a non-empty string', () => {
+			let error;
+			try {
+				api.setDefaultAuth(undefined);
+			} catch (e) {
+				error = e;
+			}
+			expect(error).to.be.an.instanceOf(Error);
+			expect(error.message).to.eql('Must pass a non-empty string');
+		});
+	});
+
+	describe('_getActiveAuthToken(auth)', () => {
+		afterEach(() => {
+			sinon.restore();
+		});
+
+		it('returns provided value when provided value is truthy', () => {
+			const expectedReturnValue = 'pass through';
+			expect(api._getActiveAuthToken(expectedReturnValue)).to.eql(expectedReturnValue);
+		});
+
+		it('returns value of _defaultAuth when provided value is NOT truthy', () => {
+			const providedValue = undefined;
+			const expectedReturnValue = 'default auth value';
+			api.setDefaultAuth(expectedReturnValue);
+			expect(api._getActiveAuthToken(providedValue)).to.eql(expectedReturnValue);
+		});
+
+		it('returns undefined when both provided value and _defaultAuth are NOT truthy', () => {
+			const providedValue = undefined;
+			const expectedReturnValue = undefined;
+			api._defaultAuth = undefined;
+			expect(api._getActiveAuthToken(providedValue)).to.eql(expectedReturnValue);
 		});
 	});
 });

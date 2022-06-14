@@ -23,6 +23,10 @@ class Particle {
 	 * @param  {Object} options Options for this API call Options to be used for all requests (see [Defaults](../src/Defaults.js))
 	 */
 	constructor(options = {}){
+		if (options.auth) {
+			this.setDefaultAuth(options.auth);
+		}
+
 		// todo - this seems a bit dangerous - would be better to put all options/context in a contained object
 		Object.assign(this, Defaults, options);
 		this.context = {};
@@ -38,7 +42,7 @@ class Particle {
 			if (this._isValidContext(name, context)){
 				this.context[name] = context;
 			} else {
-				throw Error('uknown context name or undefined context: '+name);
+				throw Error('unknown context name or undefined context: '+name);
 			}
 		}
 	}
@@ -887,6 +891,7 @@ class Particle {
 			uri += `/${encodeURIComponent(name)}`;
 		}
 
+		auth = this._getActiveAuthToken(auth);
 		return new EventStream(`${this.baseUrl}${uri}`, auth).connect();
 	}
 
@@ -2100,6 +2105,27 @@ class Particle {
 	}
 
 	/**
+	 * Set default auth token that will be used in each method if `auth` is not provided
+	 * @param  {String} auth A Particle access token
+	 * @returns {undefined}
+	 */
+	setDefaultAuth(auth){
+		if (typeof auth === 'string' && auth.length !== 0) {
+			this._defaultAuth = auth;
+		} else {
+			throw new Error('Must pass a non-empty string');
+		}
+	}
+	/**
+	 * Return provided token if truthy else use default auth if truthy else undefined
+	 * @param {*} auth Optional auth token or undefined
+	 * @private
+	 * @returns {String|undefined} a Particle auth token or undefined
+	 */
+	_getActiveAuthToken(auth) {
+		return auth || this._defaultAuth;
+	}
+	/**
 	 * API URI to access a device
 	 * @param  {Object} options Options for this API call
 	 * @param  {String} options.deviceId  Device ID to access
@@ -2113,31 +2139,37 @@ class Particle {
 
 	get({ uri, auth, headers, query, context }){
 		context = this._buildContext(context);
+		auth = this._getActiveAuthToken(auth);
 		return this.agent.get({ uri, auth, headers, query, context });
 	}
 
 	head({ uri, auth, headers, query, context }){
 		context = this._buildContext(context);
+		auth = this._getActiveAuthToken(auth);
 		return this.agent.head({ uri, auth, headers, query, context });
 	}
 
 	post({ uri, auth, headers, data, context }){
 		context = this._buildContext(context);
+		auth = this._getActiveAuthToken(auth);
 		return this.agent.post({ uri, auth, headers, data, context });
 	}
 
 	put({ uri, auth, headers, data, context }){
 		context = this._buildContext(context);
+		auth = this._getActiveAuthToken(auth);
 		return this.agent.put({ uri, auth, headers, data, context });
 	}
 
 	delete({ uri, auth, headers, data, context }){
 		context = this._buildContext(context);
+		auth = this._getActiveAuthToken(auth);
 		return this.agent.delete({ uri, auth, headers, data, context });
 	}
 
 	request(args){
 		args.context = this._buildContext(args.context);
+		args.auth = this._getActiveAuthToken(args.auth);
 		return this.agent.request(args);
 	}
 
@@ -2147,6 +2179,7 @@ class Particle {
 
 	// Internal method used to target Particle's APIs other than the default
 	setBaseUrl(baseUrl){
+		this.baseUrl = baseUrl;
 		this.agent.setBaseUrl(baseUrl);
 	}
 }
