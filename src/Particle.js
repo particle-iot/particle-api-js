@@ -891,6 +891,7 @@ class Particle {
 			uri += `/${encodeURIComponent(name)}`;
 		}
 
+		auth = this._getActiveAuthToken(auth);
 		return new EventStream(`${this.baseUrl}${uri}`, auth).connect();
 	}
 

@@ -1031,6 +1031,13 @@ describe('ParticleAPI', () => {
 					uri.should.endWith(`v1/products/test-product/devices/${props.deviceId}/events/foo`);
 				});
 			});
+
+			it('calls _getActiveAuthToken(auth)', () => {
+				const fakeToken = 'abc123';
+				sinon.stub(api, '_getActiveAuthToken').returns(fakeToken);
+				api.getEventStream({});
+				expect(api._getActiveAuthToken).to.have.property('callCount', 1);
+			});
 		});
 
 		describe('.publishEvent', () => {
