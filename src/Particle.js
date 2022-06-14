@@ -42,7 +42,7 @@ class Particle {
 			if (this._isValidContext(name, context)){
 				this.context[name] = context;
 			} else {
-				throw Error('uknown context name or undefined context: '+name);
+				throw Error('unknown context name or undefined context: '+name);
 			}
 		}
 	}
