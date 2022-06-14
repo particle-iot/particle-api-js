@@ -23,6 +23,10 @@ class Particle {
 	 * @param  {Object} options Options for this API call Options to be used for all requests (see [Defaults](../src/Defaults.js))
 	 */
 	constructor(options = {}){
+		if (options.defaultAuth) {
+			this.setDefaultAuth(options.defaultAuth);
+		}
+
 		// todo - this seems a bit dangerous - would be better to put all options/context in a contained object
 		Object.assign(this, Defaults, options);
 		this.context = {};

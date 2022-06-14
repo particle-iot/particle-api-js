@@ -130,6 +130,20 @@ describe('ParticleAPI', () => {
 				});
 			});
 
+			describe('without defaultAuth', () => {
+				it('does NOT call .setDefaultAuth(defaultAuth) unless provided value is truthy', () => {
+					sinon.stub(api, 'setDefaultAuth');
+					expect(api.setDefaultAuth).to.have.property('callCount', 0);
+				});
+			});
+
+			describe('with defaultAuth', () => {
+				it('calls .setDefaultAuth(defaultAuth) when provided defaultAuth value is truthy', () => {
+					sinon.stub(Particle.prototype, 'setDefaultAuth');
+					api = new Particle({ defaultAuth: 'foo' });
+					expect(api.setDefaultAuth).to.have.property('callCount', 1);
+				});
+			});
 		});
 
 		describe('trackingIdentity', () => {
