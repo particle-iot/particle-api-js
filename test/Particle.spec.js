@@ -139,9 +139,12 @@ describe('ParticleAPI', () => {
 
 			describe('with defaultAuth', () => {
 				it('calls .setDefaultAuth(defaultAuth) when provided defaultAuth value is truthy', () => {
+					const fakeAuthToken = 'foo';
 					sinon.stub(Particle.prototype, 'setDefaultAuth');
-					api = new Particle({ defaultAuth: 'foo' });
+					api = new Particle({ auth: fakeAuthToken });
 					expect(api.setDefaultAuth).to.have.property('callCount', 1);
+					expect(api.setDefaultAuth.firstCall.args).to.have.lengthOf(1);
+					expect(api.setDefaultAuth.firstCall.args[0]).to.eql(fakeAuthToken);
 				});
 			});
 		});

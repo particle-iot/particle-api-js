@@ -23,7 +23,7 @@ describe('Default Particle constructor options', () => {
 	});
 
 	it('includes defaultAuth', () => {
-		expect(Defaults).to.have.property('defaultAuth');
-		expect(Defaults.defaultAuth).to.eql(undefined);
+		expect(Defaults).to.have.property('auth');
+		expect(Defaults.auth).to.eql(undefined);
 	});
 });
