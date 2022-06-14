@@ -2179,6 +2179,7 @@ class Particle {
 
 	// Internal method used to target Particle's APIs other than the default
 	setBaseUrl(baseUrl){
+		this.baseUrl = baseUrl;
 		this.agent.setBaseUrl(baseUrl);
 	}
 }

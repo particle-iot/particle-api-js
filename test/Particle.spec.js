@@ -2734,6 +2734,12 @@ describe('ParticleAPI', () => {
 			sinon.restore();
 		});
 
+		it('sets baseUrl instance property', () => {
+			const baseUrl = 'foo';
+			api.setBaseUrl(baseUrl);
+			expect(api.baseUrl).to.eql(baseUrl);
+		});
+
 		it('calls agent.setBaseUrl', () => {
 			const baseUrl = 'foo';
 			sinon.stub(api.agent, 'setBaseUrl');
