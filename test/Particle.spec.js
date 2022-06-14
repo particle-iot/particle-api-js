@@ -370,6 +370,18 @@ describe('ParticleAPI', () => {
 		});
 
 		describe('.listDevices', () => {
+			describe('uses effective auth', () => {
+				afterEach(() => {
+					sinon.restore();
+				});
+				it('calls this._getEffectiveAuth', async () => {
+					sinon.stub(api, '_getEffectiveAuth');
+					sinon.stub(api, 'get'); // don't actually call the real method
+					await api.listDevices(props);
+					expect(api._getEffectiveAuth).to.have.property('callCount', 1);
+				});
+			});
+
 			describe('user scope', () => {
 				it('generates request', () => {
 					return api.listDevices(props).then((results) => {
@@ -2726,6 +2738,31 @@ describe('ParticleAPI', () => {
 			const auth = 'foo';
 			api.setDefaultAuth(auth);
 			expect(api._defaultAuth).to.eql(auth);
+		});
+	});
+
+	describe('_getEffectiveAuth(auth)', () => {
+		afterEach(() => {
+			sinon.restore();
+		});
+
+		it('returns provided value when provided value is truthy', () => {
+			const expectedReturnValue = 'pass through';
+			expect(api._getEffectiveAuth(expectedReturnValue)).to.eql(expectedReturnValue);
+		});
+
+		it('returns value of _defaultAuth when provided value is NOT truthy', () => {
+			const providedValue = undefined;
+			const expectedReturnValue = 'default auth value';
+			api.setDefaultAuth(expectedReturnValue);
+			expect(api._getEffectiveAuth(providedValue)).to.eql(expectedReturnValue);
+		});
+
+		it('returns undefined when both provided value and _defaultAuth are NOT truthy', () => {
+			const providedValue = undefined;
+			const expectedReturnValue = undefined;
+			api.setDefaultAuth(undefined);
+			expect(api._getEffectiveAuth(providedValue)).to.eql(expectedReturnValue);
 		});
 	});
 });

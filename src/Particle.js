@@ -407,6 +407,7 @@ class Particle {
 			uri = '/v1/devices';
 		}
 
+		auth = this._getEffectiveAuth(auth);
 		return this.get({ uri, auth, headers, query, context });
 	}
 
@@ -2107,7 +2108,21 @@ class Particle {
 	setDefaultAuth(auth){
 		this._defaultAuth = auth;
 	}
-
+	/**
+	 * Return provided token if truthy else use default auth if truthy else undefined
+	 * @param {*} auth Optional auth token or undefined
+	 * @private
+	 * @returns {String|undefined} a Particle auth token or undefined
+	 */
+	_getEffectiveAuth(auth) {
+		if (auth) {
+			return auth;
+		} else if (this._defaultAuth) {
+			return this._defaultAuth;
+		} else {
+			return undefined;
+		}
+	}
 	/**
 	 * API URI to access a device
 	 * @param  {Object} options Options for this API call
