@@ -2117,8 +2117,8 @@ class Particle {
 	 * @private
 	 * @returns {String|undefined} a Particle auth token or undefined
 	 */
-	_getEffectiveAuth(auth) {
-		return auth || this._defaultAuth
+	_getActiveAuthToken(auth) {
+		return auth || this._defaultAuth;
 	}
 	/**
 	 * API URI to access a device
@@ -2134,37 +2134,37 @@ class Particle {
 
 	get({ uri, auth, headers, query, context }){
 		context = this._buildContext(context);
-		auth = this._getEffectiveAuth(auth);
+		auth = this._getActiveAuthToken(auth);
 		return this.agent.get({ uri, auth, headers, query, context });
 	}
 
 	head({ uri, auth, headers, query, context }){
 		context = this._buildContext(context);
-		auth = this._getEffectiveAuth(auth);
+		auth = this._getActiveAuthToken(auth);
 		return this.agent.head({ uri, auth, headers, query, context });
 	}
 
 	post({ uri, auth, headers, data, context }){
 		context = this._buildContext(context);
-		auth = this._getEffectiveAuth(auth);
+		auth = this._getActiveAuthToken(auth);
 		return this.agent.post({ uri, auth, headers, data, context });
 	}
 
 	put({ uri, auth, headers, data, context }){
 		context = this._buildContext(context);
-		auth = this._getEffectiveAuth(auth);
+		auth = this._getActiveAuthToken(auth);
 		return this.agent.put({ uri, auth, headers, data, context });
 	}
 
 	delete({ uri, auth, headers, data, context }){
 		context = this._buildContext(context);
-		auth = this._getEffectiveAuth(auth);
+		auth = this._getActiveAuthToken(auth);
 		return this.agent.delete({ uri, auth, headers, data, context });
 	}
 
 	request(args){
 		args.context = this._buildContext(args.context);
-		args.auth = this._getEffectiveAuth(args.auth);
+		args.auth = this._getActiveAuthToken(args.auth);
 		return this.agent.request(args);
 	}
 

@@ -2636,15 +2636,15 @@ describe('ParticleAPI', () => {
 				contextResult = { def: 456 };
 				result = 'fake-result';
 				api._buildContext = sinon.stub().returns(contextResult);
-				api._getEffectiveAuth = sinon.stub().returns(auth);
+				api._getActiveAuthToken = sinon.stub().returns(auth);
 			});
 
 			afterEach(() => {
 				expect(api._buildContext).to.have.been.calledWith(context);
-				expect(api._getEffectiveAuth).to.have.been.calledWith(auth);
+				expect(api._getActiveAuthToken).to.have.been.calledWith(auth);
 			});
 
-			it('calls _buildContext and _getEffectiveAuth from get', () => {
+			it('calls _buildContext and _getActiveAuthToken from get', () => {
 				api.agent.get = sinon.stub().returns(result);
 				const options = { uri, auth, headers, query, context };
 				const res = api.get(options);
@@ -2658,7 +2658,7 @@ describe('ParticleAPI', () => {
 				});
 			});
 
-			it('calls _buildContext and _getEffectiveAuth from head', () => {
+			it('calls _buildContext and _getActiveAuthToken from head', () => {
 				api.agent.head = sinon.stub().returns(result);
 				const options = { uri, auth, headers, query, context };
 				const res = api.head(options);
@@ -2672,7 +2672,7 @@ describe('ParticleAPI', () => {
 				});
 			});
 
-			it('calls _buildContext and _getEffectiveAuth from post', () => {
+			it('calls _buildContext and _getActiveAuthToken from post', () => {
 				api.agent.post = sinon.stub().returns(result);
 				const options = { uri, auth, headers, data, context };
 				const res = api.post(options);
@@ -2686,7 +2686,7 @@ describe('ParticleAPI', () => {
 				});
 			});
 
-			it('calls _buildContext and _getEffectiveAuth from put', () => {
+			it('calls _buildContext and _getActiveAuthToken from put', () => {
 				api.agent.put = sinon.stub().returns(result);
 				const options = { uri, auth, headers, data, context };
 				const res = api.put(options);
@@ -2700,7 +2700,7 @@ describe('ParticleAPI', () => {
 				});
 			});
 
-			it('calls _buildContext and _getEffectiveAuth from delete', () => {
+			it('calls _buildContext and _getActiveAuthToken from delete', () => {
 				api.agent.delete = sinon.stub().returns(result);
 				const options = { uri, auth, headers, data, context };
 				const res = api.delete(options);
@@ -2714,7 +2714,7 @@ describe('ParticleAPI', () => {
 				});
 			});
 
-			it('calls _buildContext and _getEffectiveAuth from request', () => {
+			it('calls _buildContext and _getActiveAuthToken from request', () => {
 				api.agent.request = sinon.stub().returns(result);
 				api.request({ context, auth }).should.eql(result);
 				expect(api.agent.request).to.have.been.calledWith({ context:contextResult, auth });
@@ -2749,28 +2749,28 @@ describe('ParticleAPI', () => {
 		});
 	});
 
-	describe('_getEffectiveAuth(auth)', () => {
+	describe('_getActiveAuthToken(auth)', () => {
 		afterEach(() => {
 			sinon.restore();
 		});
 
 		it('returns provided value when provided value is truthy', () => {
 			const expectedReturnValue = 'pass through';
-			expect(api._getEffectiveAuth(expectedReturnValue)).to.eql(expectedReturnValue);
+			expect(api._getActiveAuthToken(expectedReturnValue)).to.eql(expectedReturnValue);
 		});
 
 		it('returns value of _defaultAuth when provided value is NOT truthy', () => {
 			const providedValue = undefined;
 			const expectedReturnValue = 'default auth value';
 			api.setDefaultAuth(expectedReturnValue);
-			expect(api._getEffectiveAuth(providedValue)).to.eql(expectedReturnValue);
+			expect(api._getActiveAuthToken(providedValue)).to.eql(expectedReturnValue);
 		});
 
 		it('returns undefined when both provided value and _defaultAuth are NOT truthy', () => {
 			const providedValue = undefined;
 			const expectedReturnValue = undefined;
 			api.setDefaultAuth(undefined);
-			expect(api._getEffectiveAuth(providedValue)).to.eql(expectedReturnValue);
+			expect(api._getActiveAuthToken(providedValue)).to.eql(expectedReturnValue);
 		});
 	});
 });
