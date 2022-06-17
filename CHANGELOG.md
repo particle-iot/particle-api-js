@@ -1,5 +1,9 @@
 # changelog
 
+## 9.4.1 - 17 June 2022
+
+* Fixes incompatible versions of `eslint`, `chai`, `sinon-chai` and `chai-as-promised`.
+
 ## 9.4.0 - 14 June 2022
 
 * Adds `.setDefaultAuth(auth)` so token authenticated methods don't need to pass their own auth token.
