@@ -28,7 +28,7 @@ describe('Agent', () => {
 	describe('sanitize files', () => {
 		it('can call sanitize will falsy value', () => {
 			const agent = new Agent();
-			expect(agent._sanitizeFiles(undefined)).to.be.falsy;
+			expect(agent._sanitizeFiles(undefined)).to.be.undefined;
 		});
 
 		it('sanitizes file names', () => {
@@ -247,13 +247,14 @@ describe('Agent', () => {
 		});
 
 		it('does not call used if no prefix provided', () => {
+			agent.prefix = undefined;
 			const use = sinon.stub();
 			const req = sinon.stub();
 			req.returns({ use: use });
 			const result = agent._buildRequest({ uri: 'uri', method: 'get', makerequest: req });
 			expect(result).to.be.ok;
 			expect(req).to.be.calledWith('get', 'uri');
-			expect(use).to.be.notCalled;
+			expect(use).to.not.have.been.called;
 		});
 
 		it('should invoke _applyContext with the request and context when provided', () => {
@@ -302,7 +303,7 @@ describe('Agent', () => {
 			const req = sinon.stub();
 			req.returns({ query: query, _authorizationHeader: sinon.stub() });
 			agent._buildRequest({ uri: 'uri', method: 'get', makerequest: req });
-			expect(query).to.be.notCalled;
+			expect(query).to.be.not.been.called;
 		});
 
 		it('should invoke send when data given', () => {
