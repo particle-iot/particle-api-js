@@ -41,7 +41,8 @@ class EventStream extends EventEmitter {
 				path: `${path}?access_token=${this.token}`,
 				method: 'get',
 				port: parseInt(port, 10) || (isSecure ? 443 : 80),
-				mode: 'prefer-streaming'
+				mode: 'prefer-streaming',
+				headers: this.options.headers
 			});
 
 			this.req = req;
