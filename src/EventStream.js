@@ -5,7 +5,15 @@ import url from 'url';
 import { EventEmitter } from 'events';
 
 class EventStream extends EventEmitter {
-	constructor(uri, token) {
+	/**
+	 *
+	 * @param {String} uri Event stream URL
+	 * @param {String} token Particle Access Token
+	 * @param {Object} options
+	 * @param {Particle} options.headers key/val http headers to pass along
+	 * @hideconstructor
+	 */
+	constructor(uri, token, options={ headers:{} }) {
 		super();
 		this.uri = uri;
 		this.token = token;
@@ -13,6 +21,7 @@ class EventStream extends EventEmitter {
 		this.timeout = 13000; // keep alive can be sent up to 12 seconds after last event
 		this.data = '';
 		this.buf = '';
+		this.options = options;
 
 		this.parse = this.parse.bind(this);
 		this.end = this.end.bind(this);
