@@ -929,7 +929,7 @@ describe('ParticleAPI', () => {
 		describe('.getEventStream', () => {
 			before(() => {
 				sinon.stub(EventStream.prototype, 'connect').callsFake(function connect(){
-					return Promise.resolve({ uri: this.uri });
+					return Promise.resolve({ uri: this.uri, options: this.options });
 				});
 			});
 
