@@ -892,7 +892,25 @@ class Particle {
 		}
 
 		auth = this._getActiveAuthToken(auth);
-		return new EventStream(`${this.baseUrl}${uri}`, auth).connect();
+		const headers = this._getDefaultHttpHeadersForContext();
+		return new EventStream(`${this.baseUrl}${uri}`, auth, { headers }).connect();
+	}
+
+	/**
+	 * A reimplementation of Agent's _addToolContext() and _addProjectContext() methods
+	 * that can be used by getEventStream() which doesn't use Agent for http interactions
+	 * @private
+	 * @returns {Object} key/value http headers
+	 */
+	_getDefaultHttpHeadersForContext() {
+		const returnThis = {};
+		if (this.context && this.context.tool) {
+			returnThis['X-Particle-Tool'] = `${this.context.tool.name}@${this.context.tool.version}`;
+		}
+		if (this.context && this.context.project) {
+			returnThis['X-Particle-Project'] = `${this.context.project.name}@${this.context.project.version}`;
+		}
+		return returnThis;
 	}
 
 	/**
