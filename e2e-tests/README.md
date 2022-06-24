@@ -5,4 +5,6 @@ They can be used to do deep validations on the behavior of the library against t
 Follow the directions at in each script for how to use them.
 
 Also, you'll need set valid values for env vars like PARTICLE_API_BASE_URL
-and PARTICLE_API_TOKEN
+and PARTICLE_API_TOKEN.
+
+Note also that these e2e-tests are not actively maintained.
