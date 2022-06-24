@@ -937,6 +937,44 @@ describe('ParticleAPI', () => {
 				sinon.restore();
 			});
 
+			describe('http headers', () => {
+				it('initializes options correctly with a blank headers object', async () => {
+					const { options } = await api.getEventStream({});
+					expect(options).to.be.an('object');
+					expect(options.headers).to.be.an('object');
+				});
+
+				it('determines http headers using ._getDefaultHttpHeadersForContext()', async () => {
+					const fakeHeaders = { 'X-Fake-Header': 'foo' };
+					sinon.stub(api, '_getDefaultHttpHeadersForContext').returns(fakeHeaders);
+					const { options } = await api.getEventStream({});
+					expect(options).to.be.an('object');
+					expect(options.headers).to.eql(fakeHeaders);
+				});
+
+				describe('._getDefaultHttpHeadersForContext() (a way to get http headers from context)', () => {
+
+					it('returns empty object when no context has been set', () => {
+						expect(api._getDefaultHttpHeadersForContext()).to.eql({});
+					});
+
+					it('includes X-Particle-Tool when this.context.tool is set', () => {
+						api.setContext('tool', { name: 'fake', version: '1.2.3' });
+						const r = api._getDefaultHttpHeadersForContext();
+						expect(r).to.be.an('object');
+						expect(r['X-Particle-Tool']).to.eql('fake@1.2.3');
+					});
+
+					it('includes X-Particle-Project when this.context.project is set', () => {
+						api.setContext('project', { name: 'fake', version: '1.2.3' });
+						const r = api._getDefaultHttpHeadersForContext();
+						expect(r).to.be.an('object');
+						expect(r['X-Particle-Project']).to.eql('fake@1.2.3');
+					});
+				});
+
+			});
+
 			it('requests public events', () => {
 				return api.getEventStream({ }).then(({ uri }) => {
 					uri.should.endWith('events');
