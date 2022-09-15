@@ -57,7 +57,7 @@
     "browserify": "^13.0.0",
     "chai": "^4.3.6",
     "chai-as-promised": "^7.1.1",
-    "documentation": "^4.0.0-rc.1",
+    "documentation": "^14.0.0",
     "eslint": "^8.17.0",
     "eslint-config-particle": "^2.2.1",
     "karma": "^1.1.1",
