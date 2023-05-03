@@ -11,7 +11,7 @@ describe('Particle', () => {
 
 	describe('downloadFile', () => {
 		it('download the file', () => {
-			const uri = 'https://s3.amazonaws.com/binaries.particle.io/libraries/neopixel/neopixel-0.0.10.tar.gz';
+			const uri = 'https://binaries.particle.io/libraries/neopixel/neopixel-0.0.10.tar.gz';
 			const fileSize = 25505;
 			return api.downloadFile({ uri })
 				.then(contents => {
