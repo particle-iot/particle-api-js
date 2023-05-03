@@ -95,11 +95,40 @@ const props = {
 	groups: ['foo', 'bar'],
 	dateRange: '2020-05-15T18:29:45.000Z,2020-05-19T18:29:45.000Z',
 	rectBl: '56.185412,-4.049868',
-	rectTr: '56.571537,-5.385920'
+	rectTr: '56.571537,-5.385920',
+	blockId: 1,
+	runId: 1,
+	block: {
+		enabled: true,
+		name: 'block-1',
+		description: 'hello world',
+		logic: {
+			type: 'JavaScript',
+			code: 'console.log("hello from block-1");'
+		},
+		matchers: [
+			{
+				type: 'PubSub',
+				enabled: true,
+				product_id: '9001',
+				event_name: 'main',
+			},
+			{
+				type: 'Chron',
+				enabled: true,
+				cron: '0 0 1 * *',
+				start_at: '2021-05-15T18:29:45.000Z',
+				end_at: '2021-05-19T18:29:45.000Z',
+			}
+		]
+	}
 };
 
 const product = 'ze-product-v1';
 const propsWithProduct = Object.assign({ product }, props);
+
+const org = 'test-org';
+const propsWithOrg = Object.assign({ org }, props);
 
 class Common {
 	static expectCredentials({ form }){
@@ -2532,6 +2561,154 @@ describe('ParticleAPI', () => {
 							rect_bl: props.rectBl,
 							rect_tr: props.rectTr
 						}
+					});
+				});
+			});
+		});
+
+		describe('.createLogicBlock', () => {
+			it('generates request', () => {
+				return api.createLogicBlock(propsWithOrg).then((results) => {
+					results.should.match({
+						method: 'post',
+						uri: `/v1/orgs/${org}/block`,
+						auth: props.auth,
+						data: {
+							block: {
+								enabled: true,
+								name: 'block-1',
+								description: 'hello world',
+								logic: {
+									type: 'JavaScript',
+									code: 'console.log("hello from block-1");'
+								},
+								matchers: [
+									{
+										type: 'PubSub',
+										enabled: true,
+										product_id: props.productId,
+										event_name: props.event,
+									},
+									{
+										type: 'Chron',
+										enabled: true,
+										cron: '0 0 1 * *',
+										start_at: '2021-05-15T18:29:45.000Z',
+										end_at: '2021-05-19T18:29:45.000Z',
+									}
+								]
+							}
+						}
+					});
+				});
+			});
+		});
+
+		describe('.getLogicBlock', () => {
+			it('generates request', () => {
+				return api.getLogicBlock(propsWithOrg).then((results) => {
+					results.should.match({
+						method: 'get',
+						uri: `/v1/orgs/${org}/block/${props.blockId}`,
+						auth: props.auth
+					});
+				});
+			});
+		});
+
+		describe('.updateLogicBlock', () => {
+			it('generates request', () => {
+				return api.updateLogicBlock(propsWithOrg).then((results) => {
+					results.should.match({
+						method: 'put',
+						uri: `/v1/orgs/${org}/block/${props.blockId}`,
+						auth: props.auth,
+						data: {
+							block: {
+								enabled: true,
+								name: 'block-1',
+								description: 'hello world',
+								logic: {
+									type: 'JavaScript',
+									code: 'console.log("hello from block-1");'
+								},
+								matchers: [
+									{
+										type: 'PubSub',
+										enabled: true,
+										product_id: props.productId,
+										event_name: props.event,
+									},
+									{
+										type: 'Chron',
+										enabled: true,
+										cron: '0 0 1 * *',
+										start_at: '2021-05-15T18:29:45.000Z',
+										end_at: '2021-05-19T18:29:45.000Z',
+									}
+								]
+							}
+						}
+					});
+				});
+			});
+		});
+
+		describe('.deleteLogicBlock', () => {
+			it('generates request', () => {
+				return api.deleteLogicBlock(propsWithOrg).then((results) => {
+					results.should.match({
+						method: 'delete',
+						uri: `/v1/orgs/${org}/block/${props.blockId}`,
+						auth: props.auth
+					});
+				});
+			});
+		});
+
+		describe('.listLogicBlocks', () => {
+			it('generates request', () => {
+				return api.listLogicBlocks(propsWithOrg).then((results) => {
+					results.should.match({
+						method: 'get',
+						uri: `/v1/orgs/${org}/blocks`,
+						auth: props.auth
+					});
+				});
+			});
+		});
+
+		describe('.listBlockRuns', () => {
+			it('generates request', () => {
+				return api.listBlockRuns(propsWithOrg).then((results) => {
+					results.should.match({
+						method: 'get',
+						uri: `/v1/orgs/${org}/block/${props.blockId}/runs`,
+						auth: props.auth,
+					});
+				});
+			});
+		});
+
+		describe('.getBlockRun', () => {
+			it('generates request', () => {
+				return api.getBlockRun(propsWithOrg).then((results) => {
+					results.should.match({
+						method: 'get',
+						uri: `/v1/orgs/${org}/block/${props.blockId}/run/${props.runId}`,
+						auth: props.auth,
+					});
+				});
+			});
+		});
+
+		describe('.getBlockRunLog', () => {
+			it('generates request', () => {
+				return api.getBlockRunLog(propsWithOrg).then((results) => {
+					results.should.match({
+						method: 'get',
+						uri: `/v1/orgs/${org}/block/${props.blockId}/run/${props.runId}/logs`,
+						auth: props.auth,
 					});
 				});
 			});
