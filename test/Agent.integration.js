@@ -27,7 +27,9 @@ import Agent from '../src/Agent';
 
 describe('Agent', () => {
 	if (!process.env.SKIP_AGENT_TEST){
-		it('can fetch a webpage', () => {
+		it('can fetch a webpage', function cb() {
+			this.retries(5);
+			this.timeout(6000);
 			const agent = new Agent();
 			const query = { a: '1', b: '2' };
 			const result = agent.get({ uri: 'http://httpbin.org/get', query });
