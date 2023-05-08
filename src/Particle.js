@@ -2105,23 +2105,23 @@ class Particle {
 	}
 
 	/**
-     * Creates a new logic block in the specified organization using the provided block data.
-     *
-     * When you create a logic block with PubSub matchers, events will immediately
-     * start being handled by the block code.
-     *
-     * When you create a Chron matcher, it will immediately be scheduled at the next time
-     * according to the cron and start_at properties.
-     *
-     * @param {Object} options         The options for creating the logic block.
-     * @param {Object} options.auth    Access token
-     * @param {string} options.org     The name of the organization.
-     * @param {Block}  options.block   The block object containing the block details.
-     * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-     * @param {Object} [options.context] Request context
-     *
-     * @returns {Promise<{body: {block: ResponseBlock}, statusCode: int}>} A promise that resolves to the created logic block data.
-     */
+	 * Creates a new logic block in the specified organization using the provided block data.
+	 *
+	 * When you create a logic block with PubSub matchers, events will immediately
+	 * start being handled by the block code.
+	 *
+	 * When you create a Chron matcher, it will immediately be scheduled at the next time
+	 * according to the cron and start_at properties.
+	 *
+	 * @param {Object} options         The options for creating the logic block.
+	 * @param {Object} options.auth    Access token
+	 * @param {string} options.org     The name of the organization.
+	 * @param {Block}  options.block   The block object containing the block details.
+	 * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {Object} [options.context] Request context
+	 *
+	 * @returns {Promise<{body: {block: ResponseBlock}, statusCode: int}>} A promise that resolves to the created logic block data.
+	 */
 	createLogicBlock({ auth, org, block, headers, context }) {
 		return this.post({
 			uri: `/v1/orgs/${org}/block`,
@@ -2133,17 +2133,17 @@ class Particle {
 	}
 
 	/**
-     * Get a logic block in the specified organization by block ID.
-     *
-     * @param {Object} options         The options for the logic block.
-     * @param {Object} options.auth    Access token
-     * @param {string} options.org     The name of the organization.
-     * @param {Block}  options.blockId The ID of the block to retrieve.
-     * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-     * @param {Object} [options.context] Request context
-     *
-     * @returns {Promise<{body: {block: ResponseBlock}, statusCode: int}>} A promise that resolves to the specified logic block data.
-     */
+	 * Get a logic block in the specified organization by block ID.
+	 *
+	 * @param {Object} options         The options for the logic block.
+	 * @param {Object} options.auth    Access token
+	 * @param {string} options.org     The name of the organization.
+	 * @param {Block}  options.blockId The ID of the block to retrieve.
+	 * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {Object} [options.context] Request context
+	 *
+	 * @returns {Promise<{body: {block: ResponseBlock}, statusCode: int}>} A promise that resolves to the specified logic block data.
+	 */
 	getLogicBlock({ auth, org, blockId, headers, context }) {
 		return this.get({
 			uri: `/v1/orgs/${org}/block/${blockId}`,
@@ -2154,20 +2154,20 @@ class Particle {
 	}
 
 	/**
-     * Updates an existing logic block in the specified organization using the provided block data.
-     *
-     * If you include an id on a matcher, it will update the matcher in place.
-     *
-     * @param {Object} options          The options for updating the logic block.
-     * @param {Object} options.auth     The authentication object with the API key.
-     * @param {string} options.org      The unique identifier of the organization.
-     * @param {string} options.blockId  The ID of the block to update.
-     * @param {Block} options.block     The block object containing the block details.
-     * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-     * @param {Object} [options.context] Request context.
-     *
-     * @returns {Promise<{body: {block: ResponseBlock}, statusCode: int}>} A promise that resolves to the updated logic block data.
-     */
+	 * Updates an existing logic block in the specified organization using the provided block data.
+	 *
+	 * If you include an id on a matcher, it will update the matcher in place.
+	 *
+	 * @param {Object} options          The options for updating the logic block.
+	 * @param {Object} options.auth     The authentication object with the API key.
+	 * @param {string} options.org      The unique identifier of the organization.
+	 * @param {string} options.blockId  The ID of the block to update.
+	 * @param {Block} options.block     The block object containing the block details.
+	 * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {Object} [options.context] Request context.
+	 *
+	 * @returns {Promise<{body: {block: ResponseBlock}, statusCode: int}>} A promise that resolves to the updated logic block data.
+	 */
 	updateLogicBlock({ auth, org, blockId, block, headers, context }) {
 		return this.put({
 			uri: `/v1/orgs/${org}/block/${blockId}`,
@@ -2179,17 +2179,17 @@ class Particle {
 	}
 
 	/**
-     * Deletes a logic block in the specified organization by block ID.
-     *
-     * @param {Object} options          The options for deleting the logic block.
-     * @param {Object} options.auth     The authentication object with the API key.
-     * @param {string} options.org      The unique identifier of the organization.
-     * @param {string} options.blockId  The ID of the block to delete.
-     * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-     * @param {Object} [options.context] Request context.
-     *
-     * @returns {Promise<{body: {block_id: int}, statusCode: int}>} A promise that resolves to an object containing the deleted block ID.
-     */
+	 * Deletes a logic block in the specified organization by block ID.
+	 *
+	 * @param {Object} options          The options for deleting the logic block.
+	 * @param {Object} options.auth     The authentication object with the API key.
+	 * @param {string} options.org      The unique identifier of the organization.
+	 * @param {string} options.blockId  The ID of the block to delete.
+	 * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {Object} [options.context] Request context.
+	 *
+	 * @returns {Promise<{body: {block_id: int}, statusCode: int}>} A promise that resolves to an object containing the deleted block ID.
+	 */
 	deleteLogicBlock({ auth, org, blockId, headers, context }) {
 		return this.delete({
 			uri: `/v1/orgs/${org}/block/${blockId}`,
@@ -2200,16 +2200,16 @@ class Particle {
 	}
 
 	/**
-     * Lists all logic blocks in the specified organization.
-     *
-     * @param {Object} options          The options for listing logic blocks.
-     * @param {Object} options.auth     The authentication object with the API key.
-     * @param {string} options.org      The unique identifier of the organization.
-     * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-     * @param {Object} [options.context] Request context.
-     *
-     * @returns {Promise<{body: {block: ResponseBlock[]}, statusCode: int}>} A promise that resolves to an array of logic block data.
-     */
+	 * Lists all logic blocks in the specified organization.
+	 *
+	 * @param {Object} options          The options for listing logic blocks.
+	 * @param {Object} options.auth     The authentication object with the API key.
+	 * @param {string} options.org      The unique identifier of the organization.
+	 * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {Object} [options.context] Request context.
+	 *
+	 * @returns {Promise<{body: {block: ResponseBlock[]}, statusCode: int}>} A promise that resolves to an array of logic block data.
+	 */
 	listLogicBlocks({ auth, org, headers, context }) {
 		return this.get({
 			uri: `/v1/orgs/${org}/blocks`,
@@ -2220,17 +2220,17 @@ class Particle {
 	}
 
 	/**
-     * Lists all block runs for the specified block.
-     *
-     * @param {Object} options          The options for the request.
-     * @param {Object} options.auth     Access token
-     * @param {string} options.org      The unique identifier of the organization.
-     * @param {number} options.blockId  The ID of the block for which to retrieve the block runs.
-     * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-     * @param {Object} [options.context] Request context
-     *
-     * @returns {Promise<{body: {blocks: BlockRun[]}, statusCode: int}>} A promise that resolves to an array of block run data.
-     */
+	 * Lists all block runs for the specified block.
+	 *
+	 * @param {Object} options          The options for the request.
+	 * @param {Object} options.auth     Access token
+	 * @param {string} options.org      The unique identifier of the organization.
+	 * @param {number} options.blockId  The ID of the block for which to retrieve the block runs.
+	 * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {Object} [options.context] Request context
+	 *
+	 * @returns {Promise<{body: {blocks: BlockRun[]}, statusCode: int}>} A promise that resolves to an array of block run data.
+	 */
 	listBlockRuns({ auth, org, blockId, headers, context }) {
 		return this.get({
 			uri: `/v1/orgs/${org}/block/${blockId}/runs`,
@@ -2241,18 +2241,18 @@ class Particle {
 	}
 
 	/**
-     * Retrieves a block run by its ID for the specified block.
-     *
-     * @param {Object} options          The options for the request.
-     * @param {Object} options.auth     Access token
-     * @param {string} options.org      The unique identifier of the organization.
-     * @param {number} options.blockId  The ID of the block for which to retrieve the block run.
-     * @param {number} options.runId    The ID of the block run to retrieve.
-     * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-     * @param {Object} [options.context] Request context
-     *
-     * @returns {Promise<{body: {block_runs: BlockRun[]}, statusCode: int}>} A promise that resolves to an array of block run data for the specified block run ID.
-     */
+	 * Retrieves a block run by its ID for the specified block.
+	 *
+	 * @param {Object} options          The options for the request.
+	 * @param {Object} options.auth     Access token
+	 * @param {string} options.org      The unique identifier of the organization.
+	 * @param {number} options.blockId  The ID of the block for which to retrieve the block run.
+	 * @param {number} options.runId    The ID of the block run to retrieve.
+	 * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {Object} [options.context] Request context
+	 *
+	 * @returns {Promise<{body: {block_runs: BlockRun[]}, statusCode: int}>} A promise that resolves to an array of block run data for the specified block run ID.
+	 */
 	getBlockRun({ auth, org, blockId, runId, headers, context }) {
 		return this.get({
 			uri: `/v1/orgs/${org}/block/${blockId}/run/${runId}`,
@@ -2263,18 +2263,18 @@ class Particle {
 	}
 
 	/**
-     * Retrieves the logs for a block run by its ID for the specified block.
-     *
-     * @param {Object} options          The options for the request.
-     * @param {Object} options.auth     Access token
-     * @param {string} options.org      The unique identifier of the organization.
-     * @param {number} options.blockId  The ID of the block for which to retrieve the block run logs.
-     * @param {number} options.runId    The ID of the block run for which to retrieve the logs.
-     * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-     * @param {Object} [options.context] Request context
-     *
-     * @returns {Promise<{body: {block_run_log: BlockRunLog}, statusCode: int}>} A promise that resolves to the logs for the specified block run ID.
-     */
+	 * Retrieves the logs for a block run by its ID for the specified block.
+	 *
+	 * @param {Object} options          The options for the request.
+	 * @param {Object} options.auth     Access token
+	 * @param {string} options.org      The unique identifier of the organization.
+	 * @param {number} options.blockId  The ID of the block for which to retrieve the block run logs.
+	 * @param {number} options.runId    The ID of the block run for which to retrieve the logs.
+	 * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {Object} [options.context] Request context
+	 *
+	 * @returns {Promise<{body: {block_run_log: BlockRunLog}, statusCode: int}>} A promise that resolves to the logs for the specified block run ID.
+	 */
 	getBlockRunLog({ auth, org, blockId, runId, headers, context }) {
 		return this.get({
 			uri: `/v1/orgs/${org}/block/${blockId}/run/${runId}/logs`,
