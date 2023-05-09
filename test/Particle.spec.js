@@ -110,7 +110,7 @@ const props = {
 			{
 				type: 'PubSub',
 				enabled: true,
-				product_id: '9001',
+				product_id: 9001,
 				event_name: 'main',
 			},
 			{
@@ -2586,7 +2586,7 @@ describe('ParticleAPI', () => {
 									{
 										type: 'PubSub',
 										enabled: true,
-										product_id: props.productId,
+										product_id: parseInt(props.productId),
 										event_name: props.event,
 									},
 									{
@@ -2636,7 +2636,7 @@ describe('ParticleAPI', () => {
 									{
 										type: 'PubSub',
 										enabled: true,
-										product_id: props.productId,
+										product_id: parseInt(props.productId),
 										event_name: props.event,
 									},
 									{
