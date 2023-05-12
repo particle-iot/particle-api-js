@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  browser-tools: circleci/browser-tools@1.1.0
+  browser-tools: circleci/browser-tools@1
 
 jobs:
   run-tests:
@@ -23,7 +23,7 @@ jobs:
           command: npm run test:ci
       - when:
           condition:
-            equal: ["16.15.0", << parameters.node-version >>]
+            equal: ["16.20.0", << parameters.node-version >>]
           steps:
             - browser-tools/install-browser-tools
             - run:
@@ -31,7 +31,7 @@ jobs:
                 command: npm run test:browser
   publish-npm:
     docker:
-      - image: cimg/node:16.15.0 # Primary execution image
+      - image: cimg/node:16.20.0 # Primary execution image
         auth:
           username: $DOCKERHUB_USERNAME
           password: $DOCKERHUB_PASSWORD
@@ -59,7 +59,7 @@ workflows:
             - particle-ci-private
           matrix:
             parameters:
-              node-version: ["12.22.12", "14.19.2", "16.15.0"]
+              node-version: ["12.22.12", "14.19.2", "16.20.0"]
           # run tests for all branches and tags
           filters:
             tags:
