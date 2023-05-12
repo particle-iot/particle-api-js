@@ -2233,7 +2233,7 @@ class Particle {
 	 */
 	listBlockRuns({ auth, org, blockId, headers, context }) {
 		return this.get({
-			uri: `/v1/orgs/${org}/block/${blockId}/runs`,
+			uri: `/v1/orgs/${org}/block/${blockId}/run`,
 			auth,
 			headers,
 			context
