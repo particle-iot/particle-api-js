@@ -2671,7 +2671,7 @@ describe('ParticleAPI', () => {
 				return api.listLogicBlocks(propsWithOrg).then((results) => {
 					results.should.match({
 						method: 'get',
-						uri: `/v1/orgs/${org}/blocks`,
+						uri: `/v1/orgs/${org}/block`,
 						auth: props.auth
 					});
 				});
