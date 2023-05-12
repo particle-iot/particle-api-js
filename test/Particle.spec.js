@@ -2683,7 +2683,7 @@ describe('ParticleAPI', () => {
 				return api.listBlockRuns(propsWithOrg).then((results) => {
 					results.should.match({
 						method: 'get',
-						uri: `/v1/orgs/${org}/block/${props.blockId}/runs`,
+						uri: `/v1/orgs/${org}/block/${props.blockId}/run`,
 						auth: props.auth,
 					});
 				});
