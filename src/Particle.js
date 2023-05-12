@@ -2212,7 +2212,7 @@ class Particle {
 	 */
 	listLogicBlocks({ auth, org, headers, context }) {
 		return this.get({
-			uri: `/v1/orgs/${org}/blocks`,
+			uri: `/v1/orgs/${org}/block`,
 			auth,
 			headers,
 			context
