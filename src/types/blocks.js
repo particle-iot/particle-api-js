@@ -12,17 +12,17 @@
  * @property {Matcher[]} matchers The matchers for the block
  *
  * @typedef {Object} Logic
- * @property {string} type Must be "JavaScript"
+ * @property {"JavaScript"} type Must be "JavaScript"
  * @property {string} code The JavaScript code to run
  *
  * @typedef {Object} PubSubMatcher
- * @property {string} type Must be "PubSub"
+ * @property {"PubSub"} type Must be "PubSub"
  * @property {boolean} enabled Whether the matcher is enabled
  * @property {number} product_id The ID of the product to match
  * @property {string} event_name The name of the event to match
  *
  * @typedef {Object} ChronMatcher
- * @property {string} type Must be "Chron"
+ * @property {"Chron"} type Must be "Chron"
  * @property {boolean} enabled Whether the matcher is enabled
  * @property {string} cron The cron schedule for the matcher
  * @property {string} [start_at] The start time for the matcher (ISO 8601 format)
@@ -66,7 +66,7 @@
  * @property {MatcherResponse[]} matchers The matchers associated with the block
  *
  * @typedef {Object} PubSubMatcherResponse
- * @property {string} type Must be "PubSub"
+ * @property {"PubSub"} type Must be "PubSub"
  * @property {boolean} enabled Whether the matcher is enabled
  * @property {number} product_id The ID of the product to match
  * @property {string} event_name The name of the event to match
@@ -77,7 +77,7 @@
  * @property {string} next_unscheduled_at The next time the matcher will be scheduled (ISO 8601 format)
  *
  * @typedef {Object} ChronMatcherResponse
- * @property {string} type Must be "Chron"
+ * @property {"Chron"} type Must be "Chron"
  * @property {boolean} enabled Whether the matcher is enabled
  * @property {string} cron The cron schedule for the matcher
  * @property {string} start_at The start time for the matcher (ISO 8601 format)
