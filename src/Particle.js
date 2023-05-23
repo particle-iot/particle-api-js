@@ -2154,15 +2154,16 @@ class Particle {
 	}
 
 	/**
-	 * Updates an existing logic block in the specified organization using the provided block data.
+	 * Updates an existing logic block in the specified organization, completely overwriting the existing block in-place.
+	 * If you include an id on a matcher, it will update the matcher in-place.
 	 *
-	 * If you include an id on a matcher, it will update the matcher in place.
+	 * See patchLogicBlock if you want to update only some properties.
 	 *
 	 * @param {Object} options          The options for updating the logic block.
 	 * @param {Object} options.auth     The authentication object with the API key.
 	 * @param {string} options.org      The unique identifier of the organization.
 	 * @param {string} options.blockId  The ID of the block to update.
-	 * @param {Block} options.block     The block object containing the block details.
+	 * @param {Block} options.block     The block object containing the block details. Must include all fields.
 	 * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context] Request context.
 	 *
@@ -2171,6 +2172,29 @@ class Particle {
 	updateLogicBlock({ auth, org, blockId, block, headers, context }) {
 		return this.put({
 			uri: `/v1/orgs/${org}/block/${blockId}`,
+			auth,
+			data: { block },
+			headers,
+			context
+		});
+	}
+
+	/**
+	 * Updates logic block in the specified organization, partially updating the existing block in-place.
+	 *
+	 * @param {Object} options          The options for updating the logic block.
+	 * @param {Object} options.auth     The authentication object with the API key.
+	 * @param {string} options.org      The unique identifier of the organization.
+	 * @param {string} options.blockName  The name of the block to update.
+	 * @param {Block} options.block     The block object containing the block details. Only the properties you want to update need to be included.
+	 * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {Object} [options.context] Request context.
+	 *
+	 * @returns {Promise<{body: {block: ResponseBlock}, statusCode: int}>} A promise that resolves to the updated logic block data.
+	 */
+	patchLogicBlock({ auth, org, blockName, block, headers, context }) {
+		return this.post({
+			uri: `/v1/orgs/${org}/block/${blockName}`,
 			auth,
 			data: { block },
 			headers,
