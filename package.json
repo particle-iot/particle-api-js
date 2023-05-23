@@ -3,10 +3,11 @@
   "version": "9.4.1",
   "description": "Particle API Client",
   "main": "lib/Particle.js",
+  "types": "types/index.d.ts",
   "scripts": {
     "babel-watch": "babel src -d lib --watch --source-maps",
     "prepublish": "npm run lint && npm run compile",
-    "compile": "babel src -sd lib",
+    "compile": "npm run generate-types && babel src -sd lib",
     "test": "npm run lint && npm run test:unit",
     "test:ci": "npm run lint && npm run test:unit -- --forbid-only && npm run coverage",
     "test:unit": "mocha test/ -R spec --compilers js:babel-register",
@@ -22,7 +23,8 @@
     "preversion": "npm run test && npm run prepublish",
     "reinstall": "rm -rf ./node_modules && npm i",
     "version": "npm run build && npm run docs && npm run update-changelog && git add dist/* docs/*",
-    "update-changelog": "VERSION=`node -p -e \"require('./package.json').version\"` bash -c 'read -p \"Update CHANGELOG.md for version $VERSION and press ENTER when done.\"' && git add CHANGELOG.md"
+    "update-changelog": "VERSION=`node -p -e \"require('./package.json').version\"` bash -c 'read -p \"Update CHANGELOG.md for version $VERSION and press ENTER when done.\"' && git add CHANGELOG.md",
+    "generate-types": "tsc"
   },
   "repository": {
     "type": "git",
@@ -46,6 +48,7 @@
   ],
   "license": "Apache-2.0",
   "devDependencies": {
+    "@types/node": "^16.18.32",
     "babel-cli": "^6.9.0",
     "babel-eslint": "^6.0.4",
     "babel-plugin-add-module-exports": "^0.1.2",
@@ -73,6 +76,7 @@
     "should": "^9.0.0",
     "sinon": "^7.2.5",
     "sinon-chai": "^3.7.0",
+    "typescript": "^5.0.4",
     "watchify": "^3.7.0"
   },
   "dependencies": {

@@ -13,3 +13,4 @@ lib/
 *.tgz
 .vscode
 tmp
+/types
