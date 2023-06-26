@@ -121,6 +121,13 @@ const props = {
 				end_at: '2021-05-19T18:29:45.000Z',
 			}
 		]
+	},
+	ledgerName: 'myledger',
+	definition: {
+		scope: 'Owner',
+		name: 'myledger',
+		description: 'my ledger',
+		direction: 'Downstream'
 	}
 };
 
@@ -2722,6 +2729,82 @@ describe('ParticleAPI', () => {
 						data: { password: props.password },
 						method: 'delete',
 						uri: '/v1/user',
+						auth: props.auth
+					});
+				});
+			});
+		});
+
+		describe('.createLedgerDefinition', () => {
+			it('generates request', () => {
+				return api.createLedgerDefinition(propsWithOrg).then((results) => {
+					results.should.match({
+						method: 'post',
+						uri: `/v1/orgs/${org}/ledgers`,
+						auth: props.auth,
+						data: {
+							definition: {
+								scope: 'Owner',
+								name: 'myledger',
+								description: 'my ledger',
+								direction: 'Downstream'
+							}
+						}
+					});
+				});
+			});
+		});
+
+		describe('.getLedgerDefinition', () => {
+			it('generates request', () => {
+				return api.getLedgerDefinition(propsWithOrg).then((results) => {
+					results.should.match({
+						method: 'get',
+						uri: `/v1/orgs/${org}/ledgers/${props.ledgerName}`,
+						auth: props.auth
+					});
+				});
+			});
+		});
+
+		describe('.updateLedgerDefinition', () => {
+			it('generates request', () => {
+				return api.updateLedgerDefinition(propsWithOrg).then((results) => {
+					results.should.match({
+						method: 'put',
+						uri: `/v1/orgs/${org}/ledgers/${props.ledgerName}`,
+						auth: props.auth,
+						data: {
+							definition: {
+								scope: 'Owner',
+								name: 'myledger',
+								description: 'my ledger',
+								direction: 'Downstream'
+							}
+						}
+					});
+				});
+			});
+		});
+
+		describe('.archiveLedgerDefinition', () => {
+			it('generates request', () => {
+				return api.archiveLedgerDefinition(propsWithOrg).then((results) => {
+					results.should.match({
+						method: 'delete',
+						uri: `/v1/orgs/${org}/ledgers/${props.ledgerName}`,
+						auth: props.auth
+					});
+				});
+			});
+		});
+
+		describe('.listLedgerDefinitions', () => {
+			it('generates request', () => {
+				return api.listLedgerDefinitions(propsWithOrg).then((results) => {
+					results.should.match({
+						method: 'get',
+						uri: `/v1/orgs/${org}/ledgers`,
 						auth: props.auth
 					});
 				});
