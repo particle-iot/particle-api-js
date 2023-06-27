@@ -2392,6 +2392,95 @@ class Particle {
 	}
 
 	/**
+	 * Get ledger instance data.
+	 *
+	 * @param {Object} options         The options for the ledger instance.
+	 * @param {Object} options.auth    Access token
+	 * @param {string} options.org     The name of the organization.
+	 * @param {string} options.ledgerName Ledger name.
+	 * @param {string} options.scopeValue Scope value.
+	 * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {Object} [options.context] Request context
+	 *
+	 * @returns {Promise<{body: {instance: ResponseLedgerInstance}, statusCode: int}>} A promise that resolves to the specified ledger instance data.
+	 */
+	getLedgerInstance({ auth, org, ledgerName, scopeValue, headers, context }) {
+		return this.get({
+			uri: `/v1/orgs/${org}/ledgers/${ledgerName}/instances/${scopeValue}`,
+			auth,
+			headers,
+			context
+		});
+	}
+
+	/**
+	 * Set ledger instance data.
+	 *
+	 * @param {Object} options          The options for updating the ledger instance.
+	 * @param {Object} options.auth     The authentication object with the API key.
+	 * @param {string} options.org      The unique identifier of the organization.
+	 * @param {string} options.ledgerName Ledger name.
+	 * @param {string} options.scopeValue Scope value.
+	 * @param {LedgerInstance} options.instance     The ledger instance object.
+	 * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {Object} [options.context] Request context.
+	 *
+	 * @returns {Promise<{body: {instance: ResponseLedgerInstance}, statusCode: int}>} A promise that resolves to the updated ledger instance data.
+	 */
+	setLedgerInstance({ auth, org, ledgerName, scopeValue, data, headers, context }) {
+		return this.put({
+			uri: `/v1/orgs/${org}/ledgers/${ledgerName}/instances/${scopeValue}`,
+			auth,
+			data: { data },
+			headers,
+			context
+		});
+	}
+
+	/**
+	 * Delete a ledger instance in the specified organization by ledger name.
+	 *
+	 * @param {Object} options          The options for archiving the ledger instance.
+	 * @param {Object} options.auth     The authentication object with the API key.
+	 * @param {string} options.org      The unique identifier of the organization.
+	 * @param {string} options.ledgerName  Name of the ledger instance to archive.
+	 * @param {string} options.scopeValue Scope value.
+	 * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {Object} [options.context] Request context.
+	 *
+	 * @returns {Promise<{body: {archived: Boolean}, statusCode: int}>} A promise that resolves to an object confirming the ledger instance was deleted.
+	 */
+	deleteLedgerInstance({ auth, org, ledgerName, scopeValue, headers, context }) {
+		return this.delete({
+			uri: `/v1/orgs/${org}/ledgers/${ledgerName}/instances/${scopeValue}`,
+			auth,
+			headers,
+			context
+		});
+	}
+
+	/**
+	 * Lists ledger instances.
+	 *
+	 * @param {Object} options          The options for listing ledger instances.
+	 * @param {Object} options.auth     The authentication object with the API key.
+	 * @param {string} options.org      The unique identifier of the organization.
+	 * @param {string} options.ledgerName  Name of the ledger instance to archive.
+	 * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {Object} [options.context] Request context.
+	 *
+	 * @returns {Promise<{body: {instance: ResponseLedgerInstance[]}, statusCode: int}>} A promise that resolves to an array of ledger instance data.
+	 */
+	listLedgerInstances({ auth, org, ledgerName, headers, context }) {
+		return this.get({
+			uri: `/v1/orgs/${org}/ledgers/${ledgerName}/instances`,
+			auth,
+			headers,
+			context
+		});
+	}
+
+	/**
 	 * Set default auth token that will be used in each method if `auth` is not provided
 	 * @param  {String} auth A Particle access token
 	 * @returns {undefined}
