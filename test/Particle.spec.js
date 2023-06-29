@@ -2662,6 +2662,27 @@ describe('ParticleAPI', () => {
 			});
 		});
 
+		describe('.patchLogicBlock', () => {
+			it('generates request', () => {
+				const propsWithBlockName = Object.assign({ blockName: props.block.name }, propsWithOrg);
+				return api.patchLogicBlock(propsWithBlockName).then((results) => {
+					results.should.match({
+						method: 'post',
+						uri: `/v1/orgs/${org}/block/${props.block.name}`,
+						auth: props.auth,
+						data: {
+							block: {
+								logic: {
+									type: 'JavaScript',
+									code: 'console.log("hello from block-1");'
+								}
+							}
+						}
+					});
+				});
+			});
+		});
+
 		describe('.deleteLogicBlock', () => {
 			it('generates request', () => {
 				return api.deleteLogicBlock(propsWithOrg).then((results) => {
