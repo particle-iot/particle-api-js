@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "declarationMap": true,
+    "outDir": "./types",
+    "allowJs": true,
+    "checkJs": false
+  },
+  "include": ["src/**/*.js"],
+  "exclude": ["node_modules", "test"]
+}
