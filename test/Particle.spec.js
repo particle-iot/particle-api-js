@@ -123,7 +123,7 @@ const props = {
 		]
 	},
 	ledgerName: 'myledger',
-	definition: {
+	ledger: {
 		scope: 'Owner',
 		name: 'myledger',
 		description: 'my ledger',
@@ -2736,15 +2736,15 @@ describe('ParticleAPI', () => {
 			});
 		});
 
-		describe('.createLedgerDefinition', () => {
+		describe('.createLedger', () => {
 			it('generates request', () => {
-				return api.createLedgerDefinition(propsWithOrg).then((results) => {
+				return api.createLedger(propsWithOrg).then((results) => {
 					results.should.match({
 						method: 'post',
 						uri: `/v1/orgs/${org}/ledgers`,
 						auth: props.auth,
 						data: {
-							definition: {
+							ledger: {
 								scope: 'Owner',
 								name: 'myledger',
 								description: 'my ledger',
@@ -2756,9 +2756,9 @@ describe('ParticleAPI', () => {
 			});
 		});
 
-		describe('.getLedgerDefinition', () => {
+		describe('.getLedger', () => {
 			it('generates request', () => {
-				return api.getLedgerDefinition(propsWithOrg).then((results) => {
+				return api.getLedger(propsWithOrg).then((results) => {
 					results.should.match({
 						method: 'get',
 						uri: `/v1/orgs/${org}/ledgers/${props.ledgerName}`,
@@ -2768,15 +2768,15 @@ describe('ParticleAPI', () => {
 			});
 		});
 
-		describe('.updateLedgerDefinition', () => {
+		describe('.updateLedger', () => {
 			it('generates request', () => {
-				return api.updateLedgerDefinition(propsWithOrg).then((results) => {
+				return api.updateLedger(propsWithOrg).then((results) => {
 					results.should.match({
 						method: 'put',
 						uri: `/v1/orgs/${org}/ledgers/${props.ledgerName}`,
 						auth: props.auth,
 						data: {
-							definition: {
+							ledger: {
 								scope: 'Owner',
 								name: 'myledger',
 								description: 'my ledger',
@@ -2788,9 +2788,9 @@ describe('ParticleAPI', () => {
 			});
 		});
 
-		describe('.archiveLedgerDefinition', () => {
+		describe('.archiveLedger', () => {
 			it('generates request', () => {
-				return api.archiveLedgerDefinition(propsWithOrg).then((results) => {
+				return api.archiveLedger(propsWithOrg).then((results) => {
 					results.should.match({
 						method: 'delete',
 						uri: `/v1/orgs/${org}/ledgers/${props.ledgerName}`,
@@ -2800,9 +2800,9 @@ describe('ParticleAPI', () => {
 			});
 		});
 
-		describe('.listLedgerDefinitions', () => {
+		describe('.listLedgers', () => {
 			it('generates request', () => {
-				return api.listLedgerDefinitions(propsWithOrg).then((results) => {
+				return api.listLedgers(propsWithOrg).then((results) => {
 					results.should.match({
 						method: 'get',
 						uri: `/v1/orgs/${org}/ledgers`,
