@@ -2124,7 +2124,7 @@ class Particle {
 	 */
 	createLogicBlock({ auth, org, block, headers, context }) {
 		return this.post({
-			uri: `/v1/orgs/${org}/block`,
+			uri: `/v1/orgs/${org}/blocks`,
 			auth,
 			data: { block },
 			headers,
@@ -2146,7 +2146,7 @@ class Particle {
 	 */
 	getLogicBlock({ auth, org, blockId, headers, context }) {
 		return this.get({
-			uri: `/v1/orgs/${org}/block/${blockId}`,
+			uri: `/v1/orgs/${org}/blocks/${blockId}`,
 			auth,
 			headers,
 			context
@@ -2170,7 +2170,7 @@ class Particle {
 	 */
 	updateLogicBlock({ auth, org, blockId, block, headers, context }) {
 		return this.put({
-			uri: `/v1/orgs/${org}/block/${blockId}`,
+			uri: `/v1/orgs/${org}/blocks/${blockId}`,
 			auth,
 			data: { block },
 			headers,
@@ -2192,7 +2192,7 @@ class Particle {
 	 */
 	deleteLogicBlock({ auth, org, blockId, headers, context }) {
 		return this.delete({
-			uri: `/v1/orgs/${org}/block/${blockId}`,
+			uri: `/v1/orgs/${org}/blocks/${blockId}`,
 			auth,
 			headers,
 			context
@@ -2212,7 +2212,7 @@ class Particle {
 	 */
 	listLogicBlocks({ auth, org, headers, context }) {
 		return this.get({
-			uri: `/v1/orgs/${org}/block`,
+			uri: `/v1/orgs/${org}/blocks`,
 			auth,
 			headers,
 			context
@@ -2233,7 +2233,7 @@ class Particle {
 	 */
 	listBlockRuns({ auth, org, blockId, headers, context }) {
 		return this.get({
-			uri: `/v1/orgs/${org}/block/${blockId}/run`,
+			uri: `/v1/orgs/${org}/blocks/${blockId}/runs`,
 			auth,
 			headers,
 			context
@@ -2255,7 +2255,7 @@ class Particle {
 	 */
 	getBlockRun({ auth, org, blockId, runId, headers, context }) {
 		return this.get({
-			uri: `/v1/orgs/${org}/block/${blockId}/run/${runId}`,
+			uri: `/v1/orgs/${org}/blocks/${blockId}/runs/${runId}`,
 			auth,
 			headers,
 			context
@@ -2277,7 +2277,7 @@ class Particle {
 	 */
 	getBlockRunLog({ auth, org, blockId, runId, headers, context }) {
 		return this.get({
-			uri: `/v1/orgs/${org}/block/${blockId}/run/${runId}/logs`,
+			uri: `/v1/orgs/${org}/blocks/${blockId}/runs/${runId}/logs`,
 			auth,
 			headers,
 			context
