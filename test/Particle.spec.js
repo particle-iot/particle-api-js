@@ -2579,7 +2579,7 @@ describe('ParticleAPI', () => {
 				return api.createLogicBlock(propsWithOrg).then((results) => {
 					results.should.match({
 						method: 'post',
-						uri: `/v1/orgs/${org}/block`,
+						uri: `/v1/orgs/${org}/blocks`,
 						auth: props.auth,
 						data: {
 							block: {
@@ -2617,7 +2617,7 @@ describe('ParticleAPI', () => {
 				return api.getLogicBlock(propsWithOrg).then((results) => {
 					results.should.match({
 						method: 'get',
-						uri: `/v1/orgs/${org}/block/${props.blockId}`,
+						uri: `/v1/orgs/${org}/blocks/${props.blockId}`,
 						auth: props.auth
 					});
 				});
@@ -2629,7 +2629,7 @@ describe('ParticleAPI', () => {
 				return api.updateLogicBlock(propsWithOrg).then((results) => {
 					results.should.match({
 						method: 'put',
-						uri: `/v1/orgs/${org}/block/${props.blockId}`,
+						uri: `/v1/orgs/${org}/blocks/${props.blockId}`,
 						auth: props.auth,
 						data: {
 							block: {
@@ -2667,7 +2667,7 @@ describe('ParticleAPI', () => {
 				return api.deleteLogicBlock(propsWithOrg).then((results) => {
 					results.should.match({
 						method: 'delete',
-						uri: `/v1/orgs/${org}/block/${props.blockId}`,
+						uri: `/v1/orgs/${org}/blocks/${props.blockId}`,
 						auth: props.auth
 					});
 				});
@@ -2679,7 +2679,7 @@ describe('ParticleAPI', () => {
 				return api.listLogicBlocks(propsWithOrg).then((results) => {
 					results.should.match({
 						method: 'get',
-						uri: `/v1/orgs/${org}/block`,
+						uri: `/v1/orgs/${org}/blocks`,
 						auth: props.auth
 					});
 				});
@@ -2691,7 +2691,7 @@ describe('ParticleAPI', () => {
 				return api.listBlockRuns(propsWithOrg).then((results) => {
 					results.should.match({
 						method: 'get',
-						uri: `/v1/orgs/${org}/block/${props.blockId}/run`,
+						uri: `/v1/orgs/${org}/blocks/${props.blockId}/runs`,
 						auth: props.auth,
 					});
 				});
@@ -2703,7 +2703,7 @@ describe('ParticleAPI', () => {
 				return api.getBlockRun(propsWithOrg).then((results) => {
 					results.should.match({
 						method: 'get',
-						uri: `/v1/orgs/${org}/block/${props.blockId}/run/${props.runId}`,
+						uri: `/v1/orgs/${org}/blocks/${props.blockId}/runs/${props.runId}`,
 						auth: props.auth,
 					});
 				});
@@ -2715,7 +2715,7 @@ describe('ParticleAPI', () => {
 				return api.getBlockRunLog(propsWithOrg).then((results) => {
 					results.should.match({
 						method: 'get',
-						uri: `/v1/orgs/${org}/block/${props.blockId}/run/${props.runId}/logs`,
+						uri: `/v1/orgs/${org}/blocks/${props.blockId}/runs/${props.runId}/logs`,
 						auth: props.auth,
 					});
 				});
