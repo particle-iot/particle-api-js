@@ -2290,17 +2290,17 @@ class Particle {
 	 * @param {Object} options         The options for creating the ledger definition.
 	 * @param {Object} options.auth    Access token
 	 * @param {string} options.org     The name of the organization.
-	 * @param {LedgerDefinition}  options.definition   The ledger definition object.
+	 * @param {Ledger}  options.definition   The ledger definition object.
 	 * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context] Request context
 	 *
-	 * @returns {Promise<{body: {definition: ResponseLedgerDefinition}, statusCode: int}>} A promise that resolves to the created ledger definition data.
+	 * @returns {Promise<{body: {ledger: ResponseLedger}, statusCode: int}>} A promise that resolves to the created ledger definition data.
 	 */
-	createLedgerDefinition({ auth, org, definition, headers, context }) {
+	createLedger({ auth, org, ledger, headers, context }) {
 		return this.post({
 			uri: `/v1/orgs/${org}/ledgers`,
 			auth,
-			data: { definition },
+			data: { ledger },
 			headers,
 			context
 		});
@@ -2316,9 +2316,9 @@ class Particle {
 	 * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context] Request context
 	 *
-	 * @returns {Promise<{body: {definition: ResponseLedgerDefinition}, statusCode: int}>} A promise that resolves to the specified ledger definition data.
+	 * @returns {Promise<{body: {ledger: ResponseLedger}, statusCode: int}>} A promise that resolves to the specified ledger definition data.
 	 */
-	getLedgerDefinition({ auth, org, ledgerName, headers, context }) {
+	getLedger({ auth, org, ledgerName, headers, context }) {
 		return this.get({
 			uri: `/v1/orgs/${org}/ledgers/${ledgerName}`,
 			auth,
@@ -2334,17 +2334,17 @@ class Particle {
 	 * @param {Object} options.auth     The authentication object with the API key.
 	 * @param {string} options.org      The unique identifier of the organization.
 	 * @param {string} options.ledgerName  Name of the ledger definition to update.
-	 * @param {LedgerDefinition} options.definition     The ledger definition object.
+	 * @param {Ledger} options.ledger     The ledger definition object.
 	 * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context] Request context.
 	 *
-	 * @returns {Promise<{body: {definition: ResponseLedgerDefinition}, statusCode: int}>} A promise that resolves to the updated ledger definition data.
+	 * @returns {Promise<{body: {ledger: ResponseLedger}, statusCode: int}>} A promise that resolves to the updated ledger definition data.
 	 */
-	updateLedgerDefinition({ auth, org, ledgerName, definition, headers, context }) {
+	updateLedger({ auth, org, ledgerName, ledger, headers, context }) {
 		return this.put({
 			uri: `/v1/orgs/${org}/ledgers/${ledgerName}`,
 			auth,
-			data: { definition },
+			data: { ledger },
 			headers,
 			context
 		});
@@ -2360,9 +2360,9 @@ class Particle {
 	 * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context] Request context.
 	 *
-	 * @returns {Promise<{body: {archived: Boolean}, statusCode: int}>} A promise that resolves to an object confirming the ledger definition was archived.
+	 * @returns {Promise<{body: undefined, statusCode: int}>} A promise that resolves to an object confirming the ledger definition was archived.
 	 */
-	archiveLedgerDefinition({ auth, org, ledgerName, headers, context }) {
+	archiveLedger({ auth, org, ledgerName, headers, context }) {
 		return this.delete({
 			uri: `/v1/orgs/${org}/ledgers/${ledgerName}`,
 			auth,
@@ -2380,9 +2380,9 @@ class Particle {
 	 * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context] Request context.
 	 *
-	 * @returns {Promise<{body: {definition: ResponseLedgerDefinition[]}, statusCode: int}>} A promise that resolves to an array of ledger definition data.
+	 * @returns {Promise<{body: {ledgers: ResponseLedger[]}, statusCode: int}>} A promise that resolves to an array of ledger definition data.
 	 */
-	listLedgerDefinitions({ auth, org, headers, context }) {
+	listLedgers({ auth, org, headers, context }) {
 		return this.get({
 			uri: `/v1/orgs/${org}/ledgers`,
 			auth,
@@ -2448,7 +2448,7 @@ class Particle {
 	 * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context] Request context.
 	 *
-	 * @returns {Promise<{body: {archived: Boolean}, statusCode: int}>} A promise that resolves to an object confirming the ledger instance was deleted.
+	 * @returns {Promise<{body: undefined, statusCode: int}>} A promise that resolves to an object confirming the ledger instance was deleted.
 	 */
 	deleteLedgerInstance({ auth, org, ledgerName, scopeValue, headers, context }) {
 		return this.delete({
