@@ -2208,7 +2208,7 @@ class Particle {
 	 * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context] Request context.
 	 *
-	 * @returns {Promise<{body: {block: ResponseBlock[]}, statusCode: int}>} A promise that resolves to an array of logic block data.
+	 * @returns {Promise<{body: {blocks: ResponseBlock[]}, statusCode: int}>} A promise that resolves to an array of logic block data.
 	 */
 	listLogicBlocks({ auth, org, headers, context }) {
 		return this.get({
@@ -2229,7 +2229,7 @@ class Particle {
 	 * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context] Request context
 	 *
-	 * @returns {Promise<{body: {blocks: BlockRun[]}, statusCode: int}>} A promise that resolves to an array of block run data.
+	 * @returns {Promise<{body: {block_runs: BlockRun[]}, statusCode: int}>} A promise that resolves to an array of block run data.
 	 */
 	listBlockRuns({ auth, org, blockId, headers, context }) {
 		return this.get({
@@ -2251,7 +2251,7 @@ class Particle {
 	 * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context] Request context
 	 *
-	 * @returns {Promise<{body: {block_runs: BlockRun[]}, statusCode: int}>} A promise that resolves to an array of block run data for the specified block run ID.
+	 * @returns {Promise<{body: {block_run: BlockRun}, statusCode: int}>} A promise that resolves to an array of block run data for the specified block run ID.
 	 */
 	getBlockRun({ auth, org, blockId, runId, headers, context }) {
 		return this.get({
@@ -2469,7 +2469,7 @@ class Particle {
 	 * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context] Request context.
 	 *
-	 * @returns {Promise<{body: {instance: ResponseLedgerInstance[]}, statusCode: int}>} A promise that resolves to an array of ledger instance data.
+	 * @returns {Promise<{body: {instances: ResponseLedgerInstance[]}, statusCode: int}>} A promise that resolves to an array of ledger instance data.
 	 */
 	listLedgerInstances({ auth, org, ledgerName, headers, context }) {
 		return this.get({
