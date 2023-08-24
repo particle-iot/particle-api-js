@@ -19,7 +19,6 @@
 
 import request from 'superagent';
 import prefix from 'superagent-prefix';
-
 import fetch from 'node-fetch';
 
 export default class Agent {
@@ -32,23 +31,23 @@ export default class Agent {
 		// this.prefix = prefix(baseUrl);
 	}
 
-	get({ uri, auth, headers, query, context }){
+	get({ uri, auth, headers, query, context }) {
 		return this.request({ uri, method: 'get', auth, headers, query, context });
 	}
 
-	head({ uri, auth, headers, query, context }){
+	head({ uri, auth, headers, query, context }) {
 		return this.request({ uri, method: 'head', auth, headers, query, context });
 	}
 
-	post({ uri, headers, data, auth, context }){
+	post({ uri, headers, data, auth, context }) {
 		return this.request({ uri, method: 'post', auth, headers, data, context });
 	}
 
-	put({ uri, auth, headers, data, context }){
+	put({ uri, auth, headers, data, context }) {
 		return this.request({ uri, method: 'put', auth, headers, data, context });
 	}
 
-	delete({ uri, auth, headers, data, context }){
+	delete({ uri, auth, headers, data, context }) {
 		return this.request({ uri, method: 'delete', auth, headers, data, context });
 	}
 
@@ -94,12 +93,13 @@ export default class Agent {
 	 * @param {Object} form          Form fields
 	 * @param {Object} files         array of file names and file content
 	 * @param {Object} context       the invocation context
-	 * @return {Promise} A promise. fulfilled with {body, statusCode}, rejected with { statusCode, errorDescription, error, body }
+	 * @return {Promise} A promise. fulfilled with {body, statusCode}, rejected with { statusCode, errorDescription, error }
 	 */
 	_request({ uri, method, headers, data, auth, query, form, files, context, raw }){
 		const req = this._buildRequest({ uri, method, headers, data, auth, query, form, context, files });
 
 		if (raw){
+			// TODO (carlos h): Figure out how this works
 			return req;
 		}
 		return this._promiseResponse(req);
@@ -107,43 +107,35 @@ export default class Agent {
 
 	/**
 	 * Promises to send the request and retreive the response.
-	 * @param {Request} req The request to send
-	 * @returns {Promise}   The promise to send the request and retrieve the response.
+	 * @param {[string, object]} requestParams	First argument is the URI to request, the second one are the options.
+	 * @returns {Promise}				The promise to send the request and retrieve the response.
 	 * @private
 	 */
-	_promiseResponse(req){
-		return new Promise((fulfill, reject) => this._sendRequest(req, fulfill, reject));
-	}
-
-	/**
-	 * Sends the given request, calling the fulfill or reject methods for success/failure.
-	 * @param {object} request   The request to send
-	 * @param {function} fulfill    Called on success with the response
-	 * @param {function} reject     Called on failure with the failure reason.
-	 * @private
-	 * @returns {undefined} Nothing
-	 */
-	_sendRequest(request, fulfill, reject){
-		request.end((error, res) => {
-			const body = res && res.body;
-			if (error){
-				const uri = request.url;
+	_promiseResponse(requestParams, makerequest = fetch) {
+		const resp = makerequest(...requestParams)
+			.then((resp) => {
+				if (!resp.ok) {
+					throw Error(resp);
+				}
+				return resp.json();
+			}).catch((error) => {
 				const statusCode = error.status;
-				let errorDescription = `${statusCode ? 'HTTP error ' + statusCode : 'Network error'} from ${uri}`;
+				const errorType = statusCode ? `HTTP error ${statusCode}` : 'Network error';
+				let errorDescription = `${errorType} from ${requestParams[0]}`;
 				let shortErrorDescription;
-				if (body && body.error_description){
-					errorDescription += ' - ' + body.error_description;
-					shortErrorDescription = body.error_description;
+				if (error && error.statusText){
+					errorDescription = `${errorDescription} - ${error.statusText}`;
+					shortErrorDescription = error.statusText;
 				}
 				const reason = new Error(errorDescription);
-				Object.assign(reason, { statusCode, errorDescription, shortErrorDescription, error, body });
-				reject(reason);
-			} else {
-				fulfill({
-					body: body,
-					statusCode: res.statusCode
-				});
-			}
+				Object.assign(reason, { statusCode, errorDescription, shortErrorDescription, error });
+				return reason;
+			});
+		return resp.then((body) => {
+			return {
+				body,
+				statusCode: resp.status
+			};
 		});
 	}
 
@@ -157,7 +149,10 @@ export default class Agent {
 			actualUri = `${actualUri}${hasParams ? '&' : '?'}${query}`;
 		}
 
+		let body;
+		let contentType = 'application/x-www-form-urlencoded';
 		if (files){
+			// TODO (carlos h): Support form data
 			for (let [name, file] of Object.entries(files)){
 				// API for Form Data is different in Node and in browser
 				let options = {
@@ -174,20 +169,18 @@ export default class Agent {
 				}
 			}
 		} else if (form){
-			req.type('form');
-			req.send(form);
+			body = new URLSearchParams(form);
 		} else if (data){
-			req.send(data);
+			body = new URLSearchParams(data);
 		}
-		const req = makerequest(actualUri, {
-			method,
-			headers: {
-				...this._getAuthorizationHeader(auth),
-				...this._getContextHeaders(context),
-				headers
-			}
-		});
-		return req;
+		const finalHeaders = Object.assign({},
+			{ 'Content-Type': contentType },
+			this._getAuthorizationHeader(auth),
+			this._getContextHeaders(context),
+			headers
+		);
+
+		return [actualUri, { method, body, headers: finalHeaders }];
 	}
 
 	isForBrowser(makerequest = request){
@@ -196,10 +189,10 @@ export default class Agent {
 	}
 
 	_getContextHeaders(context = {}) {
-		return {
-			...this._getToolContext(context.tool),
-			...this._getProjectContext(context.project)
-		};
+		return Object.assign({},
+			this._getToolContext(context.tool),
+			this._getProjectContext(context.project)
+		);
 	}
 
 	_getToolContext(tool = {}){
@@ -233,7 +226,7 @@ export default class Agent {
 		return value;
 	}
 
-	_getProjectContext(project){
+	_getProjectContext(project = {}){
 		let value = this._buildSemicolonSeparatedProperties(project, 'name');
 		if (value){
 			return { 'X-Particle-Project': value };
