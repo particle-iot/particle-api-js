@@ -799,16 +799,14 @@ class Particle {
 	 * @returns {Request} A promise
 	 */
 	downloadFirmwareBinary({ binaryId, auth, headers, context }){
-		let req = this.request({
+		return this.request({
 			uri: `/v1/binaries/${binaryId}`,
 			method: 'get',
 			auth,
 			headers,
 			context,
-			raw: true
+			buffer: true
 		});
-
-		return this._provideFileData(req);
 	}
 
 	/**
@@ -1466,8 +1464,7 @@ class Particle {
 	 * @returns {Promise} Resolves to a buffer with the file data
 	 */
 	downloadFile({ uri, headers, context }){
-		let req = this.request({ uri, method: 'get', headers, context, raw: true });
-		return this._provideFileData(req);
+		return this.request({ uri, method: 'get', headers, context, buffer: true });
 	}
 
 	/**
@@ -1653,28 +1650,14 @@ class Particle {
 	 * @returns {Request} A promise
 	 */
 	downloadProductFirmware({ version, product, auth, headers, context }){
-		let req = this.request({
+		return this.request({
 			uri: `/v1/products/${product}/firmware/${version}/binary`,
 			method: 'get',
 			auth,
 			headers,
 			context,
-			raw: true
+			buffer: true
 		});
-
-		return this._provideFileData(req);
-	}
-
-	_provideFileData(req){
-		if (this.agent.isForBrowser()){
-			req = req.responseType('arraybuffer').then(res => {
-				res.body = res.xhr.response;
-				return res;
-			});
-		} else {
-			req = req.buffer(true).parse(binaryParser);
-		}
-		return req.then(res => res.body);
 	}
 
 	/**

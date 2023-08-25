@@ -76,10 +76,10 @@ export default class Agent {
 		form = undefined,
 		files = undefined,
 		context = undefined,
-		raw = false
+		buffer = false
 	}){
 		const requestFiles = this._sanitizeFiles(files);
-		return this._request({ uri, method, headers, data, auth, query, form, context, files: requestFiles, raw });
+		return this._request({ uri, method, headers, data, auth, query, form, context, files: requestFiles, buffer });
 	}
 
 	/**
@@ -95,14 +95,9 @@ export default class Agent {
 	 * @param {Object} context       the invocation context
 	 * @return {Promise} A promise. fulfilled with {body, statusCode}, rejected with { statusCode, errorDescription, error }
 	 */
-	_request({ uri, method, headers, data, auth, query, form, files, context, raw }){
+	_request({ uri, method, headers, data, auth, query, form, files, context, buffer }){
 		const req = this._buildRequest({ uri, method, headers, data, auth, query, form, context, files });
-
-		if (raw){
-			// TODO (carlos h): Figure out how this works
-			return req;
-		}
-		return this._promiseResponse(req);
+		return this._promiseResponse(req, buffer);
 	}
 
 	/**
@@ -111,11 +106,14 @@ export default class Agent {
 	 * @returns {Promise}				The promise to send the request and retrieve the response.
 	 * @private
 	 */
-	_promiseResponse(requestParams, makerequest = fetch) {
+	_promiseResponse(requestParams, buffer, makerequest = fetch) {
 		const resp = makerequest(...requestParams)
 			.then((resp) => {
 				if (!resp.ok) {
 					throw Error(resp);
+				}
+				if (buffer) {
+					return resp.blob();
 				}
 				return resp.json();
 			}).catch((error) => {
@@ -131,6 +129,9 @@ export default class Agent {
 				Object.assign(reason, { statusCode, errorDescription, shortErrorDescription, error });
 				return reason;
 			});
+		if (buffer) {
+			return resp.then((blob) => blob.arrayBuffer());
+		}
 		return resp.then((body) => {
 			return {
 				body,
