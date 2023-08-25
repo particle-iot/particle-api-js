@@ -17,9 +17,7 @@
  ******************************************************************************
  */
 
-import request from 'superagent';
-import prefix from 'superagent-prefix';
-import fetch from 'node-fetch';
+import fetch, { FormData } from 'node-fetch';
 
 export default class Agent {
 	constructor(baseUrl){
@@ -28,7 +26,6 @@ export default class Agent {
 
 	setBaseUrl(baseUrl) {
 		this.baseUrl = baseUrl;
-		// this.prefix = prefix(baseUrl);
 	}
 
 	get({ uri, auth, headers, query, context }) {
@@ -60,7 +57,7 @@ export default class Agent {
 	 * @param {Object} config.headers       Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {String} config.data          Arbitrary data to send as the body.
 	 * @param {Object} config.auth          Authorization
-	 * @param {String} config.query         Query parameters
+	 * @param {String|Object} config.query  Query parameters
 	 * @param {Object} config.form          Form fields
 	 * @param {Object} config.files         array of file names and file content
 	 * @param {Object} config.context       the invocation context, describing the tool and project.
@@ -89,7 +86,7 @@ export default class Agent {
 	 * @param {Object} headers       Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {String} data          Arbitrary data to send as the body.
 	 * @param {Object} auth          Authorization
-	 * @param {String} query         Query parameters
+	 * @param {String|Object} query  Query parameters
 	 * @param {Object} form          Form fields
 	 * @param {Object} files         array of file names and file content
 	 * @param {Object} context       the invocation context
@@ -140,42 +137,44 @@ export default class Agent {
 		});
 	}
 
-	_buildRequest({ uri, method, headers, data, auth, query, form, files, context, makerequest = fetch }){
+	_buildRequest({ uri, method, headers, data, auth, query, form, files, context }){
 		let actualUri = uri;
 		if (this.baseUrl) {
 			actualUri = `${this.baseUrl}${uri}`;
 		}
 		if (query) {
+			let queryParams;
+			if (typeof auery === 'String') {
+				queryParams = query;
+			} else {
+				queryParams = new URLSearchParams(query).toString();
+			}
 			const hasParams = actualUri.includes('?');
-			actualUri = `${actualUri}${hasParams ? '&' : '?'}${query}`;
+			actualUri = `${actualUri}${hasParams ? '&' : '?'}${queryParams}`;
 		}
 
 		let body;
-		let contentType = 'application/x-www-form-urlencoded';
+		let contentType = { 'Content-Type': 'application/x-www-form-urlencoded' };
 		if (files){
-			// TODO (carlos h): Support form data
+			const FormD = this._getFormDataContructor();
+			const formData = new FormD();
 			for (let [name, file] of Object.entries(files)){
-				// API for Form Data is different in Node and in browser
-				let options = {
-					filepath: file.path
-				};
-				if (this.isForBrowser(makerequest)){
-					options = file.path;
-				}
-				req.attach(name, file.data, options);
+				formData.append(name, file.data, file.path);
 			}
 			if (form){
 				for (let [name, value] of Object.entries(form)){
-					req.field(name, value);
+					formData.append(name, value);
 				}
 			}
+			contentType = {}; // Needed to allow fetch create it's own
+			body = formData;
 		} else if (form){
 			body = new URLSearchParams(form);
 		} else if (data){
 			body = new URLSearchParams(data);
 		}
 		const finalHeaders = Object.assign({},
-			{ 'Content-Type': contentType },
+			contentType,
 			this._getAuthorizationHeader(auth),
 			this._getContextHeaders(context),
 			headers
@@ -184,9 +183,17 @@ export default class Agent {
 		return [actualUri, { method, body, headers: finalHeaders }];
 	}
 
-	isForBrowser(makerequest = request){
-		// superagent only has the getXHR method in the browser version
-		return !!makerequest.getXHR;
+	/**
+	 * When in a browser use native FormData, otherwise use the one provided by node-fetch
+	 * @returns {FormData} The FromData constructor
+	 * @private
+	 */
+	_getFormDataContructor() {
+		return this.isForBrowser() ? window.FormData : FormData;
+	}
+
+	isForBrowser() {
+		return !!window;
 	}
 
 	_getContextHeaders(context = {}) {
