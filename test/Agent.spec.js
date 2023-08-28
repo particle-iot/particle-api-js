@@ -15,14 +15,6 @@ describe('Agent', () => {
 			expect(agent.setBaseUrl.firstCall.args).to.have.lengthOf(1);
 			expect(agent.setBaseUrl.firstCall.args[0]).to.eql(baseUrl);
 		});
-
-		it('creates a prefix function instance property from the supplied baseUrl (via setBaseUrl)', () => {
-			const agent = new Agent();
-			expect(agent.prefix).to.be.a('Function');
-			// Note: validating specific .prefix function behavior seems hard without proxyquire
-			// and this test seems sufficient
-			// and redundant with the 'build request uses prefix if provided' test below
-		});
 	});
 
 	describe('sanitize files', () => {
@@ -107,24 +99,14 @@ describe('Agent', () => {
 		});
 
 		it('authorize no auth is unchanged', () => {
-			expect(agent._authorizationHeader(undefined)).to.be.undefined;
-		});
-
-		it('authorize with credentials', () => {
-			const authfn = sinon.spy();
-			const req = { auth: authfn };
-			const auth = { username: 'me', password: 'pwd' };
-			expect(agent._authorizationHeader(req, auth)).to.be.equal(req);
-			expect(authfn).to.have.been.calledWith('me', 'pwd');
+			expect(agent._getAuthorizationHeader(undefined)).to.eql({});
 		});
 
 		it('authorize with bearer', () => {
 			const auth = '123';
 			const bearer = 'Bearer 123';
-			const setfn = sinon.spy();
-			const req = { set: setfn };
-			expect(agent._authorizationHeader(req, auth)).to.be.equal(req);
-			expect(setfn).to.have.been.calledWith({ Authorization: bearer });
+			const headers = agent._getAuthorizationHeader(auth);
+			expect(headers).to.eql({ Authorization: bearer });
 		});
 	});
 
@@ -157,7 +139,7 @@ describe('Agent', () => {
 						data: '123',
 						files: sanitizedFiles,
 						context: undefined,
-						raw: false,
+						buffer: false,
 						form
 					});
 				});
@@ -177,7 +159,7 @@ describe('Agent', () => {
 						form: undefined,
 						query: undefined,
 						context: undefined,
-						raw: false
+						buffer: false
 					});
 				});
 		});
@@ -209,22 +191,63 @@ describe('Agent', () => {
 			});
 		});
 
-		it('builds a promise to call _sendRequest from _promiseResponse', () => {
+		it('builds a promise to call _promiseResponse', () => {
 			const agent = new Agent();
 			const req = sinon.stub();
-			const response = 'response';
-			const sendRequest = sinon.spy((req, fulfill) => {
-				fulfill(response);
-			});
-			agent._sendRequest = sendRequest;
-			const promise = agent._promiseResponse(req);
+			const response = {
+				ok: true,
+				status: 200,
+				json: () => Promise.resolve('response')
+			};
+			req.resolves(response);
+			const promise = agent._promiseResponse([], false, req);
 			expect(promise).has.property('then');
-			return promise.then((response) => {
-				expect(sendRequest).calledOnce;
-				// how to verify that fulfill/reject arguments are correctly passed to the promised function?
-				//expect(sendRequest).calledWith(req, fulfill, reject);
-				expect(response).to.be.equal('response');
+			return promise.then((resp) => {
+				expect(resp).to.be.eql({
+					body: 'response',
+					statusCode: 200
+				});
 			});
+		});
+
+		it('can handle error responses', () => {
+			const failResponseData = [
+				{
+					name: 'error text includes body error description',
+					response: {
+						status: 404,
+						statusText: 'file not found'
+					},
+					errorDescription: 'HTTP error 404 from 123.url - file not found'
+				},
+				{
+					name: 'error text with no body description',
+					response: {
+						status: 404
+					},
+					errorDescription: 'HTTP error 404 from 123.url'
+				},
+				{
+					name: 'error text with no status',
+					response: {},
+					errorDescription: 'Network error from 123.url'
+				}
+			];
+			const agent = new Agent();
+			const req = sinon.stub();
+			const requests = failResponseData.map((failData) => {
+				const response = Object.assign({
+					ok: false
+				}, failData.response);
+				req.resolves(response);
+				const promise = agent._promiseResponse(['123.url'] , false, req);
+				return promise.then((resp) => {
+					expect(resp.statusCode).to.eql(failData.response.status);
+					expect(resp.errorDescription).to.eql(failData.errorDescription);
+					expect(resp.shortErrorDescription).to.eql(failData.response.statusText);
+				});
+			});
+			return Promise.all(requests);
 		});
 	});
 
@@ -232,136 +255,86 @@ describe('Agent', () => {
 		let agent;
 
 		beforeEach(() => {
-			agent = new Agent();
+			agent = new Agent('abc/');
 		});
 
-		it('uses prefix if provided', () => {
-			agent.prefix = 'abc';
-			const use = sinon.stub();
-			const req = sinon.stub();
-			req.returns({ use: use });
-			const result = agent._buildRequest({ uri: 'uri', method: 'get', makerequest: req });
-			expect(result).to.be.ok;
-			expect(req).to.be.calledWith('get', 'uri');
-			expect(use).to.be.calledWith('abc');
+		it('uses a baseURL if provided', () => {
+			const [uri] = agent._buildRequest({ uri: 'uri', method: 'get' });
+			expect(uri).to.equal('abc/uri');
 		});
 
-		it('does not call used if no prefix provided', () => {
-			agent.prefix = undefined;
-			const use = sinon.stub();
-			const req = sinon.stub();
-			req.returns({ use: use });
-			const result = agent._buildRequest({ uri: 'uri', method: 'get', makerequest: req });
-			expect(result).to.be.ok;
-			expect(req).to.be.calledWith('get', 'uri');
-			expect(use).to.not.have.been.called;
+		it('uses the provided uri if no baseURL is provided', () => {
+			agent.setBaseUrl(undefined);
+			const [uri] = agent._buildRequest({ uri: 'uri', method: 'get' });
+			expect(uri).to.equal('uri');
 		});
 
-		it('should invoke _applyContext with the request and context when provided', () => {
-			agent._applyContext = sinon.stub();
-			agent.prefix = undefined;
-			const request = {};
-			const context = { foo: {} };
-			const req = sinon.stub().returns(request);
-			agent._buildRequest({ uri: 'uri', method: 'get', context, makerequest: req });
-			expect(agent._applyContext).to.be.calledWith(sinon.match.same(request), sinon.match.same(context));
+		it('generates context headers when one is provided', () => {
+			const context = { tool: { name: 'spanner' } };
+			const [, opts] = agent._buildRequest({ uri: 'uri', method: 'get', context });
+			expect(opts.headers).to.have.property('X-Particle-Tool', 'spanner');
 		});
 
-		it('should not invoke _applyContext when no context is provided', () => {
-			agent._applyContext = sinon.stub();
-			agent.prefix = undefined;
-			const request = {};
-			const req = sinon.stub().returns(request);
-			agent._buildRequest({ uri: 'uri', method: 'get', makerequest: req });
-			expect(agent._applyContext).to.not.be.called;
+		it('generates auth headers when an auth token is provided', () => {
+			const auth = 'abcd-1235';
+			const [, opts] = agent._buildRequest({ uri: 'uri', method: 'get', auth });
+			expect(opts.headers).to.have.property('Authorization', `Bearer ${auth}`);
 		});
 
-
-		it('should invoke authorize with the request and auth', () => {
-			agent.prefix = undefined;
-			const request = {};
-			const req = sinon.stub();
-			req.returns(request);
-			const authorize = sinon.stub();
-			agent._authorizationHeader = authorize;
-			agent._buildRequest({ uri: 'uri', method: 'get', auth: '123', makerequest: req });
-			expect(authorize).to.be.calledWith(sinon.match.same(request), '123');
+		// it('should invoke query with the given query', () => {
+		it('adds new query params with the given query string', () => {
+			const query = 'foo=1&bar=2';
+			const [uri] = agent._buildRequest({ uri: 'uri', method: 'get', query });
+			expect(uri).to.equal(`abc/uri?${query}`);
 		});
 
-		it('should invoke query with the given query', () => {
-			agent.prefix = undefined;
-			const query = sinon.stub();
-			const req = sinon.stub();
-			req.returns({ query: query, authorize: sinon.stub() });
-			agent._buildRequest({ uri: 'uri', method: 'get', query: '123', makerequest: req });
-			expect(query).to.be.calledWith('123');
+		it('adds new query params with the given query object', () => {
+			const query = { foo: 1, bar: 2 };
+			const [uri] = agent._buildRequest({ uri: 'uri', method: 'get', query });
+			expect(uri).to.equal('abc/uri?foo=1&bar=2');
 		});
 
-		it('should not query when no query given', () => {
-			agent.prefix = undefined;
-			const query = sinon.stub();
-			const req = sinon.stub();
-			req.returns({ query: query, _authorizationHeader: sinon.stub() });
-			agent._buildRequest({ uri: 'uri', method: 'get', makerequest: req });
-			expect(query).to.be.not.been.called;
+		it('adds query params without colliding with existing ones', () => {
+			const query = 'foo=1&bar=2';
+			const [uri] = agent._buildRequest({ uri: 'uri?test=true', method: 'get', query });
+			expect(uri).to.equal(`abc/uri?test=true&${query}`);
 		});
 
-		it('should invoke send when data given', () => {
-			agent.prefix = undefined;
-			const req = sinon.stub();
-			const send = sinon.stub();
-			req.returns({ send: send });
-			agent._buildRequest({ uri: 'uri', method: 'get', data: 'abcd', makerequest: req });
-			expect(send).to.be.calledWith('abcd');
+		it('adds the provided data as a requets body', () => {
+			const [, opts] = agent._buildRequest({ uri: 'uri', method: 'get', data: 'abcd' });
+			expect(opts.body).to.eql(new URLSearchParams('abcd'));
 		});
 
 		it('should setup form send when form data is given', () => {
-			agent.prefix = undefined;
-			const req = sinon.stub();
-			const send = sinon.stub();
-			const type = sinon.stub();
-			req.returns({ send: send, type: type });
-			agent._buildRequest({ uri: 'uri', method: 'get', form: 'abcd', makerequest: req });
-			expect(send).to.be.calledWith('abcd');
-			expect(type).to.be.calledWith('form');
+			const [, opts] = agent._buildRequest({ uri: 'uri', method: 'get', form: 'abcd' });
+			expect(opts.body).to.eql(new URLSearchParams('abcd'));
 		});
 
 		it('should attach files', () => {
-			agent.prefix = undefined;
-			const req = sinon.stub();
-			const attach = sinon.stub();
-			req.returns({ attach: attach });
 			const files = {
-				file: { data: 'filedata', path: 'filepath' },
-				file2: { data: 'file2data', path: 'file2path' }
+				file: { data: makeFile('filedata'), path: 'filepath' },
+				file2: { data: makeFile('file2data'), path: 'file2path' }
 			};
-			agent._buildRequest({ uri: 'uri', method: 'get', files: files, makerequest: req });
-			expect(attach.callCount).to.be.equal(2);
-			expect(attach).to.be.calledWith('file', 'filedata', { filepath: 'filepath' });
-			expect(attach).to.be.calledWith('file2', 'file2data', { filepath: 'file2path' });
+			const [, opts] = agent._buildRequest({ uri: 'uri', method: 'get', files });
+			expect(opts.body.toString()).to.equal('[object FormData]');
+			expect(extractFilename(opts.body, 'file', 0)).to.eql('filepath');
+			expect(extractFilename(opts.body, 'file2', 3)).to.eql('file2path');
+			expect(opts.headers).to.not.have.property('Content-Type');
 		});
 
 		it('should attach files and form data', () => {
-			agent.prefix = undefined;
-			const req = sinon.stub();
-			const attach = sinon.stub();
-			const field = sinon.stub();
-			req.returns({
-				attach: attach,
-				field: field
-			});
 			const files = {
-				file: { data: 'filedata', path: 'filepath' },
-				file2: { data: 'file2data', path: 'file2path' }
+				file: { data: makeFile('filedata'), path: 'filepath' },
+				file2: { data: makeFile('file2data'), path: 'file2path' }
 			};
 			const form = { form1: 'value1', form2: 'value2' };
-			agent._buildRequest({ uri: 'uri', method: 'get', files: files, form: form, makerequest: req });
-			expect(attach.callCount).to.be.equal(2);
-			expect(attach).to.be.calledWith('file', 'filedata', { filepath: 'filepath' });
-			expect(attach).to.be.calledWith('file2', 'file2data', { filepath: 'file2path' });
-			expect(field.callCount).to.be.equal(2);
-			expect(field).to.be.calledWith('form1', 'value1');
-			expect(field).to.be.calledWith('form2', 'value2');
+			const [, opts] = agent._buildRequest({ uri: 'uri', method: 'get', files, form });
+			expect(opts.body.toString()).to.equal('[object FormData]');
+			expect(extractFilename(opts.body, 'file', 0)).to.eql('filepath');
+			expect(extractFilename(opts.body, 'file2', 3)).to.eql('file2path');
+			expect(extractFormName(opts.body, 'form1', 6, true)).to.eql('value1');
+			expect(extractFormName(opts.body, 'form2', 9, true)).to.eql('value2');
+			expect(opts.headers).to.not.have.property('Content-Type');
 		});
 
 		it('should handle nested dirs', () => {
@@ -369,9 +342,9 @@ describe('Agent', () => {
 				file: { data: makeFile('filedata'), path: 'filepath.ino' },
 				file2: { data: makeFile('file2data'), path: 'dir/file2path.cpp' }
 			};
-			const req = agent._buildRequest({ uri: 'uri', method: 'get', files: files });
-			expect(extractFilename(req._formData, 'file', 0)).to.eql('filepath.ino');
-			expect(extractFilename(req._formData, 'file2', 3)).to.eql('dir/file2path.cpp');
+			const [, opts] = agent._buildRequest({ uri: 'uri', method: 'get', files });
+			expect(extractFilename(opts.body, 'file', 0)).to.eql('filepath.ino');
+			expect(extractFilename(opts.body, 'file2', 3)).to.eql('dir/file2path.cpp');
 		});
 
 		if (!inBrowser()){
@@ -379,8 +352,8 @@ describe('Agent', () => {
 				const files = {
 					file: { data: makeFile('filedata'), path: 'dir\\windowsfilepath.cpp' }
 				};
-				const req = agent._buildRequest({ uri: 'uri', method: 'get', files: files });
-				expect(extractFilename(req._formData, 'file', 0)).to.eql('dir/windowsfilepath.cpp');
+				const [, opts] = agent._buildRequest({ uri: 'uri', method: 'get', files });
+				expect(extractFilename(opts.body, 'file', 0)).to.eql('dir/windowsfilepath.cpp');
 			});
 		}
 
@@ -403,93 +376,13 @@ describe('Agent', () => {
 				return /filename="([^"]*)"/.exec(formData._streams[fieldIndex])[1];
 			}
 		}
-	});
 
-	describe('_sendRequest', () => {
-		it('can retrieve a success response', () => {
-			const response = { body: 'abc', statusCode:200 };
-			const fulfill = sinon.stub();
-			const reject = sinon.stub();
-
-			const request = {
-				end: function end(callback){
-					callback(undefined, response);
-				}
-			};
-			const end = sinon.spy(request, 'end');
-
-			const agent = new Agent();
-			const result = agent._sendRequest(request, fulfill, reject);
-			expect(result).to.be.undefined;
-			expect(end).to.be.calledOnce;
-
-			expect(fulfill).to.be.calledOnce;
-			// not called with response directly but with an object that is equivalent
-			expect(fulfill).to.be.calledWith(response);
-			expect(reject).to.not.be.called;
-		});
-
-		const failResponseData = [
-			{
-				name: 'error text includes body error description',
-				response: {
-					body: {
-						error_description: 'file not found'
-					}
-				},
-				error: { status: 404 },
-				errorDescription: 'HTTP error 404 from 123.url - file not found'
-			},
-
-			{
-				name: 'error text with no body description',
-				response: { body: {} },
-				error: { status: 404 },
-				errorDescription: 'HTTP error 404 from 123.url'
-			},
-
-			{
-				name: 'error text with no body',
-				response: { },
-				error: { status: 404 },
-				errorDescription: 'HTTP error 404 from 123.url'
-			},
-
-			{
-				name: 'error text with no response',
-				error: { status: 404 },
-				errorDescription: 'HTTP error 404 from 123.url' },
-
-			{
-				name: 'error text with no status',
-				error: {},
-				errorDescription: 'Network error from 123.url'
+		function extractFormName(formData, fieldName, fieldIndex){
+			if (inBrowser()){
+				return formData.get(fieldName);
+			} else {
+				return formData._streams[fieldIndex + 1];
 			}
-		];
-		for (let failData of failResponseData){
-			it(`can retrieve an error response - ${failData.name}`, () => {
-				const fulfill = sinon.stub();
-				const reject = sinon.stub();
-
-				const request = {
-					url: '123.url', end: function end(callback){
-						callback(failData.error, failData.response);
-					}
-				};
-				const end = sinon.spy(request, 'end');
-
-				const agent = new Agent();
-				const result = agent._sendRequest(request, fulfill, reject);
-				expect(result).to.be.undefined;
-				expect(end).to.be.calledOnce;
-				expect(fulfill).to.not.be.called;
-				expect(reject).to.be.calledWithMatch({
-					statusCode: failData.error.status,
-					errorDescription: failData.errorDescription,
-					error:failData.error,
-					body:failData.response ? failData.response.body : undefined
-				});
-			});
 		}
 	});
 
@@ -514,57 +407,46 @@ describe('Agent', () => {
 			});
 		});
 
-		describe('_applyContext', () => {
-			let req;
-
-			beforeEach(() => {
-				req = { set: sinon.stub() };
-			});
-
-			it('applies the tool context when defined', () => {
+		describe('_getContextHeaders', () => {
+			it('generates the tool context when defined', () => {
 				const context = { tool: { name: 'spanner' } };
-				agent._applyContext(req, context);
-				expect(req.set).to.have.been.calledOnce;
-				expect(req.set).to.have.been.calledWith('X-Particle-Tool', 'spanner');
+				const subject = agent._getContextHeaders(context);
+				expect(subject).to.have.property('X-Particle-Tool', 'spanner');
 			});
 
-			it('does not apply the tool context when not defined',() => {
+			it('does not add the tool context header when not defined',() => {
 				const context = { tool: { name2: 'spanner' } };
-				agent._applyContext(req, context);
-				expect(req.set).to.have.not.been.called;
+				const subject = agent._getContextHeaders(context);
+				expect(subject).to.not.have.property('X-Particle-Tool');
 			});
 
-			it('applies the project context when defined',() => {
+			it('generates the project context header when defined',() => {
 				const context = { project: { name: 'blinky' } };
-				agent._applyContext(req, context);
-				expect(req.set).to.have.been.calledOnce;
-				expect(req.set).to.have.been.calledWith('X-Particle-Project', 'blinky');
+				const subject = agent._getContextHeaders(context);
+				expect(subject).to.have.property('X-Particle-Project', 'blinky');
 			});
 
-			it('does not apply the tool context when not defined',() => {
+			it('does not generate the project context header when not defined',() => {
 				const context = { project: { name2: 'blinky' } };
-				agent._applyContext(req, context);
-				expect(req.set).to.have.been.not.called;
+				const subject = agent._getContextHeaders(context);
+				expect(subject).to.not.have.property('X-Particle-Project');
 			});
 		});
 
-		describe('_addToolContext', () => {
+		describe('_getToolContext', () => {
 			it('does not add a header when the tool name is not defined', () => {
-				const req = { set: sinon.stub() };
 				const tool = { noname: 'cli' };
-				agent._addToolContext(req, tool);
-				expect(req.set).to.have.not.been.called;
+				const subject = agent._getToolContext(tool);
+				expect(subject).to.eql({});
 			});
 
 			it('adds a header when the tool is defined', () => {
-				const req = { set: sinon.stub() };
 				const tool = { name: 'cli' };
-				agent._addToolContext(req, tool);
-				expect(req.set).to.have.been.calledWith('X-Particle-Tool', 'cli');
+				const subject = agent._getToolContext(tool);
+				expect(subject).to.eql({ 'X-Particle-Tool': 'cli' });
 			});
 
 			it('adds a header when the tool and components is defined', () => {
-				const req = { set: sinon.stub() };
 				const tool = {
 					name: 'cli',
 					version: '1.2.3',
@@ -573,24 +455,22 @@ describe('Agent', () => {
 						{ name: 'foo', version: '0.0.1' }
 					]
 				};
-				agent._addToolContext(req, tool);
-				expect(req.set).to.have.been.calledWith('X-Particle-Tool', 'cli@1.2.3, bar@a.b.c, foo@0.0.1');
+				const subject = agent._getToolContext(tool);
+				expect(subject).to.eql({ 'X-Particle-Tool': 'cli@1.2.3, bar@a.b.c, foo@0.0.1' });
 			});
 		});
 
 		describe('_addProjectContext', () => {
 			it('adds a header when the project is defined', () => {
-				const req = { set: sinon.stub() };
 				const project = { name: 'blinky' };
-				agent._addProjectContext(req, project);
-				expect(req.set).to.have.been.calledWith('X-Particle-Project', 'blinky');
+				const subject = agent._getProjectContext(project);
+				expect(subject).to.have.property('X-Particle-Project', 'blinky');
 			});
 
 			it('does not set the header when the project has no name', () => {
-				const req = { set: sinon.stub() };
 				const project = { noname: 'blinky' };
-				agent._addProjectContext(req, project);
-				expect(req.set).to.have.not.been.called;
+				const subject = agent._getProjectContext(project);
+				expect(subject).to.not.have.property('X-Particle-Project');
 			});
 		});
 

@@ -109,7 +109,7 @@ export default class Agent {
 		return makerequest(...requestParams)
 			.then((resp) => {
 				if (!resp.ok) {
-					const err = new Error(); // TODO: Create error object 
+					const err = new Error(); // TODO: Create error object
 					Object.assign(err, resp);
 					throw err;
 				}
@@ -148,7 +148,7 @@ export default class Agent {
 		}
 		if (query) {
 			let queryParams;
-			if (typeof auery === 'String') {
+			if (typeof query === 'string') {
 				queryParams = query;
 			} else {
 				queryParams = new URLSearchParams(query).toString();
@@ -160,10 +160,13 @@ export default class Agent {
 		let body;
 		let contentType = { 'Content-Type': 'application/x-www-form-urlencoded' };
 		if (files){
-			const FormObject = this._getFormDataContructor();
 			const formData = new FormData();
 			for (let [name, file] of Object.entries(files)){
-				formData.append(name, file.data, file.path);
+				let path = file.path;
+				if (!this.isForBrowser()) {
+					path = { filepath: file.path }; // Different API for nodejs
+				}
+				formData.append(name, file.data, path);
 			}
 			if (form){
 				for (let [name, value] of Object.entries(form)){
@@ -185,16 +188,6 @@ export default class Agent {
 		);
 
 		return [actualUri, { method, body, headers: finalHeaders }];
-	}
-
-	/**
-	 * When in a browser use native FormData, otherwise use the one provided by node-fetch
-	 * @returns {FormData} The FromData constructor
-	 * @private
-	 */
-	_getFormDataContructor() {
-		// Should check for support of FormData instead of browser
-		return this.isForBrowser() ? window.FormData : FormData;
 	}
 
 	isForBrowser() {
@@ -282,7 +275,7 @@ export default class Agent {
 
 	/**
 	 *
-	 * @param {Array} files converts the file names to file, file1, file2.
+	 * @param {Object} files converts the file names to file, file1, file2.
 	 * @returns {object} the renamed files.
 	 */
 	_sanitizeFiles(files){
