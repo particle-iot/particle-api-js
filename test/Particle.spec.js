@@ -891,15 +891,15 @@ describe('ParticleAPI', () => {
 
 		describe('.downloadFirmwareBinary', () => {
 			it('generates request', () => {
-				sinon.stub(api, '_provideFileData').callsFake(x => Promise.resolve(x));
+				sinon.stub(api, 'request').callsFake(x => Promise.resolve(x));
 				const req = api.downloadFirmwareBinary(propsWithProduct);
-				api._provideFileData.callCount.should.equal(1);
+				api.request.callCount.should.equal(1);
 				return req.then((results) => {
 					results.should.match({
 						uri: `/v1/binaries/${props.binaryId}`,
 						method: 'get',
 						auth: props.auth,
-						raw: true
+						buffer: true
 					});
 				});
 			});
@@ -1953,12 +1953,12 @@ describe('ParticleAPI', () => {
 
 		describe('.downloadFile', () => {
 			it('generates request', () => {
-				sinon.stub(api, '_provideFileData').callsFake(x => Promise.resolve(x));
+				sinon.stub(api, 'request').callsFake(x => Promise.resolve(x));
 				const uri = 'http://example.com/path/to/file.png';
 				const req = api.downloadFile({ uri });
-				api._provideFileData.callCount.should.equal(1);
+				api.request.callCount.should.equal(1);
 				return req.then((results) => {
-					results.should.match({ uri, method: 'get', raw: true });
+					results.should.match({ uri, method: 'get', buffer: true });
 				});
 			});
 		});
@@ -2174,17 +2174,17 @@ describe('ParticleAPI', () => {
 
 		describe('.downloadProductFirmware', () => {
 			it('generates request', () => {
-				sinon.stub(api, '_provideFileData').callsFake(x => Promise.resolve(x));
+				sinon.stub(api, 'request').callsFake(x => Promise.resolve(x));
 				const req = api.downloadProductFirmware(propsWithProduct);
-				api._provideFileData.callCount.should.equal(1);
+				api.request.callCount.should.equal(1);
 				return req.then((results) => {
 					results.should.match({
 						uri: `/v1/products/${product}/firmware/${props.version}/binary`,
 						method: 'get',
 						auth: props.auth,
 						headers: props.headers,
-						context: {},
-						raw: true
+						context: undefined,
+						buffer: true
 					});
 				});
 			});

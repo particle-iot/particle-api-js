@@ -120,7 +120,7 @@ export default class Agent {
 				return resp.json();
 			}).then((body) => {
 				if (buffer) {
-					return blob.arrayBuffer();
+					return body.arrayBuffer();
 				}
 				return {
 					body,

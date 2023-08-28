@@ -6,7 +6,7 @@ describe('Particle', () => {
 	let api;
 
 	beforeEach(() => {
-		api = new Particle();
+		api = new Particle({ baseUrl: '' });
 	});
 
 	describe('downloadFile', () => {
@@ -28,9 +28,10 @@ describe('Particle', () => {
 			return api.flashTinker('deviceID', 'auth').then(() => {
 				expect(api.agent._promiseResponse).to.have.been.calledOnce;
 				const req = api.agent._promiseResponse.firstCall.args[0];
+				const options = req[1];
 				expect(req).to.be.ok;
-				expect(req.header).to.have.property('X-Particle-Tool').eql('cli@1.2.3');
-				expect(req.header).to.have.property('X-Particle-Project').eql('blinky; version=0.0.1');
+				expect(options.headers).to.have.property('X-Particle-Tool').eql('cli@1.2.3');
+				expect(options.headers).to.have.property('X-Particle-Project').eql('blinky; version=0.0.1');
 			});
 		});
 	});
