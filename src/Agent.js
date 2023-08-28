@@ -17,7 +17,8 @@
  ******************************************************************************
  */
 
-import fetch, { FormData } from 'node-fetch';
+import fetch from 'node-fetch';
+import FormData from 'form-data';
 
 export default class Agent {
 	constructor(baseUrl){
@@ -104,21 +105,33 @@ export default class Agent {
 	 * @private
 	 */
 	_promiseResponse(requestParams, buffer, makerequest = fetch) {
-		const resp = makerequest(...requestParams)
+		let status;
+		return makerequest(...requestParams)
 			.then((resp) => {
 				if (!resp.ok) {
-					throw Error(resp);
+					const err = new Error(); // TODO: Create error object 
+					Object.assign(err, resp);
+					throw err;
 				}
 				if (buffer) {
 					return resp.blob();
 				}
+				status = resp.status;
 				return resp.json();
+			}).then((body) => {
+				if (buffer) {
+					return blob.arrayBuffer();
+				}
+				return {
+					body,
+					statusCode: status
+				};
 			}).catch((error) => {
 				const statusCode = error.status;
 				const errorType = statusCode ? `HTTP error ${statusCode}` : 'Network error';
 				let errorDescription = `${errorType} from ${requestParams[0]}`;
 				let shortErrorDescription;
-				if (error && error.statusText){
+				if (error && error.statusText) { // Failed fetch request
 					errorDescription = `${errorDescription} - ${error.statusText}`;
 					shortErrorDescription = error.statusText;
 				}
@@ -126,15 +139,6 @@ export default class Agent {
 				Object.assign(reason, { statusCode, errorDescription, shortErrorDescription, error });
 				return reason;
 			});
-		if (buffer) {
-			return resp.then((blob) => blob.arrayBuffer());
-		}
-		return resp.then((body) => {
-			return {
-				body,
-				statusCode: resp.status
-			};
-		});
 	}
 
 	_buildRequest({ uri, method, headers, data, auth, query, form, files, context }){
@@ -156,8 +160,8 @@ export default class Agent {
 		let body;
 		let contentType = { 'Content-Type': 'application/x-www-form-urlencoded' };
 		if (files){
-			const FormD = this._getFormDataContructor();
-			const formData = new FormD();
+			const FormObject = this._getFormDataContructor();
+			const formData = new FormData();
 			for (let [name, file] of Object.entries(files)){
 				formData.append(name, file.data, file.path);
 			}
@@ -189,11 +193,12 @@ export default class Agent {
 	 * @private
 	 */
 	_getFormDataContructor() {
+		// Should check for support of FormData instead of browser
 		return this.isForBrowser() ? window.FormData : FormData;
 	}
 
 	isForBrowser() {
-		return !!window;
+		return typeof window !== 'undefined';
 	}
 
 	_getContextHeaders(context = {}) {

@@ -1,4 +1,3 @@
-import binaryParser from './superagent-binary-parser';
 import Defaults from './Defaults';
 import EventStream from './EventStream';
 import Agent from './Agent';
