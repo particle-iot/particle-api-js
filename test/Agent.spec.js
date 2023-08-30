@@ -216,14 +216,18 @@ describe('Agent', () => {
 					name: 'error text includes body error description',
 					response: {
 						status: 404,
-						statusText: 'file not found'
+						statusText: 'file not found',
+						json: () => Promise.resolve({
+							error_description: 'file not found'
+						})
 					},
 					errorDescription: 'HTTP error 404 from 123.url - file not found'
 				},
 				{
 					name: 'error text with no body description',
 					response: {
-						status: 404
+						status: 404,
+						json: () => Promise.resolve({}),
 					},
 					errorDescription: 'HTTP error 404 from 123.url'
 				},
@@ -241,7 +245,7 @@ describe('Agent', () => {
 				}, failData.response);
 				req.resolves(response);
 				const promise = agent._promiseResponse(['123.url'] , false, req);
-				return promise.then((resp) => {
+				return promise.catch((resp) => {
 					expect(resp.statusCode).to.eql(failData.response.status);
 					expect(resp.errorDescription).to.eql(failData.errorDescription);
 					expect(resp.shortErrorDescription).to.eql(failData.response.statusText);
@@ -255,11 +259,11 @@ describe('Agent', () => {
 		let agent;
 
 		beforeEach(() => {
-			agent = new Agent('abc/');
+			agent = new Agent('abc');
 		});
 
 		it('uses a baseURL if provided', () => {
-			const [uri] = agent._buildRequest({ uri: 'uri', method: 'get' });
+			const [uri] = agent._buildRequest({ uri: '/uri', method: 'get' });
 			expect(uri).to.equal('abc/uri');
 		});
 
@@ -271,7 +275,7 @@ describe('Agent', () => {
 
 		it('generates context headers when one is provided', () => {
 			const context = { tool: { name: 'spanner' } };
-			const [, opts] = agent._buildRequest({ uri: 'uri', method: 'get', context });
+			const [, opts] = agent._buildRequest({ uri: '/uri', method: 'get', context });
 			expect(opts.headers).to.have.property('X-Particle-Tool', 'spanner');
 		});
 
@@ -284,19 +288,19 @@ describe('Agent', () => {
 		// it('should invoke query with the given query', () => {
 		it('adds new query params with the given query string', () => {
 			const query = 'foo=1&bar=2';
-			const [uri] = agent._buildRequest({ uri: 'uri', method: 'get', query });
+			const [uri] = agent._buildRequest({ uri: '/uri', method: 'get', query });
 			expect(uri).to.equal(`abc/uri?${query}`);
 		});
 
 		it('adds new query params with the given query object', () => {
 			const query = { foo: 1, bar: 2 };
-			const [uri] = agent._buildRequest({ uri: 'uri', method: 'get', query });
+			const [uri] = agent._buildRequest({ uri: '/uri', method: 'get', query });
 			expect(uri).to.equal('abc/uri?foo=1&bar=2');
 		});
 
 		it('adds query params without colliding with existing ones', () => {
 			const query = 'foo=1&bar=2';
-			const [uri] = agent._buildRequest({ uri: 'uri?test=true', method: 'get', query });
+			const [uri] = agent._buildRequest({ uri: '/uri?test=true', method: 'get', query });
 			expect(uri).to.equal(`abc/uri?test=true&${query}`);
 		});
 

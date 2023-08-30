@@ -108,42 +108,55 @@ export default class Agent {
 		let status;
 		return makerequest(...requestParams)
 			.then((resp) => {
+				status = resp.status;
 				if (!resp.ok) {
-					const err = new Error(); // TODO: Create error object
-					Object.assign(err, resp);
-					throw err;
+					return resp.text().then((err) => {
+						const objError = JSON.parse(err);
+						// particle-commnds/src/cmd/api expects response.text. to be a string
+						const response = Object.assign(resp, { text: err });
+						throw Object.assign(objError, { response, body: resp });
+					});
 				}
 				if (buffer) {
 					return resp.blob();
 				}
-				status = resp.status;
 				return resp.json();
 			}).then((body) => {
 				if (buffer) {
-					return body.arrayBuffer();
+					return body.arrayBuffer().then((arrayBuffer) => {
+						if (!this.isForBrowser()) {
+							return Buffer.from(arrayBuffer);
+						}
+						return arrayBuffer;
+					});
 				}
 				return {
 					body,
 					statusCode: status
 				};
 			}).catch((error) => {
-				const statusCode = error.status;
-				const errorType = statusCode ? `HTTP error ${statusCode}` : 'Network error';
+				const errorType = status ? `HTTP error ${status}` : 'Network error';
 				let errorDescription = `${errorType} from ${requestParams[0]}`;
 				let shortErrorDescription;
-				if (error && error.statusText) { // Failed fetch request
-					errorDescription = `${errorDescription} - ${error.statusText}`;
-					shortErrorDescription = error.statusText;
+				if (error.error_description) { // Fetch responded with ok false
+					errorDescription = `${errorDescription} - ${error.error_description}`;
+					shortErrorDescription = error.error_description;
 				}
 				const reason = new Error(errorDescription);
-				Object.assign(reason, { statusCode, errorDescription, shortErrorDescription, error });
-				return reason;
+				Object.assign(reason, {
+					statusCode: status,
+					errorDescription,
+					shortErrorDescription,
+					error,
+					body: error.response
+				});
+				throw reason;
 			});
 	}
 
 	_buildRequest({ uri, method, headers, data, auth, query, form, files, context }){
 		let actualUri = uri;
-		if (this.baseUrl) {
+		if (this.baseUrl && uri[0] === '/') {
 			actualUri = `${this.baseUrl}${uri}`;
 		}
 		if (query) {
@@ -151,7 +164,8 @@ export default class Agent {
 			if (typeof query === 'string') {
 				queryParams = query;
 			} else {
-				queryParams = new URLSearchParams(query).toString();
+				const cleanQuery = JSON.parse(JSON.stringify(query));
+				queryParams = new URLSearchParams(cleanQuery).toString();
 			}
 			const hasParams = actualUri.includes('?');
 			actualUri = `${actualUri}${hasParams ? '&' : '?'}${queryParams}`;
@@ -160,21 +174,8 @@ export default class Agent {
 		let body;
 		let contentType = { 'Content-Type': 'application/x-www-form-urlencoded' };
 		if (files){
-			const formData = new FormData();
-			for (let [name, file] of Object.entries(files)){
-				let path = file.path;
-				if (!this.isForBrowser()) {
-					path = { filepath: file.path }; // Different API for nodejs
-				}
-				formData.append(name, file.data, path);
-			}
-			if (form){
-				for (let [name, value] of Object.entries(form)){
-					formData.append(name, value);
-				}
-			}
 			contentType = {}; // Needed to allow fetch create it's own
-			body = formData;
+			body = this._getFromData(files, form);
 		} else if (form){
 			body = new URLSearchParams(form);
 		} else if (data){
@@ -192,6 +193,38 @@ export default class Agent {
 
 	isForBrowser() {
 		return typeof window !== 'undefined';
+	}
+
+	_getFromData(files, form) {
+		const formData = new FormData()
+		for (let [name, file] of Object.entries(files)){
+			let path = file.path;
+			let fileData = file.data;
+			if (!this.isForBrowser()) {
+				const nodeFormData = this._getNodeFormData(file);
+				path = nodeFormData.path;
+				fileData = nodeFormData.file;
+			}
+			formData.append(name, fileData, path);
+		}
+		if (form){
+			for (let [name, value] of Object.entries(form)){
+				formData.append(name, value);
+			}
+		}
+		return formData;
+	}
+
+	_getNodeFormData(file) {
+		let fileData = file.data;
+		if (typeof file.data === 'string') {
+			const fs = require('fs');
+			fileData = fs.createReadStream(file.data);
+		}
+		return {
+			file: fileData,
+			path: { filepath: file.path } // Different API for nodejs
+		};
 	}
 
 	_getContextHeaders(context = {}) {
