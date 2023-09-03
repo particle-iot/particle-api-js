@@ -1,7 +1,6 @@
 import { sinon, expect } from './test-setup';
 import http from 'http';
 import { EventEmitter } from 'events';
-
 import EventStream from '../src/EventStream';
 
 describe('EventStream', () => {
@@ -42,7 +41,10 @@ describe('EventStream', () => {
 				return fakeRequest;
 			});
 
-			const eventStream = new EventStream('http://hostname:8080/path', 'token');
+			const fakeToolName = 'fake';
+			const fakeToolVersion = '1.2.3';
+			const headers = { 'X-Particle-Tool': `${fakeToolName}@${fakeToolVersion}` };
+			const eventStream = new EventStream('http://hostname:8080/path', 'token', { headers });
 
 			return eventStream.connect().then(() => {
 				expect(http.request).to.have.been.calledWith({
@@ -51,7 +53,8 @@ describe('EventStream', () => {
 					path: '/path?access_token=token',
 					method: 'get',
 					port: 8080,
-					mode: 'prefer-streaming'
+					mode: 'prefer-streaming',
+					headers
 				});
 			});
 		});
