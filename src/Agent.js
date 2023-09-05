@@ -19,6 +19,7 @@
 
 import fetch from 'node-fetch';
 import FormData from 'form-data';
+import qs from 'qs';
 
 export default class Agent {
 	constructor(baseUrl){
@@ -114,8 +115,11 @@ export default class Agent {
 						const objError = JSON.parse(err);
 						// particle-commnds/src/cmd/api expects response.text. to be a string
 						const response = Object.assign(resp, { text: err });
-						throw Object.assign(objError, { response, body: resp });
+						throw Object.assign(objError, { response });
 					});
+				}
+				if (status === 204) { // Can't do resp.json() since there is no body to parse
+					return '';
 				}
 				if (buffer) {
 					return resp.blob();
@@ -148,7 +152,7 @@ export default class Agent {
 					errorDescription,
 					shortErrorDescription,
 					error,
-					body: error.response
+					body: error
 				});
 				throw reason;
 			});
@@ -164,8 +168,7 @@ export default class Agent {
 			if (typeof query === 'string') {
 				queryParams = query;
 			} else {
-				const cleanQuery = JSON.parse(JSON.stringify(query));
-				queryParams = new URLSearchParams(cleanQuery).toString();
+				queryParams = qs.stringify(query);
 			}
 			const hasParams = actualUri.includes('?');
 			actualUri = `${actualUri}${hasParams ? '&' : '?'}${queryParams}`;
@@ -177,9 +180,9 @@ export default class Agent {
 			contentType = {}; // Needed to allow fetch create it's own
 			body = this._getFromData(files, form);
 		} else if (form){
-			body = new URLSearchParams(form);
+			body = qs.stringify(form);
 		} else if (data){
-			body = new URLSearchParams(data);
+			body = qs.stringify(data);
 		}
 		const finalHeaders = Object.assign({},
 			contentType,
@@ -196,7 +199,7 @@ export default class Agent {
 	}
 
 	_getFromData(files, form) {
-		const formData = new FormData()
+		const formData = new FormData();
 		for (let [name, file] of Object.entries(files)){
 			let path = file.path;
 			let fileData = file.data;

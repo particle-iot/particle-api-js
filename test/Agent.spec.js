@@ -217,9 +217,7 @@ describe('Agent', () => {
 					response: {
 						status: 404,
 						statusText: 'file not found',
-						json: () => Promise.resolve({
-							error_description: 'file not found'
-						})
+						text: () => Promise.resolve('{"error_description": "file not found"}')
 					},
 					errorDescription: 'HTTP error 404 from 123.url - file not found'
 				},
@@ -227,7 +225,7 @@ describe('Agent', () => {
 					name: 'error text with no body description',
 					response: {
 						status: 404,
-						json: () => Promise.resolve({}),
+						text: () => Promise.resolve(''),
 					},
 					errorDescription: 'HTTP error 404 from 123.url'
 				},
@@ -305,13 +303,13 @@ describe('Agent', () => {
 		});
 
 		it('adds the provided data as a requets body', () => {
-			const [, opts] = agent._buildRequest({ uri: 'uri', method: 'get', data: 'abcd' });
-			expect(opts.body).to.eql(new URLSearchParams('abcd'));
+			const [, opts] = agent._buildRequest({ uri: 'uri', method: 'get', data: { a: 'abcd' } });
+			expect(opts.body).to.eql('a=abcd');
 		});
 
 		it('should setup form send when form data is given', () => {
-			const [, opts] = agent._buildRequest({ uri: 'uri', method: 'get', form: 'abcd' });
-			expect(opts.body).to.eql(new URLSearchParams('abcd'));
+			const [, opts] = agent._buildRequest({ uri: 'uri', method: 'get', form: { a: 'abcd' } });
+			expect(opts.body).to.eql('a=abcd');
 		});
 
 		it('should attach files', () => {
