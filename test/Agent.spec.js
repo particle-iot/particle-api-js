@@ -115,8 +115,9 @@ describe('Agent', () => {
 
 		beforeEach(() => {
 			agent = new Agent();
-			agent._request = sinon.stub();
-			agent._request.resolves('fake-response');
+			agent._promiseResponse = sinon.stub();
+			agent._promiseResponse.resolves('fake-response');
+			agent._buildRequest = sinon.stub();
 			agent._sanitizeFiles = sinon.stub();
 		});
 
@@ -130,37 +131,16 @@ describe('Agent', () => {
 				.then((res) => {
 					expect(res).to.be.equal('fake-response');
 					expect(agent._sanitizeFiles).calledOnce.calledWith(sinon.match.same(files));
-					expect(agent._request).calledOnce.calledWith({
-						uri: 'abc',
-						method: 'post',
-						auth: undefined,
-						headers: undefined,
-						query: 'all',
-						data: '123',
-						files: sanitizedFiles,
-						context: undefined,
-						buffer: false,
-						form
-					});
 				});
 		});
 
 		it('uses default arguments for request', () => {
+			const args = ['abc', { args: '123' }];
+			agent._buildRequest.returns(args);
 			return agent.request({ uri: 'abc', method:'post' })
 				.then((res) => {
 					expect(res).to.be.equal('fake-response');
-					expect(agent._request).calledOnce.calledWith({
-						uri: 'abc',
-						method:'post',
-						auth: undefined,
-						headers: undefined,
-						data: undefined,
-						files: undefined,
-						form: undefined,
-						query: undefined,
-						context: undefined,
-						buffer: false
-					});
+					expect(agent._promiseResponse).calledOnce.calledWith(args);
 				});
 		});
 
@@ -182,7 +162,7 @@ describe('Agent', () => {
 			agent._promiseResponse = sinon.stub();
 			agent._promiseResponse.resolves('fake-response');
 
-			return agent._request(options).then((res) => {
+			return agent.request(options).then((res) => {
 				expect(res).to.be.equal('fake-response');
 				expect(agent._buildRequest).calledOnce;
 				expect(agent._buildRequest).calledWith(options);

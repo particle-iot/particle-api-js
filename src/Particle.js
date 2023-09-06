@@ -804,7 +804,7 @@ class Particle {
 			auth,
 			headers,
 			context,
-			buffer: true
+			isBuffer: true
 		});
 	}
 
@@ -1463,7 +1463,7 @@ class Particle {
 	 * @returns {Promise} Resolves to a buffer with the file data
 	 */
 	downloadFile({ uri, headers, context }){
-		return this.request({ uri, method: 'get', headers, context, buffer: true });
+		return this.request({ uri, method: 'get', headers, context, isBuffer: true });
 	}
 
 	/**
@@ -1655,7 +1655,7 @@ class Particle {
 			auth,
 			headers,
 			context,
-			buffer: true
+			isBuffer: true
 		});
 	}
 
@@ -2495,36 +2495,96 @@ class Particle {
 		return product ? `/v1/products/${product}/devices/${deviceId}` : `/v1/devices/${deviceId}`;
 	}
 
+	/**
+	 * Make a GET request
+	 * @param {string} uri		The URI to request
+	 * @param {string} [auth]	Authorization token to use
+	 * @param {object} [headers]	Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {string|object} [query] Key/VAlue pairs of query params or a correctly formatted string
+	 * @param {object} [context[	The invocation context, describing the tool and project
+	 * @returns {Promise<RequestResponse, RequestError>} A promise that resolves with either the requested data or an error object
+	 */
 	get({ uri, auth, headers, query, context }){
 		context = this._buildContext(context);
 		auth = this._getActiveAuthToken(auth);
 		return this.agent.get({ uri, auth, headers, query, context });
 	}
 
+	/**
+	 * Make a HEAD request
+	 * @param {string} uri		The URI to request
+	 * @param {string} [auth]	Authorization token to use
+	 * @param {object} [headers]	Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {string|object} [query] Key/VAlue pairs of query params or a correctly formatted string
+	 * @param {object} [context]	The invocation context, describing the tool and project
+	 * @returns {Promise<RequestResponse, RequestError>} A promise that resolves with either the requested data or an error object
+	 */
 	head({ uri, auth, headers, query, context }){
 		context = this._buildContext(context);
 		auth = this._getActiveAuthToken(auth);
 		return this.agent.head({ uri, auth, headers, query, context });
 	}
 
+	/**
+	 * Make a POST request
+	 * @param {string} uri		The URI to request
+	 * @param {string} [auth]	Authorization token to use
+	 * @param {object} [headers]	Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {string|object} [query] Key/VAlue pairs of query params or a correctly formatted string
+	 * @param {object} [context]	The invocation context, describing the tool and project
+	 * @returns {Promise<RequestResponse, RequestError>} A promise that resolves with either the requested data or an error object
+	 */
 	post({ uri, auth, headers, data, context }){
 		context = this._buildContext(context);
 		auth = this._getActiveAuthToken(auth);
 		return this.agent.post({ uri, auth, headers, data, context });
 	}
 
+	/**
+	 * Make a PUT request
+	 * @param {string} uri		The URI to request
+	 * @param {string} [auth]	Authorization token to use
+	 * @param {object} [headers]	Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {string|object} [query] Key/VAlue pairs of query params or a correctly formatted string
+	 * @param {object} [context]	The invocation context, describing the tool and project
+	 * @returns {Promise<RequestResponse, RequestError>} A promise that resolves with either the requested data or an error object
+	 */
 	put({ uri, auth, headers, data, context }){
 		context = this._buildContext(context);
 		auth = this._getActiveAuthToken(auth);
 		return this.agent.put({ uri, auth, headers, data, context });
 	}
 
+	/**
+	 * Make a DELETE request
+	 * @param {string} uri		The URI to request
+	 * @param {string} [auth]	Authorization token to use
+	 * @param {object} [headers]	Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {string|object} [query] Key/VAlue pairs of query params or a correctly formatted string
+	 * @param {object} [context]	The invocation context, describing the tool and project
+	 * @returns {Promise<RequestResponse, RequestError>} A promise that resolves with either the requested data or an error object
+	 */
 	delete({ uri, auth, headers, data, context }){
 		context = this._buildContext(context);
 		auth = this._getActiveAuthToken(auth);
 		return this.agent.delete({ uri, auth, headers, data, context });
 	}
 
+	/**
+	 *
+	 * @param {Object} args			An obj with all the possible request configurations
+	 * @param {String} args.uri		The URI to request
+	 * @param {String} args.method		The method used to request the URI, should be in uppercase.
+	 * @param {Object} args.headers		Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {String} args.data		Arbitrary data to send as the body.
+	 * @param {Object} args.auth		Authorization
+	 * @param {String|Object} args.query	Query parameters
+	 * @param {Object} args.form		Form fields
+	 * @param {Object} args.files		Array of file names and file content
+	 * @param {Object} args.context		The invocation context, describing the tool and project.
+	 * @param {boolean} args.isBuffer	Indicate if the response should be treated as Buffer instead of JSON
+	 * @returns {Promise<RequestResponse, RequestError>} A promise that resolves with either the requested data or an error object
+	 */
 	request(args){
 		args.context = this._buildContext(args.context);
 		args.auth = this._getActiveAuthToken(args.auth);

@@ -21,6 +21,29 @@ import fetch from 'node-fetch';
 import FormData from 'form-data';
 import qs from 'qs';
 
+/**
+ * The object returned for a basic request
+ * @typedef {object} JSONResponse
+ * @property {number} statusCode	The HTTP response status
+ * @property {object} body		The endpoint's response parsed as a JSON
+ */
+
+/**
+ * The possible response from an API request
+ * @typedef {JSONResponse|Buffer|arrayBuffer} RequestResponse	The type is based on
+ * the request config and whether is on browser or node
+ */
+
+/**
+ * The error object generated in case of a failed request
+ * @typedef {object} RequestError
+ * @property {number} statusCode	The HTTP response status
+ * @property {string} errorDescription	Details on what caused the failed request
+ * @property {string} shortErrorDescription	Summarized version of the fail reason
+ * @property {object} body		The response object from the request
+ * @property {object} error		The error object from the request
+ */
+
 export default class Agent {
 	constructor(baseUrl){
 		this.setBaseUrl(baseUrl);
@@ -30,26 +53,70 @@ export default class Agent {
 		this.baseUrl = baseUrl;
 	}
 
+	/**
+	 * Make a GET request
+	 * @param {string} uri		The URI to request
+	 * @param {string} [auth]	Authorization token to use
+	 * @param {object} [headers]	Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {string|object} [query] Key/VAlue pairs of query params or a correctly formatted string
+	 * @param {object} [context]	The invocation context, describing the tool and project
+	 * @returns {Promise<RequestResponse, RequestError>} A promise that resolves with either the requested data or an error object
+	 */
 	get({ uri, auth, headers, query, context }) {
 		return this.request({ uri, method: 'get', auth, headers, query, context });
 	}
 
+	/**
+	 * Make a HEAD request
+	 * @param {string} uri		The URI to request
+	 * @param {string} [auth]	Authorization token to use
+	 * @param {object} [headers]	Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {string|object} [query] Key/VAlue pairs of query params or a correctly formatted string
+	 * @param {object} [context]	The invocation context, describing the tool and project
+	 * @returns {Promise<RequestResponse, RequestError>} A promise that resolves with either the requested data or an error object
+	 */
 	head({ uri, auth, headers, query, context }) {
 		return this.request({ uri, method: 'head', auth, headers, query, context });
 	}
 
+	/**
+	 * Make a POST request
+	 * @param {string} uri		The URI to request
+	 * @param {string} [auth]	Authorization token to use
+	 * @param {object} [headers]	Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {string|object} [query] Key/VAlue pairs of query params or a correctly formatted string
+	 * @param {object} [context]	The invocation context, describing the tool and project
+	 * @returns {Promise<RequestResponse, RequestError>} A promise that resolves with either the requested data or an error object
+	 */
 	post({ uri, headers, data, auth, context }) {
 		return this.request({ uri, method: 'post', auth, headers, data, context });
 	}
 
+	/**
+	 * Make a PUT request
+	 * @param {string} uri		The URI to request
+	 * @param {string} [auth]	Authorization token to use
+	 * @param {object} [headers]	Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {string|object} [query] Key/VAlue pairs of query params or a correctly formatted string
+	 * @param {object} [context]	The invocation context, describing the tool and project
+	 * @returns {Promise<RequestResponse, RequestError>} A promise that resolves with either the requested data or an error object
+	 */
 	put({ uri, auth, headers, data, context }) {
 		return this.request({ uri, method: 'put', auth, headers, data, context });
 	}
 
+	/**
+	 * Make a DELETE request
+	 * @param {string} uri		The URI to request
+	 * @param {string} [auth]	Authorization token to use
+	 * @param {object} [headers]	Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {string|object} [query] Key/VAlue pairs of query params or a correctly formatted string
+	 * @param {object} [context]	The invocation context, describing the tool and project
+	 * @returns {Promise<RequestResponse, RequestError>} A promise that resolves with either the requested data or an error object
+	 */
 	delete({ uri, auth, headers, data, context }) {
 		return this.request({ uri, method: 'delete', auth, headers, data, context });
 	}
-
 
 	/**
 	 *
@@ -63,7 +130,8 @@ export default class Agent {
 	 * @param {Object} config.form          Form fields
 	 * @param {Object} config.files         array of file names and file content
 	 * @param {Object} config.context       the invocation context, describing the tool and project.
-	 * @return {Promise} A promise. fulfilled with {body, statusCode}, rejected with { statusCode, errorDescription, error, body }
+	 * @param {boolean} config.isBuffer	Indicate if the response should be treated as Buffer instead of JSON
+	 * @returns {Promise<RequestResponse, RequestError>} A promise that resolves with either the requested data or an error object
 	 */
 	request({
 		uri,
@@ -75,37 +143,20 @@ export default class Agent {
 		form = undefined,
 		files = undefined,
 		context = undefined,
-		buffer = false
+		isBuffer = false
 	}){
 		const requestFiles = this._sanitizeFiles(files);
-		return this._request({ uri, method, headers, data, auth, query, form, context, files: requestFiles, buffer });
-	}
-
-	/**
-	 *
-	 * @param {String} uri           The URI to request
-	 * @param {String} method        The method used to request the URI, should be in uppercase.
-	 * @param {Object} headers       Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-	 * @param {String} data          Arbitrary data to send as the body.
-	 * @param {Object} auth          Authorization
-	 * @param {String|Object} query  Query parameters
-	 * @param {Object} form          Form fields
-	 * @param {Object} files         array of file names and file content
-	 * @param {Object} context       the invocation context
-	 * @return {Promise} A promise. fulfilled with {body, statusCode}, rejected with { statusCode, errorDescription, error }
-	 */
-	_request({ uri, method, headers, data, auth, query, form, files, context, buffer }){
-		const req = this._buildRequest({ uri, method, headers, data, auth, query, form, context, files });
-		return this._promiseResponse(req, buffer);
+		const requestParams = this._buildRequest({ uri, method, headers, data, auth, query, form, context, files: requestFiles });
+		return this._promiseResponse(requestParams, isBuffer);
 	}
 
 	/**
 	 * Promises to send the request and retreive the response.
 	 * @param {[string, object]} requestParams	First argument is the URI to request, the second one are the options.
-	 * @returns {Promise}				The promise to send the request and retrieve the response.
+	 * @returns {Promise<RequestResponse, RequestError>} A promise that resolves with either the requested data or an error object
 	 * @private
 	 */
-	_promiseResponse(requestParams, buffer, makerequest = fetch) {
+	_promiseResponse(requestParams, isBuffer, makerequest = fetch) {
 		let status;
 		return makerequest(...requestParams)
 			.then((resp) => {
@@ -121,12 +172,12 @@ export default class Agent {
 				if (status === 204) { // Can't do resp.json() since there is no body to parse
 					return '';
 				}
-				if (buffer) {
+				if (isBuffer) {
 					return resp.blob();
 				}
 				return resp.json();
 			}).then((body) => {
-				if (buffer) {
+				if (isBuffer) {
 					return body.arrayBuffer().then((arrayBuffer) => {
 						if (!this.isForBrowser()) {
 							return Buffer.from(arrayBuffer);

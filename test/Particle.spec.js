@@ -899,7 +899,7 @@ describe('ParticleAPI', () => {
 						uri: `/v1/binaries/${props.binaryId}`,
 						method: 'get',
 						auth: props.auth,
-						buffer: true
+						isBuffer: true
 					});
 				});
 			});
@@ -1958,7 +1958,7 @@ describe('ParticleAPI', () => {
 				const req = api.downloadFile({ uri });
 				api.request.callCount.should.equal(1);
 				return req.then((results) => {
-					results.should.match({ uri, method: 'get', buffer: true });
+					results.should.match({ uri, method: 'get', isBuffer: true });
 				});
 			});
 		});
@@ -2184,7 +2184,7 @@ describe('ParticleAPI', () => {
 						auth: props.auth,
 						headers: props.headers,
 						context: undefined,
-						buffer: true
+						isBuffer: true
 					});
 				});
 			});
