@@ -20,6 +20,7 @@
 import fetch from 'node-fetch';
 import FormData from 'form-data';
 import qs from 'qs';
+import fs from '../fs-shim';
 
 /**
  * The object returned for a basic request
