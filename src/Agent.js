@@ -273,7 +273,6 @@ export default class Agent {
 	_getNodeFormData(file) {
 		let fileData = file.data;
 		if (typeof file.data === 'string') {
-			const fs = require('fs');
 			fileData = fs.createReadStream(file.data);
 		}
 		return {
@@ -355,10 +354,20 @@ export default class Agent {
 	 * @returns {object} The original request.
 	 */
 	_getAuthorizationHeader(auth){
-		if (auth) {
+		if (!auth) {
+			return {};
+		}
+		if (typeof auth === 'string') {
 			return { Authorization: `Bearer ${auth}` };
 		}
-		return {};
+		let encoded;
+		if (this.isForBrowser()) {
+			encoded = btoa(`${auth.username}:${auth.password}`);
+		} else {
+			encoded = Buffer.from(`${auth.username}:${auth.password}`)
+				.toString('base64');
+		}
+		return { Authorization: `Basic ${encoded}` };
 	}
 
 	/**
