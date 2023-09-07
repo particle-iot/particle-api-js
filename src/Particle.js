@@ -1,7 +1,7 @@
-import Defaults from './Defaults';
-import EventStream from './EventStream';
-import Agent from './Agent';
-import Client from './Client';
+const Defaults = require('./Defaults');
+const EventStream = require('./EventStream');
+const Agent = require('./Agent');
+const Client = require('./Client');
 
 // Hack to avoid importing the type on every @return statement
 /**
@@ -2641,4 +2641,4 @@ class Particle {
 // Aliases for backwards compatibility
 Particle.prototype.removeAccessToken = Particle.prototype.deleteAccessToken;
 
-export default Particle;
+module.exports = Particle;
