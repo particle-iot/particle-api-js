@@ -46,6 +46,7 @@
   ],
   "license": "Apache-2.0",
   "devDependencies": {
+    "@types/node": "^20.5.9",
     "babel-cli": "^6.9.0",
     "babel-eslint": "^6.0.4",
     "babel-plugin-add-module-exports": "^0.1.2",
