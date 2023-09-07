@@ -1,8 +1,8 @@
 /* eslint max-depth: 0 */
-import http from 'http';
-import https from 'https';
-import url from 'url';
-import { EventEmitter } from 'events';
+const http = require('http');
+const https = require('https');
+const url = require('url');
+const { EventEmitter } = require('events');
 
 class EventStream extends EventEmitter {
 	constructor(uri, token) {
@@ -257,4 +257,4 @@ class EventStream extends EventEmitter {
 	}
 }
 
-export default EventStream;
+module.exports = EventStream;

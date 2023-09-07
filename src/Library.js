@@ -2,7 +2,7 @@
  * Represents a version of a library contributed in the cloud.
  */
 
-export default class Library {
+class Library {
 	constructor(client, data) {
 		// Make client non-enumerable so it doesn't show up in Object.keys, JSON.stringify, etc
 		Object.defineProperty(this, 'client', { value: client });
@@ -28,3 +28,5 @@ export default class Library {
 
 	/* TODO: add a versions() method to fetch an array of library objects */
 }
+
+module.exports = Library;

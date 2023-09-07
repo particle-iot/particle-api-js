@@ -1,8 +1,8 @@
-import Particle from './Particle';
-import Library from './Library';
+const Particle = require('./Particle');
+const Library = require('./Library');
 
 
-export default class Client {
+class Client {
 	constructor({ auth, api = new Particle() }){
 		Object.assign(this, { auth, api });
 	}
@@ -163,3 +163,5 @@ export default class Client {
 			});
 	}
 }
+
+module.export = Client;

@@ -17,11 +17,10 @@
  ******************************************************************************
  */
 
-import fetch from 'node-fetch';
-import FormData from 'form-data';
-import qs from 'qs';
-import fs from '../fs';
-import packageJson from '../package.json';
+const fetch = require('node-fetch');
+const FormData = require('form-data');
+const qs = require('qs');
+const fs = require('../fs');
 
 /**
  * The object returned for a basic request
@@ -46,7 +45,7 @@ import packageJson from '../package.json';
  * @property {object} error		The error object from the request
  */
 
-export default class Agent {
+class Agent {
 	constructor(baseUrl){
 		this.setBaseUrl(baseUrl);
 	}
@@ -393,3 +392,4 @@ export default class Agent {
 	}
 }
 
+module.exports = Agent;
