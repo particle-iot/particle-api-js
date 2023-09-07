@@ -73,6 +73,7 @@
     "should": "^9.0.0",
     "sinon": "^7.2.5",
     "sinon-chai": "^3.7.0",
+    "typescript": "^5.2.2",
     "watchify": "^3.7.0"
   },
   "dependencies": {
