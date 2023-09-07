@@ -32,6 +32,7 @@ class EventStream extends EventEmitter {
 				path: `${path}?access_token=${this.token}`,
 				method: 'get',
 				port: parseInt(port, 10) || (isSecure ? 443 : 80),
+				// @ts-ignore
 				mode: 'prefer-streaming'
 			});
 
@@ -70,7 +71,9 @@ class EventStream extends EventEmitter {
 							// since we are already about to reject the promise anyway
 						} finally {
 							let errorDescription = `HTTP error ${statusCode} from ${this.uri}`;
+							// @ts-ignore
 							if (body && body.error_description) {
+								// @ts-ignore
 								errorDescription += ' - ' + body.error_description;
 							}
 							reject({ statusCode, errorDescription, body });
