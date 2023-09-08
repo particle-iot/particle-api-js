@@ -20,7 +20,7 @@
 import fetch from 'node-fetch';
 import FormData from 'form-data';
 import qs from 'qs';
-import fs from 'fs';
+import fs from '../fs';
 import packageJson from '../package.json';
 
 /**
