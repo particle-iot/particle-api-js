@@ -234,7 +234,14 @@ export default class Agent {
 		} else if (form){
 			body = qs.stringify(form);
 		} else if (data){
-			body = qs.stringify(data);
+			if (typeof data === 'object') {
+				contentType = { 'Content-Type': 'application/json' };
+				body = qs.stringify(data);
+			}
+			if (typeof data === 'string') {
+				contentType = { 'Content-Type': 'application/x-www-form-urlencoded' };
+				body = data;
+			}
 		}
 		const finalHeaders = Object.assign({},
 			contentType,

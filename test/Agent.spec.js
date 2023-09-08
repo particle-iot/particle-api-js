@@ -305,8 +305,16 @@ describe('Agent', () => {
 		});
 
 		it('adds the provided data as a requets body', () => {
+			const [, opts] = agent._buildRequest({ uri: 'uri', method: 'get', data: 'a=abcd' });
+			expect(opts.body).to.eql('a=abcd');
+			expect(opts.headers).to.have.property('Content-Type', 'application/x-www-form-urlencoded');
+		});
+
+		it('adds the provided data as a requets body', () => {
 			const [, opts] = agent._buildRequest({ uri: 'uri', method: 'get', data: { a: 'abcd' } });
 			expect(opts.body).to.eql('a=abcd');
+			expect(opts.headers).to.have.property('Content-Type', 'application/json');
+
 		});
 
 		it('should setup form send when form data is given', () => {
