@@ -1,5 +1,9 @@
 # changelog
 
+## 10.0.0 - 8 Sept 2023
+
+* Change library to handle requests from `superagent` to `fetch`/`node-fetch`
+
 ## 9.4.1 - 17 June 2022
 
 * Fixes incompatible versions of `eslint`, `chai`, `sinon-chai` and `chai-as-promised`.
