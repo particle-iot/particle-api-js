@@ -345,6 +345,11 @@ describe('Agent', () => {
 			expect(extractFilename(opts.body, 'file2', 3)).to.eql('dir/file2path.cpp');
 		});
 
+		it('sets the user agent to particle-api-js', () => {
+			const [, opts] = agent._buildRequest({ uri: 'uri', method: 'get' });
+			expect(opts.headers).to.have.property('User-Agent').that.match(/^particle-api-js/);
+		});
+
 		if (!inBrowser()){
 			it('should handle Windows nested dirs', () => {
 				const files = {

@@ -21,6 +21,7 @@ import fetch from 'node-fetch';
 import FormData from 'form-data';
 import qs from 'qs';
 import fs from 'fs';
+import packageJson from '../package.json';
 
 /**
  * The object returned for a basic request
@@ -223,6 +224,7 @@ export default class Agent {
 			actualUri = `${actualUri}${hasParams ? '&' : '?'}${queryParams}`;
 		}
 
+		const userAgentHeader = { 'User-Agent': `${packageJson.name}/${packageJson.version} (${packageJson.repository.url})` };
 		let body;
 		let contentTypeHeader;
 		if (files){
@@ -236,6 +238,7 @@ export default class Agent {
 			body = JSON.stringify(data);
 		}
 		const finalHeaders = Object.assign({},
+			userAgentHeader,
 			contentTypeHeader,
 			this._getAuthorizationHeader(auth),
 			this._getContextHeaders(context),
