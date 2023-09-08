@@ -1,4 +1,3 @@
-import binaryParser from './superagent-binary-parser';
 import Defaults from './Defaults';
 import EventStream from './EventStream';
 import Agent from './Agent';
@@ -799,16 +798,14 @@ class Particle {
 	 * @returns {Request} A promise
 	 */
 	downloadFirmwareBinary({ binaryId, auth, headers, context }){
-		let req = this.request({
+		return this.request({
 			uri: `/v1/binaries/${binaryId}`,
 			method: 'get',
 			auth,
 			headers,
 			context,
-			raw: true
+			isBuffer: true
 		});
-
-		return this._provideFileData(req);
 	}
 
 	/**
@@ -1466,8 +1463,7 @@ class Particle {
 	 * @returns {Promise} Resolves to a buffer with the file data
 	 */
 	downloadFile({ uri, headers, context }){
-		let req = this.request({ uri, method: 'get', headers, context, raw: true });
-		return this._provideFileData(req);
+		return this.request({ uri, method: 'get', headers, context, isBuffer: true });
 	}
 
 	/**
@@ -1653,28 +1649,14 @@ class Particle {
 	 * @returns {Request} A promise
 	 */
 	downloadProductFirmware({ version, product, auth, headers, context }){
-		let req = this.request({
+		return this.request({
 			uri: `/v1/products/${product}/firmware/${version}/binary`,
 			method: 'get',
 			auth,
 			headers,
 			context,
-			raw: true
+			isBuffer: true
 		});
-
-		return this._provideFileData(req);
-	}
-
-	_provideFileData(req){
-		if (this.agent.isForBrowser()){
-			req = req.responseType('arraybuffer').then(res => {
-				res.body = res.xhr.response;
-				return res;
-			});
-		} else {
-			req = req.buffer(true).parse(binaryParser);
-		}
-		return req.then(res => res.body);
 	}
 
 	/**
@@ -2513,36 +2495,96 @@ class Particle {
 		return product ? `/v1/products/${product}/devices/${deviceId}` : `/v1/devices/${deviceId}`;
 	}
 
+	/**
+	 * Make a GET request
+	 * @param {string} uri		The URI to request
+	 * @param {string} [auth]	Authorization token to use
+	 * @param {object} [headers]	Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {string|object} [query] Key/VAlue pairs of query params or a correctly formatted string
+	 * @param {object} [context[	The invocation context, describing the tool and project
+	 * @returns {Promise<RequestResponse, RequestError>} A promise that resolves with either the requested data or an error object
+	 */
 	get({ uri, auth, headers, query, context }){
 		context = this._buildContext(context);
 		auth = this._getActiveAuthToken(auth);
 		return this.agent.get({ uri, auth, headers, query, context });
 	}
 
+	/**
+	 * Make a HEAD request
+	 * @param {string} uri		The URI to request
+	 * @param {string} [auth]	Authorization token to use
+	 * @param {object} [headers]	Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {string|object} [query] Key/VAlue pairs of query params or a correctly formatted string
+	 * @param {object} [context]	The invocation context, describing the tool and project
+	 * @returns {Promise<RequestResponse, RequestError>} A promise that resolves with either the requested data or an error object
+	 */
 	head({ uri, auth, headers, query, context }){
 		context = this._buildContext(context);
 		auth = this._getActiveAuthToken(auth);
 		return this.agent.head({ uri, auth, headers, query, context });
 	}
 
+	/**
+	 * Make a POST request
+	 * @param {string} uri		The URI to request
+	 * @param {string} [auth]	Authorization token to use
+	 * @param {object} [headers]	Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {string|object} [query] Key/VAlue pairs of query params or a correctly formatted string
+	 * @param {object} [context]	The invocation context, describing the tool and project
+	 * @returns {Promise<RequestResponse, RequestError>} A promise that resolves with either the requested data or an error object
+	 */
 	post({ uri, auth, headers, data, context }){
 		context = this._buildContext(context);
 		auth = this._getActiveAuthToken(auth);
 		return this.agent.post({ uri, auth, headers, data, context });
 	}
 
+	/**
+	 * Make a PUT request
+	 * @param {string} uri		The URI to request
+	 * @param {string} [auth]	Authorization token to use
+	 * @param {object} [headers]	Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {string|object} [query] Key/VAlue pairs of query params or a correctly formatted string
+	 * @param {object} [context]	The invocation context, describing the tool and project
+	 * @returns {Promise<RequestResponse, RequestError>} A promise that resolves with either the requested data or an error object
+	 */
 	put({ uri, auth, headers, data, context }){
 		context = this._buildContext(context);
 		auth = this._getActiveAuthToken(auth);
 		return this.agent.put({ uri, auth, headers, data, context });
 	}
 
+	/**
+	 * Make a DELETE request
+	 * @param {string} uri		The URI to request
+	 * @param {string} [auth]	Authorization token to use
+	 * @param {object} [headers]	Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {string|object} [query] Key/VAlue pairs of query params or a correctly formatted string
+	 * @param {object} [context]	The invocation context, describing the tool and project
+	 * @returns {Promise<RequestResponse, RequestError>} A promise that resolves with either the requested data or an error object
+	 */
 	delete({ uri, auth, headers, data, context }){
 		context = this._buildContext(context);
 		auth = this._getActiveAuthToken(auth);
 		return this.agent.delete({ uri, auth, headers, data, context });
 	}
 
+	/**
+	 *
+	 * @param {Object} args			An obj with all the possible request configurations
+	 * @param {String} args.uri		The URI to request
+	 * @param {String} args.method		The method used to request the URI, should be in uppercase.
+	 * @param {Object} args.headers		Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {String} args.data		Arbitrary data to send as the body.
+	 * @param {Object} args.auth		Authorization
+	 * @param {String|Object} args.query	Query parameters
+	 * @param {Object} args.form		Form fields
+	 * @param {Object} args.files		Array of file names and file content
+	 * @param {Object} args.context		The invocation context, describing the tool and project.
+	 * @param {boolean} args.isBuffer	Indicate if the response should be treated as Buffer instead of JSON
+	 * @returns {Promise<RequestResponse, RequestError>} A promise that resolves with either the requested data or an error object
+	 */
 	request(args){
 		args.context = this._buildContext(args.context);
 		args.auth = this._getActiveAuthToken(args.auth);

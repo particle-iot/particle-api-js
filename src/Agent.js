@@ -17,8 +17,34 @@
  ******************************************************************************
  */
 
-import request from 'superagent';
-import prefix from 'superagent-prefix';
+import fetch from 'node-fetch';
+import FormData from 'form-data';
+import qs from 'qs';
+import fs from '../fs';
+import packageJson from '../package.json';
+
+/**
+ * The object returned for a basic request
+ * @typedef {object} JSONResponse
+ * @property {number} statusCode	The HTTP response status
+ * @property {object} body		The endpoint's response parsed as a JSON
+ */
+
+/**
+ * The possible response from an API request
+ * @typedef {JSONResponse|Buffer|arrayBuffer} RequestResponse	The type is based on
+ * the request config and whether is on browser or node
+ */
+
+/**
+ * The error object generated in case of a failed request
+ * @typedef {object} RequestError
+ * @property {number} statusCode	The HTTP response status
+ * @property {string} errorDescription	Details on what caused the failed request
+ * @property {string} shortErrorDescription	Summarized version of the fail reason
+ * @property {object} body		The response object from the request
+ * @property {object} error		The error object from the request
+ */
 
 export default class Agent {
 	constructor(baseUrl){
@@ -26,42 +52,88 @@ export default class Agent {
 	}
 
 	setBaseUrl(baseUrl) {
-		this.prefix = prefix(baseUrl);
+		this.baseUrl = baseUrl;
 	}
 
-	get({ uri, auth, headers, query, context }){
+	/**
+	 * Make a GET request
+	 * @param {string} uri		The URI to request
+	 * @param {string} [auth]	Authorization token to use
+	 * @param {object} [headers]	Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {object} [query] Key/Value pairs of query params
+	 * @param {object} [context]	The invocation context, describing the tool and project
+	 * @returns {Promise<RequestResponse, RequestError>} A promise that resolves with either the requested data or an error object
+	 */
+	get({ uri, auth, headers, query, context }) {
 		return this.request({ uri, method: 'get', auth, headers, query, context });
 	}
 
-	head({ uri, auth, headers, query, context }){
+	/**
+	 * Make a HEAD request
+	 * @param {string} uri		The URI to request
+	 * @param {string} [auth]	Authorization token to use
+	 * @param {object} [headers]	Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {object} [query] Key/Value pairs of query params
+	 * @param {object} [context]	The invocation context, describing the tool and project
+	 * @returns {Promise<RequestResponse, RequestError>} A promise that resolves with either the requested data or an error object
+	 */
+	head({ uri, auth, headers, query, context }) {
 		return this.request({ uri, method: 'head', auth, headers, query, context });
 	}
 
-	post({ uri, headers, data, auth, context }){
+	/**
+	 * Make a POST request
+	 * @param {string} uri		The URI to request
+	 * @param {string} [auth]	Authorization token to use
+	 * @param {object} [headers]	Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {object} [data] Payload to send in the request body in JSON format
+	 * @param {object} [context]	The invocation context, describing the tool and project
+	 * @returns {Promise<RequestResponse, RequestError>} A promise that resolves with either the requested data or an error object
+	 */
+	post({ uri, headers, data, auth, context }) {
 		return this.request({ uri, method: 'post', auth, headers, data, context });
 	}
 
-	put({ uri, auth, headers, data, context }){
+	/**
+	 * Make a PUT request
+	 * @param {string} uri		The URI to request
+	 * @param {string} [auth]	Authorization token to use
+	 * @param {object} [headers]	Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {object} [data] Payload to send in the request body in JSON format
+	 * @param {object} [context]	The invocation context, describing the tool and project
+	 * @returns {Promise<RequestResponse, RequestError>} A promise that resolves with either the requested data or an error object
+	 */
+	put({ uri, auth, headers, data, context }) {
 		return this.request({ uri, method: 'put', auth, headers, data, context });
 	}
 
-	delete({ uri, auth, headers, data, context }){
+	/**
+	 * Make a DELETE request
+	 * @param {string} uri		The URI to request
+	 * @param {string} [auth]	Authorization token to use
+	 * @param {object} [headers]	Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {object} [data] Payload to send in the request body in JSON format
+	 * @param {object} [context]	The invocation context, describing the tool and project
+	 * @returns {Promise<RequestResponse, RequestError>} A promise that resolves with either the requested data or an error object
+	 */
+	delete({ uri, auth, headers, data, context }) {
 		return this.request({ uri, method: 'delete', auth, headers, data, context });
 	}
 
-
 	/**
 	 *
-	 * @param {String} uri           The URI to request
-	 * @param {String} method        The method used to request the URI, should be in uppercase.
-	 * @param {Object} headers       Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-	 * @param {String} data          Arbitrary data to send as the body.
-	 * @param {Object} auth          Authorization
-	 * @param {String} query         Query parameters
-	 * @param {Object} form          Form fields
-	 * @param {Object} files         array of file names and file content
-	 * @parma {Object} context       the invocation context, describing the tool and project.
-	 * @return {Promise} A promise. fulfilled with {body, statusCode}, rejected with { statusCode, errorDescription, error, body }
+	 * @param {Object} config		An obj with all the possible request configurations
+	 * @param {String} config.uri		The URI to request
+	 * @param {String} config.method        The method used to request the URI, should be in uppercase.
+	 * @param {Object} config.headers       Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {Object} config.data          Arbitrary data to send as the body.
+	 * @param {Object} config.auth          Authorization
+	 * @param {String} config.query         Query parameters
+	 * @param {Object} config.form          Form fields
+	 * @param {Object} config.files         array of file names and file content
+	 * @param {Object} config.context       the invocation context, describing the tool and project.
+	 * @param {boolean} config.isBuffer	Indicate if the response should be treated as Buffer instead of JSON
+	 * @returns {Promise<RequestResponse, RequestError>} A promise that resolves with either the requested data or an error object
 	 */
 	request({
 		uri,
@@ -73,131 +145,152 @@ export default class Agent {
 		form = undefined,
 		files = undefined,
 		context = undefined,
-		raw = false
+		isBuffer = false
 	}){
 		const requestFiles = this._sanitizeFiles(files);
-		return this._request({ uri, method, headers, data, auth, query, form, context, files: requestFiles, raw });
-	}
-
-	/**
-	 *
-	 * @param {String} uri           The URI to request
-	 * @param {String} method        The method used to request the URI, should be in uppercase.
-	 * @param {Object} headers       Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-	 * @param {String} data          Arbitrary data to send as the body.
-	 * @param {Object} auth          Authorization
-	 * @param {String} query         Query parameters
-	 * @param {Object} form          Form fields
-	 * @param {Object} files         array of file names and file content
-	 * @param {Object} context       the invocation context
-	 * @return {Promise} A promise. fulfilled with {body, statusCode}, rejected with { statusCode, errorDescription, error, body }
-	 */
-	_request({ uri, method, headers, data, auth, query, form, files, context, raw }){
-		const req = this._buildRequest({ uri, method, headers, data, auth, query, form, context, files });
-
-		if (raw){
-			return req;
-		}
-		return this._promiseResponse(req);
+		const requestParams = this._buildRequest({ uri, method, headers, data, auth, query, form, context, files: requestFiles });
+		return this._promiseResponse(requestParams, isBuffer);
 	}
 
 	/**
 	 * Promises to send the request and retreive the response.
-	 * @param {Request} req The request to send
-	 * @returns {Promise}   The promise to send the request and retrieve the response.
+	 * @param {[string, object]} requestParams	First argument is the URI to request, the second one are the options.
+	 * @param {boolean} isBuffer Indicate if the response body should be returned as a Buffer (Node) / ArrayBuffer (browser) instead of JSON
+	 * @param {Fetch} [makerequest] The fetch function to use. Override for testing.
+	 * @returns {Promise<RequestResponse, RequestError>} A promise that resolves with either the requested data or an error object
 	 * @private
 	 */
-	_promiseResponse(req){
-		return new Promise((fulfill, reject) => this._sendRequest(req, fulfill, reject));
-	}
-
-	/**
-	 * Sends the given request, calling the fulfill or reject methods for success/failure.
-	 * @param {object} request   The request to send
-	 * @param {function} fulfill    Called on success with the response
-	 * @param {function} reject     Called on failure with the failure reason.
-	 * @private
-	 * @returns {undefined} Nothing
-	 */
-	_sendRequest(request, fulfill, reject){
-		request.end((error, res) => {
-			const body = res && res.body;
-			if (error){
-				const uri = request.url;
-				const statusCode = error.status;
-				let errorDescription = `${statusCode ? 'HTTP error ' + statusCode : 'Network error'} from ${uri}`;
+	_promiseResponse(requestParams, isBuffer, makerequest = fetch) {
+		let status;
+		return makerequest(...requestParams)
+			.then((resp) => {
+				status = resp.status;
+				if (!resp.ok) {
+					return resp.text().then((err) => {
+						const objError = JSON.parse(err);
+						// particle-commnds/src/cmd/api expects response.text. to be a string
+						const response = Object.assign(resp, { text: err });
+						throw Object.assign(objError, { response });
+					});
+				}
+				if (status === 204) { // Can't do resp.json() since there is no body to parse
+					return '';
+				}
+				if (isBuffer) {
+					return resp.blob();
+				}
+				return resp.json();
+			}).then((body) => {
+				if (isBuffer) {
+					return body.arrayBuffer().then((arrayBuffer) => {
+						if (!this.isForBrowser()) {
+							return Buffer.from(arrayBuffer);
+						}
+						return arrayBuffer;
+					});
+				}
+				return {
+					body,
+					statusCode: status
+				};
+			}).catch((error) => {
+				const errorType = status ? `HTTP error ${status}` : 'Network error';
+				let errorDescription = `${errorType} from ${requestParams[0]}`;
 				let shortErrorDescription;
-				if (body && body.error_description){
-					errorDescription += ' - ' + body.error_description;
-					shortErrorDescription = body.error_description;
+				if (error.error_description) { // Fetch responded with ok false
+					errorDescription = `${errorDescription} - ${error.error_description}`;
+					shortErrorDescription = error.error_description;
 				}
 				const reason = new Error(errorDescription);
-				Object.assign(reason, { statusCode, errorDescription, shortErrorDescription, error, body });
-				reject(reason);
-			} else {
-				fulfill({
-					body: body,
-					statusCode: res.statusCode
+				Object.assign(reason, {
+					statusCode: status,
+					errorDescription,
+					shortErrorDescription,
+					error,
+					body: error
 				});
-			}
-		});
+				throw reason;
+			});
 	}
 
-	_buildRequest({ uri, method, headers, data, auth, query, form, files, context, makerequest = request }){
-		const req = makerequest(method, uri);
-		if (this.prefix){
-			req.use(this.prefix);
+	_buildRequest({ uri, method, headers, data, auth, query, form, files, context }){
+		let actualUri = uri;
+		if (this.baseUrl && uri[0] === '/') {
+			actualUri = `${this.baseUrl}${uri}`;
 		}
-		this._authorizationHeader(req, auth);
-		if (context){
-			this._applyContext(req, context);
+		if (query) {
+			const queryParams = qs.stringify(query);
+			const hasParams = actualUri.includes('?');
+			actualUri = `${actualUri}${hasParams ? '&' : '?'}${queryParams}`;
 		}
-		if (query){
-			req.query(query);
-		}
-		if (headers){
-			req.set(headers);
-		}
+
+		const userAgentHeader = { 'User-Agent': `${packageJson.name}/${packageJson.version} (${packageJson.repository.url})` };
+		let body;
+		let contentTypeHeader;
 		if (files){
-			for (let [name, file] of Object.entries(files)){
-				// API for Form Data is different in Node and in browser
-				let options = {
-					filepath: file.path
-				};
-				if (this.isForBrowser(makerequest)){
-					options = file.path;
-				}
-				req.attach(name, file.data, options);
-			}
-			if (form){
-				for (let [name, value] of Object.entries(form)){
-					req.field(name, value);
-				}
-			}
+			contentTypeHeader = {}; // Needed to allow fetch create its own
+			body = this._getFromData(files, form);
 		} else if (form){
-			req.type('form');
-			req.send(form);
+			contentTypeHeader = { 'Content-Type': 'application/x-www-form-urlencoded' };
+			body = qs.stringify(form);
 		} else if (data){
-			req.send(data);
+			contentTypeHeader = { 'Content-Type': 'application/json' };
+			body = JSON.stringify(data);
 		}
-		return req;
+		const finalHeaders = Object.assign({},
+			userAgentHeader,
+			contentTypeHeader,
+			this._getAuthorizationHeader(auth),
+			this._getContextHeaders(context),
+			headers
+		);
+
+		return [actualUri, { method, body, headers: finalHeaders }];
 	}
 
-	isForBrowser(makerequest = request){
-		// superagent only has the getXHR method in the browser version
-		return !!makerequest.getXHR;
+	isForBrowser() {
+		return typeof window !== 'undefined';
 	}
 
-	_applyContext(req, context){
-		if (context.tool){
-			this._addToolContext(req, context.tool);
+	_getFromData(files, form) {
+		const formData = new FormData();
+		for (let [name, file] of Object.entries(files)){
+			let path = file.path;
+			let fileData = file.data;
+			if (!this.isForBrowser()) {
+				const nodeFormData = this._getNodeFormData(file);
+				path = nodeFormData.path;
+				fileData = nodeFormData.file;
+			}
+			formData.append(name, fileData, path);
 		}
-		if (context.project){
-			this._addProjectContext(req, context.project);
+		if (form){
+			for (let [name, value] of Object.entries(form)){
+				formData.append(name, value);
+			}
 		}
+		return formData;
 	}
 
-	_addToolContext(req, tool){
+	_getNodeFormData(file) {
+		let fileData = file.data;
+		if (typeof file.data === 'string') {
+			fileData = fs.createReadStream(file.data);
+		}
+		return {
+			file: fileData,
+			path: { filepath: file.path } // Different API for nodejs
+		};
+	}
+
+	_getContextHeaders(context = {}) {
+		return Object.assign({},
+			this._getToolContext(context.tool),
+			this._getProjectContext(context.project)
+		);
+	}
+
+	_getToolContext(tool = {}){
 		let value = '';
 		if (tool.name){
 			value += this._toolIdent(tool);
@@ -208,8 +301,9 @@ export default class Agent {
 			}
 		}
 		if (value){
-			req.set('X-Particle-Tool', value);
+			return { 'X-Particle-Tool': value };
 		}
+		return {};
 	}
 
 	_toolIdent(tool){
@@ -227,11 +321,12 @@ export default class Agent {
 		return value;
 	}
 
-	_addProjectContext(req, project){
+	_getProjectContext(project = {}){
 		let value = this._buildSemicolonSeparatedProperties(project, 'name');
 		if (value){
-			req.set('X-Particle-Project', value);
+			return { 'X-Particle-Project': value };
 		}
+		return {};
 	}
 
 	/**
@@ -257,25 +352,29 @@ export default class Agent {
 
 	/**
 	 * Adds an authorization header.
-	 * @param {Request} req     The request to add the authorization header to.
-	 * @param {object|string}  auth    The authorization. Either a string authorization bearer token,
-	 *  or a username/password object.
-	 * @returns {Request} req   The original request.
+	 * @param {string}  auth    The authorization bearer token.
+	 * @returns {object} The original request.
 	 */
-	_authorizationHeader(req, auth){
-		if (auth){
-			if (auth.username !== undefined){
-				req.auth(auth.username, auth.password);
-			} else {
-				req.set({ Authorization: `Bearer ${auth}` });
-			}
+	_getAuthorizationHeader(auth){
+		if (!auth) {
+			return {};
 		}
-		return req;
+		if (typeof auth === 'string') {
+			return { Authorization: `Bearer ${auth}` };
+		}
+		let encoded;
+		if (this.isForBrowser()) {
+			encoded = btoa(`${auth.username}:${auth.password}`);
+		} else {
+			encoded = Buffer.from(`${auth.username}:${auth.password}`)
+				.toString('base64');
+		}
+		return { Authorization: `Basic ${encoded}` };
 	}
 
 	/**
 	 *
-	 * @param {Array} files converts the file names to file, file1, file2.
+	 * @param {Object} files converts the file names to file, file1, file2.
 	 * @returns {object} the renamed files.
 	 */
 	_sanitizeFiles(files){

@@ -77,12 +77,13 @@
   },
   "dependencies": {
     "babel-runtime": "^6.9.2",
-    "form-data": ">2.2.0",
-    "stream-http": "^3.2.0",
-    "superagent": "^5.1.2",
-    "superagent-prefix": "0.0.2"
+    "form-data": "^4.0.0",
+    "node-fetch": "^2.7.0",
+    "qs": "^6.11.2",
+    "stream-http": "^3.2.0"
   },
   "browser": {
+    "./fs": false,
     "http": "stream-http",
     "https": "stream-http"
   },

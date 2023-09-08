@@ -9,4 +9,4 @@
 5. Create a release on GitHub with the notes from the `CHANGELOG.md`
 6. Point your project to the new version `npm install particle-api-js@latest`
 
-- After updating major version, update the installation instructions in the [docs](https://github.com/particle-iot/docs/blob/master/src/content/reference/SDKs/javascript.md)
+- After updating major version, update the installation instructions in the [docs](https://github.com/particle-iot/docs/blob/master/src/content/reference/cloud-apis/javascript.md)
