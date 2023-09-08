@@ -59,7 +59,7 @@ export default class Agent {
 	 * @param {string} uri		The URI to request
 	 * @param {string} [auth]	Authorization token to use
 	 * @param {object} [headers]	Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-	 * @param {string|object} [query] Key/VAlue pairs of query params or a correctly formatted string
+	 * @param {object} [query] Key/Value pairs of query params
 	 * @param {object} [context]	The invocation context, describing the tool and project
 	 * @returns {Promise<RequestResponse, RequestError>} A promise that resolves with either the requested data or an error object
 	 */
@@ -72,7 +72,7 @@ export default class Agent {
 	 * @param {string} uri		The URI to request
 	 * @param {string} [auth]	Authorization token to use
 	 * @param {object} [headers]	Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-	 * @param {string|object} [query] Key/VAlue pairs of query params or a correctly formatted string
+	 * @param {object} [query] Key/Value pairs of query params
 	 * @param {object} [context]	The invocation context, describing the tool and project
 	 * @returns {Promise<RequestResponse, RequestError>} A promise that resolves with either the requested data or an error object
 	 */
@@ -85,7 +85,7 @@ export default class Agent {
 	 * @param {string} uri		The URI to request
 	 * @param {string} [auth]	Authorization token to use
 	 * @param {object} [headers]	Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-	 * @param {string|object} [query] Key/VAlue pairs of query params or a correctly formatted string
+	 * @param {object} [data] Payload to send in the request body in JSON format
 	 * @param {object} [context]	The invocation context, describing the tool and project
 	 * @returns {Promise<RequestResponse, RequestError>} A promise that resolves with either the requested data or an error object
 	 */
@@ -98,7 +98,7 @@ export default class Agent {
 	 * @param {string} uri		The URI to request
 	 * @param {string} [auth]	Authorization token to use
 	 * @param {object} [headers]	Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-	 * @param {string|object} [query] Key/VAlue pairs of query params or a correctly formatted string
+	 * @param {object} [data] Payload to send in the request body in JSON format
 	 * @param {object} [context]	The invocation context, describing the tool and project
 	 * @returns {Promise<RequestResponse, RequestError>} A promise that resolves with either the requested data or an error object
 	 */
@@ -111,7 +111,7 @@ export default class Agent {
 	 * @param {string} uri		The URI to request
 	 * @param {string} [auth]	Authorization token to use
 	 * @param {object} [headers]	Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-	 * @param {string|object} [query] Key/VAlue pairs of query params or a correctly formatted string
+	 * @param {object} [data] Payload to send in the request body in JSON format
 	 * @param {object} [context]	The invocation context, describing the tool and project
 	 * @returns {Promise<RequestResponse, RequestError>} A promise that resolves with either the requested data or an error object
 	 */
@@ -125,9 +125,9 @@ export default class Agent {
 	 * @param {String} config.uri		The URI to request
 	 * @param {String} config.method        The method used to request the URI, should be in uppercase.
 	 * @param {Object} config.headers       Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-	 * @param {String} config.data          Arbitrary data to send as the body.
+	 * @param {Object} config.data          Arbitrary data to send as the body.
 	 * @param {Object} config.auth          Authorization
-	 * @param {String|Object} config.query  Query parameters
+	 * @param {String} config.query         Query parameters
 	 * @param {Object} config.form          Form fields
 	 * @param {Object} config.files         array of file names and file content
 	 * @param {Object} config.context       the invocation context, describing the tool and project.
@@ -154,6 +154,8 @@ export default class Agent {
 	/**
 	 * Promises to send the request and retreive the response.
 	 * @param {[string, object]} requestParams	First argument is the URI to request, the second one are the options.
+	 * @param {boolean} isBuffer Indicate if the response body should be returned as a Buffer (Node) / ArrayBuffer (browser) instead of JSON
+	 * @param {Fetch} [makerequest] The fetch function to use. Override for testing.
 	 * @returns {Promise<RequestResponse, RequestError>} A promise that resolves with either the requested data or an error object
 	 * @private
 	 */
@@ -216,35 +218,25 @@ export default class Agent {
 			actualUri = `${this.baseUrl}${uri}`;
 		}
 		if (query) {
-			let queryParams;
-			if (typeof query === 'string') {
-				queryParams = query;
-			} else {
-				queryParams = qs.stringify(query);
-			}
+			const queryParams = qs.stringify(query);
 			const hasParams = actualUri.includes('?');
 			actualUri = `${actualUri}${hasParams ? '&' : '?'}${queryParams}`;
 		}
 
 		let body;
-		let contentType = { 'Content-Type': 'application/x-www-form-urlencoded' };
+		let contentTypeHeader;
 		if (files){
-			contentType = {}; // Needed to allow fetch create it's own
+			contentTypeHeader = {}; // Needed to allow fetch create its own
 			body = this._getFromData(files, form);
 		} else if (form){
+			contentTypeHeader = { 'Content-Type': 'application/x-www-form-urlencoded' };
 			body = qs.stringify(form);
 		} else if (data){
-			if (typeof data === 'object') {
-				contentType = { 'Content-Type': 'application/json' };
-				body = qs.stringify(data);
-			}
-			if (typeof data === 'string') {
-				contentType = { 'Content-Type': 'application/x-www-form-urlencoded' };
-				body = data;
-			}
+			contentTypeHeader = { 'Content-Type': 'application/json' };
+			body = JSON.stringify(data);
 		}
 		const finalHeaders = Object.assign({},
-			contentType,
+			contentTypeHeader,
 			this._getAuthorizationHeader(auth),
 			this._getContextHeaders(context),
 			headers

@@ -285,13 +285,6 @@ describe('Agent', () => {
 			expect(opts.headers).to.have.property('Authorization', `Bearer ${auth}`);
 		});
 
-		// it('should invoke query with the given query', () => {
-		it('adds new query params with the given query string', () => {
-			const query = 'foo=1&bar=2';
-			const [uri] = agent._buildRequest({ uri: '/uri', method: 'get', query });
-			expect(uri).to.equal(`abc/uri?${query}`);
-		});
-
 		it('adds new query params with the given query object', () => {
 			const query = { foo: 1, bar: 2 };
 			const [uri] = agent._buildRequest({ uri: '/uri', method: 'get', query });
@@ -299,22 +292,15 @@ describe('Agent', () => {
 		});
 
 		it('adds query params without colliding with existing ones', () => {
-			const query = 'foo=1&bar=2';
+			const query = { foo: 1, bar: 2 };
 			const [uri] = agent._buildRequest({ uri: '/uri?test=true', method: 'get', query });
-			expect(uri).to.equal(`abc/uri?test=true&${query}`);
+			expect(uri).to.equal('abc/uri?test=true&foo=1&bar=2');
 		});
 
-		it('adds the provided data as a requets body', () => {
-			const [, opts] = agent._buildRequest({ uri: 'uri', method: 'get', data: 'a=abcd' });
-			expect(opts.body).to.eql('a=abcd');
-			expect(opts.headers).to.have.property('Content-Type', 'application/x-www-form-urlencoded');
-		});
-
-		it('adds the provided data as a requets body', () => {
+		it('adds the provided data as a JSON request body', () => {
 			const [, opts] = agent._buildRequest({ uri: 'uri', method: 'get', data: { a: 'abcd' } });
-			expect(opts.body).to.eql('a=abcd');
+			expect(opts.body).to.eql('{"a":"abcd"}');
 			expect(opts.headers).to.have.property('Content-Type', 'application/json');
-
 		});
 
 		it('should setup form send when form data is given', () => {
