@@ -76,7 +76,9 @@
     "sinon": "^7.2.5",
     "sinon-chai": "^3.7.0",
     "typescript": "^5.2.2",
-    "watchify": "^3.7.0"
+    "watchify": "^3.7.0",
+    "webpack": "^5.88.2",
+    "webpack-cli": "^5.1.4"
   },
   "dependencies": {
     "babel-runtime": "^6.9.2",
