@@ -51,7 +51,7 @@ The `Agent` integration tests ([source](./test/Agent.integration.js)) depend on 
 <summary><b>How to write scripts that execute against local code changes?</b></summary>
 <p>
 
-Source code lives in the `./src` directory and is built for release via the `npm run compile` command. To create a simple script file to test your changes, follow these steps:
+Source code lives in the `./src` directory and is built for release via the `npm run build` command. To create a simple script file to test your changes, follow these steps:
 
 1. create a `js` file on your local machine: `touch my-api-test.js` (somewhere outside of the root of this repo)
 2. within your test `js` file, init the api client like so:
@@ -123,7 +123,7 @@ There [are many snippets of using Particle API JS on the Documentation website][
 Make your changes to the files in the `src` directory, then from the project directory run:
 
 ```
-$ npm run compile && npm run build
+$ npm run build
 ```
 
 The `dist` directory will contain the compiled and minified files that can be included in your project.

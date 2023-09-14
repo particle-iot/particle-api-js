@@ -11,7 +11,7 @@ module.exports = (env) => {
 		devtool: 'source-map',
 		externals: [nodeExternals()],
 		output: {
-			filename: 'particle.min.js',
+			filename: `particle${env.mode === 'production' ? '.min' : ''}.js`,
 			path: path.resolve(__dirname, 'dist'),
 			clean: true,
 			globalObject: 'this',

@@ -3,7 +3,6 @@
 End-to-end test program for the event stream with Node
 
 Steps:
-- npm run compile
 - PARTICLE_API_TOKEN=<my-token> node test/EventStream-e2e-node.js
 - Follow the scenarios in EventStream.feature
 
