@@ -23,6 +23,7 @@ export default class Library {
 		if (!this.downloadUrl) {
 			return Promise.reject(new Error('No download URL for this library'));
 		}
+		// @ts-ignore
 		return this.client.downloadFile(this.downloadUrl);
 	}
 

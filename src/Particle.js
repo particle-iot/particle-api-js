@@ -3,6 +3,13 @@ import EventStream from './EventStream';
 import Agent from './Agent';
 import Client from './Client';
 
+// Hack to avoid importing the type on every @return statement
+/**
+ * @typedef {import('./Agent').RequestResponse} RequestResponse
+ */
+/**
+ * @typedef {import('./Agent').RequestError} RequestError
+ */
 
 /**
  * Particle Cloud API wrapper.
@@ -66,6 +73,7 @@ class Particle {
 	 * @param  {Number} [options.context]      Request context
 	 * @returns {Promise} A promise
 	 */
+	// @ts-ignore
 	login({ username, password, tokenDuration = this.tokenDuration, headers, context }){
 		return this.request({
 			uri: '/oauth/token',
@@ -75,7 +83,9 @@ class Particle {
 				username,
 				password,
 				grant_type: 'password',
+				// @ts-ignore
 				client_id: this.clientId,
+				// @ts-ignore
 				client_secret: this.clientSecret,
 				expires_in: tokenDuration
 			},
@@ -101,7 +111,9 @@ class Particle {
 				grant_type: 'urn:custom:mfa-otp',
 				mfa_token: mfaToken,
 				otp,
+				// @ts-ignore
 				client_id: this.clientId,
+				// @ts-ignore
 				client_secret: this.clientSecret
 			},
 			context
@@ -185,7 +197,9 @@ class Particle {
 				email,
 				password,
 				grant_type: 'client_credentials',
+				// @ts-ignore
 				client_id: this.clientId,
+				// @ts-ignore
 				client_secret: this.clientSecret
 			},
 			context
@@ -206,7 +220,9 @@ class Particle {
 			headers,
 			form: {
 				grant_type: 'client_credentials',
+				// @ts-ignore
 				client_id: this.clientId,
+				// @ts-ignore
 				client_secret: this.clientSecret
 			},
 			context
@@ -365,9 +381,9 @@ class Particle {
 
 	/**
 	 * Retrieves the information that is used to identify the current login for tracking.
-	 * @param {Object} options            Options for this API call
-	 * @param {String} options.auth       The access token
-	 * @param {Boolean} options.full      When true, retrieve all information for registering a user with the tracking API. When false,
+	 * @param {Object} [options]          Options for this API call
+	 * @param {String} [options.auth]     The access token
+	 * @param {Boolean} [options.full]    When true, retrieve all information for registering a user with the tracking API. When false,
 	 *                                    retrieve only the unique tracking ID for the current login.
 	 * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context]  Request context
@@ -404,8 +420,15 @@ class Particle {
 
 		if (product){
 			uri = `/v1/products/${product}/devices`;
-			groups = Array.isArray(groups) ? groups.join(',') : undefined;
-			query = { deviceId, deviceName, groups, sortAttr, sortDir, page, per_page: perPage };
+			query = {
+				deviceId,
+				deviceName,
+				groups: Array.isArray(groups) ? groups.join(',') : undefined,
+				sortAttr,
+				sortDir,
+				page,
+				per_page: perPage
+			};
 		} else {
 			uri = '/v1/devices';
 		}
@@ -430,11 +453,12 @@ class Particle {
 
 	/**
 	 * Claim a device to the account. The device must be online and unclaimed.
-	 * @param {Object} options            Options for this API call
-	 * @param {String} options.deviceId   Device ID
-	 * @param {String} options.auth       Access Token
-	 * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-	 * @param {Object} [options.context]  Request context
+	 * @param {Object} options			Options for this API call
+	 * @param {String} options.deviceId   		Device ID
+	 * @param {String} options.auth       		Access Token
+	 * @param {boolean} options.requestTransfer     True to request the device be transfered from another user
+	 * @param {Object} [options.headers]		Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {Object} [options.context]  		Request context
 	 * @returns {Promise} A promise
 	 */
 	claimDevice({ deviceId, requestTransfer, auth, headers, context }){
@@ -609,7 +633,7 @@ class Particle {
 	 * @param {Object} options                           Options for this API call
 	 * @param {String} options.deviceId                  Device ID or Name
 	 * @param {String} [options.name]                    Desired Name
-	 * @param {Boolean} options.signal                   Signal device on or off
+	 * @param {Boolean} [options.signal]                   Signal device on or off
 	 * @param {String} [options.notes]                   Your notes about this device
 	 * @param {Boolean} [options.development]            (Product only) Set to true to mark as development, false to return to product fleet
 	 * @param {Number} [options.desiredFirmwareVersion]  (Product only) Lock the product device to run this firmware version.
@@ -622,14 +646,15 @@ class Particle {
 	 * @returns {Promise} A promise
 	 */
 	updateDevice({ deviceId, name, signal, notes, development, desiredFirmwareVersion, flash, product, auth, headers, context }){
+		let signalValue;
 		if (signal !== undefined){
-			signal = signal ? '1' : '0';
+			signalValue = signal ? '1' : '0';
 		}
 
 		const uri = this.deviceUri({ deviceId, product });
 		const data = product ?
-			{ name, signal, notes, development, desired_firmware_version: desiredFirmwareVersion, flash } :
-			{ name, signal, notes };
+			{ name, signal: signalValue, notes, development, desired_firmware_version: desiredFirmwareVersion, flash } :
+			{ name, signal: signalValue, notes };
 
 		return this.put({ uri, auth, headers, data, context });
 	}
@@ -744,7 +769,9 @@ class Particle {
 	 */
 	flashTinker({ deviceId, auth, headers, context }){
 		/* eslint-disable no-console */
+		/* @ts-ignore */
 		if (console && console.warning){
+			// @ts-ignore
 			console.warning('Particle.flashTinker is deprecated');
 		}
 		/* eslint-enable no-console */
@@ -795,7 +822,7 @@ class Particle {
 	 * @param {String} options.auth       Access Token
 	 * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context]  Request context
-	 * @returns {Request} A promise
+	 * @returns {Promise<RequestResponse, RequestError>} A promise
 	 */
 	downloadFirmwareBinary({ binaryId, auth, headers, context }){
 		return this.request({
@@ -1208,6 +1235,7 @@ class Particle {
 	 * @param {String} options.auth           Access Token
 	 * @param {Object} [options.headers]      Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context]      Request context
+	 * @param {any} [options.promoCode]
 	 * @returns {Promise} A promise
 	 */
 	activateSIM({ iccid, iccids, country, promoCode, product, auth, headers, context }){
@@ -1392,7 +1420,7 @@ class Particle {
 	/**
 	 * Contribute a new library version from a compressed archive
 	 * @param {Object} options            Options for this API call
-	 * @param {String} options.archive    Compressed archive file containing the library sources
+	 * @param {String|Buffer} options.archive    Compressed archive file containing the library sources
 	 *                                    Either a path or Buffer of the file contents in Node, or a File or Blob in the browser.
 	 * @param {String} options.auth       Access Token
 	 * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
@@ -1646,7 +1674,7 @@ class Particle {
 	 * @param {String} options.auth       Access Token
 	 * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context]  Request context
-	 * @returns {Request} A promise
+	 * @returns {Promise<RequestResponse, RequestError>} A promise that resolves with either the requested data or an error object
 	 */
 	downloadProductFirmware({ version, product, auth, headers, context }){
 		return this.request({
@@ -1982,10 +2010,10 @@ class Particle {
 
 	/**
 	 * Set product configuration
-	 * @param  {Object} options          Options for this API call
-	 * @param  {String} options.product  Config for this product ID or slug
-	 * @param  {String} options.auth     Access Token
-	 * @param  {Object} opitons.config   Product configuration to update
+	 * @param {Object} options          Options for this API call
+	 * @param {String} options.product  Config for this product ID or slug
+	 * @param {String} options.auth     Access Token
+	 * @param {Object} options.config   Product configuration to update
 	 * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context] Request context
 	 * @returns {Promise} A promise
@@ -2005,7 +2033,7 @@ class Particle {
 	 * @param  {Object} options          Options for this API call
 	 * @param  {String} options.product  Config for this product ID or slug
 	 * @param  {String} options.auth     Access Token
-	 * @param  {Object} opitons.config   Product configuration to update
+	 * @param  {Object} options.config   Product configuration to update
 	 * @param  {String} options.deviceId Device ID to access
 	 * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context] Request context
@@ -2098,11 +2126,11 @@ class Particle {
 	 * @param {Object} options         The options for creating the logic block.
 	 * @param {Object} options.auth    Access token
 	 * @param {string} options.org     The name of the organization.
-	 * @param {Block}  options.block   The block object containing the block details.
+	 * @param {string}  options.block   The block object containing the block details.
 	 * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context] Request context
 	 *
-	 * @returns {Promise<{body: {block: ResponseBlock}, statusCode: int}>} A promise that resolves to the created logic block data.
+	 * @returns {Promise<RequestResponse>} A promise that resolves to the created logic block data.
 	 */
 	createLogicBlock({ auth, org, block, headers, context }) {
 		return this.post({
@@ -2120,11 +2148,11 @@ class Particle {
 	 * @param {Object} options         The options for the logic block.
 	 * @param {Object} options.auth    Access token
 	 * @param {string} options.org     The name of the organization.
-	 * @param {Block}  options.blockId The ID of the block to retrieve.
+	 * @param {string} options.blockId The ID of the block to retrieve.
 	 * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context] Request context
 	 *
-	 * @returns {Promise<{body: {block: ResponseBlock}, statusCode: int}>} A promise that resolves to the specified logic block data.
+	 * @returns {Promise<RequestResponse>} A promise that resolves to the specified logic block data.
 	 */
 	getLogicBlock({ auth, org, blockId, headers, context }) {
 		return this.get({
@@ -2144,11 +2172,11 @@ class Particle {
 	 * @param {Object} options.auth     The authentication object with the API key.
 	 * @param {string} options.org      The unique identifier of the organization.
 	 * @param {string} options.blockId  The ID of the block to update.
-	 * @param {Block} options.block     The block object containing the block details.
+	 * @param {string} options.block     The block object containing the block details.
 	 * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context] Request context.
 	 *
-	 * @returns {Promise<{body: {block: ResponseBlock}, statusCode: int}>} A promise that resolves to the updated logic block data.
+	 * @returns {Promise<RequestResponse>} A promise that resolves to the updated logic block data.
 	 */
 	updateLogicBlock({ auth, org, blockId, block, headers, context }) {
 		return this.put({
@@ -2170,7 +2198,7 @@ class Particle {
 	 * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context] Request context.
 	 *
-	 * @returns {Promise<{body: {block_id: int}, statusCode: int}>} A promise that resolves to an object containing the deleted block ID.
+	 * @returns {Promise<RequestResponse>} A promise that resolves to an object containing the deleted block ID.
 	 */
 	deleteLogicBlock({ auth, org, blockId, headers, context }) {
 		return this.delete({
@@ -2190,7 +2218,7 @@ class Particle {
 	 * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context] Request context.
 	 *
-	 * @returns {Promise<{body: {blocks: ResponseBlock[]}, statusCode: int}>} A promise that resolves to an array of logic block data.
+	 * @returns {Promise<RequestResponse>} A promise that resolves to an array of logic block data.
 	 */
 	listLogicBlocks({ auth, org, headers, context }) {
 		return this.get({
@@ -2211,7 +2239,7 @@ class Particle {
 	 * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context] Request context
 	 *
-	 * @returns {Promise<{body: {block_runs: BlockRun[]}, statusCode: int}>} A promise that resolves to an array of block run data.
+	 * @returns {Promise<RequestResponse>} A promise that resolves to an array of block run data.
 	 */
 	listBlockRuns({ auth, org, blockId, headers, context }) {
 		return this.get({
@@ -2233,7 +2261,7 @@ class Particle {
 	 * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context] Request context
 	 *
-	 * @returns {Promise<{body: {block_run: BlockRun}, statusCode: int}>} A promise that resolves to an array of block run data for the specified block run ID.
+	 * @returns {Promise<RequestResponse>} A promise that resolves to an array of block run data for the specified block run ID.
 	 */
 	getBlockRun({ auth, org, blockId, runId, headers, context }) {
 		return this.get({
@@ -2255,7 +2283,7 @@ class Particle {
 	 * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context] Request context
 	 *
-	 * @returns {Promise<{body: {block_run_log: BlockRunLog}, statusCode: int}>} A promise that resolves to the logs for the specified block run ID.
+	 * @returns {Promise<RequestResponse>} A promise that resolves to the logs for the specified block run ID.
 	 */
 	getBlockRunLog({ auth, org, blockId, runId, headers, context }) {
 		return this.get({
@@ -2272,11 +2300,12 @@ class Particle {
 	 * @param {Object} options         The options for creating the ledger definition.
 	 * @param {Object} options.auth    Access token
 	 * @param {string} options.org     The name of the organization.
-	 * @param {Ledger}  options.definition   The ledger definition object.
+	 * @param {object} options.definition   The ledger definition object.
+	 * @param {object} options.ledger     The ledger definition object.
 	 * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context] Request context
 	 *
-	 * @returns {Promise<{body: {ledger: ResponseLedger}, statusCode: int}>} A promise that resolves to the created ledger definition data.
+	 * @returns {Promise<RequestResponse>} A promise that resolves to the created ledger definition data.
 	 */
 	createLedger({ auth, org, ledger, headers, context }) {
 		return this.post({
@@ -2298,7 +2327,7 @@ class Particle {
 	 * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context] Request context
 	 *
-	 * @returns {Promise<{body: {ledger: ResponseLedger}, statusCode: int}>} A promise that resolves to the specified ledger definition data.
+	 * @returns {Promise<RequestResponse>} A promise that resolves to the specified ledger definition data.
 	 */
 	getLedger({ auth, org, ledgerName, headers, context }) {
 		return this.get({
@@ -2316,11 +2345,11 @@ class Particle {
 	 * @param {Object} options.auth     The authentication object with the API key.
 	 * @param {string} options.org      The unique identifier of the organization.
 	 * @param {string} options.ledgerName  Name of the ledger definition to update.
-	 * @param {Ledger} options.ledger     The ledger definition object.
+	 * @param {object} options.ledger     The ledger definition object.
 	 * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context] Request context.
 	 *
-	 * @returns {Promise<{body: {ledger: ResponseLedger}, statusCode: int}>} A promise that resolves to the updated ledger definition data.
+	 * @returns {Promise<RequestResponse>} A promise that resolves to the updated ledger definition data.
 	 */
 	updateLedger({ auth, org, ledgerName, ledger, headers, context }) {
 		return this.put({
@@ -2342,7 +2371,7 @@ class Particle {
 	 * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context] Request context.
 	 *
-	 * @returns {Promise<{body: undefined, statusCode: int}>} A promise that resolves to an object confirming the ledger definition was archived.
+	 * @returns {Promise<RequestResponse>} A promise that resolves to an object confirming the ledger definition was archived.
 	 */
 	archiveLedger({ auth, org, ledgerName, headers, context }) {
 		return this.delete({
@@ -2362,7 +2391,7 @@ class Particle {
 	 * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context] Request context.
 	 *
-	 * @returns {Promise<{body: {ledgers: ResponseLedger[]}, statusCode: int}>} A promise that resolves to an array of ledger definition data.
+	 * @returns {Promise<RequestResponse>} A promise that resolves to an array of ledger definition data.
 	 */
 	listLedgers({ auth, org, headers, context }) {
 		return this.get({
@@ -2384,7 +2413,7 @@ class Particle {
 	 * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context] Request context
 	 *
-	 * @returns {Promise<{body: {instance: ResponseLedgerInstance}, statusCode: int}>} A promise that resolves to the specified ledger instance data.
+	 * @returns {Promise<RequestResponse>} A promise that resolves to the specified ledger instance data.
 	 */
 	getLedgerInstance({ auth, org, ledgerName, scopeValue, headers, context }) {
 		return this.get({
@@ -2403,11 +2432,12 @@ class Particle {
 	 * @param {string} options.org      The unique identifier of the organization.
 	 * @param {string} options.ledgerName Ledger name.
 	 * @param {string} options.scopeValue Scope value.
-	 * @param {LedgerInstance} options.instance     The ledger instance object.
+	 * @param {object} options.instance     The ledger instance object.
+	 * @param {object} options.data     The data to set to the instance
 	 * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context] Request context.
 	 *
-	 * @returns {Promise<{body: {instance: ResponseLedgerInstance}, statusCode: int}>} A promise that resolves to the updated ledger instance data.
+	 * @returns {Promise<RequestResponse>} A promise that resolves to the updated ledger instance data.
 	 */
 	setLedgerInstance({ auth, org, ledgerName, scopeValue, data, headers, context }) {
 		return this.put({
@@ -2430,7 +2460,7 @@ class Particle {
 	 * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context] Request context.
 	 *
-	 * @returns {Promise<{body: undefined, statusCode: int}>} A promise that resolves to an object confirming the ledger instance was deleted.
+	 * @returns {Promise<RequestResponse>} A promise that resolves to an object confirming the ledger instance was deleted.
 	 */
 	deleteLedgerInstance({ auth, org, ledgerName, scopeValue, headers, context }) {
 		return this.delete({
@@ -2451,7 +2481,7 @@ class Particle {
 	 * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context] Request context.
 	 *
-	 * @returns {Promise<{body: {instances: ResponseLedgerInstance[]}, statusCode: int}>} A promise that resolves to an array of ledger instance data.
+	 * @returns {Promise<RequestResponse>} A promise that resolves to an array of ledger instance data.
 	 */
 	listLedgerInstances({ auth, org, ledgerName, headers, context }) {
 		return this.get({
@@ -2465,7 +2495,7 @@ class Particle {
 	/**
 	 * Set default auth token that will be used in each method if `auth` is not provided
 	 * @param  {String} auth A Particle access token
-	 * @returns {undefined}
+	 * @throws {Error} When not auth string is provided
 	 */
 	setDefaultAuth(auth){
 		if (typeof auth === 'string' && auth.length !== 0) {
@@ -2497,11 +2527,12 @@ class Particle {
 
 	/**
 	 * Make a GET request
-	 * @param {string} uri		The URI to request
-	 * @param {string} [auth]	Authorization token to use
-	 * @param {object} [headers]	Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-	 * @param {string|object} [query] Key/VAlue pairs of query params or a correctly formatted string
-	 * @param {object} [context[	The invocation context, describing the tool and project
+	 * @param {object} params
+	 * @param {string} params.uri		The URI to request
+	 * @param {string|object} [params.auth]	Authorization token to use
+	 * @param {object} [params.headers]	Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {string|object} [params.query] Key/VAlue pairs of query params or a correctly formatted string
+	 * @param {object} [params.context]	The invocation context, describing the tool and project
 	 * @returns {Promise<RequestResponse, RequestError>} A promise that resolves with either the requested data or an error object
 	 */
 	get({ uri, auth, headers, query, context }){
@@ -2512,11 +2543,12 @@ class Particle {
 
 	/**
 	 * Make a HEAD request
-	 * @param {string} uri		The URI to request
-	 * @param {string} [auth]	Authorization token to use
-	 * @param {object} [headers]	Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-	 * @param {string|object} [query] Key/VAlue pairs of query params or a correctly formatted string
-	 * @param {object} [context]	The invocation context, describing the tool and project
+	 * @param {object} params
+	 * @param {string} params.uri		The URI to request
+	 * @param {string|object} [params.auth]	Authorization token to use
+	 * @param {object} [params.headers]	Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {string|object} [params.query] Key/VAlue pairs of query params or a correctly formatted string
+	 * @param {object} [params.context]	The invocation context, describing the tool and project
 	 * @returns {Promise<RequestResponse, RequestError>} A promise that resolves with either the requested data or an error object
 	 */
 	head({ uri, auth, headers, query, context }){
@@ -2527,11 +2559,12 @@ class Particle {
 
 	/**
 	 * Make a POST request
-	 * @param {string} uri		The URI to request
-	 * @param {string} [auth]	Authorization token to use
-	 * @param {object} [headers]	Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-	 * @param {string|object} [query] Key/VAlue pairs of query params or a correctly formatted string
-	 * @param {object} [context]	The invocation context, describing the tool and project
+	 * @param {object} params
+	 * @param {string} params.uri		The URI to request
+	 * @param {string|object} [params.auth]	Authorization token to use
+	 * @param {object} [params.headers]	Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {string|object} [params.data] Key/VAlue pairs of query params or a correctly formatted string
+	 * @param {object} [params.context]	The invocation context, describing the tool and project
 	 * @returns {Promise<RequestResponse, RequestError>} A promise that resolves with either the requested data or an error object
 	 */
 	post({ uri, auth, headers, data, context }){
@@ -2542,11 +2575,12 @@ class Particle {
 
 	/**
 	 * Make a PUT request
-	 * @param {string} uri		The URI to request
-	 * @param {string} [auth]	Authorization token to use
-	 * @param {object} [headers]	Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-	 * @param {string|object} [query] Key/VAlue pairs of query params or a correctly formatted string
-	 * @param {object} [context]	The invocation context, describing the tool and project
+	 * @param {object} params
+	 * @param {string} params.uri		The URI to request
+	 * @param {string|object} [params.auth]	Authorization token to use
+	 * @param {object} [params.headers]	Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {string|object} [params.data] Key/VAlue pairs of query params or a correctly formatted string
+	 * @param {object} [params.context]	The invocation context, describing the tool and project
 	 * @returns {Promise<RequestResponse, RequestError>} A promise that resolves with either the requested data or an error object
 	 */
 	put({ uri, auth, headers, data, context }){
@@ -2557,11 +2591,12 @@ class Particle {
 
 	/**
 	 * Make a DELETE request
-	 * @param {string} uri		The URI to request
-	 * @param {string} [auth]	Authorization token to use
-	 * @param {object} [headers]	Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-	 * @param {string|object} [query] Key/VAlue pairs of query params or a correctly formatted string
-	 * @param {object} [context]	The invocation context, describing the tool and project
+	 * @param {object} params
+	 * @param {string} params.uri		The URI to request
+	 * @param {string|object} [params.auth]	Authorization token to use
+	 * @param {object} [params.headers]	Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {string|object} [params.data] Key/VAlue pairs of query params or a correctly formatted string
+	 * @param {object} [params.context]	The invocation context, describing the tool and project
 	 * @returns {Promise<RequestResponse, RequestError>} A promise that resolves with either the requested data or an error object
 	 */
 	delete({ uri, auth, headers, data, context }){
@@ -2575,14 +2610,14 @@ class Particle {
 	 * @param {Object} args			An obj with all the possible request configurations
 	 * @param {String} args.uri		The URI to request
 	 * @param {String} args.method		The method used to request the URI, should be in uppercase.
-	 * @param {Object} args.headers		Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-	 * @param {String} args.data		Arbitrary data to send as the body.
-	 * @param {Object} args.auth		Authorization
-	 * @param {String|Object} args.query	Query parameters
-	 * @param {Object} args.form		Form fields
-	 * @param {Object} args.files		Array of file names and file content
-	 * @param {Object} args.context		The invocation context, describing the tool and project.
-	 * @param {boolean} args.isBuffer	Indicate if the response should be treated as Buffer instead of JSON
+	 * @param {Object} [args.headers]	Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {object} [args.data]		Arbitrary data to send as the body.
+	 * @param {string|object} [args.auth]	Authorization
+	 * @param {String|Object} [args.query]	Query parameters
+	 * @param {Object} [args.form]		Form fields
+	 * @param {Object} [args.files]		Array of file names and file content
+	 * @param {Object} [args.context]	The invocation context, describing the tool and project.
+	 * @param {boolean} [args.isBuffer]	Indicate if the response should be treated as Buffer instead of JSON
 	 * @returns {Promise<RequestResponse, RequestError>} A promise that resolves with either the requested data or an error object
 	 */
 	request(args){
@@ -2592,6 +2627,7 @@ class Particle {
 	}
 
 	client(options = {}){
+		// @ts-ignore
 		return new Client(Object.assign({ api: this }, options));
 	}
 

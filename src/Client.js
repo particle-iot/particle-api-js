@@ -4,7 +4,8 @@ import Library from './Library';
 
 export default class Client {
 	constructor({ auth, api = new Particle() }){
-		Object.assign(this, { auth, api });
+		this.auth = auth;
+		this.api = api;
 	}
 
 	ready(){
@@ -84,8 +85,9 @@ export default class Client {
 
 	/**
 	 * Delete an entire published library
-	 * @param  {String} $0.name Name of the library to delete
-	 * @param  {String} $0.force Key to force deleting a public library
+	 * @param {object} params	Specific params of the library to delete
+	 * @param {string} params.name	Name of the library to delete
+	 * @param {string} params.force	Key to force deleting a public library
 	 * @returns {Promise} A promise
 	 */
 	deleteLibrary({ name, force }){
@@ -117,8 +119,9 @@ export default class Client {
 	}
 
 	/**
-	 * @param {String} $0.deviceId Device ID or Name
-	 * @param {Boolean} $0.signal   Signal on or off
+	 * @param {object} params
+	 * @param {string} params.deviceId	Device ID or Name
+	 * @param {boolean} params.signal	Signal on or off
 	 * @returns {Promise} A promise
 	 * @deprecated Will be removed in 6.5
 	 */
@@ -156,7 +159,7 @@ export default class Client {
 			}, () => {});
 	}
 
-	trackingIdentity({ full=false, context }={}){
+	trackingIdentity({ full = false, context = undefined }={}){
 		return this.api.trackingIdentity({ full, context, auth: this.auth })
 			.then(payload => {
 				return payload.body;
