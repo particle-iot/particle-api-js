@@ -1,5 +1,5 @@
-import { expect } from './test-setup';
-import Defaults from '../src/Defaults';
+const { expect } = require('./test-setup');
+const Defaults = require('../src/Defaults');
 
 describe('Default Particle constructor options', () => {
 	it('includes baseUrl', () => {

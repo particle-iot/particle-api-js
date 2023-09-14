@@ -1,5 +1,5 @@
-import { sinon, expect } from './test-setup';
-import Agent from '../src/Agent.js';
+const { sinon, expect } = require('./test-setup');
+const Agent = require('../src/Agent.js');
 
 describe('Agent', () => {
 	beforeEach(() => {

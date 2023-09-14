@@ -24,6 +24,6 @@ function readJSON(filename) {
 	return JSON.parse(read(filename));
 }
 
-export {
+module.exports = {
 	read, readJSON
 };

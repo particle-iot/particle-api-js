@@ -1,7 +1,7 @@
-import { expect, sinon } from './test-setup';
-import Client from '../src/Client';
-import * as fixtures from './fixtures';
-import Library from '../src/Library';
+const { expect, sinon } = require('./test-setup');
+const Client = require('../src/Client');
+const fixtures = require('./fixtures');
+const Library = require('../src/Library');
 
 let api;
 const token = 'tok';

@@ -1,6 +1,5 @@
-import { expect, sinon } from './test-setup';
-import Particle from '../src/Particle';
-
+const { expect, sinon } = require('./test-setup');
+const Particle = require('../src/Particle');
 
 describe('Particle', () => {
 	let api;

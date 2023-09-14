@@ -1,8 +1,8 @@
-import { sinon, expect } from './test-setup';
-import http from 'http';
-import { EventEmitter } from 'events';
+const { sinon, expect } = require('./test-setup');
+const http = require('http');
+const { EventEmitter } = require('events');
 
-import EventStream from '../src/EventStream';
+const EventStream = require('../src/EventStream');
 
 describe('EventStream', () => {
 	afterEach(() => {

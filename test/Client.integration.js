@@ -1,6 +1,6 @@
-import { expect } from './test-setup';
-import Particle from '../src/Particle';
-import { read } from './fixtures/index';
+const { expect } = require('./test-setup');
+const Particle = require('../src/Particle');
+const { read } = require('./fixtures/index');
 
 
 describe('Client', () => {

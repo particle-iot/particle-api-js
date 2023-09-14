@@ -1,10 +1,10 @@
-import should from 'should'; // monkeypatch the world~!1
-import Particle from '../src/Particle';
-import Defaults from '../src/Defaults';
-import Client from '../src/Client';
-import EventStream from '../src/EventStream';
-import FakeAgent from './FakeAgent';
-import { sinon, expect } from './test-setup';
+const should = require('should'); // monkeypatch the world~!1
+const Particle = require('../src/Particle');
+const Defaults = require('../src/Defaults');
+const Client = require('../src/Client');
+const EventStream = require('../src/EventStream');
+const FakeAgent = require('./FakeAgent');
+const { sinon, expect } = require('./test-setup');
 
 let api;
 

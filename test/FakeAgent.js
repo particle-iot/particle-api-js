@@ -1,4 +1,4 @@
-export default class FakeAgent {
+class FakeAgent {
 	get({ uri, auth, headers, query, context }){
 		return this.request({ uri, method: 'get', auth, headers, query, context });
 	}
@@ -23,4 +23,4 @@ export default class FakeAgent {
 		return new Promise((resolve) => resolve(opts));
 	}
 }
-
+module.exports = FakeAgent;
