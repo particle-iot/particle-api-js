@@ -3,12 +3,12 @@
 End-to-end test program for the event stream with Node
 
 Steps:
-- PARTICLE_API_TOKEN=<my-token> node test/EventStream-e2e-node.js
+- PARTICLE_API_TOKEN=<my-token> node EventStream-e2e-node.js
 - Follow the scenarios in EventStream.feature
 
  */
 
-const Particle = require('../lib/Particle');
+const Particle = require('./lib/Particle');
 const baseUrl = process.env.PARTICLE_API_BASE_URL || 'http://localhost:9090';
 const auth = process.env.PARTICLE_API_TOKEN;
 const particle = new Particle({ baseUrl });
