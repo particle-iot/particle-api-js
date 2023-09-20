@@ -41,10 +41,7 @@ module.exports = function karmaCfg(config){
 			plugins: [
 				new webpack.ProvidePlugin({ Buffer: ['buffer', 'Buffer'] }),
 				new webpack.EnvironmentPlugin({
-					SKIP_AGENT_TEST: process.env.SKIP_AGENT_TEST || false,
-					ACCESS_TOKEN: process.env.ACCESS_TOKEN || '',
-					API_URL: process.env.API_URL || 'https://api.particle.io',
-					PARTICLE_LIBRARY_DELETE_TOKEN: process.env.PARTICLE_LIBRARY_DELETE_TOKEN || ''
+					SKIP_AGENT_TEST: process.env.SKIP_AGENT_TEST || false
 				})
 			]
 		},
