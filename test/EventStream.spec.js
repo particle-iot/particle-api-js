@@ -32,6 +32,7 @@ describe('EventStream', () => {
 
 	describe('connect', () => {
 		it('successfully connects to http', () => {
+			sinon.useFakeTimers({ shouldAdvanceTime: true });
 			const fakeRequest = makeRequest();
 			sinon.stub(http, 'request').callsFake(() => {
 				setImmediate(() => {
@@ -57,6 +58,7 @@ describe('EventStream', () => {
 		});
 
 		it('returns http errors on connect', () => {
+			sinon.useFakeTimers({ shouldAdvanceTime: true });
 			const fakeRequest = makeRequest();
 			sinon.stub(http, 'request').callsFake(() => {
 				setImmediate(() => {

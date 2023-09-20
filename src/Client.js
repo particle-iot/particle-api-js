@@ -1,6 +1,5 @@
-const Particle = require('./Particle');
 const Library = require('./Library');
-
+let Particle;
 
 class Client {
 	constructor({ auth, api = new Particle() }){
@@ -168,3 +167,4 @@ class Client {
 }
 
 module.exports = Client;
+Particle = require('./Particle'); // Move it to after the export to avoid issue with circular reference
