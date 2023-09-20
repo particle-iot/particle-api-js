@@ -14,10 +14,8 @@ module.exports = (env) => {
 			clean: true,
 			globalObject: 'this',
 			library: {
-				name: 'particle-api-js',
-				type: 'umd',
-				umdNamedDefine: true,
-				export: 'default'
+				name: 'Particle',
+				type: 'var'
 			}
 		},
 		optimization: {
