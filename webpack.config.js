@@ -1,15 +1,13 @@
 const path = require('path');
 const webpack = require('webpack');
-const nodeExternals = require('webpack-node-externals');
 const TerserPlugin = require('terser-webpack-plugin');
 
 module.exports = (env) => {
 	return {
-		mode: env.mode || 'development',
+		mode: env.mode,
 		target: 'web',
 		entry: './src/Particle.js',
 		devtool: 'source-map',
-		externals: [nodeExternals()],
 		output: {
 			filename: `particle${env.mode === 'production' ? '.min' : ''}.js`,
 			path: path.resolve(__dirname, 'dist'),
@@ -23,7 +21,7 @@ module.exports = (env) => {
 			}
 		},
 		optimization: {
-			minimize: true,
+			minimize: env.mode === 'production',
 			minimizer: [new TerserPlugin({
 				extractComments: false,
 				terserOptions: {
