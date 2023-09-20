@@ -35,7 +35,9 @@ module.exports = (env) => {
 		},
 		resolve: {
 			fallback: {
-				buffer: require.resolve('buffer')
+				buffer: require.resolve('buffer'),
+				events: require.resolve('events'),
+				url: require.resolve('url')
 			}
 		},
 		plugins: [
