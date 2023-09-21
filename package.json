@@ -46,11 +46,13 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@types/node": "^20.5.9",
+    "buffer": "^6.0.3",
     "chai": "^4.3.6",
     "chai-as-promised": "^7.1.1",
     "documentation": "^4.0.0-rc.1",
     "eslint": "^8.17.0",
     "eslint-config-particle": "^2.2.1",
+    "events": "^3.3.0",
     "karma": "^1.1.1",
     "karma-chai": "^0.1.0",
     "karma-cli": "^1.0.1",
@@ -60,22 +62,21 @@
     "karma-webpack": "^5.0.0",
     "mocha": "^2.5.1",
     "nyc": "^15.1.0",
+    "process": "^0.11.10",
     "should": "^9.0.0",
     "sinon": "^7.2.5",
     "sinon-chai": "^3.7.0",
     "terser-webpack-plugin": "^5.3.9",
     "typescript": "^5.2.2",
+    "url": "^0.11.3",
     "webpack": "^5.88.2",
     "webpack-cli": "^5.1.4"
   },
   "dependencies": {
-    "buffer": "^6.0.3",
-    "events": "^3.3.0",
     "form-data": "^4.0.0",
     "node-fetch": "^2.7.0",
     "qs": "^6.11.2",
-    "stream-http": "^3.2.0",
-    "url": "^0.11.3"
+    "stream-http": "^3.2.0"
   },
   "browser": {
     "./fs": false,
