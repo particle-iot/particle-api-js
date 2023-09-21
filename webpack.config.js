@@ -12,7 +12,6 @@ module.exports = (env) => {
 			filename: `particle${env.mode === 'production' ? '.min' : ''}.js`,
 			path: path.resolve(__dirname, 'dist'),
 			clean: true,
-			globalObject: 'this',
 			library: {
 				name: 'Particle',
 				type: 'var'
@@ -39,6 +38,7 @@ module.exports = (env) => {
 		plugins: [
 			new webpack.ProvidePlugin({
 				Buffer: ['buffer', 'Buffer'],
+				process: 'process/browser',
 			})
 		]
 	};
