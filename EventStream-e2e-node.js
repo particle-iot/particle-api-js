@@ -8,7 +8,7 @@ Steps:
 
  */
 
-const Particle = require('./lib/Particle');
+const Particle = require('./src/Particle');
 const baseUrl = process.env.PARTICLE_API_BASE_URL || 'http://localhost:9090';
 const auth = process.env.PARTICLE_API_TOKEN;
 const particle = new Particle({ baseUrl });
