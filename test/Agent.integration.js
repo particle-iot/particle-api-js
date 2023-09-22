@@ -21,9 +21,8 @@
  * Tests for real the Agent class using an external service.
  */
 
-import { expect } from './test-setup';
-import Agent from '../src/Agent';
-
+const { expect } = require('./test-setup');
+const Agent = require('../src/Agent');
 
 describe('Agent', () => {
 	if (!process.env.SKIP_AGENT_TEST){

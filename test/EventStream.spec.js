@@ -1,8 +1,8 @@
-import { sinon, expect } from './test-setup';
-import http from 'http';
-import { EventEmitter } from 'events';
+const { sinon, expect } = require('./test-setup');
+const http = require('http');
+const { EventEmitter } = require('events');
 
-import EventStream from '../src/EventStream';
+const EventStream = require('../src/EventStream');
 
 describe('EventStream', () => {
 	afterEach(() => {
@@ -32,6 +32,7 @@ describe('EventStream', () => {
 
 	describe('connect', () => {
 		it('successfully connects to http', () => {
+			sinon.useFakeTimers({ shouldAdvanceTime: true });
 			const fakeRequest = makeRequest();
 			sinon.stub(http, 'request').callsFake(() => {
 				setImmediate(() => {
@@ -57,6 +58,7 @@ describe('EventStream', () => {
 		});
 
 		it('returns http errors on connect', () => {
+			sinon.useFakeTimers({ shouldAdvanceTime: true });
 			const fakeRequest = makeRequest();
 			sinon.stub(http, 'request').callsFake(() => {
 				setImmediate(() => {

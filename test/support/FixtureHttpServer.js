@@ -1,9 +1,9 @@
 // Serve files from the fixture folder
-import express from 'express';
-import * as fixtures from '../fixtures';
+const express = require('express');
+const fixtures = require('../fixtures');
 
 
-export default class FixtureHttpServer {
+class FixtureHttpServer {
 	constructor(){
 		this.app = express();
 		this.app.get('/:filename', (req, res) => {
@@ -23,3 +23,5 @@ export default class FixtureHttpServer {
 		return `http://localhost:${this.server.address().port}`;
 	}
 }
+
+module.exports = FixtureHttpServer;

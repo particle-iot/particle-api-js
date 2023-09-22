@@ -1,7 +1,7 @@
-import { expect, sinon } from './test-setup';
-import Client from '../src/Client';
-import * as fixtures from './fixtures';
-import Library from '../src/Library';
+const { expect, sinon } = require('./test-setup');
+const Client = require('../src/Client');
+const fixtures = require('./fixtures');
+const Library = require('../src/Library');
 
 let api;
 const token = 'tok';
@@ -25,7 +25,7 @@ describe('Client', () => {
 
 	describe('libraries', () => {
 		it('resolves to a list of Library objects', () => {
-			api.listLibraries = () => Promise.resolve({ body: fixtures.readJSON('libraries.json') });
+			api.listLibraries = () => Promise.resolve({ body: fixtures.read('libraries.json') });
 			return client.libraries().then(libraries => {
 				expect(libraries.length).to.equal(1);
 				expect(libraries[0].name).to.equal('neopixel');
@@ -35,7 +35,7 @@ describe('Client', () => {
 
 	describe('library', () => {
 		it('resolves to a Library objects', () => {
-			api.getLibrary = () => Promise.resolve({ body: fixtures.readJSON('library.json') });
+			api.getLibrary = () => Promise.resolve({ body: fixtures.read('library.json') });
 			return client.library('neopixel').then(library => {
 				expect(library.name).to.equal('neopixel');
 			});
@@ -44,7 +44,7 @@ describe('Client', () => {
 
 	describe('libraryVersions', () => {
 		it('resolves to a Library objects', () => {
-			api.getLibraryVersions = () => Promise.resolve({ body: fixtures.readJSON('libraryVersions.json') });
+			api.getLibraryVersions = () => Promise.resolve({ body: fixtures.read('libraryVersions.json') });
 			return client.libraryVersions().then(libraries => {
 				expect(libraries.length).to.equal(9);
 				expect(libraries[0].name).to.equal('neopixel');

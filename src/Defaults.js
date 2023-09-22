@@ -1,4 +1,4 @@
-export default {
+module.exports = {
 	baseUrl: 'https://api.particle.io',
 	clientSecret: 'particle-api',
 	clientId: 'particle-api',

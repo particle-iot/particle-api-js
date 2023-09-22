@@ -1,5 +1,5 @@
-import { expect } from './test-setup';
-import Library from '../src/Library';
+const { expect } = require('./test-setup');
+const Library = require('../src/Library');
 
 let client = {};
 

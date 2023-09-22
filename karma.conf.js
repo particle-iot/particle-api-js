@@ -1,5 +1,7 @@
 // Karma configuration
 // Generated on Wed Jul 20 2016 12:00:09 GMT-0400 (EDT)
+const webpackConf = require('./webpack.config.js');
+const webpack = require('webpack');
 
 module.exports = function karmaCfg(config){
 	config.set({
@@ -8,7 +10,7 @@ module.exports = function karmaCfg(config){
 
 		// frameworks to use
 		// available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-		frameworks: ['browserify', 'mocha', 'chai'],
+		frameworks: ['webpack', 'mocha', 'chai'],
 
 		// list of files / patterns to load in the browser
 		files: [
@@ -24,14 +26,24 @@ module.exports = function karmaCfg(config){
 		// preprocess matching files before serving them to the browser
 		// available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
 		preprocessors: {
-			'src/**/*.js': ['browserify'],
-			'test/**/*.js': ['browserify']
+			'src/**/*.js': ['webpack'],
+			'test/**/*.js': ['webpack']
 		},
 
 		// Transform test files to a single browser consumable file
-		browserify: {
-			debug: true, // generate source maps
-			transform: ['babelify', 'brfs']
+		webpack: {
+			mode: 'development',
+			target: 'web',
+			devtool: 'inline-source-map',
+			output: webpackConf.output,
+			externals: webpackConf.externals,
+			resolve: webpackConf.resolve,
+			plugins: [
+				new webpack.ProvidePlugin({ Buffer: ['buffer', 'Buffer'] }),
+				new webpack.EnvironmentPlugin({
+					SKIP_AGENT_TEST: process.env.SKIP_AGENT_TEST || false
+				})
+			]
 		},
 
 		// test results reporter to use

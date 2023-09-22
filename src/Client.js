@@ -1,8 +1,7 @@
-import Particle from './Particle';
-import Library from './Library';
+const Library = require('./Library');
+let Particle;
 
-
-export default class Client {
+class Client {
 	constructor({ auth, api = new Particle() }){
 		this.auth = auth;
 		this.api = api;
@@ -166,3 +165,6 @@ export default class Client {
 			});
 	}
 }
+
+module.exports = Client;
+Particle = require('./Particle'); // Move it to after the export to avoid issue with circular reference
