@@ -1,5 +1,12 @@
 # changelog
 
+
+## 10.1.0 - 8 Sept 2023
+
+* Use wepback to bundle for browser use
+* Remove babel, browserify and their related dependencies
+* Adds support for checkJS loose type/docs validations
+
 ## 10.0.0 - 8 Sept 2023
 
 * Change library to handle requests from `superagent` to `fetch`/`node-fetch`
