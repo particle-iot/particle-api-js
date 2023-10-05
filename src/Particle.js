@@ -2115,48 +2115,48 @@ class Particle {
 	}
 
 	/**
-	 * Creates a new logic block in the specified organization using the provided block data.
+	 * Creates a new logic function in the specified organization using the provided function data.
 	 *
-	 * When you create a logic block with PubSub matchers, events will immediately
-	 * start being handled by the block code.
+	 * When you create a logic function with Event logic triggers, events will immediately
+	 * start being handled by the function code.
 	 *
-	 * When you create a Chron matcher, it will immediately be scheduled at the next time
+	 * When you create a Scheduled logic trigger, it will immediately be scheduled at the next time
 	 * according to the cron and start_at properties.
 	 *
-	 * @param {Object} options         The options for creating the logic block.
+	 * @param {Object} options         The options for creating the logic function.
 	 * @param {Object} options.auth    Access token
 	 * @param {string} options.org     The name of the organization.
-	 * @param {string}  options.block   The block object containing the block details.
+	 * @param {string}  options.logicFunction   The logic function object containing the function details.
 	 * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context] Request context
 	 *
-	 * @returns {Promise<RequestResponse>} A promise that resolves to the created logic block data.
+	 * @returns {Promise<RequestResponse>} A promise that resolves to the created logic function data.
 	 */
-	createLogicBlock({ auth, org, block, headers, context }) {
+	createLogicFunction({ auth, org, logicFunction, headers, context }) {
 		return this.post({
-			uri: `/v1/orgs/${org}/blocks`,
+			uri: `/v1/orgs/${org}/logic/functions`,
 			auth,
-			data: { block },
+			data: { logic_function: logicFunction },
 			headers,
 			context
 		});
 	}
 
 	/**
-	 * Get a logic block in the specified organization by block ID.
+	 * Get a logic function in the specified organization by logic function ID.
 	 *
-	 * @param {Object} options         The options for the logic block.
+	 * @param {Object} options         The options for the logic function.
 	 * @param {Object} options.auth    Access token
 	 * @param {string} options.org     The name of the organization.
-	 * @param {string} options.blockId The ID of the block to retrieve.
+	 * @param {string} options.logicFunctionId The ID of the logic function to retrieve.
 	 * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context] Request context
 	 *
-	 * @returns {Promise<RequestResponse>} A promise that resolves to the specified logic block data.
+	 * @returns {Promise<RequestResponse>} A promise that resolves to the specified logic function data.
 	 */
-	getLogicBlock({ auth, org, blockId, headers, context }) {
+	getLogicFunction({ auth, org, logicFunctionId, headers, context }) {
 		return this.get({
-			uri: `/v1/orgs/${org}/blocks/${blockId}`,
+			uri: `/v1/orgs/${org}/logic/functions/${logicFunctionId}`,
 			auth,
 			headers,
 			context
@@ -2164,45 +2164,45 @@ class Particle {
 	}
 
 	/**
-	 * Updates an existing logic block in the specified organization using the provided block data.
+	 * Updates an existing logic function in the specified organization using the provided function data.
 	 *
-	 * If you include an id on a matcher, it will update the matcher in place.
+	 * If you include an id on a logic trigger, it will update the logic trigger in place.
 	 *
-	 * @param {Object} options          The options for updating the logic block.
+	 * @param {Object} options          The options for updating the logic function.
 	 * @param {Object} options.auth     The authentication object with the API key.
 	 * @param {string} options.org      The unique identifier of the organization.
-	 * @param {string} options.blockId  The ID of the block to update.
-	 * @param {string} options.block     The block object containing the block details.
+	 * @param {string} options.logicFunctionId  The ID of the logic function to update.
+	 * @param {string} options.logicFunction     The logic function object containing the logic function details.
 	 * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context] Request context.
 	 *
-	 * @returns {Promise<RequestResponse>} A promise that resolves to the updated logic block data.
+	 * @returns {Promise<RequestResponse>} A promise that resolves to the updated logic function data.
 	 */
-	updateLogicBlock({ auth, org, blockId, block, headers, context }) {
+	updateLogicFunction({ auth, org, logicFunctionId, logicFunction, headers, context }) {
 		return this.put({
-			uri: `/v1/orgs/${org}/blocks/${blockId}`,
+			uri: `/v1/orgs/${org}/logic/functions/${logicFunctionId}`,
 			auth,
-			data: { block },
+			data: { logic_function: logicFunction },
 			headers,
 			context
 		});
 	}
 
 	/**
-	 * Deletes a logic block in the specified organization by block ID.
+	 * Deletes a logic function in the specified organization by logic function ID.
 	 *
-	 * @param {Object} options          The options for deleting the logic block.
+	 * @param {Object} options          The options for deleting the logic function.
 	 * @param {Object} options.auth     The authentication object with the API key.
 	 * @param {string} options.org      The unique identifier of the organization.
-	 * @param {string} options.blockId  The ID of the block to delete.
+	 * @param {string} options.logicFunctionId  The ID of the logic function to delete.
 	 * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context] Request context.
 	 *
-	 * @returns {Promise<RequestResponse>} A promise that resolves to an object containing the deleted block ID.
+	 * @returns {Promise<RequestResponse>} A promise that resolves to an object containing the deleted logic function ID.
 	 */
-	deleteLogicBlock({ auth, org, blockId, headers, context }) {
+	deleteLogicFunction({ auth, org, logicFunctionId, headers, context }) {
 		return this.delete({
-			uri: `/v1/orgs/${org}/blocks/${blockId}`,
+			uri: `/v1/orgs/${org}/logic/functions/${logicFunctionId}`,
 			auth,
 			headers,
 			context
@@ -2210,19 +2210,19 @@ class Particle {
 	}
 
 	/**
-	 * Lists all logic blocks in the specified organization.
+	 * Lists all logic functions in the specified organization.
 	 *
-	 * @param {Object} options          The options for listing logic blocks.
+	 * @param {Object} options          The options for listing logic functions.
 	 * @param {Object} options.auth     The authentication object with the API key.
 	 * @param {string} options.org      The unique identifier of the organization.
 	 * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context] Request context.
 	 *
-	 * @returns {Promise<RequestResponse>} A promise that resolves to an array of logic block data.
+	 * @returns {Promise<RequestResponse>} A promise that resolves to an array of logic functions data.
 	 */
-	listLogicBlocks({ auth, org, headers, context }) {
+	listLogicFunctions({ auth, org, headers, context }) {
 		return this.get({
-			uri: `/v1/orgs/${org}/blocks`,
+			uri: `/v1/orgs/${org}/logic/functions`,
 			auth,
 			headers,
 			context
@@ -2230,20 +2230,20 @@ class Particle {
 	}
 
 	/**
-	 * Lists all block runs for the specified block.
+	 * Lists all logic runs for the specified logic function.
 	 *
 	 * @param {Object} options          The options for the request.
 	 * @param {Object} options.auth     Access token
 	 * @param {string} options.org      The unique identifier of the organization.
-	 * @param {number} options.blockId  The ID of the block for which to retrieve the block runs.
+	 * @param {number} options.logicFunctionId  The ID of the logic function for which to retrieve the logic runs.
 	 * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context] Request context
 	 *
-	 * @returns {Promise<RequestResponse>} A promise that resolves to an array of block run data.
+	 * @returns {Promise<RequestResponse>} A promise that resolves to an array of logic run data.
 	 */
-	listBlockRuns({ auth, org, blockId, headers, context }) {
+	listLogicRuns({ auth, org, logicFunctionId, headers, context }) {
 		return this.get({
-			uri: `/v1/orgs/${org}/blocks/${blockId}/runs`,
+			uri: `/v1/orgs/${org}/logic/functions/${logicFunctionId}/runs`,
 			auth,
 			headers,
 			context
@@ -2251,21 +2251,21 @@ class Particle {
 	}
 
 	/**
-	 * Retrieves a block run by its ID for the specified block.
+	 * Retrieves a logic run by its ID for the specified logic function.
 	 *
 	 * @param {Object} options          The options for the request.
 	 * @param {Object} options.auth     Access token
 	 * @param {string} options.org      The unique identifier of the organization.
-	 * @param {number} options.blockId  The ID of the block for which to retrieve the block run.
-	 * @param {number} options.runId    The ID of the block run to retrieve.
+	 * @param {number} options.logicFunctionId  The ID of the logic function for which to retrieve the logic run.
+	 * @param {number} options.logicRunId    The ID of the logic run to retrieve.
 	 * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context] Request context
 	 *
-	 * @returns {Promise<RequestResponse>} A promise that resolves to an array of block run data for the specified block run ID.
+	 * @returns {Promise<RequestResponse>} A promise that resolves to an array of logic run data for the specified logic run ID.
 	 */
-	getBlockRun({ auth, org, blockId, runId, headers, context }) {
+	getLogicRun({ auth, org, logicFunctionId, logicRunId, headers, context }) {
 		return this.get({
-			uri: `/v1/orgs/${org}/blocks/${blockId}/runs/${runId}`,
+			uri: `/v1/orgs/${org}/logic/functions/${logicFunctionId}/runs/${logicRunId}`,
 			auth,
 			headers,
 			context
@@ -2273,21 +2273,21 @@ class Particle {
 	}
 
 	/**
-	 * Retrieves the logs for a block run by its ID for the specified block.
+	 * Retrieves the logs for a logic run by its ID for the specified logic function.
 	 *
 	 * @param {Object} options          The options for the request.
 	 * @param {Object} options.auth     Access token
 	 * @param {string} options.org      The unique identifier of the organization.
-	 * @param {number} options.blockId  The ID of the block for which to retrieve the block run logs.
-	 * @param {number} options.runId    The ID of the block run for which to retrieve the logs.
+	 * @param {number} options.logicFunctionId  The ID of the logic function for which to retrieve the logic run logs.
+	 * @param {number} options.logicRunId    The ID of the logic run for which to retrieve the logs.
 	 * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context] Request context
 	 *
-	 * @returns {Promise<RequestResponse>} A promise that resolves to the logs for the specified block run ID.
+	 * @returns {Promise<RequestResponse>} A promise that resolves to the logs for the specified logic run ID.
 	 */
-	getBlockRunLog({ auth, org, blockId, runId, headers, context }) {
+	getLogicRunLogs({ auth, org, logicFunctionId, logicRunId, headers, context }) {
 		return this.get({
-			uri: `/v1/orgs/${org}/blocks/${blockId}/runs/${runId}/logs`,
+			uri: `/v1/orgs/${org}/logic/functions/${logicFunctionId}/runs/${logicRunId}/logs`,
 			auth,
 			headers,
 			context

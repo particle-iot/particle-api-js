@@ -96,25 +96,25 @@ const props = {
 	dateRange: '2020-05-15T18:29:45.000Z,2020-05-19T18:29:45.000Z',
 	rectBl: '56.185412,-4.049868',
 	rectTr: '56.571537,-5.385920',
-	blockId: 1,
-	runId: 1,
-	block: {
+	logicFunctionId: 1,
+	logicRunId: 1,
+	logicFunction: {
 		enabled: true,
-		name: 'block-1',
+		name: 'function-1',
 		description: 'hello world',
-		logic: {
+		source: {
 			type: 'JavaScript',
-			code: 'console.log("hello from block-1");'
+			code: 'console.log("hello from function-1");'
 		},
-		matchers: [
+		logic_triggers: [
 			{
-				type: 'PubSub',
+				type: 'Event',
 				enabled: true,
 				product_id: 9001,
 				event_name: 'main',
 			},
 			{
-				type: 'Chron',
+				type: 'Scheduled',
 				enabled: true,
 				cron: '0 0 1 * *',
 				start_at: '2021-05-15T18:29:45.000Z',
@@ -2574,31 +2574,31 @@ describe('ParticleAPI', () => {
 			});
 		});
 
-		describe('.createLogicBlock', () => {
+		describe('.createLogicFunction', () => {
 			it('generates request', () => {
-				return api.createLogicBlock(propsWithOrg).then((results) => {
+				return api.createLogicFunction(propsWithOrg).then((results) => {
 					results.should.match({
 						method: 'post',
-						uri: `/v1/orgs/${org}/blocks`,
+						uri: `/v1/orgs/${org}/logic/functions`,
 						auth: props.auth,
 						data: {
-							block: {
+							logic_function: {
 								enabled: true,
-								name: 'block-1',
+								name: 'function-1',
 								description: 'hello world',
-								logic: {
+								source: {
 									type: 'JavaScript',
-									code: 'console.log("hello from block-1");'
+									code: 'console.log("hello from function-1");'
 								},
-								matchers: [
+								logic_triggers: [
 									{
-										type: 'PubSub',
+										type: 'Event',
 										enabled: true,
 										product_id: parseInt(props.productId),
 										event_name: props.event,
 									},
 									{
-										type: 'Chron',
+										type: 'Scheduled',
 										enabled: true,
 										cron: '0 0 1 * *',
 										start_at: '2021-05-15T18:29:45.000Z',
@@ -2612,43 +2612,43 @@ describe('ParticleAPI', () => {
 			});
 		});
 
-		describe('.getLogicBlock', () => {
+		describe('.getLogicFunction', () => {
 			it('generates request', () => {
-				return api.getLogicBlock(propsWithOrg).then((results) => {
+				return api.getLogicFunction(propsWithOrg).then((results) => {
 					results.should.match({
 						method: 'get',
-						uri: `/v1/orgs/${org}/blocks/${props.blockId}`,
+						uri: `/v1/orgs/${org}/logic/functions/${props.logicFunctionId}`,
 						auth: props.auth
 					});
 				});
 			});
 		});
 
-		describe('.updateLogicBlock', () => {
+		describe('.updateLogicFunction', () => {
 			it('generates request', () => {
-				return api.updateLogicBlock(propsWithOrg).then((results) => {
+				return api.updateLogicFunction(propsWithOrg).then((results) => {
 					results.should.match({
 						method: 'put',
-						uri: `/v1/orgs/${org}/blocks/${props.blockId}`,
+						uri: `/v1/orgs/${org}/logic/functions/${props.logicFunctionId}`,
 						auth: props.auth,
 						data: {
-							block: {
+							logic_function: {
 								enabled: true,
-								name: 'block-1',
+								name: 'function-1',
 								description: 'hello world',
-								logic: {
+								source: {
 									type: 'JavaScript',
-									code: 'console.log("hello from block-1");'
+									code: 'console.log("hello from function-1");'
 								},
-								matchers: [
+								logic_triggers: [
 									{
-										type: 'PubSub',
+										type: 'Event',
 										enabled: true,
 										product_id: parseInt(props.productId),
 										event_name: props.event,
 									},
 									{
-										type: 'Chron',
+										type: 'Scheduled',
 										enabled: true,
 										cron: '0 0 1 * *',
 										start_at: '2021-05-15T18:29:45.000Z',
@@ -2662,60 +2662,60 @@ describe('ParticleAPI', () => {
 			});
 		});
 
-		describe('.deleteLogicBlock', () => {
+		describe('.deleteLogicFunction', () => {
 			it('generates request', () => {
-				return api.deleteLogicBlock(propsWithOrg).then((results) => {
+				return api.deleteLogicFunction(propsWithOrg).then((results) => {
 					results.should.match({
 						method: 'delete',
-						uri: `/v1/orgs/${org}/blocks/${props.blockId}`,
+						uri: `/v1/orgs/${org}/logic/functions/${props.logicFunctionId}`,
 						auth: props.auth
 					});
 				});
 			});
 		});
 
-		describe('.listLogicBlocks', () => {
+		describe('.listLogicFunctions', () => {
 			it('generates request', () => {
-				return api.listLogicBlocks(propsWithOrg).then((results) => {
+				return api.listLogicFunctions(propsWithOrg).then((results) => {
 					results.should.match({
 						method: 'get',
-						uri: `/v1/orgs/${org}/blocks`,
+						uri: `/v1/orgs/${org}/logic/functions`,
 						auth: props.auth
 					});
 				});
 			});
 		});
 
-		describe('.listBlockRuns', () => {
+		describe('.listLogicRuns', () => {
 			it('generates request', () => {
-				return api.listBlockRuns(propsWithOrg).then((results) => {
+				return api.listLogicRuns(propsWithOrg).then((results) => {
 					results.should.match({
 						method: 'get',
-						uri: `/v1/orgs/${org}/blocks/${props.blockId}/runs`,
+						uri: `/v1/orgs/${org}/logic/functions/${props.logicFunctionId}/runs`,
 						auth: props.auth,
 					});
 				});
 			});
 		});
 
-		describe('.getBlockRun', () => {
+		describe('.getLogicRun', () => {
 			it('generates request', () => {
-				return api.getBlockRun(propsWithOrg).then((results) => {
+				return api.getLogicRun(propsWithOrg).then((results) => {
 					results.should.match({
 						method: 'get',
-						uri: `/v1/orgs/${org}/blocks/${props.blockId}/runs/${props.runId}`,
+						uri: `/v1/orgs/${org}/logic/functions/${props.logicFunctionId}/runs/${props.logicRunId}`,
 						auth: props.auth,
 					});
 				});
 			});
 		});
 
-		describe('.getBlockRunLog', () => {
+		describe('.getLogicRunLogs', () => {
 			it('generates request', () => {
-				return api.getBlockRunLog(propsWithOrg).then((results) => {
+				return api.getLogicRunLogs(propsWithOrg).then((results) => {
 					results.should.match({
 						method: 'get',
-						uri: `/v1/orgs/${org}/blocks/${props.blockId}/runs/${props.runId}/logs`,
+						uri: `/v1/orgs/${org}/logic/functions/${props.logicFunctionId}/runs/${props.logicRunId}/logs`,
 						auth: props.auth,
 					});
 				});
