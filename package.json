@@ -1,6 +1,6 @@
 {
   "name": "particle-api-js",
-  "version": "10.1.0",
+  "version": "10.2.0",
   "description": "Particle API Client",
   "main": "src/Particle.js",
   "scripts": {

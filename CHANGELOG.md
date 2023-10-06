@@ -1,5 +1,8 @@
 # changelog
 
+## 10.2.0 - 6 October 2023
+
+* Migrate LogicBlocks methods to LogicFunctions, LogicTriggers, and LogicRuns
 
 ## 10.1.0 - 8 Sept 2023
 
