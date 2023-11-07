@@ -2130,7 +2130,7 @@ class Particle {
 	 */
 	executeLogic({ auth, org, logic, headers, context }) {
 		return this.post({
-			uri: this._subspacePath(org, 'logic/execute'),
+			uri: this._namespacedPath(org, 'logic/execute'),
 			auth,
 			data: logic,
 			headers,
@@ -2158,7 +2158,7 @@ class Particle {
 	 */
 	createLogicFunction({ auth, org, logicFunction, headers, context }) {
 		return this.post({
-			uri: this._subspacePath(org, 'logic/functions'),
+			uri: this._namespacedPath(org, 'logic/functions'),
 			auth,
 			data: { logic_function: logicFunction },
 			headers,
@@ -2180,7 +2180,7 @@ class Particle {
 	 */
 	getLogicFunction({ auth, org, logicFunctionId, headers, context }) {
 		return this.get({
-			uri: this._subspacePath(org, `logic/functions/${logicFunctionId}`),
+			uri: this._namespacedPath(org, `logic/functions/${logicFunctionId}`),
 			auth,
 			headers,
 			context
@@ -2204,7 +2204,7 @@ class Particle {
 	 */
 	updateLogicFunction({ auth, org, logicFunctionId, logicFunction, headers, context }) {
 		return this.put({
-			uri: this._subspacePath(org, `logic/functions/${logicFunctionId}`),
+			uri: this._namespacedPath(org, `logic/functions/${logicFunctionId}`),
 			auth,
 			data: { logic_function: logicFunction },
 			headers,
@@ -2226,7 +2226,7 @@ class Particle {
 	 */
 	deleteLogicFunction({ auth, org, logicFunctionId, headers, context }) {
 		return this.delete({
-			uri: this._subspacePath(org, `logic/functions/${logicFunctionId}`),
+			uri: this._namespacedPath(org, `logic/functions/${logicFunctionId}`),
 			auth,
 			headers,
 			context
@@ -2246,7 +2246,7 @@ class Particle {
 	 */
 	listLogicFunctions({ auth, org, headers, context }) {
 		return this.get({
-			uri: this._subspacePath(org, 'logic/functions'),
+			uri: this._namespacedPath(org, 'logic/functions'),
 			auth,
 			headers,
 			context
@@ -2267,7 +2267,7 @@ class Particle {
 	 */
 	listLogicRuns({ auth, org, logicFunctionId, headers, context }) {
 		return this.get({
-			uri: this._subspacePath(org, `logic/functions/${logicFunctionId}/runs`),
+			uri: this._namespacedPath(org, `logic/functions/${logicFunctionId}/runs`),
 			auth,
 			headers,
 			context
@@ -2289,7 +2289,7 @@ class Particle {
 	 */
 	getLogicRun({ auth, org, logicFunctionId, logicRunId, headers, context }) {
 		return this.get({
-			uri: this._subspacePath(org, `logic/functions/${logicFunctionId}/runs/${logicRunId}`),
+			uri: this._namespacedPath(org, `logic/functions/${logicFunctionId}/runs/${logicRunId}`),
 			auth,
 			headers,
 			context
@@ -2311,7 +2311,7 @@ class Particle {
 	 */
 	getLogicRunLogs({ auth, org, logicFunctionId, logicRunId, headers, context }) {
 		return this.get({
-			uri: this._subspacePath(org, `logic/functions/${logicFunctionId}/runs/${logicRunId}/logs`),
+			uri: this._namespacedPath(org, `logic/functions/${logicFunctionId}/runs/${logicRunId}/logs`),
 			auth,
 			headers,
 			context
@@ -2333,7 +2333,7 @@ class Particle {
 	 */
 	createLedger({ auth, org, ledger, headers, context }) {
 		return this.post({
-			uri: this._subspacePath(org, 'ledgers'),
+			uri: this._namespacedPath(org, 'ledgers'),
 			auth,
 			data: { ledger },
 			headers,
@@ -2355,7 +2355,7 @@ class Particle {
 	 */
 	getLedger({ auth, org, ledgerName, headers, context }) {
 		return this.get({
-			uri: this._subspacePath(org, `ledgers/${ledgerName}`),
+			uri: this._namespacedPath(org, `ledgers/${ledgerName}`),
 			auth,
 			headers,
 			context
@@ -2377,7 +2377,7 @@ class Particle {
 	 */
 	updateLedger({ auth, org, ledgerName, ledger, headers, context }) {
 		return this.put({
-			uri: this._subspacePath(org, `ledgers/${ledgerName}`),
+			uri: this._namespacedPath(org, `ledgers/${ledgerName}`),
 			auth,
 			data: { ledger },
 			headers,
@@ -2399,7 +2399,7 @@ class Particle {
 	 */
 	archiveLedger({ auth, org, ledgerName, headers, context }) {
 		return this.delete({
-			uri: this._subspacePath(org, `ledgers/${ledgerName}`),
+			uri: this._namespacedPath(org, `ledgers/${ledgerName}`),
 			auth,
 			headers,
 			context
@@ -2419,7 +2419,7 @@ class Particle {
 	 */
 	listLedgers({ auth, org, headers, context }) {
 		return this.get({
-			uri: this._subspacePath(org, 'ledgers'),
+			uri: this._namespacedPath(org, 'ledgers'),
 			auth,
 			headers,
 			context
@@ -2441,7 +2441,7 @@ class Particle {
 	 */
 	getLedgerInstance({ auth, org, ledgerName, scopeValue, headers, context }) {
 		return this.get({
-			uri: this._subspacePath(org, `ledgers/${ledgerName}/instances/${scopeValue}`),
+			uri: this._namespacedPath(org, `ledgers/${ledgerName}/instances/${scopeValue}`),
 			auth,
 			headers,
 			context
@@ -2465,7 +2465,7 @@ class Particle {
 	 */
 	setLedgerInstance({ auth, org, ledgerName, scopeValue, data, headers, context }) {
 		return this.put({
-			uri: this._subspacePath(org, `ledgers/${ledgerName}/instances/${scopeValue}`),
+			uri: this._namespacedPath(org, `ledgers/${ledgerName}/instances/${scopeValue}`),
 			auth,
 			data: { data },
 			headers,
@@ -2488,7 +2488,7 @@ class Particle {
 	 */
 	deleteLedgerInstance({ auth, org, ledgerName, scopeValue, headers, context }) {
 		return this.delete({
-			uri: this._subspacePath(org, `ledgers/${ledgerName}/instances/${scopeValue}`),
+			uri: this._namespacedPath(org, `ledgers/${ledgerName}/instances/${scopeValue}`),
 			auth,
 			headers,
 			context
@@ -2509,7 +2509,7 @@ class Particle {
 	 */
 	listLedgerInstances({ auth, org, ledgerName, headers, context }) {
 		return this.get({
-			uri: this._subspacePath(org, `ledgers/${ledgerName}/instances`),
+			uri: this._namespacedPath(org, `ledgers/${ledgerName}/instances`),
 			auth,
 			headers,
 			context
@@ -2550,13 +2550,13 @@ class Particle {
 	}
 
 	/**
-	 * Helper for building subspace API paths based on org being provided or not
+	 * Helper for building API paths that support sandbox and org prefixes based on org presence
 	 * @param {string | undefined} org slug or ID
-	 * @param {string} path
-	 * @returns {string} path
+	 * @param {string} path will be appended to the end of the org/sandbox prefix
+	 * @returns {string} the full combined path
 	 * @private
 	 */
-	_subspacePath(org, path) {
+	_namespacedPath(org, path) {
 		return org ? `/v1/orgs/${org}/${path}` : `/v1/${path}`;
 	}
 
