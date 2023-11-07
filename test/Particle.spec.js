@@ -122,6 +122,19 @@ const props = {
 			}
 		]
 	},
+	logic: {
+		source: {
+			type: 'JavaScript',
+			code: 'export default function main() { console.log("hi"); }'
+		},
+		event: {
+			event_name: 'main',
+			device_id: '1234',
+			event_data: JSON.stringify({ data: true }),
+			product_id: 9001,
+			user_id: '5678'
+		}
+	},
 	ledgerName: 'myledger',
 	ledger: {
 		scope: 'Owner',
@@ -2569,6 +2582,30 @@ describe('ParticleAPI', () => {
 							rect_bl: props.rectBl,
 							rect_tr: props.rectTr
 						}
+					});
+				});
+			});
+		});
+
+		describe('.executeLogic', () => {
+			it('generates org request', () => {
+				return api.executeLogic(propsWithOrg).then((results) => {
+					results.should.match({
+						method: 'post',
+						uri: `/v1/orgs/${org}/logic/execute`,
+						auth: props.auth,
+						data: props.logic
+					});
+				});
+			});
+
+			it('generates user request', () => {
+				return api.executeLogic(props).then((results) => {
+					results.should.match({
+						method: 'post',
+						uri: '/v1/logic/execute',
+						auth: props.auth,
+						data: props.logic
 					});
 				});
 			});

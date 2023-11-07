@@ -2115,6 +2115,30 @@ class Particle {
 	}
 
 	/**
+	 * Executes the provided logic function once and returns the result. No logs, runs, etc are saved
+	 *
+	 * NOTE: Any external interactions such as Particle.publish will actually occur when the logic is executed.
+	 *
+	 * @param {Object} options         The options for creating the logic function.
+	 * @param {Object} options.auth    Access token
+	 * @param {string | undefined} options.org     The Organization ID or slug. If not provided, the request will go to your sandbox account.
+	 * @param {string}  options.logic   The logic "function" which will be executed once
+	 * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {Object} [options.context] Request context
+	 *
+	 * @returns {Promise<RequestResponse>} A promise that resolves to the created logic function data.
+	 */
+	executeLogic({ auth, org, logic, headers, context }) {
+		return this.post({
+			uri: this._subspacePath(org, 'logic/execute'),
+			auth,
+			data: logic,
+			headers,
+			context
+		});
+	}
+
+	/**
 	 * Creates a new logic function in the specified organization or sandbox using the provided function data.
 	 *
 	 * When you create a logic function with Event logic triggers, events will immediately
