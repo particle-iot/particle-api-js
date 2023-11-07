@@ -1,5 +1,10 @@
 # changelog
 
+## 10.3.0 - 7 November 2023
+
+* Add support for sandbox accounts on all logic/ledger APIs by allowing the omission of the `org` property
+* Add `executeLogic` function for testing logic functions before deploying them
+
 ## 10.2.0 - 6 October 2023
 
 * Migrate LogicBlocks methods to LogicFunctions, LogicTriggers, and LogicRuns
