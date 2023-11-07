@@ -2115,7 +2115,7 @@ class Particle {
 	}
 
 	/**
-	 * Creates a new logic function in the specified organization using the provided function data.
+	 * Creates a new logic function in the specified organization or sandbox using the provided function data.
 	 *
 	 * When you create a logic function with Event logic triggers, events will immediately
 	 * start being handled by the function code.
@@ -2125,7 +2125,7 @@ class Particle {
 	 *
 	 * @param {Object} options         The options for creating the logic function.
 	 * @param {Object} options.auth    Access token
-	 * @param {string} options.org     The name of the organization.
+	 * @param {string | undefined} options.org     The Organization ID or slug. If not provided, the request will go to your sandbox account.
 	 * @param {string}  options.logicFunction   The logic function object containing the function details.
 	 * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context] Request context
@@ -2134,7 +2134,7 @@ class Particle {
 	 */
 	createLogicFunction({ auth, org, logicFunction, headers, context }) {
 		return this.post({
-			uri: `/v1/orgs/${org}/logic/functions`,
+			uri: this._subspacePath(org, 'logic/functions'),
 			auth,
 			data: { logic_function: logicFunction },
 			headers,
@@ -2143,11 +2143,11 @@ class Particle {
 	}
 
 	/**
-	 * Get a logic function in the specified organization by logic function ID.
+	 * Get a logic function in the specified organization or sandbox by logic function ID.
 	 *
 	 * @param {Object} options         The options for the logic function.
 	 * @param {Object} options.auth    Access token
-	 * @param {string} options.org     The name of the organization.
+	 * @param {string | undefined} options.org     The Organization ID or slug. If not provided, the request will go to your sandbox account.
 	 * @param {string} options.logicFunctionId The ID of the logic function to retrieve.
 	 * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context] Request context
@@ -2156,7 +2156,7 @@ class Particle {
 	 */
 	getLogicFunction({ auth, org, logicFunctionId, headers, context }) {
 		return this.get({
-			uri: `/v1/orgs/${org}/logic/functions/${logicFunctionId}`,
+			uri: this._subspacePath(org, `logic/functions/${logicFunctionId}`),
 			auth,
 			headers,
 			context
@@ -2164,13 +2164,13 @@ class Particle {
 	}
 
 	/**
-	 * Updates an existing logic function in the specified organization using the provided function data.
+	 * Updates an existing logic function in the specified organization or sandbox using the provided function data.
 	 *
 	 * If you include an id on a logic trigger, it will update the logic trigger in place.
 	 *
 	 * @param {Object} options          The options for updating the logic function.
 	 * @param {Object} options.auth     The authentication object with the API key.
-	 * @param {string} options.org      The unique identifier of the organization.
+	 * @param {string | undefined} options.org     The Organization ID or slug. If not provided, the request will go to your sandbox account.
 	 * @param {string} options.logicFunctionId  The ID of the logic function to update.
 	 * @param {string} options.logicFunction     The logic function object containing the logic function details.
 	 * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
@@ -2180,7 +2180,7 @@ class Particle {
 	 */
 	updateLogicFunction({ auth, org, logicFunctionId, logicFunction, headers, context }) {
 		return this.put({
-			uri: `/v1/orgs/${org}/logic/functions/${logicFunctionId}`,
+			uri: this._subspacePath(org, `logic/functions/${logicFunctionId}`),
 			auth,
 			data: { logic_function: logicFunction },
 			headers,
@@ -2189,11 +2189,11 @@ class Particle {
 	}
 
 	/**
-	 * Deletes a logic function in the specified organization by logic function ID.
+	 * Deletes a logic function in the specified organization or sandbox by logic function ID.
 	 *
 	 * @param {Object} options          The options for deleting the logic function.
 	 * @param {Object} options.auth     The authentication object with the API key.
-	 * @param {string} options.org      The unique identifier of the organization.
+	 * @param {string | undefined} options.org     The Organization ID or slug. If not provided, the request will go to your sandbox account.
 	 * @param {string} options.logicFunctionId  The ID of the logic function to delete.
 	 * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context] Request context.
@@ -2202,7 +2202,7 @@ class Particle {
 	 */
 	deleteLogicFunction({ auth, org, logicFunctionId, headers, context }) {
 		return this.delete({
-			uri: `/v1/orgs/${org}/logic/functions/${logicFunctionId}`,
+			uri: this._subspacePath(org, `logic/functions/${logicFunctionId}`),
 			auth,
 			headers,
 			context
@@ -2210,11 +2210,11 @@ class Particle {
 	}
 
 	/**
-	 * Lists all logic functions in the specified organization.
+	 * Lists all logic functions in the specified organization or sandbox.
 	 *
 	 * @param {Object} options          The options for listing logic functions.
 	 * @param {Object} options.auth     The authentication object with the API key.
-	 * @param {string} options.org      The unique identifier of the organization.
+	 * @param {string | undefined} options.org     The Organization ID or slug. If not provided, the request will go to your sandbox account.
 	 * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context] Request context.
 	 *
@@ -2222,7 +2222,7 @@ class Particle {
 	 */
 	listLogicFunctions({ auth, org, headers, context }) {
 		return this.get({
-			uri: `/v1/orgs/${org}/logic/functions`,
+			uri: this._subspacePath(org, 'logic/functions'),
 			auth,
 			headers,
 			context
@@ -2230,11 +2230,11 @@ class Particle {
 	}
 
 	/**
-	 * Lists all logic runs for the specified logic function.
+	 * Lists all logic runs for the specified logic function in the specified organization or sandbox.
 	 *
 	 * @param {Object} options          The options for the request.
 	 * @param {Object} options.auth     Access token
-	 * @param {string} options.org      The unique identifier of the organization.
+	 * @param {string | undefined} options.org     The Organization ID or slug. If not provided, the request will go to your sandbox account.
 	 * @param {number} options.logicFunctionId  The ID of the logic function for which to retrieve the logic runs.
 	 * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context] Request context
@@ -2243,7 +2243,7 @@ class Particle {
 	 */
 	listLogicRuns({ auth, org, logicFunctionId, headers, context }) {
 		return this.get({
-			uri: `/v1/orgs/${org}/logic/functions/${logicFunctionId}/runs`,
+			uri: this._subspacePath(org, `logic/functions/${logicFunctionId}/runs`),
 			auth,
 			headers,
 			context
@@ -2251,11 +2251,11 @@ class Particle {
 	}
 
 	/**
-	 * Retrieves a logic run by its ID for the specified logic function.
+	 * Retrieves a logic run by its ID for the specified logic function in the specified organization or sandbox.
 	 *
 	 * @param {Object} options          The options for the request.
 	 * @param {Object} options.auth     Access token
-	 * @param {string} options.org      The unique identifier of the organization.
+	 * @param {string | undefined} options.org     The Organization ID or slug. If not provided, the request will go to your sandbox account.
 	 * @param {number} options.logicFunctionId  The ID of the logic function for which to retrieve the logic run.
 	 * @param {number} options.logicRunId    The ID of the logic run to retrieve.
 	 * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
@@ -2265,7 +2265,7 @@ class Particle {
 	 */
 	getLogicRun({ auth, org, logicFunctionId, logicRunId, headers, context }) {
 		return this.get({
-			uri: `/v1/orgs/${org}/logic/functions/${logicFunctionId}/runs/${logicRunId}`,
+			uri: this._subspacePath(org, `logic/functions/${logicFunctionId}/runs/${logicRunId}`),
 			auth,
 			headers,
 			context
@@ -2273,11 +2273,11 @@ class Particle {
 	}
 
 	/**
-	 * Retrieves the logs for a logic run by its ID for the specified logic function.
+	 * Retrieves the logs for a logic run by its ID for the specified logic function in the specified organization or sandbox.
 	 *
 	 * @param {Object} options          The options for the request.
 	 * @param {Object} options.auth     Access token
-	 * @param {string} options.org      The unique identifier of the organization.
+	 * @param {string | undefined} options.org      The unique identifier of the organization.
 	 * @param {number} options.logicFunctionId  The ID of the logic function for which to retrieve the logic run logs.
 	 * @param {number} options.logicRunId    The ID of the logic run for which to retrieve the logs.
 	 * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
@@ -2287,7 +2287,7 @@ class Particle {
 	 */
 	getLogicRunLogs({ auth, org, logicFunctionId, logicRunId, headers, context }) {
 		return this.get({
-			uri: `/v1/orgs/${org}/logic/functions/${logicFunctionId}/runs/${logicRunId}/logs`,
+			uri: this._subspacePath(org, `logic/functions/${logicFunctionId}/runs/${logicRunId}/logs`),
 			auth,
 			headers,
 			context
@@ -2295,11 +2295,11 @@ class Particle {
 	}
 
 	/**
-	 * Creates a new ledger definition in the specified organization.
+	 * Creates a new ledger definition in the specified organization or sandbox.
 	 *
 	 * @param {Object} options         The options for creating the ledger definition.
 	 * @param {Object} options.auth    Access token
-	 * @param {string} options.org     The name of the organization.
+	 * @param {string | undefined} options.org     The Organization ID or slug. If not provided, the request will go to your sandbox account.
 	 * @param {object} options.definition   The ledger definition object.
 	 * @param {object} options.ledger     The ledger definition object.
 	 * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
@@ -2309,7 +2309,7 @@ class Particle {
 	 */
 	createLedger({ auth, org, ledger, headers, context }) {
 		return this.post({
-			uri: `/v1/orgs/${org}/ledgers`,
+			uri: this._subspacePath(org, 'ledgers'),
 			auth,
 			data: { ledger },
 			headers,
@@ -2318,11 +2318,11 @@ class Particle {
 	}
 
 	/**
-	 * Get a ledger definition in the specified organization by ledger name.
+	 * Get a ledger definition in the specified organization or sandbox by ledger name.
 	 *
 	 * @param {Object} options         The options for the ledger definition.
 	 * @param {Object} options.auth    Access token
-	 * @param {string} options.org     The name of the organization.
+	 * @param {string | undefined} options.org     The Organization ID or slug. If not provided, the request will go to your sandbox account.
 	 * @param {string} options.ledgerName The ID of the ledger definition to retrieve.
 	 * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context] Request context
@@ -2331,7 +2331,7 @@ class Particle {
 	 */
 	getLedger({ auth, org, ledgerName, headers, context }) {
 		return this.get({
-			uri: `/v1/orgs/${org}/ledgers/${ledgerName}`,
+			uri: this._subspacePath(org, `ledgers/${ledgerName}`),
 			auth,
 			headers,
 			context
@@ -2339,11 +2339,11 @@ class Particle {
 	}
 
 	/**
-	 * Updates an existing ledger definition in the specified organization.
+	 * Updates an existing ledger definition in the specified organization or sandbox.
 	 *
 	 * @param {Object} options          The options for updating the ledger definition.
 	 * @param {Object} options.auth     The authentication object with the API key.
-	 * @param {string} options.org      The unique identifier of the organization.
+	 * @param {string | undefined} options.org     The Organization ID or slug. If not provided, the request will go to your sandbox account.
 	 * @param {string} options.ledgerName  Name of the ledger definition to update.
 	 * @param {object} options.ledger     The ledger definition object.
 	 * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
@@ -2353,7 +2353,7 @@ class Particle {
 	 */
 	updateLedger({ auth, org, ledgerName, ledger, headers, context }) {
 		return this.put({
-			uri: `/v1/orgs/${org}/ledgers/${ledgerName}`,
+			uri: this._subspacePath(org, `ledgers/${ledgerName}`),
 			auth,
 			data: { ledger },
 			headers,
@@ -2362,11 +2362,11 @@ class Particle {
 	}
 
 	/**
-	 * Archives a ledger definition in the specified organization by ledger name.
+	 * Archives a ledger definition in the specified organization or sandbox by ledger name.
 	 *
 	 * @param {Object} options          The options for archiving the ledger definition.
 	 * @param {Object} options.auth     The authentication object with the API key.
-	 * @param {string} options.org      The unique identifier of the organization.
+	 * @param {string | undefined} options.org     The Organization ID or slug. If not provided, the request will go to your sandbox account.
 	 * @param {string} options.ledgerName  Name of the ledger definition to archive.
 	 * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context] Request context.
@@ -2375,7 +2375,7 @@ class Particle {
 	 */
 	archiveLedger({ auth, org, ledgerName, headers, context }) {
 		return this.delete({
-			uri: `/v1/orgs/${org}/ledgers/${ledgerName}`,
+			uri: this._subspacePath(org, `ledgers/${ledgerName}`),
 			auth,
 			headers,
 			context
@@ -2383,11 +2383,11 @@ class Particle {
 	}
 
 	/**
-	 * Lists all ledger definitions in the specified organization.
+	 * Lists all ledger definitions in the specified organization or sandbox.
 	 *
 	 * @param {Object} options          The options for listing ledger definitions.
 	 * @param {Object} options.auth     The authentication object with the API key.
-	 * @param {string} options.org      The unique identifier of the organization.
+	 * @param {string | undefined} options.org     The Organization ID or slug. If not provided, the request will go to your sandbox account.
 	 * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context] Request context.
 	 *
@@ -2395,7 +2395,7 @@ class Particle {
 	 */
 	listLedgers({ auth, org, headers, context }) {
 		return this.get({
-			uri: `/v1/orgs/${org}/ledgers`,
+			uri: this._subspacePath(org, 'ledgers'),
 			auth,
 			headers,
 			context
@@ -2407,7 +2407,7 @@ class Particle {
 	 *
 	 * @param {Object} options         The options for the ledger instance.
 	 * @param {Object} options.auth    Access token
-	 * @param {string} options.org     The name of the organization.
+	 * @param {string | undefined} options.org     The Organization ID or slug. If not provided, the request will go to your sandbox account.
 	 * @param {string} options.ledgerName Ledger name.
 	 * @param {string} options.scopeValue Scope value.
 	 * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
@@ -2417,7 +2417,7 @@ class Particle {
 	 */
 	getLedgerInstance({ auth, org, ledgerName, scopeValue, headers, context }) {
 		return this.get({
-			uri: `/v1/orgs/${org}/ledgers/${ledgerName}/instances/${scopeValue}`,
+			uri: this._subspacePath(org, `ledgers/${ledgerName}/instances/${scopeValue}`),
 			auth,
 			headers,
 			context
@@ -2429,7 +2429,7 @@ class Particle {
 	 *
 	 * @param {Object} options          The options for updating the ledger instance.
 	 * @param {Object} options.auth     The authentication object with the API key.
-	 * @param {string} options.org      The unique identifier of the organization.
+	 * @param {string | undefined} options.org     The Organization ID or slug. If not provided, the request will go to your sandbox account.
 	 * @param {string} options.ledgerName Ledger name.
 	 * @param {string} options.scopeValue Scope value.
 	 * @param {object} options.instance     The ledger instance object.
@@ -2441,7 +2441,7 @@ class Particle {
 	 */
 	setLedgerInstance({ auth, org, ledgerName, scopeValue, data, headers, context }) {
 		return this.put({
-			uri: `/v1/orgs/${org}/ledgers/${ledgerName}/instances/${scopeValue}`,
+			uri: this._subspacePath(org, `ledgers/${ledgerName}/instances/${scopeValue}`),
 			auth,
 			data: { data },
 			headers,
@@ -2450,11 +2450,11 @@ class Particle {
 	}
 
 	/**
-	 * Delete a ledger instance in the specified organization by ledger name.
+	 * Delete a ledger instance in the specified organization or sandbox by ledger name.
 	 *
 	 * @param {Object} options          The options for archiving the ledger instance.
 	 * @param {Object} options.auth     The authentication object with the API key.
-	 * @param {string} options.org      The unique identifier of the organization.
+	 * @param {string | undefined} options.org     The Organization ID or slug. If not provided, the request will go to your sandbox account.
 	 * @param {string} options.ledgerName  Name of the ledger instance to archive.
 	 * @param {string} options.scopeValue Scope value.
 	 * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
@@ -2464,7 +2464,7 @@ class Particle {
 	 */
 	deleteLedgerInstance({ auth, org, ledgerName, scopeValue, headers, context }) {
 		return this.delete({
-			uri: `/v1/orgs/${org}/ledgers/${ledgerName}/instances/${scopeValue}`,
+			uri: this._subspacePath(org, `ledgers/${ledgerName}/instances/${scopeValue}`),
 			auth,
 			headers,
 			context
@@ -2472,11 +2472,11 @@ class Particle {
 	}
 
 	/**
-	 * Lists ledger instances.
+	 * Lists ledger instances in the specified organization or sandbox.
 	 *
 	 * @param {Object} options          The options for listing ledger instances.
 	 * @param {Object} options.auth     The authentication object with the API key.
-	 * @param {string} options.org      The unique identifier of the organization.
+	 * @param {string} [options.org]    The unique identifier of the organization.
 	 * @param {string} options.ledgerName  Name of the ledger instance to archive.
 	 * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context] Request context.
@@ -2485,7 +2485,7 @@ class Particle {
 	 */
 	listLedgerInstances({ auth, org, ledgerName, headers, context }) {
 		return this.get({
-			uri: `/v1/orgs/${org}/ledgers/${ledgerName}/instances`,
+			uri: this._subspacePath(org, `ledgers/${ledgerName}/instances`),
 			auth,
 			headers,
 			context
@@ -2523,6 +2523,17 @@ class Particle {
 	 */
 	deviceUri({ deviceId, product }){
 		return product ? `/v1/products/${product}/devices/${deviceId}` : `/v1/devices/${deviceId}`;
+	}
+
+	/**
+	 * Helper for building subspace API paths based on org being provided or not
+	 * @param {string | undefined} org slug or ID
+	 * @param {string} path
+	 * @returns {string} path
+	 * @private
+	 */
+	_subspacePath(org, path) {
+		return org ? `/v1/orgs/${org}/${path}` : `/v1/${path}`;
 	}
 
 	/**
