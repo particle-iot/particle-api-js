@@ -24,6 +24,16 @@ const fs = require('../fs');
 const packageJson = require('../package.json');
 
 /**
+ * @typedef {object} BasicAuth
+ * @property {string} username
+ * @property {string} password
+ */
+
+/**
+ * @typedef {BasicAuth | string} Auth
+ */
+
+/**
  * The object returned for a basic request
  * @typedef {object} JSONResponse
  * @property {number} statusCode	The HTTP response status
@@ -59,7 +69,7 @@ class Agent {
 	 * Make a GET request
 	 * @param {object} params		Configurations to customize the request
 	 * @param {string} params.uri		The URI to request
-	 * @param {string|object} [params.auth]	Authorization token to use
+	 * @param {Auth} [params.auth]	Authorization token to use
 	 * @param {object} [params.headers]	Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {string|object} [params.query] Key/Value pairs of query params or a correctly formatted string
 	 * @param {object} [params.context]	The invocation context, describing the tool and project
@@ -73,7 +83,7 @@ class Agent {
 	 * Make a HEAD request
 	 * @param {object} params		Configurations to customize the request
 	 * @param {string} params.uri		The URI to request
-	 * @param {string|object} [params.auth]	Authorization token to use
+	 * @param {Auth} [params.auth]	Authorization token to use
 	 * @param {object} [params.headers]	Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {string|object} [params.query] Key/Value pairs of query params or a correctly formatted string
 	 * @param {object} [params.context]	The invocation context, describing the tool and project
@@ -87,7 +97,7 @@ class Agent {
 	 * Make a POST request
 	 * @param {object} params		Configurations to customize the request
 	 * @param {string} params.uri		The URI to request
-	 * @param {string|object} [params.auth]	Authorization token to use
+	 * @param {Auth} [params.auth]	Authorization token to use
 	 * @param {object} [params.headers]	Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {object} [params.data]	Key/Value pairs of query params or a correctly formatted string
 	 * @param {object} [params.context]	The invocation context, describing the tool and project
@@ -101,7 +111,7 @@ class Agent {
 	 * Make a PUT request
 	 * @param {object} params		Configurations to customize the request
 	 * @param {string} params.uri		The URI to request
-	 * @param {string|object} [params.auth]	Authorization token to use
+	 * @param {Auth} [params.auth]	Authorization token to use
 	 * @param {object} [params.headers]	Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {object} [params.data]	Key/VAlue pairs of query params or a correctly formatted string
 	 * @param {object} [params.context]	The invocation context, describing the tool and project
@@ -115,7 +125,7 @@ class Agent {
 	 * Make a DELETE request
 	 * @param {object} params		Configurations to customize the request
 	 * @param {string} params.uri		The URI to request
-	 * @param {string|object} [params.auth]	Authorization token to use
+	 * @param {Auth} [params.auth]	Authorization token to use
 	 * @param {object} [params.headers]	Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {object} [params.data]	Key/Value pairs of query params or a correctly formatted string
 	 * @param {object} [params.context]	The invocation context, describing the tool and project
@@ -132,7 +142,7 @@ class Agent {
 	 * @param {string} config.method        	The method used to request the URI, should be in uppercase.
 	 * @param {object} [config.headers]		Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {object} [config.data]		Arbitrary data to send as the body.
-	 * @param {string|object} [config.auth]         Authorization
+	 * @param {Auth} [config.auth]         Authorization
 	 * @param {string|object} [config.query]	Query parameters
 	 * @param {object} [config.form]		Form fields
 	 * @param {object} [config.files]		Array of file names and file content
@@ -220,6 +230,16 @@ class Agent {
 
 	/**
 	 * Generate the params in a format valid for 'fetch'
+	 * @param {object} config		Configurations to customize the request
+	 * @param {string} config.uri			The URI to request
+	 * @param {string} config.method        	The method used to request the URI, should be in uppercase.
+	 * @param {object} [config.headers]		Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {object} [config.data]		Arbitrary data to send as the body.
+	 * @param {Auth} [config.auth]         Authorization
+	 * @param {string|object} [config.query]	Query parameters
+	 * @param {object} [config.form]		Form fields
+	 * @param {object} [config.files]		Array of file names and file content
+	 * @param {object} [config.context]		The invocation context, describing the tool and project.
 	 * @returns {[string, object]} The uri to make the request too, and extra configs
 	 * @private
 	 */
@@ -363,7 +383,7 @@ class Agent {
 
 	/**
 	 * Adds an authorization header.
-	 * @param {string|object}  auth    The authorization bearer token.
+	 * @param {Auth}  [auth]    The authorization bearer token.
 	 * @returns {object} The original request.
 	 */
 	_getAuthorizationHeader(auth){
