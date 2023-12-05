@@ -24,13 +24,17 @@ const fs = require('../fs');
 const packageJson = require('../package.json');
 
 /**
+ * @typedef {string} AccessToken
+ */
+
+/**
  * @typedef {object} BasicAuth
  * @property {string} username
  * @property {string} password
  */
 
 /**
- * @typedef {BasicAuth | string} Auth
+ * @typedef {AccessToken | BasicAuth} Auth Prefer using an access token over basic auth for better security
  */
 
 /**
