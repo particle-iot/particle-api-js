@@ -2598,12 +2598,12 @@ class Particle {
 
 	/**
 	 * Make a GET request
-	 * @param {object}          params
-	 * @param {string}          params.uri        The URI to request
-	 * @param {Auth}            [params.auth]     Authorization token to use
-	 * @param {object}          [params.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-	 * @param {string | object} [params.query]    Key/Value pairs of query params or a correctly formatted string
-	 * @param {object}          [params.context]  The invocation context, describing the tool and project
+	 * @param {object} params
+	 * @param {string} params.uri        The URI to request
+	 * @param {Auth}   [params.auth]     Authorization token to use
+	 * @param {object} [params.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {object} [params.query]    Key/Value pairs of query params or a correctly formatted string
+	 * @param {object} [params.context]  The invocation context, describing the tool and project
 	 * @returns {Promise<RequestResponse, RequestError>} A promise that resolves with either the requested data or an error object
 	 */
 	get({ uri, auth, headers, query, context }){
@@ -2614,12 +2614,12 @@ class Particle {
 
 	/**
 	 * Make a HEAD request
-	 * @param {object}          params
-	 * @param {string}          params.uri        The URI to request
-	 * @param {Auth}            [params.auth]     Authorization token to use
-	 * @param {object}          [params.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-	 * @param {string | object} [params.query]    Key/Value pairs of query params or a correctly formatted string
-	 * @param {object}          [params.context]  The invocation context, describing the tool and project
+	 * @param {object} params
+	 * @param {string} params.uri        The URI to request
+	 * @param {Auth}   [params.auth]     Authorization token to use
+	 * @param {object} [params.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {object} [params.query]    Key/Value pairs of query params or a correctly formatted string
+	 * @param {object} [params.context]  The invocation context, describing the tool and project
 	 * @returns {Promise<RequestResponse, RequestError>} A promise that resolves with either the requested data or an error object
 	 */
 	head({ uri, auth, headers, query, context }){
@@ -2678,17 +2678,17 @@ class Particle {
 
 	/**
 	 *
-	 * @param {Object}          args             An obj with all the possible request configurations
-	 * @param {String}          args.uri         The URI to request
-	 * @param {String}          args.method      The method used to request the URI, should be in uppercase.
-	 * @param {Object}          [args.headers]   Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-	 * @param {object}          [args.data]      Arbitrary data to send as the body.
-	 * @param {Auth}            [args.auth]      Authorization
-	 * @param {String | Object} [args.query]     Query parameters
-	 * @param {Object}          [args.form]      Form fields
-	 * @param {Object}          [args.files]     Array of file names and file content
-	 * @param {Object}          [args.context]   The invocation context, describing the tool and project.
-	 * @param {boolean}         [args.isBuffer]  Indicate if the response should be treated as Buffer instead of JSON
+	 * @param {Object}  args             An obj with all the possible request configurations
+	 * @param {String}  args.uri         The URI to request
+	 * @param {String}  args.method      The method used to request the URI, should be in uppercase.
+	 * @param {Object}  [args.headers]   Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {object}  [args.data]      Arbitrary data to send as the body.
+	 * @param {Auth}    [args.auth]      Authorization
+	 * @param {Object}  [args.query]     Query parameters
+	 * @param {Object}  [args.form]      Form fields
+	 * @param {Object}  [args.files]     Array of file names and file content
+	 * @param {Object}  [args.context]   The invocation context, describing the tool and project.
+	 * @param {boolean} [args.isBuffer]  Indicate if the response should be treated as Buffer instead of JSON
 	 * @returns {Promise<RequestResponse, RequestError>} A promise that resolves with either the requested data or an error object
 	 */
 	request(args){

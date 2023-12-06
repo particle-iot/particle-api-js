@@ -71,12 +71,12 @@ class Agent {
 
 	/**
 	 * Make a GET request
-	 * @param {object} params		Configurations to customize the request
-	 * @param {string} params.uri		The URI to request
-	 * @param {Auth} [params.auth]	Authorization token to use
-	 * @param {object} [params.headers]	Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-	 * @param {string|object} [params.query] Key/Value pairs of query params or a correctly formatted string
-	 * @param {object} [params.context]	The invocation context, describing the tool and project
+	 * @param {object} params            Configurations to customize the request
+	 * @param {string} params.uri        The URI to request
+	 * @param {Auth}   [params.auth]     Authorization token to use
+	 * @param {object} [params.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {object} [params.query]    Key/Value pairs of query params
+	 * @param {object} [params.context]  The invocation context, describing the tool and project
 	 * @returns {Promise<RequestResponse, RequestError>} A promise that resolves with either the requested data or an error object
 	 */
 	get({ uri, auth, headers, query, context }) {
@@ -87,9 +87,9 @@ class Agent {
 	 * Make a HEAD request
 	 * @param {object} params		Configurations to customize the request
 	 * @param {string} params.uri		The URI to request
-	 * @param {Auth} [params.auth]	Authorization token to use
-	 * @param {object} [params.headers]	Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-	 * @param {string|object} [params.query] Key/Value pairs of query params or a correctly formatted string
+	 * @param {Auth}   [params.auth]	Authorization token to use
+	 * @param {object} [params.headers]        Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {object} [params.query] Key/Value pairs of query params
 	 * @param {object} [params.context]	The invocation context, describing the tool and project
 	 * @returns {Promise<RequestResponse, RequestError>} A promise that resolves with either the requested data or an error object
 	 */
@@ -103,7 +103,7 @@ class Agent {
 	 * @param {string} params.uri		The URI to request
 	 * @param {Auth} [params.auth]	Authorization token to use
 	 * @param {object} [params.headers]	Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-	 * @param {object} [params.data]	Key/Value pairs of query params or a correctly formatted string
+	 * @param {object} [params.data]	Key/Value pairs of query params
 	 * @param {object} [params.context]	The invocation context, describing the tool and project
 	 * @returns {Promise<RequestResponse, RequestError>} A promise that resolves with either the requested data or an error object
 	 */
@@ -117,7 +117,7 @@ class Agent {
 	 * @param {string} params.uri		The URI to request
 	 * @param {Auth} [params.auth]	Authorization token to use
 	 * @param {object} [params.headers]	Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-	 * @param {object} [params.data]	Key/VAlue pairs of query params or a correctly formatted string
+	 * @param {object} [params.data]	Key/VAlue pairs of query params
 	 * @param {object} [params.context]	The invocation context, describing the tool and project
 	 * @returns {Promise<RequestResponse, RequestError>} A promise that resolves with either the requested data or an error object
 	 */
@@ -131,7 +131,7 @@ class Agent {
 	 * @param {string} params.uri		The URI to request
 	 * @param {Auth} [params.auth]	Authorization token to use
 	 * @param {object} [params.headers]	Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-	 * @param {object} [params.data]	Key/Value pairs of query params or a correctly formatted string
+	 * @param {object} [params.data]	Key/Value pairs of query params
 	 * @param {object} [params.context]	The invocation context, describing the tool and project
 	 * @returns {Promise<RequestResponse, RequestError>} A promise that resolves with either the requested data or an error object
 	 */
@@ -147,7 +147,7 @@ class Agent {
 	 * @param {object} [config.headers]		Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {object} [config.data]		Arbitrary data to send as the body.
 	 * @param {Auth} [config.auth]         Authorization
-	 * @param {string|object} [config.query]	Query parameters
+	 * @param {object} [config.query]	Query parameters
 	 * @param {object} [config.form]		Form fields
 	 * @param {object} [config.files]		Array of file names and file content
 	 * @param {object} [config.context]		The invocation context, describing the tool and project.
@@ -240,7 +240,7 @@ class Agent {
 	 * @param {object} [config.headers]		Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {object} [config.data]		Arbitrary data to send as the body.
 	 * @param {Auth} [config.auth]         Authorization
-	 * @param {string|object} [config.query]	Query parameters
+	 * @param {object} [config.query]	Query parameters
 	 * @param {object} [config.form]		Form fields
 	 * @param {object} [config.files]		Array of file names and file content
 	 * @param {object} [config.context]		The invocation context, describing the tool and project.
