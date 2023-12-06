@@ -12,10 +12,10 @@ class Client {
     }
 
     /**
-	 * Get firmware library objects
-	 * @param  {Object} query The query parameters for libraries. See Particle.listLibraries
-	 * @returns {Promise} A promise
-	 */
+     * Get firmware library objects
+     * @param  {Object} query The query parameters for libraries. See Particle.listLibraries
+     * @returns {Promise} A promise
+     */
     libraries(query = {}){
         return this.api.listLibraries(Object.assign({}, query, { auth: this.auth }))
             .then(payload => {
@@ -25,11 +25,11 @@ class Client {
     }
 
     /**
-	 * Get one firmware library object
-	 * @param  {String} name Name of the library to fetch
-	 * @param  {Object} query The query parameters for libraries. See Particle.getLibrary
-	 * @returns {Promise} A promise
-	 */
+     * Get one firmware library object
+     * @param  {String} name Name of the library to fetch
+     * @param  {Object} query The query parameters for libraries. See Particle.getLibrary
+     * @returns {Promise} A promise
+     */
     library(name, query = {}){
         return this.api.getLibrary(Object.assign({}, query, { name, auth: this.auth }))
             .then(payload => {
@@ -39,11 +39,11 @@ class Client {
     }
 
     /**
-	 * Get list of library versions
-	 * @param  {String} name Name of the library to fetch
-	 * @param  {Object} query The query parameters for versions. See Particle.getLibraryVersions
-	 * @returns {Promise} A promise
-	 */
+     * Get list of library versions
+     * @param  {String} name Name of the library to fetch
+     * @param  {Object} query The query parameters for versions. See Particle.getLibraryVersions
+     * @returns {Promise} A promise
+     */
     libraryVersions(name, query = {}){
         return this.api.getLibraryVersions(Object.assign({}, query, { name, auth: this.auth }))
             .then(payload => {
@@ -53,10 +53,10 @@ class Client {
     }
 
     /**
-	 * Contribute a new library version
-	 * @param  {Buffer} archive The compressed archive with the library source
-	 * @returns {Promise} A promise
-	 */
+     * Contribute a new library version
+     * @param  {Buffer} archive The compressed archive with the library source
+     * @returns {Promise} A promise
+     */
     contributeLibrary(archive){
         return this.api.contributeLibrary({ archive, auth: this.auth })
             .then(payload => {
@@ -68,10 +68,10 @@ class Client {
     }
 
     /**
-	 * Make the the most recent private library version public
-	 * @param  {string} name The name of the library to publish
-	 * @return {Promise} To publish the library
-	 */
+     * Make the the most recent private library version public
+     * @param  {string} name The name of the library to publish
+     * @return {Promise} To publish the library
+     */
     publishLibrary(name){
         return this.api.publishLibrary({ name, auth: this.auth })
             .then(payload => {
@@ -83,12 +83,12 @@ class Client {
     }
 
     /**
-	 * Delete an entire published library
-	 * @param {object} params	Specific params of the library to delete
-	 * @param {string} params.name	Name of the library to delete
-	 * @param {string} params.force	Key to force deleting a public library
-	 * @returns {Promise} A promise
-	 */
+     * Delete an entire published library
+     * @param {object} params	Specific params of the library to delete
+     * @param {string} params.name	Name of the library to delete
+     * @param {string} params.force	Key to force deleting a public library
+     * @returns {Promise} A promise
+     */
     deleteLibrary({ name, force }){
         return this.api.deleteLibrary({ name, force, auth: this.auth })
             .then(() => true, error => this._throwError(error));
@@ -107,39 +107,39 @@ class Client {
     }
 
     /**
-	 * @param {Object} files Object containing files to be compiled
-	 * @param {Number} platformId Platform id number of the device you are compiling for
-	 * @param {String} targetVersion System firmware version to compile against
-	 * @returns {Promise} A promise
-	 * @deprecated Will be removed in 6.5
-	 */
+     * @param {Object} files Object containing files to be compiled
+     * @param {Number} platformId Platform id number of the device you are compiling for
+     * @param {String} targetVersion System firmware version to compile against
+     * @returns {Promise} A promise
+     * @deprecated Will be removed in 6.5
+     */
     compileCode(files, platformId, targetVersion){
         return this.api.compileCode({ files, platformId, targetVersion, auth: this.auth });
     }
 
     /**
-	 * @param {object} params
-	 * @param {string} params.deviceId	Device ID or Name
-	 * @param {boolean} params.signal	Signal on or off
-	 * @returns {Promise} A promise
-	 * @deprecated Will be removed in 6.5
-	 */
+     * @param {object} params
+     * @param {string} params.deviceId	Device ID or Name
+     * @param {boolean} params.signal	Signal on or off
+     * @returns {Promise} A promise
+     * @deprecated Will be removed in 6.5
+     */
     signalDevice({ signal, deviceId }){
         return this.api.signalDevice({ signal, deviceId, auth: this.auth });
     }
 
     /**
-	 * @returns {Promise} A promise
-	 * @deprecated Will be removed in 6.5
-	 */
+     * @returns {Promise} A promise
+     * @deprecated Will be removed in 6.5
+     */
     listDevices(){
         return this.api.listDevices({ auth: this.auth });
     }
 
     /**
-	 * @returns {Promise} A promise
-	 * @deprecated Will be removed in 6.5
-	 */
+     * @returns {Promise} A promise
+     * @deprecated Will be removed in 6.5
+     */
     listBuildTargets(){
         return this.api.listBuildTargets({ onlyFeatured: true, auth: this.auth })
             .then(payload => {

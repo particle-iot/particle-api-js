@@ -16,9 +16,9 @@ class Library {
 
 
     /**
-	 * Download the compressed file containing the source code for this library version.
-	 * @return {Promise} Resolves to the .tar.gz compressed source code
-	 */
+     * Download the compressed file containing the source code for this library version.
+     * @return {Promise} Resolves to the .tar.gz compressed source code
+     */
     download() {
         if (!this.downloadUrl) {
             return Promise.reject(new Error('No download URL for this library'));

@@ -22,16 +22,16 @@ const auth = '<my-token>';
 const particle = new Particle({ baseUrl });
 
 particle.getEventStream({ deviceId: 'mine', auth }).then(stream => {
-	console.log('event stream connected');
+    console.log('event stream connected');
 
-	['event', 'error', 'disconnect', 'reconnect', 'reconnect-success', 'reconnect-error'].forEach(eventName => {
-		stream.on(eventName, (arg) => {
-			console.log(eventName, arg);
-		});
-	});
+    ['event', 'error', 'disconnect', 'reconnect', 'reconnect-success', 'reconnect-error'].forEach(eventName => {
+        stream.on(eventName, (arg) => {
+            console.log(eventName, arg);
+        });
+    });
 
 }).catch(function (err) {
-	console.log(err);
+    console.log(err);
 });
 
 </script>
