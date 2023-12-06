@@ -16,19 +16,19 @@ const particle = new Particle({ baseUrl });
 
 /* eslint-disable no-console */
 particle.getEventStream({ deviceId: 'mine', auth })
-	.then(stream => {
-		console.log('event stream connected');
+    .then(stream => {
+        console.log('event stream connected');
 
-		['event', 'error', 'disconnect', 'reconnect', 'reconnect-success', 'reconnect-error']
-			.forEach(eventName => {
-				stream.on(eventName, (arg) => {
-					console.log(eventName, arg);
-				});
-			});
-	})
-	.catch((err) => {
-		console.error(err);
-		process.exit(1);
-	});
+        ['event', 'error', 'disconnect', 'reconnect', 'reconnect-success', 'reconnect-error']
+            .forEach(eventName => {
+                stream.on(eventName, (arg) => {
+                    console.log(eventName, arg);
+                });
+            });
+    })
+    .catch((err) => {
+        console.error(err);
+        process.exit(1);
+    });
 /* eslint-enable no-console */
 
