@@ -29,12 +29,12 @@ class Particle {
 	 *
 	 * Create a new Particle object and call methods below on it.
 	 *
-	 * @param {Object} options Options for this API call Options to be used for all requests (see [Defaults](../src/Defaults.js))
+	 * @param {Object} options                  Options for this API call Options to be used for all requests (see [Defaults](../src/Defaults.js))
 	 * @param {string} [options.baseUrl]
 	 * @param {string} [options.clientSecret]
 	 * @param {string} [options.clientId]
 	 * @param {number} [options.tokenDuration]
-	 * @param {Auth} [options.auth] The access token or basic auth object. If not specified here, will have to be added to every request
+	 * @param {Auth}   [options.auth]           The access token or basic auth object. If not specified here, will have to be added to every request
 	 */
 	constructor(options = {}){
 		if (options.auth) {
@@ -63,7 +63,7 @@ class Particle {
 
 	/**
 	 * Builds the final context from the context parameter and the context items in the api.
-	 * @param  {Object} context       The invocation context, this takes precedence over the local context.
+	 * @param   {Object} context  The invocation context, this takes precedence over the local context.
 	 * @returns {Object} The context to use.
 	 * @private
 	 */
@@ -130,10 +130,10 @@ class Particle {
 
 	/**
 	 * Enable MFA on the currently logged in user
-	 * @param {Object} options             Options for this API call
-	 * @param {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
-	 * @param  {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-	 * @param {Object} [options.context]   Request context
+	 * @param {Object} options            Options for this API call
+	 * @param {Auth}   [options.auth]     The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {Object} [options.context]  Request context
 	 * @returns {Promise} A promise
 	 */
 	enableMfa({ auth, headers, context }){
@@ -142,13 +142,13 @@ class Particle {
 
 	/**
 	 * Confirm MFA for the user. This must be called with current TOTP code, determined from the results of enableMfa(). You will be prompted to enter an OTP code every time you login after enrollment is confirmed.
-	 * @param {Object} options            Options for this API call
-	 * @param {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
-	 * @param {Object} options.mfaToken   Token given from previous step to
-	 * @param {Object} options.otp        Current one-time-password generated from the authentication app
-	 * @param {Boolean} options.invalidateTokens Should all tokens be invalidated
-	 * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-	 * @param {Object} [options.context]  Request context
+	 * @param {Object} options                    Options for this API call
+	 * @param {Auth} [options.auth]               The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {Object} options.mfaToken           Token given from previous step to
+	 * @param {Object} options.otp                Current one-time-password generated from the authentication app
+	 * @param {Boolean} options.invalidateTokens  Should all tokens be invalidated
+	 * @param {Object} [options.headers]          Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {Object} [options.context]          Request context
 	 * @returns {Promise} A promise
 	 */
 	confirmMfa({ mfaToken, otp, invalidateTokens = false, auth, headers, context }){
@@ -170,7 +170,7 @@ class Particle {
 	/**
 	 * Disable MFA for the user.
 	 * @param {Object} options                  Options for this API call
-	 * @param {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {Auth} [options.auth]             The access token or basic auth object. Can be ignored if provided in constructor
 	 * @param {Object} options.currentPassword  User's current password
 	 * @param {Object} [options.headers]        Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context]        Request context
@@ -317,7 +317,7 @@ class Particle {
 	/**
 	 * Revoke the current session access token
 	 * @param {Object} options            Options for this API call
-	 * @param {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {Auth}   [options.auth]     The access token or basic auth object. Can be ignored if provided in constructor
 	 * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context]  Request context
 	 * @returns {Promise} A promise
@@ -334,7 +334,7 @@ class Particle {
 	/**
 	 * Revoke all active access tokens
 	 * @param {Object} options            Options for this API call
-	 * @param {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {Auth}   [options.auth]     The access token or basic auth object. Can be ignored if provided in constructor
 	 * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context]  Request context
 	 * @returns {Promise} A promise
@@ -351,7 +351,7 @@ class Particle {
 	/**
 	 * Delete the current user
 	 * @param {Object} options            Options for this API call
-	 * @param {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {Auth}   [options.auth]     The access token or basic auth object. Can be ignored if provided in constructor
 	 * @param {String} options.password   Password
 	 * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context]  Request context
@@ -389,12 +389,12 @@ class Particle {
 
 	/**
 	 * Retrieves the information that is used to identify the current login for tracking.
-	 * @param {Object} [options]          Options for this API call
-	 * @param {Auth} [options.auth]     The access token or basic auth object. Can be ignored if provided in constructor
-	 * @param {Boolean} [options.full]    When true, retrieve all information for registering a user with the tracking API. When false,
-	 *                                    retrieve only the unique tracking ID for the current login.
-	 * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-	 * @param {Object} [options.context]  Request context
+	 * @param {Object}  [options]          Options for this API call
+	 * @param {Auth}    [options.auth]     The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {Boolean} [options.full]     When true, retrieve all information for registering a user with the tracking API. When false,
+	 *                                     retrieve only the unique tracking ID for the current login.
+	 * @param {Object}  [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {Object}  [options.context]  Request context
 	 * @returns {Promise<Object>} Resolve the tracking identify of the current login
 	 */
 	trackingIdentity({ full = false, auth, headers, context } = {}){
@@ -409,18 +409,18 @@ class Particle {
 
 	/**
 	 * List devices claimed to the account or product
-	 * @param {Object} options                   Options for this API call
-	 * @param {String} [options.deviceId]        (Product only) Filter results to devices with this ID (partial matching)
-	 * @param {String} [options.deviceName]      (Product only) Filter results to devices with this name (partial matching)
-	 * @param {Array.<string>} [options.groups]  (Product only) A list of full group names to filter results to devices belonging to these groups only.
-	 * @param {String} [options.sortAttr]        (Product only) The attribute by which to sort results. See API docs for options.
-	 * @param {String} [options.sortDir]         (Product only) The direction of sorting. See API docs for options.
-	 * @param {Number} [options.page]            (Product only) Current page of results
-	 * @param {Number} [options.perPage]         (Product only) Records per page
-	 * @param {String} [options.product]         List devices in this product ID or slug
-	 * @param {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
-	 * @param {Object} [options.headers]         Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-	 * @param {Object} [options.context]         Request context
+	 * @param {Object}         options               Options for this API call
+	 * @param {String}         [options.deviceId]    (Product only) Filter results to devices with this ID (partial matching)
+	 * @param {String}         [options.deviceName]  (Product only) Filter results to devices with this name (partial matching)
+	 * @param {Array.<string>} [options.groups]      (Product only) A list of full group names to filter results to devices belonging to these groups only.
+	 * @param {String}         [options.sortAttr]    (Product only) The attribute by which to sort results. See API docs for options.
+	 * @param {String}         [options.sortDir]     (Product only) The direction of sorting. See API docs for options.
+	 * @param {Number}         [options.page]        (Product only) Current page of results
+	 * @param {Number}         [options.perPage]     (Product only) Records per page
+	 * @param {String}         [options.product]     List devices in this product ID or slug
+	 * @param {Auth}           [options.auth]        The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {Object}         [options.headers]     Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {Object}         [options.context]     Request context
 	 * @returns {Promise} A promise
 	 */
 	listDevices({ deviceId, deviceName, groups, sortAttr, sortDir, page, perPage, product, auth, headers, context }){
@@ -449,7 +449,7 @@ class Particle {
 	 * @param {Object} options            Options for this API call
 	 * @param {String} options.deviceId   Device ID or Name
 	 * @param {String} [options.product]  Device in this product ID or slug
-	 * @param {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {Auth}   [options.auth]     The access token or basic auth object. Can be ignored if provided in constructor
 	 * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context]  Request context
 	 * @returns {Promise} A promise
@@ -461,12 +461,12 @@ class Particle {
 
 	/**
 	 * Claim a device to the account. The device must be online and unclaimed.
-	 * @param {Object} options			Options for this API call
-	 * @param {String} options.deviceId   		Device ID
-	 * @param {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
-	 * @param {boolean} options.requestTransfer     True to request the device be transfered from another user
-	 * @param {Object} [options.headers]		Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-	 * @param {Object} [options.context]  		Request context
+	 * @param {Object}  options                  Options for this API call
+	 * @param {String}  options.deviceId         Device ID
+	 * @param {Auth}    [options.auth]           The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {boolean} options.requestTransfer  True to request the device be transfered from another user
+	 * @param {Object}  [options.headers]        Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {Object}  [options.context]        Request context
 	 * @returns {Promise} A promise
 	 */
 	claimDevice({ deviceId, requestTransfer, auth, headers, context }){
@@ -489,7 +489,7 @@ class Particle {
 	 * @param {Object} options.file       A file that contains a single-column list of device IDs, device serial numbers, device IMEIs, or devie ICCIDs.
 	 *                                    Node: Either a path or Buffer. Browser: a File or Blob.
 	 * @param {String} options.product    Add to this product ID or slug
-	 * @param {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {Auth}   [options.auth]     The access token or basic auth object. Can be ignored if provided in constructor
 	 * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context]  Request context
 	 * @returns {Promise} A promise
@@ -516,13 +516,13 @@ class Particle {
 
 	/**
 	 * Unclaim / Remove a device from your account or product, or deny quarantine
-	 * @param {Object} options            Options for this API call
-	 * @param {String} options.deviceId   Device ID or Name
-	 * @param {Boolean} [options.deny]    (Product only) Deny this quarantined device, instead of removing an already approved device
-	 * @param {String} options.product    Remove from this product ID or slug
-	 * @param {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
-	 * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-	 * @param {Object} [options.context]  Request context
+	 * @param {Object}  options            Options for this API call
+	 * @param {String}  options.deviceId   Device ID or Name
+	 * @param {Boolean} [options.deny]     (Product only) Deny this quarantined device, instead of removing an already approved device
+	 * @param {String}  options.product    Remove from this product ID or slug
+	 * @param {Auth}    [options.auth]     The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {Object}  [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {Object}  [options.context]  Request context
 	 * @returns {Promise} A promise
 	 */
 	removeDevice({ deviceId, deny, product, auth, headers, context }){
@@ -536,7 +536,7 @@ class Particle {
 	 * @param {Object} options            Options for this API call
 	 * @param {String} options.deviceId   Device ID or Name
 	 * @param {String} options.product    Remove from this product ID or slug
-	 * @param {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {Auth}   [options.auth]     The access token or basic auth object. Can be ignored if provided in constructor
 	 * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context]  Request context
 	 * @returns {Promise} A promise
@@ -552,7 +552,7 @@ class Particle {
 	 * @param {String} options.deviceId   Device ID or Name
 	 * @param {String} options.name       Desired Name
 	 * @param {String} [options.product]  Rename device in this product ID or slug
-	 * @param {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {Auth}   [options.auth]     The access token or basic auth object. Can be ignored if provided in constructor
 	 * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context]  Request context
 	 * @returns {Promise} A promise
@@ -567,7 +567,7 @@ class Particle {
 	 * @param {String} options.deviceId   Device ID or Name
 	 * @param {Boolean} options.signal    Signal on or off
 	 * @param {String} [options.product]  Device in this product ID or slug
-	 * @param {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {Auth}   [options.auth]     The access token or basic auth object. Can be ignored if provided in constructor
 	 * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context]  Request context
 	 * @returns {Promise} A promise
@@ -582,7 +582,7 @@ class Particle {
 	 * @param {String} options.deviceId   Device ID or Name
 	 * @param {String} options.notes      Your notes about this device
 	 * @param {String} [options.product]  Device in this product ID or slug
-	 * @param {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {Auth}   [options.auth]     The access token or basic auth object. Can be ignored if provided in constructor
 	 * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context]  Request context
 	 * @returns {Promise} A promise
@@ -597,7 +597,7 @@ class Particle {
 	 * @param {String} options.deviceId      Device ID or Name
 	 * @param {Boolean} options.development  Set to true to mark as development, false to return to product fleet
 	 * @param {String} options.product       Device in this product ID or slug
-	 * @param {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {Auth}   [options.auth]        The access token or basic auth object. Can be ignored if provided in constructor
 	 * @param {Object} [options.headers]     Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context]     Request context
 	 * @returns {Promise} A promise
@@ -607,19 +607,19 @@ class Particle {
 	}
 
 	/**
-	 * Mark device as being used in development of a product so it opts out of automatic firmware updates
-	 * @param {Object} options                         Options for this API call
-	 * @param {String} options.deviceId                Device ID or Name
-	 * @param {Number} options.desiredFirmwareVersion  Lock the product device to run this firmware version.
-	 * @param {Boolean} [options.flash]                Immediately flash firmware indicated by desiredFirmwareVersion
-	 * @param {String} options.product                 Device in this product ID or slug
-	 * @param {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
-	 * @param {Object} [options.headers]               Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-	 * @param {Object} [options.context]               Request context
+	 * Mark device as being used in development of a product, so it opts out of automatic firmware updates
+	 * @param {Object}  options                         Options for this API call
+	 * @param {String}  options.deviceId                Device ID or Name
+	 * @param {Number}  options.desiredFirmwareVersion  Lock the product device to run this firmware version.
+	 * @param {Boolean} [options.flash]                 Immediately flash firmware indicated by desiredFirmwareVersion
+	 * @param {String}  options.product                 Device in this product ID or slug
+	 * @param {Auth}    [options.auth]                  The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {Object}  [options.headers]               Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {Object}  [options.context]               Request context
 	 * @returns {Promise} A promise
 	 */
-	lockDeviceProductFirmware({ deviceId, desiredFirmwareVersion, flash, product, auth, context }){
-		return this.updateDevice({ deviceId, desiredFirmwareVersion, flash, product, auth, context });
+	lockDeviceProductFirmware({ deviceId, desiredFirmwareVersion, flash, product, auth, headers, context }){
+		return this.updateDevice({ deviceId, desiredFirmwareVersion, flash, product, auth, headers, context });
 	}
 
 	/**
@@ -627,7 +627,7 @@ class Particle {
 	 * @param {Object} options            Options for this API call
 	 * @param {String} options.deviceId   Device ID or Name
 	 * @param {String} options.product    Device in this product ID or slug
-	 * @param {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {Auth}   [options.auth]     The access token or basic auth object. Can be ignored if provided in constructor
 	 * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context]  Request context
 	 * @returns {Promise} A promise
@@ -638,19 +638,19 @@ class Particle {
 
 	/**
 	 * Update multiple device attributes at the same time
-	 * @param {Object} options                           Options for this API call
-	 * @param {String} options.deviceId                  Device ID or Name
-	 * @param {String} [options.name]                    Desired Name
-	 * @param {Boolean} [options.signal]                   Signal device on or off
-	 * @param {String} [options.notes]                   Your notes about this device
-	 * @param {Boolean} [options.development]            (Product only) Set to true to mark as development, false to return to product fleet
+	 * @param {Object}        options                           Options for this API call
+	 * @param {String}        options.deviceId                  Device ID or Name
+	 * @param {String}        [options.name]                    Desired Name
+	 * @param {Boolean}       [options.signal]                  Signal device on or off
+	 * @param {String}        [options.notes]                   Your notes about this device
+	 * @param {Boolean}       [options.development]             (Product only) Set to true to mark as development, false to return to product fleet
 	 * @param {Number | null} [options.desiredFirmwareVersion]  (Product only) Lock the product device to run this firmware version.
-	 *                                                   Pass `null` to unlock firmware and go back to released firmware.
-	 * @param {Boolean} [options.flash]                  (Product only) Immediately flash firmware indicated by desiredFirmwareVersion
-	 * @param {String} [options.product]                 Device in this product ID or slug
-	 * @param {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
-	 * @param {Object} [options.headers]                 Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-	 * @param {Object} [options.context]                 Request context
+	 *                                                          Pass `null` to unlock firmware and go back to released firmware.
+	 * @param {Boolean}       [options.flash]                   (Product only) Immediately flash firmware indicated by desiredFirmwareVersion
+	 * @param {String}        [options.product]                 Device in this product ID or slug
+	 * @param {Auth}          [options.auth]                    The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {Object}        [options.headers]                 Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {Object}        [options.context]                 Request context
 	 * @returns {Promise} A promise
 	 */
 	updateDevice({ deviceId, name, signal, notes, development, desiredFirmwareVersion, flash, product, auth, headers, context }){
@@ -671,7 +671,7 @@ class Particle {
 	 * Provision a new device for products that allow self-provisioning
 	 * @param {Object} options            Options for this API call
 	 * @param {String} options.productId  Product ID where to create this device
-	 * @param {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {Auth}   [options.auth]     The access token or basic auth object. Can be ignored if provided in constructor
 	 * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context]  Request context
 	 * @returns {Promise} A promise
@@ -693,7 +693,7 @@ class Particle {
 	 * @param {Object} options            Options for this API call
 	 * @param {String} [options.iccid]    ICCID of the SIM card used in the Electron
 	 * @param {String} [options.product]  Device in this product ID or slug
-	 * @param {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {Auth}   [options.auth]     The access token or basic auth object. Can be ignored if provided in constructor
 	 * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context]  Request context
 	 * @returns {Promise} A promise
@@ -728,7 +728,7 @@ class Particle {
 	 * @param {String} options.deviceId   Device ID or Name
 	 * @param {String} options.name       Variable name
 	 * @param {String} [options.product]  Device in this product ID or slug
-	 * @param {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {Auth}   [options.auth]     The access token or basic auth object. Can be ignored if provided in constructor
 	 * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context]  Request context
 	 * @returns {Promise} A promise
@@ -748,7 +748,7 @@ class Particle {
 	 * @param {String} options.product                 Flash device in this product ID or slug
 	 * @param {Object} options.files                   Object containing files to be compiled and flashed. Keys should be the filenames, including relative path, and the values should be a path or Buffer of the file contents in Node, or a File or Blob in the browser.
 	 * @param {String} [options.targetVersion=latest]  System firmware version to compile against
-	 * @param {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {Auth}   [options.auth]                  The access token or basic auth object. Can be ignored if provided in constructor
 	 * @param {Object} [options.headers]               Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context]               Request context
 	 * @returns {Promise} A promise
@@ -770,7 +770,7 @@ class Particle {
 	 * DEPRECATED: Flash the Tinker application to a device. Instead compile and flash the Tinker source code.
 	 * @param {Object} options            Options for this API call
 	 * @param {String} options.deviceId   Device ID or Name
-	 * @param {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {Auth}   [options.auth]     The access token or basic auth object. Can be ignored if provided in constructor
 	 * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context]  Request context
 	 * @returns {Promise} A promise
@@ -798,7 +798,7 @@ class Particle {
 	 * @param {Object} options.files                   Object containing files to be compiled. Keys should be the filenames, including relative path, and the values should be a path or Buffer of the file contents in Node, or a File or Blob in the browser.
 	 * @param {Number} [options.platformId]            Platform id number of the device you are compiling for. Common values are 0=Core, 6=Photon, 10=Electron.
 	 * @param {String} [options.targetVersion=latest]  System firmware version to compile against
-	 * @param {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {Auth}   [options.auth]                  The access token or basic auth object. Can be ignored if provided in constructor
 	 * @param {Object} [options.headers]               Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context]               Request context
 	 * @returns {Promise} A promise
@@ -827,7 +827,7 @@ class Particle {
 	 * Download a firmware binary
 	 * @param {Object} options            Options for this API call
 	 * @param {String} options.binaryId   Binary ID received from a successful compile call
-	 * @param {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {Auth}   [options.auth]     The access token or basic auth object. Can be ignored if provided in constructor
 	 * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context]  Request context
 	 * @returns {Promise<RequestResponse, RequestError>} A promise
@@ -845,13 +845,13 @@ class Particle {
 
 	/**
 	 * Send a new device public key to the Particle Cloud
-	 * @param {Object} options                  Options for this API call
-	 * @param {String} options.deviceId         Device ID or Name
-	 * @param {(String|Buffer)} options.key     Public key contents
-	 * @param {String} [options.algorithm=rsa]  Algorithm used to generate the public key. Valid values are `rsa` or `ecc`.
-	 * @param {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
-	 * @param {Object} [options.headers]        Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-	 * @param {Object} [options.context]        Request context
+	 * @param {Object}          options                  Options for this API call
+	 * @param {String}          options.deviceId         Device ID or Name
+	 * @param {String | Buffer} options.key              Public key contents
+	 * @param {String}          [options.algorithm=rsa]  Algorithm used to generate the public key. Valid values are `rsa` or `ecc`.
+	 * @param {Auth}            [options.auth]           The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {Object}          [options.headers]        Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {Object}          [options.context]        Request context
 	 * @returns {Promise} A promise
 	 */
 	sendPublicKey({ deviceId, key, algorithm, auth, headers, context }){
@@ -877,7 +877,7 @@ class Particle {
 	 * @param {String} options.name       Function name
 	 * @param {String} options.argument   Function argument
 	 * @param {String} [options.product]  Device in this product ID or slug
-	 * @param {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {Auth}   [options.auth]     The access token or basic auth object. Can be ignored if provided in constructor
 	 * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context]  Request context
 	 * @returns {Promise} A promise
@@ -896,7 +896,7 @@ class Particle {
 	 * @param {String} [options.name]      Event Name
 	 * @param {String} [options.org]       Organization Slug
 	 * @param {String} [options.product]   Events for this product ID or slug
-	 * @param {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {Auth}   [options.auth]      The access token or basic auth object. Can be ignored if provided in constructor
 	 * @returns {Promise} If the promise resolves, the resolution value will be an EventStream object that will
 	 * emit 'event' events.
 	 */
@@ -929,14 +929,14 @@ class Particle {
 
 	/**
 	 * Publish a event to the Particle Cloud
-	 * @param {Object} options             Options for this API call
-	 * @param {String} options.name        Event name
-	 * @param {String} options.data        Event data
+	 * @param {Object}  options            Options for this API call
+	 * @param {String}  options.name       Event name
+	 * @param {String}  options.data       Event data
 	 * @param {Boolean} options.isPrivate  Should the event be publicly available?
-	 * @param {String} [options.product]   Event for this product ID or slug
-	 * @param {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
-	 * @param {Object} [options.headers]   Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-	 * @param {Object} [options.context]   Request context
+	 * @param {String}  [options.product]  Event for this product ID or slug
+	 * @param {Auth}    [options.auth]     The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {Object}  [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {Object}  [options.context]  Request context
 	 * @returns {Promise} A promise
 	 */
 	publishEvent({ name, data, isPrivate, product, auth, headers, context }){
@@ -946,28 +946,32 @@ class Particle {
 	}
 
 	/**
+	 * @typedef  {Object}  Hook
+	 * @property {String}  [method=POST]         Type of web request triggered by the Webhook (GET, POST, PUT, or DELETE)
+	 * @property {Object}  [auth]                Auth data like `{ username: 'me', password: '1234' }` to send via basic auth header with the Webhook request
+	 * @property {Object}  [headers]             Additional headers to add to the Webhook like `{ 'X-ONE': '1', X-TWO: '2' }`
+	 * @property {Object}  [query]               Query params to add to the Webhook request like `{ foo: 'foo', bar: 'bar' }`
+	 * @property {Object}  [json]                JSON data to send with the Webhook request - sets `Content-Type` to `application/json`
+	 * @property {Object}  [form]                Form data to send with the Webhook request - sets `Content-Type` to `application/x-www-form-urlencoded`
+	 * @property {String}  [body]                Custom body to send with the Webhook request
+	 * @property {Object}  [responseTemplate]    Template to use to customize the Webhook response body
+	 * @property {Object}  [responseEvent]       The Webhook response event name that your devices can subscribe to
+	 * @property {Object}  [errorResponseEvent]  The Webhook error response event name that your devices can subscribe to
+	 */
+
+	/**
 	 * Create a webhook
-	 * @param {Object} options                            Options for this API call
-	 * @param {String} options.event                      The name of the Particle event that should trigger the Webhook
-	 * @param {String} options.url                        The web address that will be targeted when the Webhook is triggered
-	 * @param {String} [options.device]                   Trigger Webhook only for this device ID or Name
-	 * @param {Boolean} [options.rejectUnauthorized]      Set to `false` to skip SSL certificate validation of the target URL
-	 * @param {Boolean} [options.noDefaults]              Don't include default event data in the webhook request
-	 * @param {Object} [options.hook]                     Webhook configuration settings
-	 * @param {String} [options.hook.method=POST]         Type of web request triggered by the Webhook (GET, POST, PUT, or DELETE)
-	 * @param {Object} [options.hook.auth]                Auth data like `{ username: 'me', password: '1234' }` to send via basic auth header with the Webhook request
-	 * @param {Object} [options.hook.headers]             Additional headers to add to the Webhook like `{ 'X-ONE': '1', X-TWO: '2' }`
-	 * @param {Object} [options.hook.query]               Query params to add to the Webhook request like `{ foo: 'foo', bar: 'bar' }`
-	 * @param {Object} [options.hook.json]                JSON data to send with the Webhook request - sets `Content-Type` to `application/json`
-	 * @param {Object} [options.hook.form]                Form data to send with the Webhook request - sets `Content-Type` to `application/x-www-form-urlencoded`
-	 * @param {String} [options.hook.body]                Custom body to send with the Webhook request
-	 * @param {Object} [options.hook.responseTemplate]    Template to use to customize the Webhook response body
-	 * @param {Object} [options.hook.responseEvent]       The Webhook response event name that your devices can subscribe to
-	 * @param {Object} [options.hook.errorResponseEvent]  The Webhook error response event name that your devices can subscribe to
-	 * @param {String} [options.product]                  Webhook for this product ID or slug
-	 * @param {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
-	 * @param {Object} [options.headers]                  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-	 * @param {Object} [options.context]                  Request context
+	 * @param {Object}  options                       Options for this API call
+	 * @param {String}  options.event                 The name of the Particle event that should trigger the Webhook
+	 * @param {String}  options.url                   The web address that will be targeted when the Webhook is triggered
+	 * @param {String}  [options.device]              Trigger Webhook only for this device ID or Name
+	 * @param {Boolean} [options.rejectUnauthorized]  Set to `false` to skip SSL certificate validation of the target URL
+	 * @param {Boolean} [options.noDefaults]          Don't include default event data in the webhook request
+	 * @param {Hook}    [options.hook]                Webhook configuration settings
+	 * @param {String}  [options.product]             Webhook for this product ID or slug
+	 * @param {Auth}    [options.auth]                The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {Object}  [options.headers]             Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {Object}  [options.context]             Request context
 	 * @returns {Promise} A promise
 	 */
 	createWebhook({ event, url, device, rejectUnauthorized, noDefaults, hook, product, auth, headers, context }){
@@ -999,7 +1003,7 @@ class Particle {
 	 * @param {Object} options            Options for this API call
 	 * @param {String} options.hookId     Webhook ID
 	 * @param {String} [options.product]  Webhook for this product ID or slug
-	 * @param {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {Auth}   [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
 	 * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context]  Request context
 	 * @returns {Promise} A promise
@@ -1013,7 +1017,7 @@ class Particle {
 	 * List all webhooks owned by the account or product
 	 * @param {Object} options            Options for this API call
 	 * @param {String} [options.product]  Webhooks for this product ID or slug
-	 * @param {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {Auth}   [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
 	 * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context]  Request context
 	 * @returns {Promise} A promise
@@ -1033,9 +1037,9 @@ class Particle {
 	 * @param {Object} options.settings    Settings specific to that integration type
 	 * @param {String} [options.deviceId]  Trigger integration only for this device ID or Name
 	 * @param {String} [options.product]   Integration for this product ID or slug
-	 * @param {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {Auth}   [options.auth]      The access token or basic auth object. Can be ignored if provided in constructor
 	 * @param {Object} [options.headers]   Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-	 * @param {Object} [options.context]  Request context
+	 * @param {Object} [options.context]   Request context
 	 * @returns {Promise} A promise
 	 */
 	createIntegration({ event, settings, deviceId, product, auth, headers, context }){
@@ -1055,7 +1059,7 @@ class Particle {
 	 * @param {Object} [options.settings]     Change the settings specific to that integration type
 	 * @param {String} [options.deviceId]     Trigger integration only for this device ID or Name
 	 * @param {String} [options.product]      Integration for this product ID or slug
-	 * @param {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {Auth}   [options.auth]         The access token or basic auth object. Can be ignored if provided in constructor
 	 * @param {Object} [options.headers]      Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context]      Request context
 	 * @returns {Promise} A promise
@@ -1072,7 +1076,7 @@ class Particle {
 	 * @param {Object} options                Options for this API call
 	 * @param {String} options.integrationId  The integration to remove
 	 * @param {String} [options.product]      Integration for this product ID or slug
-	 * @param {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {Auth}   [options.auth]         The access token or basic auth object. Can be ignored if provided in constructor
 	 * @param {Object} [options.headers]      Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context]      Request context
 	 * @returns {Promise} A promise
@@ -1086,7 +1090,7 @@ class Particle {
 	 * List all integrations owned by the account or product
 	 * @param {Object} options            Options for this API call
 	 * @param {String} [options.product]  Integrations for this product ID or slug
-	 * @param {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {Auth}   [options.auth]     The access token or basic auth object. Can be ignored if provided in constructor
 	 * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context]  Request context
 	 * @returns {Promise} A promise
@@ -1099,7 +1103,7 @@ class Particle {
 	/**
 	 * Get details about the current user
 	 * @param {Object} options            Options for this API call
-	 * @param {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {Auth}   [options.auth]     The access token or basic auth object. Can be ignored if provided in constructor
 	 * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context]  Request context
 	 * @returns {Promise} A promise
@@ -1111,7 +1115,7 @@ class Particle {
 	/**
 	 * Set details on the current user
 	 * @param {Object} options              Options for this API call
-	 * @param {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {Auth}   [options.auth]       The access token or basic auth object. Can be ignored if provided in constructor
 	 * @param {String} options.accountInfo  Set user's extended info fields (name, business account, company name, etc)
 	 * @param {Object} [options.headers]    Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context]    Request context
@@ -1124,13 +1128,13 @@ class Particle {
 
 	/**
 	 * Change username (i.e, email)
-	 * @param {Object} options                  Options for this API call
-	 * @param {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
-	 * @param {String} options.currentPassword  Current password
-	 * @param {String} options.username         New email
-	 * @param {Boolean} options.invalidateTokens Should all tokens be invalidated
-	 * @param {Object} [options.headers]        Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-	 * @param {Object} [options.context]        Request context
+	 * @param {Object}  options                   Options for this API call
+	 * @param {Auth}    [options.auth]            The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {String}  options.currentPassword   Current password
+	 * @param {String}  options.username          New email
+	 * @param {Boolean} options.invalidateTokens  Should all tokens be invalidated
+	 * @param {Object}  [options.headers]         Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {Object}  [options.context]         Request context
 	 * @returns {Promise} A promise
 	 */
 	changeUsername({ currentPassword, username, invalidateTokens = false, auth, headers, context }){
@@ -1145,13 +1149,13 @@ class Particle {
 
 	/**
 	 * Change user's password
-	 * @param {Object} options                   Options for this API call
-	 * @param {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
-	 * @param {String} options.currentPassword   Current password
-	 * @param {String} options.password          New password
-	 * @param {Boolean} options.invalidateTokens Should all tokens be invalidated
-	 * @param {Object} [options.headers]         Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-	 * @param {Object} [options.context]         Request context
+	 * @param {Object}  options                   Options for this API call
+	 * @param {Auth}    [options.auth]            The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {String}  options.currentPassword   Current password
+	 * @param {String}  options.password          New password
+	 * @param {Boolean} options.invalidateTokens  Should all tokens be invalidated
+	 * @param {Object}  [options.headers]         Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {Object}  [options.context]         Request context
 	 * @returns {Promise} A promise
 	 */
 	changeUserPassword({ currentPassword, password, invalidateTokens = false, auth, headers, context }){
@@ -1173,7 +1177,7 @@ class Particle {
 	 * @param {Number} [options.page]        (Product only) Current page of results
 	 * @param {Number} [options.perPage]     (Product only) Records per page
 	 * @param {String} [options.product]     SIM cards for this product ID or slug
-	 * @param {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {Auth}   [options.auth]        The access token or basic auth object. Can be ignored if provided in constructor
 	 * @param {Object} [options.headers]     Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context]     Request context
 	 * @returns {Promise} A promise
@@ -1189,7 +1193,7 @@ class Particle {
 	 * @param {Object} options            Options for this API call
 	 * @param {String} options.iccid      ICCID of the SIM card
 	 * @param {String} [options.product]  SIM card for this product ID or slug
-	 * @param {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {Auth}   [options.auth]     The access token or basic auth object. Can be ignored if provided in constructor
 	 * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context]  Request context
 	 * @returns {Promise} A promise
@@ -1206,7 +1210,7 @@ class Particle {
 	 * Get data usage for all SIM cards in a product the current billing period
 	 * @param {Object} options            Options for this API call
 	 * @param {String} options.product    SIM cards for this product ID or slug
-	 * @param {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {Auth}   [options.auth]     The access token or basic auth object. Can be ignored if provided in constructor
 	 * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context]  Request context
 	 * @returns {Promise} A promise
@@ -1224,7 +1228,7 @@ class Particle {
 	 * Check SIM status
 	 * @param {Object} options            Options for this API call
 	 * @param {String} options.iccid      ICCID of the SIM card
-	 * @param {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {Auth}   [options.auth]     The access token or basic auth object. Can be ignored if provided in constructor
 	 * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context]  Request context
 	 * @returns {Promise} A promise
@@ -1235,15 +1239,15 @@ class Particle {
 
 	/**
 	 * Activate and add SIM cards to an account or product
-	 * @param {Object} options                Options for this API call
-	 * @param {String} options.iccid          ICCID of the SIM card
-	 * @param {Array<String>} options.iccids  (Product only) ICCID of multiple SIM cards to import
-	 * @param {String} options.country        The ISO country code for the SIM cards
-	 * @param {String} [options.product]      SIM cards for this product ID or slug
-	 * @param {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
-	 * @param {Object} [options.headers]      Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-	 * @param {Object} [options.context]      Request context
-	 * @param {any} [options.promoCode]
+	 * @param {Object}        options              Options for this API call
+	 * @param {String}        options.iccid        ICCID of the SIM card
+	 * @param {Array<String>} options.iccids       (Product only) ICCID of multiple SIM cards to import
+	 * @param {String}        options.country      The ISO country code for the SIM cards
+	 * @param {String}        [options.product]    SIM cards for this product ID or slug
+	 * @param {Auth}          [options.auth]       The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {Object}        [options.headers]    Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {Object}        [options.context]    Request context
+	 * @param {any}           [options.promoCode]
 	 * @returns {Promise} A promise
 	 */
 	activateSIM({ iccid, iccids, country, promoCode, product, auth, headers, context }){
@@ -1263,7 +1267,7 @@ class Particle {
 	 * @param {Object} options            Options for this API call
 	 * @param {String} options.iccid      ICCID of the SIM card
 	 * @param {String} [options.product]  SIM cards for this product ID or slug
-	 * @param {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {Auth}   [options.auth]     The access token or basic auth object. Can be ignored if provided in constructor
 	 * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context]  Request context
 	 * @returns {Promise} A promise
@@ -1280,7 +1284,7 @@ class Particle {
 	 * @param {String} options.iccid      ICCID of the SIM card
 	 * @param {Number} [options.mbLimit]  New monthly data limit. Necessary if unpausing a SIM card
 	 * @param {String} [options.product]  SIM cards for this product ID or slug
-	 * @param {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {Auth}   [options.auth]     The access token or basic auth object. Can be ignored if provided in constructor
 	 * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context]  Request context
 	 * @returns {Promise} A promise
@@ -1297,7 +1301,7 @@ class Particle {
 	 * @param {String} options.iccid      ICCID of the SIM card
 	 * @param {Array}  options.mbLimit    Data limit in megabyte for the SIM card
 	 * @param {String} [options.product]  SIM cards for this product ID or slug
-	 * @param {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {Auth}   [options.auth]     The access token or basic auth object. Can be ignored if provided in constructor
 	 * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context]  Request context
 	 * @returns {Promise} A promise
@@ -1313,7 +1317,7 @@ class Particle {
 	 * @param {Object} options            Options for this API call
 	 * @param {String} options.iccid      ICCID of the SIM card
 	 * @param {String} [options.product]  SIM cards for this product ID or slug
-	 * @param {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {Auth}   [options.auth]     The access token or basic auth object. Can be ignored if provided in constructor
 	 * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context]  Request context
 	 * @returns {Promise} A promise
@@ -1325,11 +1329,11 @@ class Particle {
 
 	/**
 	 * List valid build targets to be used for compiling
-	 * @param {Object} options                        Options for this API call
+	 * @param {Object}  options                       Options for this API call
 	 * @param {Boolean} [options.onlyFeatured=false]  Only list featured build targets
-	 * @param {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
-	 * @param {Object} [options.headers]              Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-	 * @param {Object} [options.context]              Request context
+	 * @param {Auth}    [options.auth]                The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {Object}  [options.headers]             Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {Object}  [options.context]             Request context
 	 * @returns {Promise} A promise
 	 */
 	listBuildTargets({ onlyFeatured, auth, headers, context }){
@@ -1339,26 +1343,26 @@ class Particle {
 
 	/**
 	 * List firmware libraries
-	 * @param  {Object} options Options for this API call
-	 * @param  {Number} options.page Page index (default, first page)
-	 * @param  {Number} options.limit Number of items per page
-	 * @param  {String} options.filter Search term for the libraries
-	 * @param  {String} options.sort Ordering key for the library list
-	 * @param  {Array<String>}  options.architectures List of architectures to filter
-	 * @param  {String} options.category Category to filter
-	 * @param  {String} options.scope The library scope to list. Default is 'all'. Other values are
-	 * - 'all' - list public libraries and my private libraries
-	 * - 'public' - list only public libraries
-	 * - 'private' - list only my private libraries
-	 * - 'mine' - list my libraries (public and private)
-	 * - 'official' - list only official libraries
-	 * - 'verified' - list only verified libraries
-	 * - 'featured' - list only featured libraries
-	 * @param  {String} options.excludeScopes  list of scopes to exclude
-	 * @param  {String} options.category Category to filter
-	 * @param  {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
-	 * @param {Object} [options.headers]              Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-	 * @param {Object} [options.context]              Request context
+	 * @param {Object}         options                Options for this API call
+	 * @param {Number}         options.page           Page index (default, first page)
+	 * @param {Number}         options.limit          Number of items per page
+	 * @param {String}         options.filter         Search term for the libraries
+	 * @param {String}         options.sort           Ordering key for the library list
+	 * @param {Array<String>}  options.architectures  List of architectures to filter
+	 * @param {String}         options.category       Category to filter
+	 * @param {String}         options.scope          The library scope to list. Default is 'all'. Other values are
+	 *                                                - 'all' - list public libraries and my private libraries
+	 *                                                - 'public' - list only public libraries
+	 *                                                - 'private' - list only my private libraries
+	 *                                                - 'mine' - list my libraries (public and private)
+	 *                                                - 'official' - list only official libraries
+	 *                                                - 'verified' - list only verified libraries
+	 *                                                - 'featured' - list only featured libraries
+	 * @param {String}         options.excludeScopes  list of scopes to exclude
+	 * @param {String}         options.category       Category to filter
+	 * @param {Auth}           [options.auth]         The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {Object}         [options.headers]      Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {Object}         [options.context]      Request context
 	 * @returns {Promise} A promise
 	 */
 	listLibraries({ page, limit, filter, sort, architectures, category, scope, excludeScopes, auth, headers, context }){
@@ -1389,7 +1393,7 @@ class Particle {
 	 * @param {Object} options            Options for this API call
 	 * @param {String} options.name       Name of the library to fetch
 	 * @param {String} options.version    Version of the library to fetch (default: latest)
-	 * @param {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {Auth}   [options.auth]     The access token or basic auth object. Can be ignored if provided in constructor
 	 * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context]  Request context
 	 * @returns {Promise} A promise
@@ -1410,7 +1414,7 @@ class Particle {
 	 * @param {String} options.name       Name of the library to fetch
 	 * @param {Number} options.page       Page index (default, first page)
 	 * @param {Number} options.limit      Number of items per page
-	 * @param {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {Auth}   [options.auth]     The access token or basic auth object. Can be ignored if provided in constructor
 	 * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context]  Request context
 	 * @returns {Promise} A promise
@@ -1427,12 +1431,12 @@ class Particle {
 
 	/**
 	 * Contribute a new library version from a compressed archive
-	 * @param {Object} options            Options for this API call
-	 * @param {String|Buffer} options.archive    Compressed archive file containing the library sources
-	 *                                    Either a path or Buffer of the file contents in Node, or a File or Blob in the browser.
-	 * @param {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
-	 * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-	 * @param {Object} [options.context]  Request context
+	 * @param {Object}          options            Options for this API call
+	 * @param {String | Buffer} options.archive    Compressed archive file containing the library sources
+	 *                                             Either a path or Buffer of the file contents in Node, or a File or Blob in the browser.
+	 * @param {Auth}            [options.auth]     The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {Object}          [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {Object}          [options.context]  Request context
 	 * @returns {Promise} A promise
 	 */
 	contributeLibrary({ archive, auth, headers, context }){
@@ -1454,7 +1458,7 @@ class Particle {
 	 * Publish the latest version of a library to the public
 	 * @param {Object} options            Options for this API call
 	 * @param {String} options.name       Name of the library to publish
-	 * @param {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {Auth}   [options.auth]     The access token or basic auth object. Can be ignored if provided in constructor
 	 * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context]  Request context
 	 * @returns {Promise} A promise
@@ -1475,7 +1479,7 @@ class Particle {
 	 * @param {Object} options            Options for this API call
 	 * @param {String} options.name       Name of the library to remove
 	 * @param {String} options.force      Key to force deleting a public library
-	 * @param {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {Auth}   [options.auth]     The access token or basic auth object. Can be ignored if provided in constructor
 	 * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context]  Request context
 	 * @returns {Promise} A promise
@@ -1506,7 +1510,7 @@ class Particle {
 	 * List OAuth client created by the account
 	 * @param {Object} options            Options for this API call
 	 * @param {String} [options.product]  List clients for this product ID or slug
-	 * @param {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {Auth}   [options.auth]     The access token or basic auth object. Can be ignored if provided in constructor
 	 * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context]  Request context
 	 * @returns {Promise} A promise
@@ -1524,7 +1528,7 @@ class Particle {
 	 * @param {String} [options.redirect_uri]  URL to redirect after OAuth flow. Only for type web.
 	 * @param {Object} [options.scope]         Limits what the access tokens created by this client can do.
 	 * @param {String} [options.product]       Create client for this product ID or slug
-	 * @param {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {Auth}   [options.auth]          The access token or basic auth object. Can be ignored if provided in constructor
 	 * @param {Object} [options.headers]       Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context]       Request context
 	 * @returns {Promise} A promise
@@ -1542,7 +1546,7 @@ class Particle {
 	 * @param {String} [options.name]     New Name of the OAuth client
 	 * @param {Object} [options.scope]    New scope of the OAuth client
 	 * @param {String} [options.product]  Update client linked to this product ID or slug
-	 * @param {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {Auth}   [options.auth]     The access token or basic auth object. Can be ignored if provided in constructor
 	 * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context]  Request context
 	 * @returns {Promise} A promise
@@ -1558,7 +1562,7 @@ class Particle {
 	 * @param {Object} options            Options for this API call
 	 * @param {String} options.clientId   The OAuth client to update
 	 * @param {String} [options.product]  OAuth client linked to this product ID or slug
-	 * @param {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {Auth}   [options.auth]     The access token or basic auth object. Can be ignored if provided in constructor
 	 * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context]  Request context
 	 * @returns {Promise} A promise
@@ -1571,7 +1575,7 @@ class Particle {
 	/**
 	 * List products the account has access to
 	 * @param {Object} options            Options for this API call
-	 * @param {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {Auth}   [options.auth]     The access token or basic auth object. Can be ignored if provided in constructor
 	 * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context]  Request context
 	 * @returns {Promise} A promise
@@ -1584,7 +1588,7 @@ class Particle {
 	 * Get detailed information about a product
 	 * @param {Object} options            Options for this API call
 	 * @param {String} options.product    Product ID or slug
-	 * @param {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {Auth}   [options.auth]     The access token or basic auth object. Can be ignored if provided in constructor
 	 * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context]  Request context
 	 * @returns {Promise} A promise
@@ -1597,7 +1601,7 @@ class Particle {
 	 * List product firmware versions
 	 * @param {Object} options            Options for this API call
 	 * @param {String} options.product    Firmware for this product ID or slug
-	 * @param {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {Auth}   [options.auth]     The access token or basic auth object. Can be ignored if provided in constructor
 	 * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context]  Request context
 	 * @returns {Promise} A promise
@@ -1615,7 +1619,7 @@ class Particle {
 	 * @param {String} options.title          Short identifier for the new firmware
 	 * @param {String} [options.description]  Longer description for the new firmware
 	 * @param {String} options.product        Firmware for this product ID or slug
-	 * @param {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {Auth}   [options.auth]         The access token or basic auth object. Can be ignored if provided in constructor
 	 * @param {Object} [options.headers]      Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context]      Request context
 	 * @returns {Promise} A promise
@@ -1643,7 +1647,7 @@ class Particle {
 	 * @param {Object} options            Options for this API call
 	 * @param {Number} options.version    Version number of firmware
 	 * @param {String} options.product    Firmware for this product ID or slug
-	 * @param {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {Auth}   [options.auth]     The access token or basic auth object. Can be ignored if provided in constructor
 	 * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context]  Request context
 	 * @returns {Promise} A promise
@@ -1664,7 +1668,7 @@ class Particle {
 	 * @param {String} [options.title]        New title
 	 * @param {String} [options.description]  New description
 	 * @param {String} options.product        Firmware for this product ID or slug
-	 * @param {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {Auth}   [options.auth]         The access token or basic auth object. Can be ignored if provided in constructor
 	 * @param {Object} [options.headers]      Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context]      Request context
 	 * @returns {Promise} A promise
@@ -1679,7 +1683,7 @@ class Particle {
 	 * @param {Object} options            Options for this API call
 	 * @param {Number} options.version    Version number of new firmware
 	 * @param {String} options.product    Firmware for this product ID or slug
-	 * @param {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {Auth}   [options.auth]     The access token or basic auth object. Can be ignored if provided in constructor
 	 * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context]  Request context
 	 * @returns {Promise<RequestResponse, RequestError>} A promise that resolves with either the requested data or an error object
@@ -1700,7 +1704,7 @@ class Particle {
 	 * @param {Object} options            Options for this API call
 	 * @param {Number} options.version    Version number of new firmware
 	 * @param {String} options.product    Firmware for this product ID or slug
-	 * @param {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {Auth}   [options.auth]     The access token or basic auth object. Can be ignored if provided in constructor
 	 * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context]  Request context
 	 * @returns {Promise} A promise
@@ -1714,7 +1718,7 @@ class Particle {
 	 * List product team members
 	 * @param {Object} options            Options for this API call
 	 * @param {String} options.product    Team for this product ID or slug
-	 * @param {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {Auth}   [options.auth]     The access token or basic auth object. Can be ignored if provided in constructor
 	 * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context]  Request context
 	 * @returns {Promise} A promise
@@ -1733,7 +1737,7 @@ class Particle {
 	 * @param {Object} options            Options for this API call
 	 * @param {String} options.username   Username for the Particle account
 	 * @param {String} options.product    Team for this product ID or slug
-	 * @param {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {Auth}   [options.auth]     The access token or basic auth object. Can be ignored if provided in constructor
 	 * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context]  Request context
 	 * @returns {Promise} A promise
@@ -1753,7 +1757,7 @@ class Particle {
 	 * @param {Object} options            Options for this API call
 	 * @param {String} options.username   Username for the Particle account
 	 * @param {String} options.product    Team for this product ID or slug
-	 * @param {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {Auth}   [options.auth]     The access token or basic auth object. Can be ignored if provided in constructor
 	 * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context]  Request context
 	 * @returns {Promise} A promise
@@ -1771,7 +1775,7 @@ class Particle {
 	 * Fetch details about a serial number
 	 * @param {Object} options               Options for this API call
 	 * @param {String} options.serialNumber  The serial number printed on the barcode of the device packaging
-	 * @param {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {Auth}   [options.auth]        The access token or basic auth object. Can be ignored if provided in constructor
 	 * @param {Object} [options.headers]     Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context]     Request context
 	 * @returns {Promise} A promise
@@ -1791,7 +1795,7 @@ class Particle {
 	 * @param {String} options.name       Network name
 	 * @param {String} options.deviceId   Gateway device ID
 	 * @param {String} [options.iccid]    ICCID of the active SIM card (only for cellular gateway devices)
-	 * @param {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {Auth}   [options.auth]     The access token or basic auth object. Can be ignored if provided in constructor
 	 * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context]  Request context
 	 * @returns {Promise<Object>} A promise
@@ -1810,7 +1814,7 @@ class Particle {
 	 * Remove a mesh network.
 	 * @param {Object} options            Options for this API call
 	 * @param {String} options.networkId  Network ID or name
-	 * @param {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {Auth}   [options.auth]     The access token or basic auth object. Can be ignored if provided in constructor
 	 * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context]  Request context
 	 * @returns {Promise<Object>} A promise
@@ -1822,7 +1826,7 @@ class Particle {
 	/**
 	 * List all mesh networks
 	 * @param {Object} options            Options for this API call
-	 * @param {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {Auth}   [options.auth]     The access token or basic auth object. Can be ignored if provided in constructor
 	 * @param {Number} [options.page]     Current page of results
 	 * @param {Number} [options.perPage]  Records per page
 	 * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
@@ -1838,7 +1842,7 @@ class Particle {
 	 * Get information about a mesh network.
 	 * @param {Object} options            Options for this API call
 	 * @param {String} options.networkId  Network ID or name
-	 * @param {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {Auth}   [options.auth]     The access token or basic auth object. Can be ignored if provided in constructor
 	 * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context]  Request context
 	 * @returns {Promise<Object>} A promise
@@ -1853,7 +1857,7 @@ class Particle {
 	 * @param {String} options.networkId  Network ID or name
 	 * @param {String} options.action     'add-device', 'remove-device', 'gateway-enable' or 'gateway-disable'
 	 * @param {String} options.deviceId   Device ID
-	 * @param {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {Auth}   [options.auth]     The access token or basic auth object. Can be ignored if provided in constructor
 	 * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context]  Request context
 	 * @returns {Promise<Object>} A promise
@@ -1873,7 +1877,7 @@ class Particle {
 	 * @param {Object} options            Options for this API call
 	 * @param {String} options.networkId  Network ID or name
 	 * @param {String} options.deviceId   Device ID
-	 * @param {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {Auth}   [options.auth]     The access token or basic auth object. Can be ignored if provided in constructor
 	 * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context]  Request context
 	 * @returns {Promise<Object>} A promise
@@ -1894,7 +1898,7 @@ class Particle {
 	 * @param {Object} options              Options for this API call
 	 * @param {String} [options.networkId]  Network ID or name
 	 * @param {String} options.deviceId     Device ID
-	 * @param {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {Auth}   [options.auth]       The access token or basic auth object. Can be ignored if provided in constructor
 	 * @param {Object} [options.headers]    Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context]    Request context
 	 * @returns {Promise<Object>} A promise
@@ -1921,7 +1925,7 @@ class Particle {
 	 * List all devices of a mesh network.
 	 * @param {Object} options            Options for this API call
 	 * @param {String} options.networkId  Network ID or name
-	 * @param {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {Auth}   [options.auth]     The access token or basic auth object. Can be ignored if provided in constructor
 	 * @param {Number} [options.role]     Device role: 'gateway' or 'node'
 	 * @param {Number} [options.page]     Current page of results
 	 * @param {Number} [options.perPage]  Records per page
@@ -1942,11 +1946,11 @@ class Particle {
 
 	/**
 	 * Get product configuration
-	 * @param  {Object} options          Options for this API call
-	 * @param  {String} options.product  Config for this product ID or slug
-	 * @param  {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
-	 * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-	 * @param {Object} [options.context] Request context
+	 * @param {Object} options            Options for this API call
+	 * @param {String} options.product    Config for this product ID or slug
+	 * @param {Auth}   [options.auth]     The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {Object} [options.context]  Request context
 	 * @returns {Promise} A promise
 	 */
 	getProductConfiguration({ auth, product, headers, context }){
@@ -1960,11 +1964,11 @@ class Particle {
 
 	/**
 	 * Get product configuration schema
-	 * @param  {Object} options          Options for this API call
-	 * @param  {String} options.product  Config for this product ID or slug
-	 * @param  {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
-	 * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-	 * @param {Object} [options.context] Request context
+	 * @param {Object} options            Options for this API call
+	 * @param {String} options.product    Config for this product ID or slug
+	 * @param {Auth}   [options.auth]     The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {Object} [options.context]  Request context
 	 * @returns {Promise} A promise
 	 */
 	getProductConfigurationSchema({ auth, product, headers = {}, context }){
@@ -1979,12 +1983,12 @@ class Particle {
 
 	/**
 	 * Get product device's configuration
-	 * @param  {Object} options          Options for this API call
-	 * @param  {String} options.product  Config for this product ID or slug
-	 * @param  {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
-	 * @param  {String} options.deviceId Device ID to access
-	 * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-	 * @param {Object} [options.context] Request context
+	 * @param {Object} options            Options for this API call
+	 * @param {String} options.product    Config for this product ID or slug
+	 * @param {Auth}   [options.auth]     The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {String} options.deviceId   Device ID to access
+	 * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {Object} [options.context]  Request context
 	 * @returns {Promise} A promise
 	 */
 	getProductDeviceConfiguration({ auth, product, deviceId, headers, context }){
@@ -1998,12 +2002,12 @@ class Particle {
 
 	/**
 	 * Get product device's configuration schema
-	 * @param  {Object} options          Options for this API call
-	 * @param  {String} options.product  Config for this product ID or slug
-	 * @param  {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
-	 * @param  {String} options.deviceId Device ID to access
-	 * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-	 * @param {Object} [options.context] Request context
+	 * @param {Object} options            Options for this API call
+	 * @param {String} options.product    Config for this product ID or slug
+	 * @param {Auth}   [options.auth]     The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {String} options.deviceId   Device ID to access
+	 * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {Object} [options.context]  Request context
 	 * @returns {Promise} A promise
 	 */
 	getProductDeviceConfigurationSchema({ auth, product, deviceId, headers, context }){
@@ -2018,12 +2022,12 @@ class Particle {
 
 	/**
 	 * Set product configuration
-	 * @param {Object} options          Options for this API call
-	 * @param {String} options.product  Config for this product ID or slug
-	 * @param {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
-	 * @param {Object} options.config   Product configuration to update
-	 * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-	 * @param {Object} [options.context] Request context
+	 * @param {Object} options            Options for this API call
+	 * @param {String} options.product    Config for this product ID or slug
+	 * @param {Auth}   [options.auth]     The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {Object} options.config     Product configuration to update
+	 * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {Object} [options.context]  Request context
 	 * @returns {Promise} A promise
 	 */
 	setProductConfiguration({ auth, product, config, headers, context }){
@@ -2038,13 +2042,13 @@ class Particle {
 
 	/**
 	 * Set product configuration for a specific device within the product
-	 * @param  {Object} options          Options for this API call
-	 * @param  {String} options.product  Config for this product ID or slug
-	 * @param  {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
-	 * @param  {Object} options.config   Product configuration to update
-	 * @param  {String} options.deviceId Device ID to access
-	 * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-	 * @param {Object} [options.context] Request context
+	 * @param {Object} options            Options for this API call
+	 * @param {String} options.product    Config for this product ID or slug
+	 * @param {Auth}   [options.auth]     The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {Object} options.config     Product configuration to update
+	 * @param {String} options.deviceId   Device ID to access
+	 * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {Object} [options.context]  Request context
 	 * @returns {Promise} A promise
 	 */
 	setProductDeviceConfiguration({ auth, product, deviceId, config, headers, context }){
@@ -2059,17 +2063,17 @@ class Particle {
 
 	/**
 	 * Query location for devices within a product
-	 * @param  {Object} options            Options for this API call
-	 * @param  {String} options.product    Locations for this product ID or slug
-	 * @param  {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
-	 * @param  {String} options.dateRange  Start and end date in ISO8601 format, separated by comma, to query
-	 * @param  {String} options.rectBl     Bottom left of the rectangular bounding box to query. Latitude and longitude separated by comma
-	 * @param  {String} options.rectTr     Top right of the rectangular bounding box to query. Latitude and longitude separated by comma
-	 * @param  {String} options.deviceId   Device ID prefix to include in the query
-	 * @param  {String} options.deviceName Device name prefix to include in the query
-	 * @param  {String} options.groups     Array of group names to include in the query
-	 * @param  {String} options.page       Page of results to display. Defaults to 1
-	 * @param  {String} options.perPage    Number of results per page. Defaults to 20. Maximum of 100
+	 * @param {Object} options             Options for this API call
+	 * @param {String} options.product     Locations for this product ID or slug
+	 * @param {Auth}   [options.auth]      The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {String} options.dateRange   Start and end date in ISO8601 format, separated by comma, to query
+	 * @param {String} options.rectBl      Bottom left of the rectangular bounding box to query. Latitude and longitude separated by comma
+	 * @param {String} options.rectTr      Top right of the rectangular bounding box to query. Latitude and longitude separated by comma
+	 * @param {String} options.deviceId    Device ID prefix to include in the query
+	 * @param {String} options.deviceName  Device name prefix to include in the query
+	 * @param {String} options.groups      Array of group names to include in the query
+	 * @param {String} options.page        Page of results to display. Defaults to 1
+	 * @param {String} options.perPage     Number of results per page. Defaults to 20. Maximum of 100
 	 * @param {Object} [options.headers]   Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context]   Request context
 	 * @returns {Promise} A promise
@@ -2095,13 +2099,13 @@ class Particle {
 
 	/**
 	 * Query location for one device within a product
-	 * @param  {Object} options           Options for this API call
-	 * @param  {String} options.product   Locations for this product ID or slug
-	 * @param  {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
-	 * @param  {String} options.dateRange Start and end date in ISO8601 format, separated by comma, to query
-	 * @param  {String} options.rectBl    Bottom left of the rectangular bounding box to query. Latitude and longitude separated by comma
-	 * @param  {String} options.rectTr    Top right of the rectangular bounding box to query. Latitude and longitude separated by comma
-	 * @param  {String} options.deviceId  Device ID to query
+	 * @param {Object} options            Options for this API call
+	 * @param {String} options.product    Locations for this product ID or slug
+	 * @param {Auth}   [options.auth]     The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {String} options.dateRange  Start and end date in ISO8601 format, separated by comma, to query
+	 * @param {String} options.rectBl     Bottom left of the rectangular bounding box to query. Latitude and longitude separated by comma
+	 * @param {String} options.rectTr     Top right of the rectangular bounding box to query. Latitude and longitude separated by comma
+	 * @param {String} options.deviceId   Device ID to query
 	 * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
 	 * @param {Object} [options.context]  Request context
 	 * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
@@ -2127,12 +2131,12 @@ class Particle {
 	 *
 	 * NOTE: Any external interactions such as Particle.publish will actually occur when the logic is executed.
 	 *
-	 * @param {Object} options         The options for creating the logic function.
-	 * @param {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
-	 * @param {string} [options.org]     The Organization ID or slug. If not provided, the request will go to your sandbox account.
-	 * @param {Object}  options.logic   The logic "function" which will be executed once
-	 * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-	 * @param {Object} [options.context] Request context
+	 * @param {Object} options            The options for creating the logic function.
+	 * @param {Auth}   [options.auth]     The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {string} [options.org]      The Organization ID or slug. If not provided, the request will go to your sandbox account.
+	 * @param {Object} options.logic      The logic "function" which will be executed once
+	 * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {Object} [options.context]  Request context
 	 *
 	 * @returns {Promise<RequestResponse>} A promise that resolves to the created logic function data.
 	 */
@@ -2155,12 +2159,12 @@ class Particle {
 	 * When you create a Scheduled logic trigger, it will immediately be scheduled at the next time
 	 * according to the cron and start_at properties.
 	 *
-	 * @param {Object} options         The options for creating the logic function.
-	 * @param {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
-	 * @param {string} [options.org]     The Organization ID or slug. If not provided, the request will go to your sandbox account.
-	 * @param {string}  options.logicFunction   The logic function object containing the function details.
-	 * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-	 * @param {Object} [options.context] Request context
+	 * @param {Object} options                The options for creating the logic function.
+	 * @param {Auth}   [options.auth]         The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {string} [options.org]          The Organization ID or slug. If not provided, the request will go to your sandbox account.
+	 * @param {string} options.logicFunction  The logic function object containing the function details.
+	 * @param {Object} [options.headers]      Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {Object} [options.context]      Request context
 	 *
 	 * @returns {Promise<RequestResponse>} A promise that resolves to the created logic function data.
 	 */
@@ -2177,12 +2181,12 @@ class Particle {
 	/**
 	 * Get a logic function in the specified organization or sandbox by logic function ID.
 	 *
-	 * @param {Object} options         The options for the logic function.
-	 * @param {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
-	 * @param {string} [options.org]     The Organization ID or slug. If not provided, the request will go to your sandbox account.
+	 * @param {Object} options                 The options for the logic function.
+	 * @param {Auth}   [options.auth]          The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {string} [options.org]           The Organization ID or slug. If not provided, the request will go to your sandbox account.
 	 * @param {string} options.logicFunctionId The ID of the logic function to retrieve.
-	 * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-	 * @param {Object} [options.context] Request context
+	 * @param {Object} [options.headers]       Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {Object} [options.context]       Request context
 	 *
 	 * @returns {Promise<RequestResponse>} A promise that resolves to the specified logic function data.
 	 */
@@ -2200,13 +2204,13 @@ class Particle {
 	 *
 	 * If you include an id on a logic trigger, it will update the logic trigger in place.
 	 *
-	 * @param {Object} options          The options for updating the logic function.
-	 * @param {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
-	 * @param {string} [options.org]     The Organization ID or slug. If not provided, the request will go to your sandbox account.
+	 * @param {Object} options                  The options for updating the logic function.
+	 * @param {Auth}   [options.auth]           The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {string} [options.org]            The Organization ID or slug. If not provided, the request will go to your sandbox account.
 	 * @param {string} options.logicFunctionId  The ID of the logic function to update.
-	 * @param {string} options.logicFunction     The logic function object containing the logic function details.
-	 * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-	 * @param {Object} [options.context] Request context.
+	 * @param {string} options.logicFunction    The logic function object containing the logic function details.
+	 * @param {Object} [options.headers]        Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {Object} [options.context]        Request context.
 	 *
 	 * @returns {Promise<RequestResponse>} A promise that resolves to the updated logic function data.
 	 */
@@ -2223,12 +2227,12 @@ class Particle {
 	/**
 	 * Deletes a logic function in the specified organization or sandbox by logic function ID.
 	 *
-	 * @param {Object} options          The options for deleting the logic function.
-	 * @param {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
-	 * @param {string} [options.org]     The Organization ID or slug. If not provided, the request will go to your sandbox account.
+	 * @param {Object} options                  The options for deleting the logic function.
+	 * @param {Auth}   [options.auth]           The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {string} [options.org]            The Organization ID or slug. If not provided, the request will go to your sandbox account.
 	 * @param {string} options.logicFunctionId  The ID of the logic function to delete.
-	 * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-	 * @param {Object} [options.context] Request context.
+	 * @param {Object} [options.headers]        Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {Object} [options.context]        Request context.
 	 *
 	 * @returns {Promise<RequestResponse>} A promise that resolves to an object containing the deleted logic function ID.
 	 */
@@ -2244,12 +2248,12 @@ class Particle {
 	/**
 	 * Lists all logic functions in the specified organization or sandbox.
 	 *
-	 * @param {Object} options          The options for listing logic functions.
-	 * @param {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
-	 * @param {string} [options.org]     The Organization ID or slug. If not provided, the request will go to your sandbox account.
+	 * @param {Object}  options               The options for listing logic functions.
+	 * @param {Auth}    [options.auth]        The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {string}  [options.org]         The Organization ID or slug. If not provided, the request will go to your sandbox account.
 	 * @param {boolean} [options.todayStats]  Whether to include today's stats in the response
-	 * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-	 * @param {Object} [options.context] Request context.
+	 * @param {Object}  [options.headers]     Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {Object}  [options.context]     Request context.
 	 *
 	 * @returns {Promise<RequestResponse>} A promise that resolves to an array of logic functions data.
 	 */
@@ -2268,12 +2272,12 @@ class Particle {
 	/**
 	 * Lists all logic runs for the specified logic function in the specified organization or sandbox.
 	 *
-	 * @param {Object} options          The options for the request.
-	 * @param {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
-	 * @param {string} [options.org]     The Organization ID or slug. If not provided, the request will go to your sandbox account.
+	 * @param {Object} options                  The options for the request.
+	 * @param {Auth}   [options.auth]           The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {string} [options.org]            The Organization ID or slug. If not provided, the request will go to your sandbox account.
 	 * @param {number} options.logicFunctionId  The ID of the logic function for which to retrieve the logic runs.
-	 * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-	 * @param {Object} [options.context] Request context
+	 * @param {Object} [options.headers]        Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {Object} [options.context]        Request context
 	 *
 	 * @returns {Promise<RequestResponse>} A promise that resolves to an array of logic run data.
 	 */
@@ -2289,13 +2293,13 @@ class Particle {
 	/**
 	 * Retrieves a logic run by its ID for the specified logic function in the specified organization or sandbox.
 	 *
-	 * @param {Object} options          The options for the request.
-	 * @param {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
-	 * @param {string} [options.org]     The Organization ID or slug. If not provided, the request will go to your sandbox account.
+	 * @param {Object} options                  The options for the request.
+	 * @param {Auth}   [options.auth]           The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {string} [options.org]            The Organization ID or slug. If not provided, the request will go to your sandbox account.
 	 * @param {number} options.logicFunctionId  The ID of the logic function for which to retrieve the logic run.
-	 * @param {number} options.logicRunId    The ID of the logic run to retrieve.
-	 * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-	 * @param {Object} [options.context] Request context
+	 * @param {number} options.logicRunId       The ID of the logic run to retrieve.
+	 * @param {Object} [options.headers]        Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {Object} [options.context]        Request context
 	 *
 	 * @returns {Promise<RequestResponse>} A promise that resolves to an array of logic run data for the specified logic run ID.
 	 */
@@ -2311,13 +2315,13 @@ class Particle {
 	/**
 	 * Retrieves the logs for a logic run by its ID for the specified logic function in the specified organization or sandbox.
 	 *
-	 * @param {Object} options          The options for the request.
-	 * @param {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
-	 * @param {string} [options.org]      The unique identifier of the organization.
+	 * @param {Object} options                  The options for the request.
+	 * @param {Auth}   [options.auth]           The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {string} [options.org]            The unique identifier of the organization.
 	 * @param {number} options.logicFunctionId  The ID of the logic function for which to retrieve the logic run logs.
-	 * @param {number} options.logicRunId    The ID of the logic run for which to retrieve the logs.
-	 * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-	 * @param {Object} [options.context] Request context
+	 * @param {number} options.logicRunId       The ID of the logic run for which to retrieve the logs.
+	 * @param {Object} [options.headers]        Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {Object} [options.context]        Request context
 	 *
 	 * @returns {Promise<RequestResponse>} A promise that resolves to the logs for the specified logic run ID.
 	 */
@@ -2333,13 +2337,12 @@ class Particle {
 	/**
 	 * Creates a new ledger definition in the specified organization or sandbox.
 	 *
-	 * @param {Object} options         The options for creating the ledger definition.
-	 * @param {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
-	 * @param {string} [options.org]     The Organization ID or slug. If not provided, the request will go to your sandbox account.
-	 * @param {object} options.definition   The ledger definition object.
-	 * @param {object} options.ledger     The ledger definition object.
-	 * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-	 * @param {Object} [options.context] Request context
+	 * @param {Object} options              The options for creating the ledger definition.
+	 * @param {Auth}   [options.auth]       The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {string} [options.org]        The Organization ID or slug. If not provided, the request will go to your sandbox account.
+	 * @param {object} options.ledger       The ledger definition object.
+	 * @param {Object} [options.headers]    Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {Object} [options.context]    Request context
 	 *
 	 * @returns {Promise<RequestResponse>} A promise that resolves to the created ledger definition data.
 	 */
@@ -2356,12 +2359,12 @@ class Particle {
 	/**
 	 * Get a ledger definition in the specified organization or sandbox by ledger name.
 	 *
-	 * @param {Object} options         The options for the ledger definition.
-	 * @param {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
-	 * @param {string} [options.org]     The Organization ID or slug. If not provided, the request will go to your sandbox account.
-	 * @param {string} options.ledgerName The ID of the ledger definition to retrieve.
-	 * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-	 * @param {Object} [options.context] Request context
+	 * @param {Object} options             The options for the ledger definition.
+	 * @param {Auth}   [options.auth]      The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {string} [options.org]       The Organization ID or slug. If not provided, the request will go to your sandbox account.
+	 * @param {string} options.ledgerName  The ID of the ledger definition to retrieve.
+	 * @param {Object} [options.headers]   Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {Object} [options.context]   Request context
 	 *
 	 * @returns {Promise<RequestResponse>} A promise that resolves to the specified ledger definition data.
 	 */
@@ -2377,13 +2380,13 @@ class Particle {
 	/**
 	 * Updates an existing ledger definition in the specified organization or sandbox.
 	 *
-	 * @param {Object} options          The options for updating the ledger definition.
-	 * @param {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
-	 * @param {string} [options.org]     The Organization ID or slug. If not provided, the request will go to your sandbox account.
+	 * @param {Object} options             The options for updating the ledger definition.
+	 * @param {Auth}   [options.auth]      The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {string} [options.org]       The Organization ID or slug. If not provided, the request will go to your sandbox account.
 	 * @param {string} options.ledgerName  Name of the ledger definition to update.
-	 * @param {object} options.ledger     The ledger definition object.
-	 * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-	 * @param {Object} [options.context] Request context.
+	 * @param {object} options.ledger      The ledger definition object.
+	 * @param {Object} [options.headers]   Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {Object} [options.context]   Request context.
 	 *
 	 * @returns {Promise<RequestResponse>} A promise that resolves to the updated ledger definition data.
 	 */
@@ -2400,12 +2403,12 @@ class Particle {
 	/**
 	 * Archives a ledger definition in the specified organization or sandbox by ledger name.
 	 *
-	 * @param {Object} options          The options for archiving the ledger definition.
-	 * @param {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
-	 * @param {string} [options.org]     The Organization ID or slug. If not provided, the request will go to your sandbox account.
+	 * @param {Object} options             The options for archiving the ledger definition.
+	 * @param {Auth}   [options.auth]      The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {string} [options.org]       The Organization ID or slug. If not provided, the request will go to your sandbox account.
 	 * @param {string} options.ledgerName  Name of the ledger definition to archive.
-	 * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-	 * @param {Object} [options.context] Request context.
+	 * @param {Object} [options.headers]   Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {Object} [options.context]   Request context.
 	 *
 	 * @returns {Promise<RequestResponse>} A promise that resolves to an object confirming the ledger definition was archived.
 	 */
@@ -2419,17 +2422,21 @@ class Particle {
 	}
 
 	/**
+	 * @typedef {"Owner" | "Product" | "Device"} Scope
+	 */
+
+	/**
 	 * Lists all ledger definitions in the specified organization or sandbox.
 	 *
-	 * @param {Object} options          The options for listing ledger definitions.
-	 * @param {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
-	 * @param {string} [options.org]     The Organization ID or slug. If not provided, the request will go to your sandbox account.
-	 * @param {"Owner" | "Product" | "Device"} [options.scope] Filter to show only ledgers of the specified scope
-	 * @param {boolean} [options.archived] Filter to show only archived ledger or non-archived ledgers. If not provided, all ledgers are returned.
-	 * @param {number} [options.page] Page of results to display
-	 * @param {number} [options.perPage] Number of results per page. Default is 100
-	 * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-	 * @param {Object} [options.context] Request context.
+	 * @param {Object}  options             The options for listing ledger definitions.
+	 * @param {Auth}    [options.auth]      The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {string}  [options.org]       The Organization ID or slug. If not provided, the request will go to your sandbox account.
+	 * @param {Scope}   [options.scope]     Filter to show only ledgers of the specified scope
+	 * @param {boolean} [options.archived]  Filter to show only archived ledger or non-archived ledgers. If not provided, all ledgers are returned.
+	 * @param {number}  [options.page]      Page of results to display
+	 * @param {number}  [options.perPage]   Number of results per page. Default is 100
+	 * @param {Object}  [options.headers]   Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {Object}  [options.context]   Request context.
 	 *
 	 * @returns {Promise<RequestResponse>} A promise that resolves to an array of ledger definition data.
 	 */
@@ -2451,13 +2458,13 @@ class Particle {
 	/**
 	 * Get ledger instance data.
 	 *
-	 * @param {Object} options         The options for the ledger instance.
-	 * @param {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
-	 * @param {string} [options.org]     The Organization ID or slug. If not provided, the request will go to your sandbox account.
-	 * @param {string} options.ledgerName Ledger name.
-	 * @param {string} options.scopeValue Scope value.
-	 * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-	 * @param {Object} [options.context] Request context
+	 * @param {Object} options             The options for the ledger instance.
+	 * @param {Auth}   [options.auth]      The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {string} [options.org]       The Organization ID or slug. If not provided, the request will go to your sandbox account.
+	 * @param {string} options.ledgerName  Ledger name.
+	 * @param {string} options.scopeValue  Scope value.
+	 * @param {Object} [options.headers]   Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {Object} [options.context]   Request context
 	 *
 	 * @returns {Promise<RequestResponse>} A promise that resolves to the specified ledger instance data.
 	 */
@@ -2473,14 +2480,14 @@ class Particle {
 	/**
 	 * Set ledger instance data.
 	 *
-	 * @param {Object} options          The options for updating the ledger instance.
-	 * @param {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
-	 * @param {string} [options.org]     The Organization ID or slug. If not provided, the request will go to your sandbox account.
-	 * @param {string} options.ledgerName Ledger name.
-	 * @param {string} options.scopeValue Scope value.
-	 * @param {object} options.data     The data to set to the instance
-	 * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-	 * @param {Object} [options.context] Request context.
+	 * @param {Object} options             The options for updating the ledger instance.
+	 * @param {Auth}   [options.auth]      The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {string} [options.org]       The Organization ID or slug. If not provided, the request will go to your sandbox account.
+	 * @param {string} options.ledgerName  Ledger name.
+	 * @param {string} options.scopeValue  Scope value.
+	 * @param {object} options.data        The data to set to the instance
+	 * @param {Object} [options.headers]   Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {Object} [options.context]   Request context.
 	 *
 	 * @returns {Promise<RequestResponse>} A promise that resolves to the updated ledger instance data.
 	 */
@@ -2497,13 +2504,13 @@ class Particle {
 	/**
 	 * Delete a ledger instance in the specified organization or sandbox by ledger name.
 	 *
-	 * @param {Object} options          The options for archiving the ledger instance.
-	 * @param {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
-	 * @param {string} [options.org]     The Organization ID or slug. If not provided, the request will go to your sandbox account.
+	 * @param {Object} options             The options for archiving the ledger instance.
+	 * @param {Auth}   [options.auth]      The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {string} [options.org]       The Organization ID or slug. If not provided, the request will go to your sandbox account.
 	 * @param {string} options.ledgerName  Name of the ledger instance to archive.
-	 * @param {string} options.scopeValue Scope value.
-	 * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-	 * @param {Object} [options.context] Request context.
+	 * @param {string} options.scopeValue  Scope value.
+	 * @param {Object} [options.headers]   Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {Object} [options.context]   Request context.
 	 *
 	 * @returns {Promise<RequestResponse>} A promise that resolves to an object confirming the ledger instance was deleted.
 	 */
@@ -2519,14 +2526,14 @@ class Particle {
 	/**
 	 * Lists ledger instances in the specified organization or sandbox.
 	 *
-	 * @param {Object} options          The options for listing ledger instances.
-	 * @param {Auth} [options.auth] The access token or basic auth object. Can be ignored if provided in constructor
-	 * @param {string} [options.org]    The unique identifier of the organization.
+	 * @param {Object} options             The options for listing ledger instances.
+	 * @param {Auth}   [options.auth]      The access token or basic auth object. Can be ignored if provided in constructor
+	 * @param {string} [options.org]       The unique identifier of the organization.
 	 * @param {string} options.ledgerName  Name of the ledger instance to archive.
-	 * @param {number} [options.page] Page of results to display
-	 * @param {number} [options.perPage] Number of results per page. Default is 100
-	 * @param {Object} [options.headers] Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-	 * @param {Object} [options.context] Request context.
+	 * @param {number} [options.page]      Page of results to display
+	 * @param {number} [options.perPage]   Number of results per page. Default is 100
+	 * @param {Object} [options.headers]   Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {Object} [options.context]   Request context.
 	 *
 	 * @returns {Promise<RequestResponse>} A promise that resolves to an array of ledger instance data.
 	 */
@@ -2545,7 +2552,7 @@ class Particle {
 
 	/**
 	 * Set default auth token that will be used in each method if `auth` is not provided
-	 * @param  {Auth} auth The access token or basic auth object
+	 * @param {Auth} auth The access token or basic auth object
 	 * @throws {Error} When not auth string is provided
 	 */
 	setDefaultAuth(auth){
@@ -2568,9 +2575,9 @@ class Particle {
 	}
 	/**
 	 * API URI to access a device
-	 * @param  {Object} options Options for this API call
-	 * @param  {String} options.deviceId  Device ID to access
-	 * @param  {String} [options.product] Device only in this product ID or slug
+	 * @param {Object} options           Options for this API call
+	 * @param {String} options.deviceId  Device ID to access
+	 * @param {String} [options.product] Device only in this product ID or slug
 	 * @private
 	 * @returns {string} URI
 	 */
@@ -2581,7 +2588,7 @@ class Particle {
 	/**
 	 * Helper for building API paths that support sandbox and org prefixes based on org presence
 	 * @param {string | undefined} org slug or ID
-	 * @param {string} path will be appended to the end of the org/sandbox prefix
+	 * @param {string}             path will be appended to the end of the org/sandbox prefix
 	 * @returns {string} the full combined path
 	 * @private
 	 */
@@ -2591,12 +2598,12 @@ class Particle {
 
 	/**
 	 * Make a GET request
-	 * @param {object} params
-	 * @param {string} params.uri		The URI to request
-	 * @param {Auth} [params.auth]	Authorization token to use
-	 * @param {object} [params.headers]	Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-	 * @param {string|object} [params.query] Key/VAlue pairs of query params or a correctly formatted string
-	 * @param {object} [params.context]	The invocation context, describing the tool and project
+	 * @param {object}          params
+	 * @param {string}          params.uri        The URI to request
+	 * @param {Auth}            [params.auth]     Authorization token to use
+	 * @param {object}          [params.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {string | object} [params.query]    Key/Value pairs of query params or a correctly formatted string
+	 * @param {object}          [params.context]  The invocation context, describing the tool and project
 	 * @returns {Promise<RequestResponse, RequestError>} A promise that resolves with either the requested data or an error object
 	 */
 	get({ uri, auth, headers, query, context }){
@@ -2607,12 +2614,12 @@ class Particle {
 
 	/**
 	 * Make a HEAD request
-	 * @param {object} params
-	 * @param {string} params.uri		The URI to request
-	 * @param {Auth} [params.auth]	Authorization token to use
-	 * @param {object} [params.headers]	Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-	 * @param {string|object} [params.query] Key/VAlue pairs of query params or a correctly formatted string
-	 * @param {object} [params.context]	The invocation context, describing the tool and project
+	 * @param {object}          params
+	 * @param {string}          params.uri        The URI to request
+	 * @param {Auth}            [params.auth]     Authorization token to use
+	 * @param {object}          [params.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {string | object} [params.query]    Key/Value pairs of query params or a correctly formatted string
+	 * @param {object}          [params.context]  The invocation context, describing the tool and project
 	 * @returns {Promise<RequestResponse, RequestError>} A promise that resolves with either the requested data or an error object
 	 */
 	head({ uri, auth, headers, query, context }){
@@ -2623,12 +2630,12 @@ class Particle {
 
 	/**
 	 * Make a POST request
-	 * @param {object} params
-	 * @param {string} params.uri		The URI to request
-	 * @param {Auth} [params.auth]	Authorization token to use
-	 * @param {object} [params.headers]	Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-	 * @param {string|object} [params.data] Key/VAlue pairs of query params or a correctly formatted string
-	 * @param {object} [params.context]	The invocation context, describing the tool and project
+	 * @param {object}          params
+	 * @param {string}          params.uri        The URI to request
+	 * @param {Auth}            [params.auth]     Authorization token to use
+	 * @param {object}          [params.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {string | object} [params.data]     Key/Value pairs of query params or a correctly formatted string
+	 * @param {object}          [params.context]  The invocation context, describing the tool and project
 	 * @returns {Promise<RequestResponse, RequestError>} A promise that resolves with either the requested data or an error object
 	 */
 	post({ uri, auth, headers, data, context }){
@@ -2639,12 +2646,12 @@ class Particle {
 
 	/**
 	 * Make a PUT request
-	 * @param {object} params
-	 * @param {string} params.uri		The URI to request
-	 * @param {Auth} [params.auth]	Authorization token to use
-	 * @param {object} [params.headers]	Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-	 * @param {string|object} [params.data] Key/VAlue pairs of query params or a correctly formatted string
-	 * @param {object} [params.context]	The invocation context, describing the tool and project
+	 * @param {object}          params
+	 * @param {string}          params.uri        The URI to request
+	 * @param {Auth}            [params.auth]     Authorization token to use
+	 * @param {object}          [params.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {string | object} [params.data]     Key/Value pairs of query params or a correctly formatted string
+	 * @param {object}          [params.context]  The invocation context, describing the tool and project
 	 * @returns {Promise<RequestResponse, RequestError>} A promise that resolves with either the requested data or an error object
 	 */
 	put({ uri, auth, headers, data, context }){
@@ -2655,12 +2662,12 @@ class Particle {
 
 	/**
 	 * Make a DELETE request
-	 * @param {object} params
-	 * @param {string} params.uri		The URI to request
-	 * @param {Auth} [params.auth]	Authorization token to use
-	 * @param {object} [params.headers]	Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-	 * @param {string|object} [params.data] Key/VAlue pairs of query params or a correctly formatted string
-	 * @param {object} [params.context]	The invocation context, describing the tool and project
+	 * @param {object}          params
+	 * @param {string}          params.uri        The URI to request
+	 * @param {Auth}            [params.auth]     Authorization token to use
+	 * @param {object}          [params.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {string | object} [params.data]     Key/Value pairs of query params or a correctly formatted string
+	 * @param {object}          [params.context]  The invocation context, describing the tool and project
 	 * @returns {Promise<RequestResponse, RequestError>} A promise that resolves with either the requested data or an error object
 	 */
 	delete({ uri, auth, headers, data, context }){
@@ -2671,17 +2678,17 @@ class Particle {
 
 	/**
 	 *
-	 * @param {Object} args			An obj with all the possible request configurations
-	 * @param {String} args.uri		The URI to request
-	 * @param {String} args.method		The method used to request the URI, should be in uppercase.
-	 * @param {Object} [args.headers]	Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-	 * @param {object} [args.data]		Arbitrary data to send as the body.
-	 * @param {Auth} [args.auth]	Authorization
-	 * @param {String|Object} [args.query]	Query parameters
-	 * @param {Object} [args.form]		Form fields
-	 * @param {Object} [args.files]		Array of file names and file content
-	 * @param {Object} [args.context]	The invocation context, describing the tool and project.
-	 * @param {boolean} [args.isBuffer]	Indicate if the response should be treated as Buffer instead of JSON
+	 * @param {Object}          args             An obj with all the possible request configurations
+	 * @param {String}          args.uri         The URI to request
+	 * @param {String}          args.method      The method used to request the URI, should be in uppercase.
+	 * @param {Object}          [args.headers]   Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {object}          [args.data]      Arbitrary data to send as the body.
+	 * @param {Auth}            [args.auth]      Authorization
+	 * @param {String | Object} [args.query]     Query parameters
+	 * @param {Object}          [args.form]      Form fields
+	 * @param {Object}          [args.files]     Array of file names and file content
+	 * @param {Object}          [args.context]   The invocation context, describing the tool and project.
+	 * @param {boolean}         [args.isBuffer]  Indicate if the response should be treated as Buffer instead of JSON
 	 * @returns {Promise<RequestResponse, RequestError>} A promise that resolves with either the requested data or an error object
 	 */
 	request(args){
