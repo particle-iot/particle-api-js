@@ -1,5 +1,13 @@
 # changelog
 
+## 10.3.1 - 6 December 2023
+
+* Add `todayStats` query option to listLogicFunctions
+* Add `scope`, `archived`, `page`, and `perPage` query options to listLedgers
+* Add `page` and `perPage` query options to listLedgerInstances
+* Add JSDocs for constructor
+* Fix JSDocs across most functions in the library to be more accurate
+
 ## 10.3.0 - 7 November 2023
 
 * Add support for sandbox accounts on all logic/ledger APIs by allowing the omission of the `org` property
