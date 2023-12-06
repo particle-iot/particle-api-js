@@ -11,7 +11,7 @@ chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 module.exports = {
-	chai,
-	sinon,
-	expect
+    chai,
+    sinon,
+    expect
 };
