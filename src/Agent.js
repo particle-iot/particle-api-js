@@ -40,24 +40,24 @@ const packageJson = require('../package.json');
 /**
  * The object returned for a basic request
  * @typedef {object} JSONResponse
- * @property {number} statusCode	The HTTP response status
- * @property {object} body		The endpoint's response parsed as a JSON
+ * @property {number} statusCode  The HTTP response status
+ * @property {object} body        The endpoint's response parsed as a JSON
  */
 
 /**
  * The possible response from an API request
- * @typedef {JSONResponse|Buffer|ArrayBuffer} RequestResponse	The type is based on
+ * @typedef {JSONResponse | Buffer | ArrayBuffer} RequestResponse	The type is based on
  * the request config and whether is on browser or node
  */
 
 /**
  * The error object generated in case of a failed request
  * @typedef {object} RequestError
- * @property {number} statusCode	The HTTP response status
- * @property {string} errorDescription	Details on what caused the failed request
- * @property {string} shortErrorDescription	Summarized version of the fail reason
- * @property {object} body		The response object from the request
- * @property {object} error		The error object from the request
+ * @property {number} statusCode             The HTTP response status
+ * @property {string} errorDescription       Details on what caused the failed request
+ * @property {string} shortErrorDescription  Summarized version of the fail reason
+ * @property {object} body                   The response object from the request
+ * @property {object} error                  The error object from the request
  */
 
 class Agent {
@@ -85,12 +85,12 @@ class Agent {
 
 	/**
 	 * Make a HEAD request
-	 * @param {object} params		Configurations to customize the request
-	 * @param {string} params.uri		The URI to request
-	 * @param {Auth}   [params.auth]	Authorization token to use
-	 * @param {object} [params.headers]        Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-	 * @param {object} [params.query] Key/Value pairs of query params
-	 * @param {object} [params.context]	The invocation context, describing the tool and project
+	 * @param {object} params            Configurations to customize the request
+	 * @param {string} params.uri        The URI to request
+	 * @param {Auth}   [params.auth]     Authorization token to use
+	 * @param {object} [params.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {object} [params.query]    Key/Value pairs of query params
+	 * @param {object} [params.context]  The invocation context, describing the tool and project
 	 * @returns {Promise<RequestResponse, RequestError>} A promise that resolves with either the requested data or an error object
 	 */
 	head({ uri, auth, headers, query, context }) {
@@ -99,12 +99,12 @@ class Agent {
 
 	/**
 	 * Make a POST request
-	 * @param {object} params		Configurations to customize the request
-	 * @param {string} params.uri		The URI to request
-	 * @param {Auth} [params.auth]	Authorization token to use
-	 * @param {object} [params.headers]	Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-	 * @param {object} [params.data]	Key/Value pairs of query params
-	 * @param {object} [params.context]	The invocation context, describing the tool and project
+	 * @param {object} params            Configurations to customize the request
+	 * @param {string} params.uri        The URI to request
+	 * @param {Auth}   [params.auth]     Authorization token to use
+	 * @param {object} [params.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {object} [params.data]     Key/Value pairs of query params
+	 * @param {object} [params.context]  The invocation context, describing the tool and project
 	 * @returns {Promise<RequestResponse, RequestError>} A promise that resolves with either the requested data or an error object
 	 */
 	post({ uri, headers, data, auth, context }) {
@@ -113,12 +113,12 @@ class Agent {
 
 	/**
 	 * Make a PUT request
-	 * @param {object} params		Configurations to customize the request
-	 * @param {string} params.uri		The URI to request
-	 * @param {Auth} [params.auth]	Authorization token to use
-	 * @param {object} [params.headers]	Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-	 * @param {object} [params.data]	Key/VAlue pairs of query params
-	 * @param {object} [params.context]	The invocation context, describing the tool and project
+	 * @param {object} params            Configurations to customize the request
+	 * @param {string} params.uri        The URI to request
+	 * @param {Auth}   [params.auth]     Authorization token to use
+	 * @param {object} [params.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {object} [params.data]     Key/VAlue pairs of query params
+	 * @param {object} [params.context]  The invocation context, describing the tool and project
 	 * @returns {Promise<RequestResponse, RequestError>} A promise that resolves with either the requested data or an error object
 	 */
 	put({ uri, auth, headers, data, context }) {
@@ -127,12 +127,12 @@ class Agent {
 
 	/**
 	 * Make a DELETE request
-	 * @param {object} params		Configurations to customize the request
-	 * @param {string} params.uri		The URI to request
-	 * @param {Auth} [params.auth]	Authorization token to use
-	 * @param {object} [params.headers]	Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-	 * @param {object} [params.data]	Key/Value pairs of query params
-	 * @param {object} [params.context]	The invocation context, describing the tool and project
+	 * @param {object} params            Configurations to customize the request
+	 * @param {string} params.uri        The URI to request
+	 * @param {Auth}   [params.auth]     Authorization token to use
+	 * @param {object} [params.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {object} [params.data]     Key/Value pairs of query params
+	 * @param {object} [params.context]  The invocation context, describing the tool and project
 	 * @returns {Promise<RequestResponse, RequestError>} A promise that resolves with either the requested data or an error object
 	 */
 	delete({ uri, auth, headers, data, context }) {
@@ -141,17 +141,17 @@ class Agent {
 
 	/**
 	 *
-	 * @param {object} config			An obj with all the possible request configurations
-	 * @param {string} config.uri			The URI to request
-	 * @param {string} config.method        	The method used to request the URI, should be in uppercase.
-	 * @param {object} [config.headers]		Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-	 * @param {object} [config.data]		Arbitrary data to send as the body.
-	 * @param {Auth} [config.auth]         Authorization
-	 * @param {object} [config.query]	Query parameters
-	 * @param {object} [config.form]		Form fields
-	 * @param {object} [config.files]		Array of file names and file content
-	 * @param {object} [config.context]		The invocation context, describing the tool and project.
-	 * @param {boolean} [config.isBuffer=false]	Indicate if the response should be treated as Buffer instead of JSON
+	 * @param {object}  config                  An obj with all the possible request configurations
+	 * @param {string}  config.uri              The URI to request
+	 * @param {string}  config.method           The method used to request the URI, should be in uppercase.
+	 * @param {object}  [config.headers]        Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {object}  [config.data]           Arbitrary data to send as the body.
+	 * @param {Auth}    [config.auth]           Authorization
+	 * @param {object}  [config.query]          Query parameters
+	 * @param {object}  [config.form]           Form fields
+	 * @param {object}  [config.files]          Array of file names and file content
+	 * @param {object}  [config.context]        The invocation context, describing the tool and project.
+	 * @param {boolean} [config.isBuffer=false] Indicate if the response should be treated as Buffer instead of JSON
 	 * @returns {Promise<RequestResponse, RequestError>} A promise that resolves with either the requested data or an error object
 	 */
 	request({
@@ -172,10 +172,10 @@ class Agent {
 	}
 
 	/**
-	 * Promises to send the request and retreive the response.
-	 * @param {[string, object]} requestParams	First argument is the URI to request, the second one are the options.
-	 * @param {boolean} isBuffer Indicate if the response body should be returned as a Buffer (Node) / ArrayBuffer (browser) instead of JSON
-	 * @param {function} [makerequest=fetch] The fetch function to use. Override for testing.
+	 * Promises to send the request and retrieve the response.
+	 * @param {[string, object]} requestParams        First argument is the URI to request, the second one are the options.
+	 * @param {boolean}          isBuffer             Indicate if the response body should be returned as a Buffer (Node) / ArrayBuffer (browser) instead of JSON
+	 * @param {function}         [makerequest=fetch]  The fetch function to use. Override for testing.
 	 * @returns {Promise<RequestResponse, RequestError>} A promise that resolves with either the requested data or an error object
 	 * @private
 	 */
@@ -234,16 +234,16 @@ class Agent {
 
 	/**
 	 * Generate the params in a format valid for 'fetch'
-	 * @param {object} config		Configurations to customize the request
-	 * @param {string} config.uri			The URI to request
-	 * @param {string} config.method        	The method used to request the URI, should be in uppercase.
-	 * @param {object} [config.headers]		Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-	 * @param {object} [config.data]		Arbitrary data to send as the body.
-	 * @param {Auth} [config.auth]         Authorization
-	 * @param {object} [config.query]	Query parameters
-	 * @param {object} [config.form]		Form fields
-	 * @param {object} [config.files]		Array of file names and file content
-	 * @param {object} [config.context]		The invocation context, describing the tool and project.
+	 * @param {object} config            Configurations to customize the request
+	 * @param {string} config.uri        The URI to request
+	 * @param {string} config.method     The method used to request the URI, should be in uppercase.
+	 * @param {object} [config.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+	 * @param {object} [config.data]     Arbitrary data to send as the body.
+	 * @param {Auth}   [config.auth]     Authorization
+	 * @param {object} [config.query]    Query parameters
+	 * @param {object} [config.form]     Form fields
+	 * @param {object} [config.files]    Array of file names and file content
+	 * @param {object} [config.context]  The invocation context, describing the tool and project.
 	 * @returns {[string, object]} The uri to make the request too, and extra configs
 	 * @private
 	 */
@@ -387,7 +387,7 @@ class Agent {
 
 	/**
 	 * Adds an authorization header.
-	 * @param {Auth}  [auth]    The authorization bearer token.
+	 * @param {Auth} [auth]  The authorization bearer token.
 	 * @returns {object} The original request.
 	 */
 	_getAuthorizationHeader(auth){
@@ -409,7 +409,7 @@ class Agent {
 
 	/**
 	 *
-	 * @param {Object} files converts the file names to file, file1, file2.
+	 * @param {Object} files  converts the file names to file, file1, file2.
 	 * @returns {object} the renamed files.
 	 */
 	_sanitizeFiles(files){
