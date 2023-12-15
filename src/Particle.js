@@ -2551,6 +2551,57 @@ class Particle {
     }
 
     /**
+     * List ledger instance versions
+     *
+     * @param {Object} options                   The options for the ledger instance.
+     * @param {Auth}   [options.auth]            The access token or basic auth object. Can be ignored if provided in constructor
+     * @param {string} [options.org]             The Organization ID or slug. If not provided, the request will go to your sandbox account.
+     * @param {string} options.ledgerName        Ledger name.
+     * @param {string} options.scopeValue        Scope value.
+     * @param {string} [options.replacedBefore]  ISO date string to filter to instances replaced before this time
+     * @param {string} [options.replacedAfter]   ISO date string to filter to instances replaced after this time
+     * @param {Object} [options.headers]         Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+     * @param {Object} [options.context]         Request context
+     *
+     * @returns {Promise<RequestResponse>} A promise that resolves to an array of ledger instance data.
+     */
+    listLedgerInstanceVersions({ auth, org, ledgerName, scopeValue, replacedBefore, replacedAfter, headers, context }) {
+        return this.get({
+            uri: this._namespacedPath(org, `ledgers/${ledgerName}/instances/${scopeValue}/versions`),
+            query: {
+                replaced_before: replacedBefore,
+                replaced_after: replacedAfter
+            },
+            auth,
+            headers,
+            context
+        });
+    }
+
+    /**
+     * Get specific ledger instance version
+     *
+     * @param {Object} options             The options for the ledger instance.
+     * @param {Auth}   [options.auth]      The access token or basic auth object. Can be ignored if provided in constructor
+     * @param {string} [options.org]       The Organization ID or slug. If not provided, the request will go to your sandbox account.
+     * @param {string} options.ledgerName  Ledger name.
+     * @param {string} options.scopeValue  Scope value.
+     * @param {string} options.version     Version of the ledger instance
+     * @param {Object} [options.headers]   Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+     * @param {Object} [options.context]   Request context
+     *
+     * @returns {Promise<RequestResponse>} A promise that resolves to the specified ledger instance data.
+     */
+    getLedgerInstanceVersion({ auth, org, ledgerName, scopeValue, version, headers, context }) {
+        return this.get({
+            uri: this._namespacedPath(org, `ledgers/${ledgerName}/instances/${scopeValue}/versions/${version}`),
+            auth,
+            headers,
+            context
+        });
+    }
+
+    /**
      * Set default auth token that will be used in each method if `auth` is not provided
      * @param {Auth} auth The access token or basic auth object
      * @throws {Error} When not auth string is provided
