@@ -2901,6 +2901,30 @@ describe('ParticleAPI', () => {
                 });
             });
         });
+
+        describe('listLedgerInstanceVersions', () => {
+            it('generates request', () => {
+                return api.listLedgerInstanceVersions(propsWithOrg).then((results) => {
+                    results.should.match({
+                        method: 'get',
+                        uri: `/v1/orgs/${org}/ledgers/${props.ledgerName}/instances/${props.scopeValue}/versions`,
+                        auth: props.auth
+                    });
+                });
+            });
+        });
+
+        describe('.getLedgerInstanceVersion', () => {
+            it('generates request', () => {
+                return api.getLedgerInstanceVersion(propsWithOrg).then((results) => {
+                    results.should.match({
+                        method: 'get',
+                        uri: `/v1/orgs/${org}/ledgers/${props.ledgerName}/instances/${props.scopeValue}/versions/${props.version}`,
+                        auth: props.auth
+                    });
+                });
+            });
+        });
     });
 
     describe('backwards-compatibility function aliases', () => {
