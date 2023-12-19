@@ -1,5 +1,10 @@
 # changelog
 
+## 10.4.0 - 19 December 2023
+
+* Add `listLedgerInstanceVersions` function
+* Add `getLedgerInstanceVersion` function
+
 ## 10.3.1 - 6 December 2023
 
 * Add `todayStats` query option to listLogicFunctions
