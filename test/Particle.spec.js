@@ -142,7 +142,10 @@ const props = {
         description: 'my ledger',
         direction: 'Downstream'
     },
-    scopeValue: '1234'
+    scopeValue: '1234',
+    instance: {
+        property: 'yes'
+    }
 };
 
 const product = 'ze-product-v1';
@@ -2869,8 +2872,8 @@ describe('ParticleAPI', () => {
                         uri: `/v1/orgs/${org}/ledgers/${props.ledgerName}/instances/${props.scopeValue}`,
                         auth: props.auth,
                         data: {
-                            data: {
-                                sentient: true
+                            instance: {
+                                property: 'yes'
                             }
                         }
                     });
