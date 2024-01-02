@@ -1,5 +1,9 @@
 # changelog
 
+## 10.4.1 - 2 January 2024
+
+* Fix `setLedgerInstance` taking wrong argument and passing a bad request body to the API
+
 ## 10.4.0 - 19 December 2023
 
 * Add `listLedgerInstanceVersions` function
