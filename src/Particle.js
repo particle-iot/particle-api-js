@@ -2485,17 +2485,17 @@ class Particle {
      * @param {string} [options.org]       The Organization ID or slug. If not provided, the request will go to your sandbox account.
      * @param {string} options.ledgerName  Ledger name.
      * @param {string} options.scopeValue  Scope value.
-     * @param {object} options.data        The data to set to the instance
+     * @param {object} options.instance    The instance with the data
      * @param {Object} [options.headers]   Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]   Request context.
      *
      * @returns {Promise<RequestResponse>} A promise that resolves to the updated ledger instance data.
      */
-    setLedgerInstance({ auth, org, ledgerName, scopeValue, data, headers, context }) {
+    setLedgerInstance({ auth, org, ledgerName, scopeValue, instance, headers, context }) {
         return this.put({
             uri: this._namespacedPath(org, `ledgers/${ledgerName}/instances/${scopeValue}`),
             auth,
-            data: { data },
+            data: { instance },
             headers,
             context
         });
