@@ -5,7 +5,6 @@ const Client = require('../src/Client');
 const EventStream = require('../src/EventStream');
 const FakeAgent = require('./FakeAgent');
 const { sinon, expect } = require('./test-setup');
-const { randomUUID } = require('node:crypto');
 
 let api;
 
@@ -97,8 +96,8 @@ const props = {
     dateRange: '2020-05-15T18:29:45.000Z,2020-05-19T18:29:45.000Z',
     rectBl: '56.185412,-4.049868',
     rectTr: '56.571537,-5.385920',
-    logicFunctionId: randomUUID(),
-    logicRunId: randomUUID(),
+    logicFunctionId: 'ea838324-a4a7-4fa6-b278-95bdaed7114b',
+    logicRunId: 'd0580956-71dc-4f11-89e2-987dcf82a86f',
     logicFunction: {
         enabled: true,
         name: 'function-1',
