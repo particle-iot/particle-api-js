@@ -5,6 +5,7 @@ const Client = require('../src/Client');
 const EventStream = require('../src/EventStream');
 const FakeAgent = require('./FakeAgent');
 const { sinon, expect } = require('./test-setup');
+const { randomUUID } = require('node:crypto');
 
 let api;
 
@@ -66,7 +67,7 @@ const props = {
     clientId: 'client-123',
     type: 'web',
     redirect_uri: 'https://example.com',
-    scope: '',
+    scope: 'Owner',
     deviceName: 'test-device',
     page: 5,
     perPage: 50,
@@ -78,7 +79,7 @@ const props = {
     notes: 'A fancy Photon',
     desiredFirmwareVersion: 42,
     flash: false,
-    version: 42,
+    version: '42',
     title: 'prod',
     description: 'ready for production',
     file: new Buffer('ELF...'),
@@ -96,8 +97,8 @@ const props = {
     dateRange: '2020-05-15T18:29:45.000Z,2020-05-19T18:29:45.000Z',
     rectBl: '56.185412,-4.049868',
     rectTr: '56.571537,-5.385920',
-    logicFunctionId: 1,
-    logicRunId: 1,
+    logicFunctionId: randomUUID(),
+    logicRunId: randomUUID(),
     logicFunction: {
         enabled: true,
         name: 'function-1',
@@ -142,7 +143,7 @@ const props = {
         description: 'my ledger',
         direction: 'Downstream'
     },
-    scopeValue: '1234',
+    scopeValue: 'abc1234',
     instance: {
         property: 'yes'
     }
@@ -2622,30 +2623,7 @@ describe('ParticleAPI', () => {
                         uri: `/v1/orgs/${org}/logic/functions`,
                         auth: props.auth,
                         data: {
-                            logic_function: {
-                                enabled: true,
-                                name: 'function-1',
-                                description: 'hello world',
-                                source: {
-                                    type: 'JavaScript',
-                                    code: 'console.log("hello from function-1");'
-                                },
-                                logic_triggers: [
-                                    {
-                                        type: 'Event',
-                                        enabled: true,
-                                        product_id: parseInt(props.productId),
-                                        event_name: props.event,
-                                    },
-                                    {
-                                        type: 'Scheduled',
-                                        enabled: true,
-                                        cron: '0 0 1 * *',
-                                        start_at: '2021-05-15T18:29:45.000Z',
-                                        end_at: '2021-05-19T18:29:45.000Z',
-                                    }
-                                ]
-                            }
+                            logic_function: props.logicFunction
                         }
                     });
                 });
@@ -2672,30 +2650,7 @@ describe('ParticleAPI', () => {
                         uri: `/v1/orgs/${org}/logic/functions/${props.logicFunctionId}`,
                         auth: props.auth,
                         data: {
-                            logic_function: {
-                                enabled: true,
-                                name: 'function-1',
-                                description: 'hello world',
-                                source: {
-                                    type: 'JavaScript',
-                                    code: 'console.log("hello from function-1");'
-                                },
-                                logic_triggers: [
-                                    {
-                                        type: 'Event',
-                                        enabled: true,
-                                        product_id: parseInt(props.productId),
-                                        event_name: props.event,
-                                    },
-                                    {
-                                        type: 'Scheduled',
-                                        enabled: true,
-                                        cron: '0 0 1 * *',
-                                        start_at: '2021-05-15T18:29:45.000Z',
-                                        end_at: '2021-05-19T18:29:45.000Z',
-                                    }
-                                ]
-                            }
+                            logic_function: props.logicFunction
                         }
                     });
                 });
@@ -2784,12 +2739,7 @@ describe('ParticleAPI', () => {
                         uri: `/v1/orgs/${org}/ledgers`,
                         auth: props.auth,
                         data: {
-                            ledger: {
-                                scope: 'Owner',
-                                name: 'myledger',
-                                description: 'my ledger',
-                                direction: 'Downstream'
-                            }
+                            ledger: props.ledger
                         }
                     });
                 });
@@ -2816,12 +2766,7 @@ describe('ParticleAPI', () => {
                         uri: `/v1/orgs/${org}/ledgers/${props.ledgerName}`,
                         auth: props.auth,
                         data: {
-                            ledger: {
-                                scope: 'Owner',
-                                name: 'myledger',
-                                description: 'my ledger',
-                                direction: 'Downstream'
-                            }
+                            ledger: props.ledger
                         }
                     });
                 });
@@ -2872,9 +2817,7 @@ describe('ParticleAPI', () => {
                         uri: `/v1/orgs/${org}/ledgers/${props.ledgerName}/instances/${props.scopeValue}`,
                         auth: props.auth,
                         data: {
-                            instance: {
-                                property: 'yes'
-                            }
+                            instance: props.instance
                         }
                     });
                 });

@@ -2162,7 +2162,7 @@ class Particle {
      * @param {Object} options                The options for creating the logic function.
      * @param {Auth}   [options.auth]         The access token or basic auth object. Can be ignored if provided in constructor
      * @param {string} [options.org]          The Organization ID or slug. If not provided, the request will go to your sandbox account.
-     * @param {string} options.logicFunction  The logic function object containing the function details.
+     * @param {Object} options.logicFunction  The logic function object containing the function details.
      * @param {Object} [options.headers]      Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]      Request context
      *
@@ -2208,7 +2208,7 @@ class Particle {
      * @param {Auth}   [options.auth]           The access token or basic auth object. Can be ignored if provided in constructor
      * @param {string} [options.org]            The Organization ID or slug. If not provided, the request will go to your sandbox account.
      * @param {string} options.logicFunctionId  The ID of the logic function to update.
-     * @param {string} options.logicFunction    The logic function object containing the logic function details.
+     * @param {Object} options.logicFunction    The logic function object containing the logic function details.
      * @param {Object} [options.headers]        Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]        Request context.
      *
@@ -2275,7 +2275,7 @@ class Particle {
      * @param {Object} options                  The options for the request.
      * @param {Auth}   [options.auth]           The access token or basic auth object. Can be ignored if provided in constructor
      * @param {string} [options.org]            The Organization ID or slug. If not provided, the request will go to your sandbox account.
-     * @param {number} options.logicFunctionId  The ID of the logic function for which to retrieve the logic runs.
+     * @param {string} options.logicFunctionId  The ID of the logic function for which to retrieve the logic runs.
      * @param {Object} [options.headers]        Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]        Request context
      *
@@ -2296,8 +2296,8 @@ class Particle {
      * @param {Object} options                  The options for the request.
      * @param {Auth}   [options.auth]           The access token or basic auth object. Can be ignored if provided in constructor
      * @param {string} [options.org]            The Organization ID or slug. If not provided, the request will go to your sandbox account.
-     * @param {number} options.logicFunctionId  The ID of the logic function for which to retrieve the logic run.
-     * @param {number} options.logicRunId       The ID of the logic run to retrieve.
+     * @param {string} options.logicFunctionId  The ID of the logic function for which to retrieve the logic run.
+     * @param {string} options.logicRunId       The ID of the logic run to retrieve.
      * @param {Object} [options.headers]        Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]        Request context
      *
@@ -2318,8 +2318,8 @@ class Particle {
      * @param {Object} options                  The options for the request.
      * @param {Auth}   [options.auth]           The access token or basic auth object. Can be ignored if provided in constructor
      * @param {string} [options.org]            The unique identifier of the organization.
-     * @param {number} options.logicFunctionId  The ID of the logic function for which to retrieve the logic run logs.
-     * @param {number} options.logicRunId       The ID of the logic run for which to retrieve the logs.
+     * @param {string} options.logicFunctionId  The ID of the logic function for which to retrieve the logic run logs.
+     * @param {string} options.logicRunId       The ID of the logic run for which to retrieve the logs.
      * @param {Object} [options.headers]        Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]        Request context
      *
