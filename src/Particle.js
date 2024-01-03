@@ -2478,22 +2478,30 @@ class Particle {
     }
 
     /**
+     * @typedef {"Replace" | "Merge"} SetMode
+     */
+
+    /**
      * Set ledger instance data.
      *
-     * @param {Object} options             The options for updating the ledger instance.
-     * @param {Auth}   [options.auth]      The access token or basic auth object. Can be ignored if provided in constructor
-     * @param {string} [options.org]       The Organization ID or slug. If not provided, the request will go to your sandbox account.
-     * @param {string} options.ledgerName  Ledger name.
-     * @param {string} options.scopeValue  Scope value.
-     * @param {object} options.instance    The instance with the data
-     * @param {Object} [options.headers]   Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-     * @param {Object} [options.context]   Request context.
+     * @param {Object}  options             The options for updating the ledger instance.
+     * @param {Auth}    [options.auth]      The access token or basic auth object. Can be ignored if provided in constructor
+     * @param {string}  [options.org]       The Organization ID or slug. If not provided, the request will go to your sandbox account.
+     * @param {string}  options.ledgerName  Ledger name.
+     * @param {string}  options.scopeValue  Scope value.
+     * @param {object}  options.instance    The instance with the data
+     * @param {SetMode} [options.setMode]   How the data should be set with existing data. Default is "Replace"
+     * @param {Object}  [options.headers]   Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+     * @param {Object}  [options.context]   Request context.
      *
      * @returns {Promise<RequestResponse>} A promise that resolves to the updated ledger instance data.
      */
-    setLedgerInstance({ auth, org, ledgerName, scopeValue, instance, headers, context }) {
+    setLedgerInstance({ auth, org, ledgerName, scopeValue, instance, setMode, headers, context }) {
         return this.put({
             uri: this._namespacedPath(org, `ledgers/${ledgerName}/instances/${scopeValue}`),
+            query: {
+                set_mode: setMode
+            },
             auth,
             data: { instance },
             headers,
@@ -2685,7 +2693,7 @@ class Particle {
      * @param {string}          params.uri        The URI to request
      * @param {Auth}            [params.auth]     Authorization token to use
      * @param {object}          [params.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-     * @param {string | object} [params.data]     Key/Value pairs of query params or a correctly formatted string
+     * @param {string | object} [params.data]     Request body
      * @param {object}          [params.context]  The invocation context, describing the tool and project
      * @returns {Promise<RequestResponse, RequestError>} A promise that resolves with either the requested data or an error object
      */
@@ -2701,14 +2709,15 @@ class Particle {
      * @param {string}          params.uri        The URI to request
      * @param {Auth}            [params.auth]     Authorization token to use
      * @param {object}          [params.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-     * @param {string | object} [params.data]     Key/Value pairs of query params or a correctly formatted string
+     * @param {string | object} [params.data]     Request body
+     * @param {object}          [params.query]    Key/Value pairs of query params or a correctly formatted string
      * @param {object}          [params.context]  The invocation context, describing the tool and project
      * @returns {Promise<RequestResponse, RequestError>} A promise that resolves with either the requested data or an error object
      */
-    put({ uri, auth, headers, data, context }){
+    put({ uri, auth, headers, data, query, context }){
         context = this._buildContext(context);
         auth = this._getActiveAuthToken(auth);
-        return this.agent.put({ uri, auth, headers, data, context });
+        return this.agent.put({ uri, auth, headers, data, query, context });
     }
 
     /**
@@ -2717,7 +2726,7 @@ class Particle {
      * @param {string}          params.uri        The URI to request
      * @param {Auth}            [params.auth]     Authorization token to use
      * @param {object}          [params.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-     * @param {string | object} [params.data]     Key/Value pairs of query params or a correctly formatted string
+     * @param {string | object} [params.data]     Request body
      * @param {object}          [params.context]  The invocation context, describing the tool and project
      * @returns {Promise<RequestResponse, RequestError>} A promise that resolves with either the requested data or an error object
      */

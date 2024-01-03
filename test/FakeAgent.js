@@ -11,8 +11,8 @@ class FakeAgent {
         return this.request({ uri, method: 'post', auth, headers, data, context });
     }
 
-    put({ uri, auth, headers, data, context }){
-        return this.request({ uri, method: 'put', auth, headers, data, context });
+    put({ uri, auth, headers, data, query, context }){
+        return this.request({ uri, method: 'put', auth, headers, data, query, context });
     }
 
     delete({ uri, auth, headers, data, context }){
@@ -20,7 +20,7 @@ class FakeAgent {
     }
 
     request(opts){
-        return new Promise((resolve) => resolve(opts));
+        return Promise.resolve(opts);
     }
 }
 module.exports = FakeAgent;
