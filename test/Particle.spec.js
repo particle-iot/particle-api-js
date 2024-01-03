@@ -140,12 +140,13 @@ const props = {
         scope: 'Owner',
         name: 'myledger',
         description: 'my ledger',
-        direction: 'Downstream'
+        direction: 'CloudOnly'
     },
     scopeValue: 'abc1234',
     instance: {
         property: 'yes'
-    }
+    },
+    setMode: 'Replace'
 };
 
 const product = 'ze-product-v1';
@@ -315,6 +316,7 @@ describe('ParticleAPI', () => {
                         method: 'put',
                         auth: props.auth,
                         headers: props.headers,
+                        query: undefined,
                         data: {
                             current_password: props.password,
                         },
@@ -1462,6 +1464,7 @@ describe('ParticleAPI', () => {
                             method: 'put',
                             auth: 'X',
                             headers: undefined,
+                            query: undefined,
                             data: {
                                 account_info: { first_name: 'John', last_name: 'Scully' }
                             },
@@ -1480,6 +1483,7 @@ describe('ParticleAPI', () => {
                             method: 'put',
                             auth: 'X',
                             headers: undefined,
+                            query: undefined,
                             data: {
                                 current_password: 'blabla',
                                 username: 'john@skul.ly'
@@ -1496,6 +1500,7 @@ describe('ParticleAPI', () => {
                             method: 'put',
                             auth: 'X',
                             headers: undefined,
+                            query: undefined,
                             data: {
                                 current_password: 'blabla',
                                 username: 'john@skul.ly',
@@ -1516,6 +1521,7 @@ describe('ParticleAPI', () => {
                             method: 'put',
                             auth: 'X',
                             headers: undefined,
+                            query: undefined,
                             data: {
                                 current_password: 'blabla',
                                 password: 'blabla2'
@@ -1533,6 +1539,7 @@ describe('ParticleAPI', () => {
                             uri: '/v1/user',
                             auth: 'X',
                             headers: undefined,
+                            query: undefined,
                             data: {
                                 current_password: 'blabla',
                                 password: 'blabla2',
@@ -2814,6 +2821,9 @@ describe('ParticleAPI', () => {
                     results.should.match({
                         method: 'put',
                         uri: `/v1/orgs/${org}/ledgers/${props.ledgerName}/instances/${props.scopeValue}`,
+                        query: {
+                            set_mode: props.setMode
+                        },
                         auth: props.auth,
                         data: {
                             instance: props.instance
@@ -3015,7 +3025,7 @@ describe('ParticleAPI', () => {
 
             it('calls _buildContext and _getActiveAuthToken from put', () => {
                 api.agent.put = sinon.stub().returns(result);
-                const options = { uri, auth, headers, data, context };
+                const options = { uri, auth, headers, data, context, query };
                 const res = api.put(options);
                 expect(res).to.equal(result);
                 expect(api.agent.put).to.have.been.calledWith({
@@ -3023,6 +3033,7 @@ describe('ParticleAPI', () => {
                     auth,
                     headers,
                     data,
+                    query,
                     context: contextResult
                 });
             });

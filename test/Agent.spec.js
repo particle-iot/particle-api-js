@@ -78,8 +78,8 @@ describe('Agent', () => {
 
         it('can PUT a resource', () => {
             method = 'put';
-            return agent.put({ uri, auth, headers, data, context }).then(() => {
-                expect(agent.request).to.be.calledWith({ uri, method, auth, headers, data, context });
+            return agent.put({ uri, auth, headers, data, context, query }).then(() => {
+                expect(agent.request).to.be.calledWith({ uri, method, auth, headers, data, context, query });
             });
         });
 

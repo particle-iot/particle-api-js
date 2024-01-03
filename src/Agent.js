@@ -103,7 +103,7 @@ class Agent {
      * @param {string} params.uri        The URI to request
      * @param {Auth}   [params.auth]     Authorization token to use
      * @param {object} [params.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-     * @param {object} [params.data]     Key/Value pairs of query params
+     * @param {object} [params.data]     Request body
      * @param {object} [params.context]  The invocation context, describing the tool and project
      * @returns {Promise<RequestResponse, RequestError>} A promise that resolves with either the requested data or an error object
      */
@@ -117,12 +117,13 @@ class Agent {
      * @param {string} params.uri        The URI to request
      * @param {Auth}   [params.auth]     Authorization token to use
      * @param {object} [params.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-     * @param {object} [params.data]     Key/VAlue pairs of query params
+     * @param {object} [params.data]     Request body
+     * @param {object}          [params.query]    Key/Value pairs of query params or a correctly formatted string
      * @param {object} [params.context]  The invocation context, describing the tool and project
      * @returns {Promise<RequestResponse, RequestError>} A promise that resolves with either the requested data or an error object
      */
-    put({ uri, auth, headers, data, context }) {
-        return this.request({ uri, method: 'put', auth, headers, data, context });
+    put({ uri, auth, headers, data, query, context }) {
+        return this.request({ uri, method: 'put', auth, headers, data, query, context });
     }
 
     /**
@@ -131,7 +132,7 @@ class Agent {
      * @param {string} params.uri        The URI to request
      * @param {Auth}   [params.auth]     Authorization token to use
      * @param {object} [params.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-     * @param {object} [params.data]     Key/Value pairs of query params
+     * @param {object} [params.data]     Request body
      * @param {object} [params.context]  The invocation context, describing the tool and project
      * @returns {Promise<RequestResponse, RequestError>} A promise that resolves with either the requested data or an error object
      */
