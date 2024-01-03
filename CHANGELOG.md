@@ -1,5 +1,9 @@
 # changelog
 
+## 10.4.2 - 3 January 2024
+* Add `setMode` arg to `setLedgerInstance`
+* Fix a few incorrect logic function JSDocs
+
 ## 10.4.1 - 2 January 2024
 
 * Fix `setLedgerInstance` taking wrong argument and passing a bad request body to the API
