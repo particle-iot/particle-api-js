@@ -352,7 +352,28 @@ describe('ParticleAPI', () => {
                         data: {
                             username: props.username,
                             password: props.password,
-                            account_info: props.accountInfo
+                            account_info: props.accountInfo,
+                            utm: undefined
+                        },
+                        context: {}
+                    });
+                });
+            });
+            it('allows sending utm parameters', () => {
+                props.utm = { utm_source: 'web' };
+                return api.createUser(props).then(( results ) => {
+                    results.should.eql({
+                        uri: '/v1/users',
+                        method: 'post',
+                        auth: undefined,
+                        headers: props.headers,
+                        data: {
+                            username: props.username,
+                            password: props.password,
+                            account_info: props.accountInfo,
+                            utm: {
+                                utm_source: 'web'
+                            }
                         },
                         context: {}
                     });
