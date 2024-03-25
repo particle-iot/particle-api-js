@@ -243,7 +243,7 @@ class Particle {
      * @param {String} options.username     Email of the new user
      * @param {String} options.password     Password
      * @param {String} options.accountInfo  Object that contains account information fields such as user real name, company name, business account flag etc
-	 * @param {Object} [options.utm]        Object that contains info about the campaign that lead to this user creation
+     * @param {Object} [options.utm]        Object that contains info about the campaign that lead to this user creation
      * @param {Object} [options.headers]    Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]    Request context
      * @returns {Promise} A promise
