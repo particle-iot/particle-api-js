@@ -1,5 +1,8 @@
 # changelog
 
+## 10.4.3 - 25 March 2024
+* Add `utm` paramater to `createUser`
+
 ## 10.4.2 - 3 January 2024
 * Add `setMode` arg to `setLedgerInstance`
 * Fix a few incorrect logic function JSDocs
