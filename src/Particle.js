@@ -3,17 +3,6 @@ const EventStream = require('./EventStream');
 const Agent = require('./Agent');
 const Client = require('./Client');
 
-// Hack to avoid importing the type on every @return statement
-/**
- * @typedef {import('./Agent').RequestResponse} RequestResponse
- */
-/**
- * @typedef {import('./Agent').RequestError} RequestError
- */
-/**
- * @typedef {import('./Agent').Auth} Auth
- */
-
 /**
  * Particle Cloud API wrapper.
  *
@@ -22,7 +11,12 @@ const Client = require('./Client');
  *
  * Most Particle methods take a single unnamed argument object documented as
  * `options` with key/value pairs for each option.
+ *
+ * @typedef {import('./Agent').RequestResponse} RequestResponse
+ * @typedef {import('./Agent').RequestError} RequestError
+ * @typedef {import('./Agent').Auth} Auth
  */
+// These typedef avoid importing the type on every @return statement
 class Particle {
     /**
      * Contructor for the Cloud API wrapper.
@@ -710,16 +704,6 @@ class Particle {
             uri: `/v1/promo_code/${promoCode}`,
             auth,
             headers,
-            context
-        });
-    }
-
-    changeProduct({ deviceId, productId, auth, headers, context }){
-        return this.put({
-            uri: `/v1/devices/${deviceId}`,
-            auth,
-            headers,
-            data: { product_id: productId },
             context
         });
     }
