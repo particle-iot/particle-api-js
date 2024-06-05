@@ -663,6 +663,20 @@ class Particle {
         return this.put({ uri, auth, headers, data, context });
     }
 
+    /**
+     * Disable device protection.
+     *
+     * @param {Object} options               Options for this API call.
+     * @param {String} options.deviceId      Device ID or name.
+     * @param {String} options.action        Request action: `prepare` or `confirm`.
+     * @param {String} [options.product]     Unprotect device in this product ID or slug.
+     * @param {String} [options.deviceNonce] Base64-encoded device nonce.
+     * @param {String} [options.serverNonce] Base64-encoded server nonce.
+     * @param {Auth}   [options.auth]        Access token or basic auth object. Can be ignored if provided in constructor.
+     * @param {Object} [options.headers]     Key/value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+     * @param {Object} [options.context]     Request context.
+     * @returns {Promise} A promise
+     */
     unprotectDevice({ deviceId, product, action, deviceNonce, serverNonce, auth, headers, context }) {
         const uri = this.deviceUri({ deviceId, product });
         const data = { action };
