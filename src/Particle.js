@@ -663,6 +663,18 @@ class Particle {
         return this.put({ uri, auth, headers, data, context });
     }
 
+    unprotectDevice({ deviceId, product, action, deviceNonce, serverNonce, auth, headers, context }) {
+        const uri = this.deviceUri({ deviceId, product });
+        const data = { action };
+        if (deviceNonce !== undefined) {
+            data.device_nonce = deviceNonce;
+        }
+        if (serverNonce !== undefined) {
+            data.server_nonce = serverNonce;
+        }
+        return this.put({ uri, data, auth, headers, context });
+    }
+
     /**
      * Provision a new device for products that allow self-provisioning
      * @param {Object} options            Options for this API call
