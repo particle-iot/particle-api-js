@@ -678,7 +678,7 @@ class Particle {
      * @returns {Promise} A promise
      */
     unprotectDevice({ deviceId, product, action, deviceNonce, serverNonce, auth, headers, context }) {
-        const uri = this.deviceUri({ deviceId, product });
+        const uri = this.deviceUri({ deviceId, product }) + '/unprotect';
         const data = { action };
         if (deviceNonce !== undefined) {
             data.device_nonce = deviceNonce;
