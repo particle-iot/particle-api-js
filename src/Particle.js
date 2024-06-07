@@ -666,19 +666,19 @@ class Particle {
     /**
      * Disable device protection.
      *
-     * @param {Object} options               Options for this API call.
-     * @param {String} options.deviceId      Device ID or name.
-     * @param {String} options.action        Request action: `prepare` or `confirm`.
-     * @param {String} [options.product]     Unprotect device in this product ID or slug.
-     * @param {String} [options.deviceNonce] Base64-encoded device nonce.
-     * @param {String} [options.serverNonce] Base64-encoded server nonce.
-     * @param {Auth}   [options.auth]        Access token or basic auth object. Can be ignored if provided in constructor.
-     * @param {Object} [options.headers]     Key/value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-     * @param {Object} [options.context]     Request context.
+     * @param {Object} options                   Options for this API call.
+     * @param {String} options.deviceId          Device ID or name.
+     * @param {String} options.action            Request action: `prepare` or `confirm`.
+     * @param {String} [options.product]         Unprotect device in this product ID or slug.
+     * @param {String} [options.serverNonce]     Base64-encoded server nonce.
+     * @param {String} [options.deviceNonce]     Base64-encoded device nonce.
+     * @param {String} [options.deviceSignature] Base64-encoded device signature.
+     * @param {Auth}   [options.auth]            Access token or basic auth object. Can be ignored if provided in constructor.
+     * @param {Object} [options.headers]         Key/value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+     * @param {Object} [options.context]         Request context.
      * @returns {Promise} A promise
      */
-    unprotectDevice({ deviceId, product, action, deviceNonce, serverNonce, auth, headers, context }) {
-        const uri = this.deviceUri({ deviceId, product }) + '/unprotect';
+    unprotectDevice({ deviceId, product, action, serverNonce, deviceNonce, deviceSignature, auth, headers, context }) {
         const data = { action };
         if (deviceNonce !== undefined) {
             data.device_nonce = deviceNonce;
@@ -686,6 +686,10 @@ class Particle {
         if (serverNonce !== undefined) {
             data.server_nonce = serverNonce;
         }
+        if (deviceSignature !== undefined) {
+            data.device_signature = deviceSignature;
+        }
+        const uri = this.deviceUri({ deviceId, product }) + '/unprotect';
         return this.put({ uri, data, auth, headers, context });
     }
 
