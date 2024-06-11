@@ -670,15 +670,17 @@ class Particle {
      * @param {String} options.deviceId          Device ID or name.
      * @param {String} options.action            Request action: `prepare` or `confirm`.
      * @param {String} [options.product]         Unprotect device in this product ID or slug.
-     * @param {String} [options.serverNonce]     Base64-encoded server nonce.
-     * @param {String} [options.deviceNonce]     Base64-encoded device nonce.
-     * @param {String} [options.deviceSignature] Base64-encoded device signature.
+     * @param {String} [options.serverNonce]     Base64-encoded server nonce. Mandatory if `action` is `confirm`,
+     * @param {String} [options.deviceNonce]     Base64-encoded device nonce. Mandatory if `action` is `confirm`,
+     * @param {String} [options.deviceSignature] Base64-encoded device signature. Mandatory if `action` is `confirm`,
+     * @param {String} [options.devicePublicKeyFingerprint] Base64-encoded fingerprint of the device public key.
+     *                                           Mandatory if `action` is `confirm`,
      * @param {Auth}   [options.auth]            Access token or basic auth object. Can be ignored if provided in constructor.
      * @param {Object} [options.headers]         Key/value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]         Request context.
      * @returns {Promise} A promise
      */
-    unprotectDevice({ deviceId, product, action, serverNonce, deviceNonce, deviceSignature, auth, headers, context }) {
+    unprotectDevice({ deviceId, product, action, serverNonce, deviceNonce, deviceSignature, devicePublicKeyFingerprint, auth, headers, context }) {
         const data = { action };
         if (deviceNonce !== undefined) {
             data.device_nonce = deviceNonce;
@@ -688,6 +690,9 @@ class Particle {
         }
         if (deviceSignature !== undefined) {
             data.device_signature = deviceSignature;
+        }
+        if (devicePublicKeyFingerprint !== undefined) {
+            data.device_public_key_fingerprint = devicePublicKeyFingerprint;
         }
         const uri = this.deviceUri({ deviceId, product }) + '/unprotect';
         return this.put({ uri, data, auth, headers, context });
