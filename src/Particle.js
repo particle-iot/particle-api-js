@@ -669,18 +669,19 @@ class Particle {
      * @param {Object} options                   Options for this API call.
      * @param {String} options.deviceId          Device ID or name.
      * @param {String} options.action            Request action: `prepare` or `confirm`.
-     * @param {String} [options.product]         Unprotect device in this product ID or slug.
+     * @param {String} [options.org]             Organziation ID or slug.
+     * @param {String} [options.product]         Product ID or slug.
      * @param {String} [options.serverNonce]     Base64-encoded server nonce. Mandatory if `action` is `confirm`,
      * @param {String} [options.deviceNonce]     Base64-encoded device nonce. Mandatory if `action` is `confirm`,
      * @param {String} [options.deviceSignature] Base64-encoded device signature. Mandatory if `action` is `confirm`,
      * @param {String} [options.devicePublicKeyFingerprint] Base64-encoded fingerprint of the device public key.
      *                                           Mandatory if `action` is `confirm`,
      * @param {Auth}   [options.auth]            Access token or basic auth object. Can be ignored if provided in constructor.
-     * @param {Object} [options.headers]         Key/value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+     * @param {Object} [options.headers]         Key/value pairs to send as headers.
      * @param {Object} [options.context]         Request context.
      * @returns {Promise} A promise
      */
-    unprotectDevice({ deviceId, product, action, serverNonce, deviceNonce, deviceSignature, devicePublicKeyFingerprint, auth, headers, context }) {
+    unprotectDevice({ deviceId, org, product, action, serverNonce, deviceNonce, deviceSignature, devicePublicKeyFingerprint, auth, headers, context }) {
         const data = { action };
         if (deviceNonce !== undefined) {
             data.device_nonce = deviceNonce;
@@ -694,7 +695,7 @@ class Particle {
         if (devicePublicKeyFingerprint !== undefined) {
             data.device_public_key_fingerprint = devicePublicKeyFingerprint;
         }
-        const uri = this.deviceUri({ deviceId, product }) + '/unprotect';
+        const uri = this.deviceUri({ deviceId, product, org }) + '/unprotect';
         return this.put({ uri, data, auth, headers, context });
     }
 
@@ -2658,11 +2659,18 @@ class Particle {
      * @param {Object} options           Options for this API call
      * @param {String} options.deviceId  Device ID to access
      * @param {String} [options.product] Device only in this product ID or slug
+     * @param {String} [options.org]     Device only in this organization ID or slug
      * @private
      * @returns {string} URI
      */
-    deviceUri({ deviceId, product }){
-        return product ? `/v1/products/${product}/devices/${deviceId}` : `/v1/devices/${deviceId}`;
+    deviceUri({ deviceId, product, org }){
+        if (org) {
+            return `/v1/orgs/${org}/devices/${deviceId}`;
+        }
+        if (product) {
+            return `/v1/products/${product}/devices/${deviceId}`;
+        }
+        return `/v1/devices/${deviceId}`;
     }
 
     /**

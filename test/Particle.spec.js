@@ -2901,6 +2901,32 @@ describe('ParticleAPI', () => {
                 });
             });
         });
+
+        describe('.unprotectDevice', () => {
+            it('generates request', () => {
+                const args = {
+                    action: 'action',
+                    deviceNonce: 'device-nonce',
+                    serverNonce: 'server-nonce',
+                    deviceSignature: 'device-signature',
+                    devicePublicKeyFingerprint: 'device-public-key-fingerprint'
+                };
+                return api.unprotectDevice({ ...propsWithProduct, ...args }).then((results) => {
+                    results.should.match({
+                        method: 'put',
+                        uri: `/v1/products/${product}/devices/${props.deviceId}/unprotect`,
+                        auth: props.auth,
+                        data: {
+                            action: 'action',
+                            device_nonce: 'device-nonce',
+                            server_nonce: 'server-nonce',
+                            device_signature: 'device-signature',
+                            device_public_key_fingerprint: 'device-public-key-fingerprint'
+                        }
+                    });
+                });
+            });
+        });
     });
 
     describe('backwards-compatibility function aliases', () => {
@@ -2920,6 +2946,12 @@ describe('ParticleAPI', () => {
             it('gets the product device uri', () => {
                 const uri = api.deviceUri({ deviceId: 'abc', product: 'xyz' });
                 uri.should.equal('/v1/products/xyz/devices/abc');
+            });
+        });
+        describe('org scope', () => {
+            it('gets the org device uri', () => {
+                const uri = api.deviceUri({ deviceId: 'abc', org: 'xyz' });
+                uri.should.equal('/v1/orgs/xyz/devices/abc');
             });
         });
     });
