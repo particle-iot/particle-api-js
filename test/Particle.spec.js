@@ -817,19 +817,6 @@ describe('ParticleAPI', () => {
             });
         });
 
-        describe('.changeProduct', () => {
-            it('generates request', () => {
-                return api.changeProduct(props).then(Common.expectDeviceUrlAndToken);
-            });
-
-            it('sends proper data', () => {
-                return api.changeProduct(props).then(({ data }) => {
-                    data.should.be.instanceOf(Object);
-                    data.product_id.should.equal(props.productId);
-                });
-            });
-        });
-
         describe('.getVariable', () => {
             describe('user scope', () => {
                 it('generates request', () => {
@@ -2901,6 +2888,32 @@ describe('ParticleAPI', () => {
                 });
             });
         });
+
+        describe('.unprotectDevice', () => {
+            it('generates request', () => {
+                return api.unprotectDevice(Object.assign({}, propsWithProduct, {
+                    action: 'action',
+                    deviceNonce: 'device-nonce',
+                    serverNonce: 'server-nonce',
+                    deviceSignature: 'device-signature',
+                    devicePublicKeyFingerprint: 'device-public-key-fingerprint'
+                })).then((results) => {
+                    results.should.match({
+                        method: 'put',
+                        uri: `/v1/products/${product}/devices/${props.deviceId}/unprotect`,
+                        auth: props.auth,
+                        headers: props.headers,
+                        data: {
+                            action: 'action',
+                            device_nonce: 'device-nonce',
+                            server_nonce: 'server-nonce',
+                            device_signature: 'device-signature',
+                            device_public_key_fingerprint: 'device-public-key-fingerprint'
+                        }
+                    });
+                });
+            });
+        });
     });
 
     describe('backwards-compatibility function aliases', () => {
@@ -2920,6 +2933,12 @@ describe('ParticleAPI', () => {
             it('gets the product device uri', () => {
                 const uri = api.deviceUri({ deviceId: 'abc', product: 'xyz' });
                 uri.should.equal('/v1/products/xyz/devices/abc');
+            });
+        });
+        describe('org scope', () => {
+            it('gets the org device uri', () => {
+                const uri = api.deviceUri({ deviceId: 'abc', org: 'xyz' });
+                uri.should.equal('/v1/orgs/xyz/devices/abc');
             });
         });
     });
