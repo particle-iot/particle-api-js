@@ -1,5 +1,9 @@
 # changelog
 
+## 10.5.0 - 14 June 2024
+* Add `unprotectDevice`
+* Remove `changeProduct`
+
 ## 10.4.3 - 25 March 2024
 * Add `utm` paramater to `createUser`
 
