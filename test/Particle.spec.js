@@ -2904,18 +2904,18 @@ describe('ParticleAPI', () => {
 
         describe('.unprotectDevice', () => {
             it('generates request', () => {
-                const args = {
+                return api.unprotectDevice(Object.assign({}, propsWithProduct, {
                     action: 'action',
                     deviceNonce: 'device-nonce',
                     serverNonce: 'server-nonce',
                     deviceSignature: 'device-signature',
                     devicePublicKeyFingerprint: 'device-public-key-fingerprint'
-                };
-                return api.unprotectDevice({ ...propsWithProduct, ...args }).then((results) => {
+                })).then((results) => {
                     results.should.match({
                         method: 'put',
                         uri: `/v1/products/${product}/devices/${props.deviceId}/unprotect`,
                         auth: props.auth,
+                        headers: props.headers,
                         data: {
                             action: 'action',
                             device_nonce: 'device-nonce',
