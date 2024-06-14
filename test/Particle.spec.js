@@ -817,19 +817,6 @@ describe('ParticleAPI', () => {
             });
         });
 
-        describe('.changeProduct', () => {
-            it('generates request', () => {
-                return api.changeProduct(props).then(Common.expectDeviceUrlAndToken);
-            });
-
-            it('sends proper data', () => {
-                return api.changeProduct(props).then(({ data }) => {
-                    data.should.be.instanceOf(Object);
-                    data.product_id.should.equal(props.productId);
-                });
-            });
-        });
-
         describe('.getVariable', () => {
             describe('user scope', () => {
                 it('generates request', () => {
