@@ -255,8 +255,10 @@ class Agent {
         }
         if (query) {
             const queryParams = qs.stringify(query);
-            const hasParams = actualUri.includes('?');
-            actualUri = `${actualUri}${hasParams ? '&' : '?'}${queryParams}`;
+            if (queryParams) {
+                const hasParams = actualUri.includes('?');
+                actualUri = `${actualUri}${hasParams ? '&' : '?'}${queryParams}`;
+            }
         }
 
         const userAgentHeader = { 'User-Agent': `${packageJson.name}/${packageJson.version} (${packageJson.repository.url})` };
