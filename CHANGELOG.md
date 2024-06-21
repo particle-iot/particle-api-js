@@ -1,5 +1,8 @@
 # changelog
 
+## 10.5.1 - 21 June 2024
+* Don't add an empty query string to the URL
+
 ## 10.5.0 - 14 June 2024
 * Add `unprotectDevice`
 * Remove `changeProduct`
