@@ -2632,6 +2632,37 @@ class Particle {
     }
 
     /**
+     * List Device OS versions
+     *
+     * @param {Object} options                    Options for this API call
+     * @param {Number} [options.platformId]       Platform ID to filter Device OS versions
+     * @param {Number} [options.internalVersion]  Internal version number to filter Device OS versions
+     * @param {Number} [options.page]             Page number for pagination
+     * @param {Number} [options.perPage]          Number of items per page
+     * @param {Auth}   [options.auth]             The access token or basic auth object. Can be ignored if provided in constructor
+     * @param {Object} [options.headers]          Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+     * @param {Object} [options.context]          Request context
+     *
+     * @returns {Promise<RequestResponse>}        A promise that resolves to the list of Device OS versions.
+     */
+    listDeviceOsVersions({ platformId, internalVersion, page, perPage, auth, headers, context }) {
+        const query = {
+            platform_id: platformId,
+            internal_version: internalVersion,
+            page,
+            per_page: perPage
+        };
+
+        return this.get({
+            uri: '/v1/device-os/versions',
+            query,
+            auth,
+            headers,
+            context
+        });
+    }
+
+    /**
      * Set default auth token that will be used in each method if `auth` is not provided
      * @param {Auth} auth The access token or basic auth object
      * @throws {Error} When not auth string is provided
