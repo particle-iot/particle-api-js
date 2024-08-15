@@ -2925,6 +2925,41 @@ describe('ParticleAPI', () => {
             });
         });
 
+        describe('.getDeviceOsVersion', () => {
+            it('generates request without optional parameters', () => {
+                const options = {
+                    auth: props.auth,
+                    version: '1.2.3'
+                };
+                return api.getDeviceOsVersion(options).then((results) => {
+                    results.should.match({
+                        method: 'get',
+                        uri: '/v1/device-os/versions/1.2.3',
+                        auth: props.auth,
+                        query: {}
+                    });
+                });
+            });
+
+            it('generates request with platformId parameter', () => {
+                const options = {
+                    auth: props.auth,
+                    version: '1.2.3',
+                    platformId: 6
+                };
+                return api.getDeviceOsVersion(options).then((results) => {
+                    results.should.match({
+                        method: 'get',
+                        uri: '/v1/device-os/versions/1.2.3',
+                        auth: props.auth,
+                        query: {
+                            platform_id: 6
+                        }
+                    });
+                });
+            });
+        });
+
         describe('.unprotectDevice', () => {
             it('generates request', () => {
                 return api.unprotectDevice(Object.assign({}, propsWithProduct, {

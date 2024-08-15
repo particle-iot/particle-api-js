@@ -2663,6 +2663,29 @@ class Particle {
     }
 
     /**
+     * Get a specific Device OS version
+     *
+     * @param {Object} options               Options for this API call
+     * @param {String} options.version       Version of the Device OS
+     * @param {Number} [options.platformId]  Optional platform ID to filter Device OS version
+     * @param {Auth}   [options.auth]        The access token or basic auth object. Can be ignored if provided in constructor
+     * @param {Object} [options.headers]     Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+     * @param {Object} [options.context]     Request context
+     *
+     * @returns {Promise<RequestResponse>}        A promise that resolves to the specified Device OS version data.
+     */
+    getDeviceOsVersion({ version, platformId, auth, headers, context }) {
+        const query = platformId ? { platform_id: platformId } : {};
+        return this.get({
+            uri: `/v1/device-os/versions/${version}`,
+            query,
+            auth,
+            headers,
+            context
+        });
+    }
+
+    /**
      * Set default auth token that will be used in each method if `auth` is not provided
      * @param {Auth} auth The access token or basic auth object
      * @throws {Error} When not auth string is provided
