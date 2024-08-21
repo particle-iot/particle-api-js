@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  browser-tools: circleci/browser-tools@1
+  browser-tools: circleci/browser-tools@1.4.8
 
 jobs:
   run-tests:
@@ -25,9 +25,7 @@ jobs:
           condition:
             equal: ["16.20.0", << parameters.node-version >>]
           steps:
-            - browser-tools/install-browser-tools:
-                # Workaround for circleCI automatically targeting unstalbe build https://github.com/CircleCI-Public/browser-tools-orb/issues/90
-                chrome-version: 116.0.5845.96 # TODO: remove when chromedriver downloads are fixed
+            - browser-tools/install-browser-tools
             - run:
                 name: Run tests with browser
                 command: npm run test:browser
