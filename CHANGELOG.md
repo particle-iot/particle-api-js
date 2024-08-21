@@ -1,5 +1,8 @@
 # changelog
 
+## 10.6.0 - 21 August 2024
+* Add DeviceOS versions endpoints
+
 ## 10.5.1 - 21 June 2024
 * Don't add an empty query string to the URL
 
