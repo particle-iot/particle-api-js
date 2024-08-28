@@ -534,7 +534,7 @@ describe('ParticleAPI', () => {
             });
         });
 
-        describe('.addDeviceToProduct', () => {
+        describe.only('.addDeviceToProduct', () => {
             it('sends request to add a single device by id', () => {
                 const prodProps = Object.assign({}, propsWithProduct);
                 delete prodProps.file;
@@ -560,6 +560,54 @@ describe('ParticleAPI', () => {
                             file: props.file,
                         }
                     });
+                });
+            });
+
+            it('does not throw an error if an Open Device is added to a non-protected product', () => {
+                return api.addDeviceToProduct(propsWithProduct).then((results) => {
+                    results.should.match({
+                        method: 'post',
+                        uri: `/v1/products/${product}/devices`,
+                        auth: props.auth,
+                        files: {
+                            file: props.file,
+                        }
+                    });
+                });
+            });
+
+            it('does not throw an error if an Open Device is added to a Protected product', () => {
+                const prodProps = Object.assign({ device_protection: 'active' }, propsWithProduct);
+                return api.addDeviceToProduct(prodProps).then((results) => {
+                    results.should.match({
+                        method: 'post',
+                        uri: `/v1/products/${product}/devices`,
+                        auth: props.auth,
+                        files: {
+                            file: props.file,
+                        }
+                    });
+                });
+            });
+
+            it('does not throw an error if a Protected Device is added to a Protected product', () => {
+                const prodProps = Object.assign({ device_protection: 'active' }, propsWithProduct);
+                return api.addDeviceToProduct(prodProps).then((results) => {
+                    results.should.match({
+                        method: 'post',
+                        uri: `/v1/products/${product}/devices`,
+                        auth: props.auth,
+                        files: {
+                            file: props.file,
+                        }
+                    });
+                });
+            });
+
+            it('throws an error if a Protected Device is added to a non-protected product', () => {
+                sinon.stub(api, 'getDevice').resolves({ device_protection: { status: 'active' } });
+                return api.addDeviceToProduct(propsWithProduct).catch((error) => {
+                    expect(error.message).to.equal('Protected Devices cannot be added to a non-protected product');
                 });
             });
         });

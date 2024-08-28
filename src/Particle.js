@@ -186,6 +186,7 @@ class Particle {
      * @param {String} options.email      Username for the Particle account
      * @param {String} options.password   Password for the Particle account
      * @param {String} options.product    Create the customer in this product ID or slug
+     * @param {String} options.   Create the customer in this ID or slug
      * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]  Request context
      * @returns {Promise} A promise
@@ -498,6 +499,18 @@ class Particle {
         } else if (deviceId){
             data = { id: deviceId };
         }
+
+        const devicePromise = this.getDevice({ deviceId, auth, headers, context });
+        const productPromise = this.getProduct({ product, auth, headers, context });
+
+        Promise.all([devicePromise, productPromise]).then(([device, product]) => {
+            let deviceIsProtected = device.device_protection.status === 'active';
+            let productIsProtected = product.device_protection === 'active';
+
+            if (deviceIsProtected && !productIsProtected) {
+                throw new Error('Protected Devices cannot be added to a non-protected product');
+            }
+        });
 
         return this.request({
             uri: `/v1/products/${product}/devices`,
