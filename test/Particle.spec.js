@@ -3155,7 +3155,7 @@ describe('ParticleAPI', () => {
                 error = e;
             }
             expect(error).to.be.an.instanceOf(Error);
-            expect(error.message).to.eql('Must pass a non-empty string or object with username and password for basic auth!');
+            expect(error.message).to.eql('Must pass a non-empty string representing an auth token!');
         });
     });
 
