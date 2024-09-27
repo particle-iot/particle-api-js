@@ -24,17 +24,7 @@ const fs = require('../fs');
 const packageJson = require('../package.json');
 
 /**
- * @typedef {string} AccessToken
- */
-
-/**
- * @typedef {object} BasicAuth
- * @property {string} username
- * @property {string} password
- */
-
-/**
- * @typedef {AccessToken | BasicAuth} Auth Prefer using an access token over basic auth for better security
+ * @typedef {string} Auth Access token to use for the request
  */
 
 /**
@@ -394,20 +384,11 @@ class Agent {
      * @returns {object} The original request.
      */
     _getAuthorizationHeader(auth){
-        if (!auth) {
-            return {};
-        }
         if (typeof auth === 'string') {
             return { Authorization: `Bearer ${auth}` };
         }
-        let encoded;
-        if (this.isForBrowser()) {
-            encoded = btoa(`${auth.username}:${auth.password}`);
-        } else {
-            encoded = Buffer.from(`${auth.username}:${auth.password}`)
-                .toString('base64');
-        }
-        return { Authorization: `Basic ${encoded}` };
+
+        return {};
     }
 
     /**
