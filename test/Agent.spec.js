@@ -108,28 +108,6 @@ describe('Agent', () => {
             const headers = agent._getAuthorizationHeader(auth);
             expect(headers).to.eql({ Authorization: bearer });
         });
-
-        if (typeof window !== 'undefined') {
-            it('supports auth with user/pass in browsers', () => {
-                const auth = {
-                    username: 'test@particle.io',
-                    password: 'super_secret'
-                };
-                const basic = 'Basic dGVzdEBwYXJ0aWNsZS5pbzpzdXBlcl9zZWNyZXQ=';
-                const headers = agent._getAuthorizationHeader(auth);
-                expect(headers).to.eql({ Authorization: basic });
-            });
-        } else {
-            it('supports auth with user/pass in node', () => {
-                const auth = {
-                    username: 'test@particle.io',
-                    password: 'super_secret'
-                };
-                const basic = 'Basic dGVzdEBwYXJ0aWNsZS5pbzpzdXBlcl9zZWNyZXQ=';
-                const headers = agent._getAuthorizationHeader(auth);
-                expect(headers).to.eql({ Authorization: basic });
-            });
-        }
     });
 
     describe('request', () => {

@@ -389,21 +389,6 @@ describe('ParticleAPI', () => {
             });
         });
 
-        describe('.deleteAccessToken', () => {
-            it('sends request', () => {
-                return api.deleteAccessToken(props).then((results) => {
-                    results.should.match({
-                        method: 'delete',
-                        uri: `/v1/access_tokens/${props.token}`,
-                        auth: {
-                            username: props.username,
-                            password: props.password
-                        }
-                    });
-                });
-            });
-        });
-
         describe('.deleteCurrentAccessToken', () => {
             it('sends request', () => {
                 return api.deleteCurrentAccessToken(props).then((results) => {
@@ -425,41 +410,6 @@ describe('ParticleAPI', () => {
                         auth: props.auth,
                     });
                 });
-            });
-        });
-
-        describe('.listAccessTokens', () => {
-            let options;
-
-            beforeEach(() => {
-                options = {
-                    username: props.username,
-                    password: props.password,
-                    otp: props.otp
-                };
-            });
-
-            it('sends credentials', () => {
-                delete options.otp;
-                return api.listAccessTokens(options)
-                    .then(({ auth, query }) => {
-                        expect(auth).to.be.an('object');
-                        expect(auth).to.have.property('username', options.username);
-                        expect(auth).to.have.property('password', options.password);
-                        expect(query).to.equal(undefined);
-                    });
-            });
-
-            it('includes otp when provided', () => {
-                return api.listAccessTokens(options)
-                    .then(({ auth, query }) => {
-                        expect(auth).to.be.an('object');
-                        expect(auth).to.have.property('username', options.username);
-                        expect(auth).to.have.property('password', options.password);
-                        expect(query).to.be.an('object');
-                        expect(query).to.have.property('otp', props.otp);
-                        expect(props.otp).to.be.a('string').with.lengthOf(6);
-                    });
             });
         });
 
@@ -2984,12 +2934,6 @@ describe('ParticleAPI', () => {
                     });
                 });
             });
-        });
-    });
-
-    describe('backwards-compatibility function aliases', () => {
-        it('maps removeAccessToken to deleteAccessToken', () => {
-            api.removeAccessToken.should.equal(api.deleteAccessToken);
         });
     });
 
