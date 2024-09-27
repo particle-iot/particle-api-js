@@ -291,26 +291,6 @@ class Particle {
     }
 
     /**
-     * Revoke an access token
-     * @param {Object} options            Options for this API call
-     * @param {String} options.username   Username of the Particle cloud account that the token belongs to.
-     * @param {String} options.password   Password for the account
-     * @param {String} options.token      Access token you wish to revoke
-     * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-     * @param {Object} [options.context]  Request context
-     * @returns {Promise} A promise
-     */
-    deleteAccessToken({ username, password, token, headers, context }){
-        return this.delete({
-            uri: `/v1/access_tokens/${token}`,
-            auth: { username, password },
-            headers,
-            data: { access_token: token },
-            context
-        });
-    }
-
-    /**
      * Revoke the current session access token
      * @param {Object} options            Options for this API call
      * @param {Auth}   [options.auth]     The access token or basic auth object. Can be ignored if provided in constructor
@@ -358,26 +338,6 @@ class Particle {
             uri: '/v1/user',
             data: { password },
             auth,
-            headers,
-            context
-        });
-    }
-
-    /**
-     * List all valid access tokens for a Particle Cloud account
-     * @param {Object} options            Options for this API call
-     * @param {String} options.username   Username
-     * @param {String} options.password   Password
-     * @param {String} options.otp        Current one-time-password generated from the authentication application
-     * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-     * @param {Object} [options.context]  Request context
-     * @returns {Promise} A promise
-     */
-    listAccessTokens({ username, password, otp, headers, context }){
-        return this.get({
-            uri: '/v1/access_tokens',
-            auth: { username, password },
-            query: otp ? { otp } : undefined,
             headers,
             context
         });
@@ -2851,8 +2811,5 @@ class Particle {
         this.agent.setBaseUrl(baseUrl);
     }
 }
-
-// Aliases for backwards compatibility
-Particle.prototype.removeAccessToken = Particle.prototype.deleteAccessToken;
 
 module.exports = Particle;
