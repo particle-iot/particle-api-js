@@ -49,7 +49,10 @@ describe('EventStream', () => {
                 expect(http.request).to.have.been.calledWith({
                     hostname: 'hostname',
                     protocol: 'http:',
-                    path: '/path?access_token=token',
+                    path: '/path',
+                    headers: {
+                        'Authorization': 'Bearer token'
+                    },
                     method: 'get',
                     port: 8080,
                     mode: 'prefer-streaming'
