@@ -24,20 +24,6 @@ const fs = require('../fs');
 const packageJson = require('../package.json');
 
 /**
- * @typedef {string} AccessToken
- */
-
-/**
- * @typedef {object} BasicAuth
- * @property {string} username
- * @property {string} password
- */
-
-/**
- * @typedef {AccessToken | BasicAuth} Auth Prefer using an access token over basic auth for better security
- */
-
-/**
  * The object returned for a basic request
  * @typedef {object} JSONResponse
  * @property {number} statusCode  The HTTP response status
@@ -73,7 +59,7 @@ class Agent {
      * Make a GET request
      * @param {object} params            Configurations to customize the request
      * @param {string} params.uri        The URI to request
-     * @param {Auth}   [params.auth]     Authorization token to use
+     * @param {string} [params.auth]     Authorization token to use
      * @param {object} [params.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {object} [params.query]    Key/Value pairs of query params
      * @param {object} [params.context]  The invocation context, describing the tool and project
@@ -87,7 +73,7 @@ class Agent {
      * Make a HEAD request
      * @param {object} params            Configurations to customize the request
      * @param {string} params.uri        The URI to request
-     * @param {Auth}   [params.auth]     Authorization token to use
+     * @param {string} [params.auth]     Authorization token to use
      * @param {object} [params.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {object} [params.query]    Key/Value pairs of query params
      * @param {object} [params.context]  The invocation context, describing the tool and project
@@ -101,7 +87,7 @@ class Agent {
      * Make a POST request
      * @param {object} params            Configurations to customize the request
      * @param {string} params.uri        The URI to request
-     * @param {Auth}   [params.auth]     Authorization token to use
+     * @param {string} [params.auth]     Authorization token to use
      * @param {object} [params.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {object} [params.data]     Request body
      * @param {object} [params.context]  The invocation context, describing the tool and project
@@ -115,7 +101,7 @@ class Agent {
      * Make a PUT request
      * @param {object} params            Configurations to customize the request
      * @param {string} params.uri        The URI to request
-     * @param {Auth}   [params.auth]     Authorization token to use
+     * @param {string} [params.auth]     Authorization token to use
      * @param {object} [params.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {object} [params.data]     Request body
      * @param {object}          [params.query]    Key/Value pairs of query params or a correctly formatted string
@@ -130,7 +116,7 @@ class Agent {
      * Make a DELETE request
      * @param {object} params            Configurations to customize the request
      * @param {string} params.uri        The URI to request
-     * @param {Auth}   [params.auth]     Authorization token to use
+     * @param {string} [params.auth]     Authorization token to use
      * @param {object} [params.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {object} [params.data]     Request body
      * @param {object} [params.context]  The invocation context, describing the tool and project
@@ -147,7 +133,7 @@ class Agent {
      * @param {string}  config.method           The method used to request the URI, should be in uppercase.
      * @param {object}  [config.headers]        Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {object}  [config.data]           Arbitrary data to send as the body.
-     * @param {Auth}    [config.auth]           Authorization
+     * @param {string}  [config.auth]           Authorization
      * @param {object}  [config.query]          Query parameters
      * @param {object}  [config.form]           Form fields
      * @param {object}  [config.files]          Array of file names and file content
@@ -240,7 +226,7 @@ class Agent {
      * @param {string} config.method     The method used to request the URI, should be in uppercase.
      * @param {object} [config.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {object} [config.data]     Arbitrary data to send as the body.
-     * @param {Auth}   [config.auth]     Authorization
+     * @param {string} [config.auth]     Authorization
      * @param {object} [config.query]    Query parameters
      * @param {object} [config.form]     Form fields
      * @param {object} [config.files]    Array of file names and file content
@@ -390,24 +376,15 @@ class Agent {
 
     /**
      * Adds an authorization header.
-     * @param {Auth} [auth]  The authorization bearer token.
+     * @param {string} [auth]  The authorization bearer token.
      * @returns {object} The original request.
      */
     _getAuthorizationHeader(auth){
-        if (!auth) {
-            return {};
-        }
         if (typeof auth === 'string') {
             return { Authorization: `Bearer ${auth}` };
         }
-        let encoded;
-        if (this.isForBrowser()) {
-            encoded = btoa(`${auth.username}:${auth.password}`);
-        } else {
-            encoded = Buffer.from(`${auth.username}:${auth.password}`)
-                .toString('base64');
-        }
-        return { Authorization: `Basic ${encoded}` };
+
+        return {};
     }
 
     /**
