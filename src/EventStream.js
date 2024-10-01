@@ -29,7 +29,10 @@ class EventStream extends EventEmitter {
             const req = requestor.request({
                 hostname,
                 protocol,
-                path: `${path}?access_token=${this.token}`,
+                path,
+                headers: {
+                    'Authorization': `Bearer ${this.token}`
+                },
                 method: 'get',
                 // @ts-ignore
                 port: parseInt(port, 10) || (isSecure ? 443 : 80),
