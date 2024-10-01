@@ -1,5 +1,9 @@
 # changelog
 
+## 11.0.0 - 1 October 2024
+* Remove `listAccessTokens` and `deleteAccessToken` methods that relied on HTTP basic auth
+* Update EventStream to send access_token in the Authorization header instead. No functional change
+
 ## 10.6.0 - 21 August 2024
 * Add DeviceOS versions endpoints
 
