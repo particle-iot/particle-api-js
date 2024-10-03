@@ -290,6 +290,22 @@ class Particle {
     }
 
     /**
+     * Revoke an access token
+     * @param {Object} options            Options for this API call
+     * @param {String} options.token      Access token you wish to revoke
+     * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+     * @param {Object} [options.context]  Request context
+     * @returns {Promise} A promise
+     */
+    deleteAccessToken({ token, headers, context }){
+        return this.delete({
+            uri: `/v1/access_tokens/${token}`,
+            headers,
+            context
+        });
+    }
+
+    /**
      * Revoke the current session access token
      * @param {Object} options            Options for this API call
      * @param {string} [options.auth]     The access token. Can be ignored if provided in constructor
