@@ -1,5 +1,8 @@
 # changelog
 
+## 11.1.0 - 3 October 2024
+* Re-add `deleteAccessToken` method, but with basic auth removed
+
 ## 11.0.0 - 1 October 2024
 * Remove `listAccessTokens` and `deleteAccessToken` methods that relied on HTTP basic auth
 * Update EventStream to send access_token in the Authorization header instead. No functional change
