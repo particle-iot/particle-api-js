@@ -136,28 +136,6 @@ class Client {
         return this.api.listDevices({ auth: this.auth });
     }
 
-    /**
-     * @returns {Promise} A promise
-     * @deprecated Will be removed in 6.5
-     */
-    listBuildTargets(){
-        return this.api.listBuildTargets({ onlyFeatured: true, auth: this.auth })
-            .then(payload => {
-                let targets = [];
-                for (let target of payload.body.targets){
-                    for (let platform of target.platforms){
-                        targets.push({
-                            version: target.version,
-                            platform: platform,
-                            prerelease: target.prereleases.indexOf(platform) > -1,
-                            firmware_vendor: target.firmware_vendor
-                        });
-                    }
-                }
-                return targets;
-            }, () => {});
-    }
-
     trackingIdentity({ full = false, context = undefined }={}){
         return this.api.trackingIdentity({ full, context, auth: this.auth })
             .then(payload => {

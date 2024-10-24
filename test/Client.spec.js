@@ -145,54 +145,6 @@ describe('Client', () => {
         });
     });
 
-    describe('listBuildTargets', () => {
-        it('delegates to api', () => {
-            const response = {
-                targets: [
-                    {
-                        platforms: [0, 6],
-                        prereleases: [],
-                        version: '1.2.3',
-                        firmware_vendor: 'Foo'
-                    }, {
-                        platforms: [6, 8],
-                        prereleases: [6],
-                        version: '4.5.6',
-                        firmware_vendor: 'Bar'
-                    }
-                ]
-            };
-            const expected = [
-                {
-                    version: '1.2.3',
-                    platform: 0,
-                    prerelease: false,
-                    firmware_vendor: 'Foo'
-                }, {
-                    version: '1.2.3',
-                    platform: 6,
-                    prerelease: false,
-
-                    firmware_vendor: 'Foo'
-                }, {
-                    version: '4.5.6',
-                    platform: 6,
-                    prerelease: true,
-                    firmware_vendor: 'Bar'
-                }, {
-                    version: '4.5.6',
-                    platform: 8,
-                    prerelease: false,
-                    firmware_vendor: 'Bar'
-                },
-            ];
-            api.listBuildTargets = () => {
-                return Promise.resolve({ body: response });
-            };
-            return expect(client.listBuildTargets()).to.eventually.eql(expected);
-        });
-    });
-
     describe('trackingIdentity', () => {
         it('delegates to api and unpacks the body', () => {
             api.trackingIdentity = ({ auth, full, context }) => {
