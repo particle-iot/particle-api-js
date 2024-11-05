@@ -49,7 +49,7 @@ describe('EventStream', () => {
                 expect(http.request).to.have.been.calledWith({
                     hostname: 'hostname',
                     protocol: 'http:',
-                    path: '/path',
+                    path: '/path?nonce=0',
                     headers: {
                         'Authorization': 'Bearer token'
                     },

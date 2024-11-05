@@ -26,10 +26,12 @@ class EventStream extends EventEmitter {
 
             const isSecure = protocol === 'https:';
             const requestor = isSecure ? https : http;
+            const nonce = global.performance ? global.performance.now() : 0;
             const req = requestor.request({
                 hostname,
                 protocol,
-                path,
+                // Firefox has issues making multiple fetch requests with the same parameters so add a nonce
+                path: `${path}?nonce=${nonce}`,
                 headers: {
                     'Authorization': `Bearer ${this.token}`
                 },
