@@ -29,7 +29,8 @@ class EventStream extends EventEmitter {
             const req = requestor.request({
                 hostname,
                 protocol,
-                path,
+                // Firefox has issues making multiple fetch requests with the same parameters so add a nonce
+                path: `${path}?nonce=${performance.now()}`,
                 headers: {
                     'Authorization': `Bearer ${this.token}`
                 },
