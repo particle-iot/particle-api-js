@@ -1,5 +1,8 @@
 # changelog
 
+## 11.1.1 - 5 November 2024
+* Workaround for Firefox failing to open multiple event streams
+
 ## 11.1.0 - 3 October 2024
 * Re-add `deleteAccessToken` method, but with basic auth removed
 
