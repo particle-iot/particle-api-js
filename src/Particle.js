@@ -28,7 +28,6 @@ class Particle {
      * @param {string} [options.clientId]
      * @param {number} [options.tokenDuration]
      * @param {string} [options.auth]            The access token. If not specified here, will have to be added to every request
-     * @param {ToolContext} [options.tool]       The tool context which will add the X-Particle-Tool header to every request
      */
     constructor(options = {}){
         if (options.auth) {
@@ -38,7 +37,6 @@ class Particle {
         // todo - this seems a bit dangerous - would be better to put all options/context in a contained object
         Object.assign(this, Defaults, options);
         this.context = {};
-        this.setContext('tool', options.tool);
 
         this.agent = new Agent(this.baseUrl);
     }
