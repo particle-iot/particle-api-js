@@ -22,12 +22,12 @@ class Particle {
      *
      * Create a new Particle object and call methods below on it.
      *
-     * @param {Object} options                  Options for this API call Options to be used for all requests (see [Defaults](../src/Defaults.js))
+     * @param {Object} options                   Options for this API call Options to be used for all requests (see [Defaults](../src/Defaults.js))
      * @param {string} [options.baseUrl]
      * @param {string} [options.clientSecret]
      * @param {string} [options.clientId]
      * @param {number} [options.tokenDuration]
-     * @param {string} [options.auth]           The access token. If not specified here, will have to be added to every request
+     * @param {string} [options.auth]            The access token. If not specified here, will have to be added to every request
      */
     constructor(options = {}){
         if (options.auth) {
@@ -37,6 +37,7 @@ class Particle {
         // todo - this seems a bit dangerous - would be better to put all options/context in a contained object
         Object.assign(this, Defaults, options);
         this.context = {};
+
         this.agent = new Agent(this.baseUrl);
     }
 
@@ -44,6 +45,25 @@ class Particle {
         return (name === 'tool' || name === 'project') && context !== undefined;
     }
 
+    /**
+     * @typedef {Object} ToolContext
+     * @property {string} name
+     * @property {string | number} [version]
+     * @property {Omit<ToolContext, 'components'>[]} [components]
+     */
+
+    /**
+     * @typedef {Record<string, string | number>} ProjectContext
+     * @property {string} name
+     */
+
+    /**
+     * Allows setting a tool or project context which will be sent as headers with every request.
+     * Tool- x-particle-tool
+     * Project- x-particle-project
+     * @param {'tool' | 'project'} name
+     * @param {ToolContext | ProjectContext | undefined} context
+     */
     setContext(name, context){
         if (context !== undefined){
             if (this._isValidContext(name, context)){
