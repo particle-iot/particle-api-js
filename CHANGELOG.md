@@ -1,5 +1,8 @@
 # changelog
 
+## 11.1.2 - 11 December 2024
+* Add context docs for x-particle-tool and x-particle-project headers
+
 ## 11.1.1 - 5 November 2024
 * Workaround for Firefox failing to open multiple event streams
 
