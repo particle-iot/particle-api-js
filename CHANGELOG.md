@@ -1,5 +1,8 @@
 # changelog
 
+## 11.1.3 - 22 July 2025
+* Bump form-data to resolve security warning
+
 ## 11.1.2 - 11 December 2024
 * Add context docs for x-particle-tool and x-particle-project headers
 
