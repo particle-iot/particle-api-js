@@ -31,7 +31,7 @@ describe('Agent', () => {
             this.timeout(6000);
             const agent = new Agent();
             const query = { a: '1', b: '2' };
-            const result = agent.get({ uri: 'http://httpbin.org/get', query });
+            const result = agent.get({ uri: 'https://postman-echo.com/get', query });
             return result.then((res)=> {
                 expect(res.statusCode).to.equal(200);
                 expect(res).has.property('body');
