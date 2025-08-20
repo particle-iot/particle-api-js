@@ -1,5 +1,8 @@
 # changelog
 
+## 11.1.4 - 20 August 2025
+* Clarify license is Apache 2.0
+
 ## 11.1.3 - 22 July 2025
 * Bump form-data to resolve security warning
 
