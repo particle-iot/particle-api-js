@@ -4,7 +4,7 @@
   "description": "Particle API Client",
   "main": "src/Particle.js",
   "scripts": {
-    "prepare": "npm run lint && npm run build",
+    "prepare": "npm run build",
     "test": "npm run lint && npm run typecheck && npm run test:unit",
     "test:ci": "npm run test:unit -- --forbid-only && npm run coverage",
     "test:unit": "mocha test/ -R spec",
