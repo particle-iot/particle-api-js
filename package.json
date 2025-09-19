@@ -17,7 +17,7 @@
     "docs": "documentation build src/Particle.js --shallow -g -f md -o docs/api.md",
     "build": "webpack --env mode=production",
     "build-nomin": "webpack --env mode=development",
-    "preversion": "npm run test && npm run prepublish",
+    "preversion": "npm run test && npm run prepare",
     "reinstall": "rm -rf ./node_modules && npm i",
     "version": "npm run build && npm run docs && npm run update-changelog && git add dist/* docs/*",
     "update-changelog": "VERSION=`node -p -e \"require('./package.json').version\"` bash -c 'read -p \"Update CHANGELOG.md for version $VERSION and press ENTER when done.\"' && git add CHANGELOG.md"
