@@ -62,7 +62,7 @@ workflows:
             - particle-ci-private
           matrix:
             parameters:
-              node-version: ["12.22.12", "14.19.2", "16.20.0"]
+              node-version: ["12.22.12", "16.20.0", "22.18"]
           # run tests for all branches and tags
           filters:
             tags:
