@@ -1,5 +1,10 @@
 # changelog
 
+## 11.1.5 - 19 September 2025
+* Ensure node 22 works as expected
+* Remove node 12 validations
+* Update eslint configuration
+
 ## 11.1.4 - 20 August 2025
 * Clarify license is Apache 2.0
 
