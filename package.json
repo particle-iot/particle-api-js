@@ -4,17 +4,16 @@
   "description": "Particle API Client",
   "main": "src/Particle.js",
   "scripts": {
-    "prepare": "npm run lint && npm run build",
+    "prepare": "npm run build",
     "test": "npm run lint && npm run typecheck && npm run test:unit",
-    "test:ci": "npm run lint && npm run test:unit -- --forbid-only && npm run coverage",
+    "test:ci": "npm run test:unit -- --forbid-only && npm run coverage",
     "test:unit": "mocha test/ -R spec",
     "test:unit:silent": "npm run test:unit > tmp/test-unit-log.txt 2>&1",
     "test:browser": "karma start --single-run",
     "test:watch": "npm run test:unit -- --watch",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc",
     "coverage": "nyc --reporter=text --include='src/**/*.js' --temp-dir=./tmp/ --check-coverage --lines 91 npm run test:unit:silent",
-    "lint": "eslint . --ext .js --format unix --ignore-path .gitignore --ignore-pattern \"dist/*\"",
-    "lint:fix": "npm run lint -- --fix",
+    "lint": "eslint",
     "docs": "documentation build src/Particle.js --shallow -g -f md -o docs/api.md",
     "build": "webpack --env mode=production",
     "build-nomin": "webpack --env mode=development",
@@ -44,14 +43,20 @@
     "api"
   ],
   "license": "Apache-2.0",
+  "dependencies": {
+    "form-data": "^4.0.0",
+    "node-fetch": "^2.7.0",
+    "qs": "^6.11.2",
+    "stream-http": "^3.2.0"
+  },
   "devDependencies": {
     "@types/node": "^20.5.9",
     "buffer": "^6.0.3",
     "chai": "^4.3.6",
     "chai-as-promised": "^7.1.1",
     "documentation": "^4.0.0-rc.1",
-    "eslint": "^8.17.0",
-    "eslint-config-particle": "^2.2.1",
+    "eslint": "^9.36.0",
+    "eslint-config-particle": "^3.0.0",
     "events": "^3.3.0",
     "karma": "^6.4.4",
     "karma-chai": "^0.1.0",
@@ -67,16 +72,10 @@
     "sinon": "^7.2.5",
     "sinon-chai": "^3.7.0",
     "terser-webpack-plugin": "^5.3.9",
-    "typescript": "^5.2.2",
+    "typescript": "^5.9.2",
     "url": "^0.11.3",
     "webpack": "^5.88.2",
     "webpack-cli": "^5.1.4"
-  },
-  "dependencies": {
-    "form-data": "^4.0.0",
-    "node-fetch": "^2.7.0",
-    "qs": "^6.11.2",
-    "stream-http": "^3.2.0"
   },
   "browser": {
     "./fs": false,
@@ -84,7 +83,7 @@
     "https": "stream-http"
   },
   "engines": {
-    "node": ">=12.x",
-    "npm": "8.x"
+    "node": ">=16.x",
+    "npm": ">=8.x"
   }
 }

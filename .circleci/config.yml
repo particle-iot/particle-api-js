@@ -4,6 +4,20 @@ orbs:
   browser-tools: circleci/browser-tools@2.2.0
 
 jobs:
+  lint:
+    docker:
+      - image: cimg/node:22.18 # eslint 9.x requires 18+, so we've separated it from the test step
+        auth:
+          username: $DOCKERHUB_USERNAME
+          password: $DOCKERHUB_PASSWORD
+    steps:
+      - checkout
+      - run:
+          name: NPM install
+          command: npm ci
+      - run:
+          name: Lint
+          command: npm run lint
   run-tests:
     parameters:
       node-version:
@@ -57,12 +71,19 @@ workflows:
   version: 2
   test-and-publish:
     jobs:
+      - lint:
+          context:
+            - particle-ci-private
+          # run tests for all branches
+          filters:
+            branches:
+              only: /.*/
       - run-tests:
           context:
             - particle-ci-private
           matrix:
             parameters:
-              node-version: ["12.22.12", "14.19.2", "16.20.0"]
+              node-version: ["16.20.0", "22.18"]
           # run tests for all branches and tags
           filters:
             tags:
@@ -71,6 +92,7 @@ workflows:
               only: /.*/
       - publish-npm:
           requires:
+            - lint
             - run-tests
           context:
             - particle-ci-private

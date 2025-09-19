@@ -1,6 +1,6 @@
 // Set up the Mocha test framework with the Chai assertion library and
 // the Sinon mock library
-
+'use strict';
 const chai = require('chai');
 const sinon = require('sinon');
 const sinonChai = require('sinon-chai');
@@ -11,7 +11,7 @@ chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 module.exports = {
-    chai,
-    sinon,
-    expect
+	chai,
+	sinon,
+	expect
 };
