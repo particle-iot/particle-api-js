@@ -1717,7 +1717,7 @@ class Particle {
 		});
 	}
 
-     /**
+	/**
       * Download a tachyon manufacturing backup files
       * @param {Object} options                   Options for this API call
       * @param {Number} options.deviceId          Device ID
@@ -1726,16 +1726,16 @@ class Particle {
       * @param {Object} [options.context]         Request context
       * @returns {Promise<RequestResponse, RequestError>} A promise with a zip file that contains all manufacturing backup files for the specific device.
       */
-     downloadManufacturingBackup({ deviceId, auth, headers, context }) {
-          return this.request({
-               uri:`/v1/devices/${deviceId}/backup_files`,
-               method: 'put',
-               auth,
-               headers,
-               context,
-               isBuffer: true
-          });
-     }
+	downloadManufacturingBackup({ deviceId, auth, headers, context }) {
+		return this.request({
+			uri:`/v1/devices/${deviceId}/backup_files`,
+			method: 'put',
+			auth,
+			headers,
+			context,
+			isBuffer: true
+		});
+	}
 
 	/**
      * Release a product firmware version as the default version
