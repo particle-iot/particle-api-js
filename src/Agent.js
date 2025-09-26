@@ -211,7 +211,7 @@ class Agent {
      * @param {string} [config.auth]     Authorization
      * @param {object} [config.query]    Query parameters
      * @param {object} [config.form]     Form fields
-     * @param {object} [config.files]    Array of file names and file content
+     * @param {object} [config.files]    Object of key-value file names and file content
      * @param {object} [config.context]  The invocation context, describing the tool and project.
      * @returns {[string, object]} The uri to make the request too, and extra configs
      * @private
@@ -239,9 +239,13 @@ class Agent {
 		} else if (form){
 			contentTypeHeader = { 'Content-Type': 'application/x-www-form-urlencoded' };
 			body = qs.stringify(form);
-		} else if (data){
-			contentTypeHeader = { 'Content-Type': 'application/json' };
-			body = JSON.stringify(data);
+		} else if (data) {
+			if (data instanceof FormData) {
+				body = data;
+			} else {
+				contentTypeHeader = { 'Content-Type': 'application/json' };
+				body = JSON.stringify(data);
+			}
 		}
 		const finalHeaders = Object.assign({},
 			userAgentHeader,
