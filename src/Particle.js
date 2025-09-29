@@ -2770,7 +2770,7 @@ class Particle {
      * @param {string}          params.uri        The URI to request
      * @param {string}          [params.auth]     Authorization token to use
      * @param {object}          [params.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-     * @param {string | object} [params.data]     Request body
+     * @param {object}          [params.data]     Object to send as JSON data in the body.
      * @param {object}          [params.context]  The invocation context, describing the tool and project
      * @returns {Promise<RequestResponse, RequestError>} A promise that resolves with either the requested data or an error object
      */
@@ -2786,7 +2786,7 @@ class Particle {
      * @param {string}          params.uri        The URI to request
      * @param {string}          [params.auth]     Authorization token to use
      * @param {object}          [params.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-     * @param {string | object} [params.data]     Request body
+     * @param {object}          [params.data]     Object to send as JSON data in the body.
      * @param {object}          [params.query]    Key/Value pairs of query params or a correctly formatted string
      * @param {object}          [params.context]  The invocation context, describing the tool and project
      * @returns {Promise<RequestResponse, RequestError>} A promise that resolves with either the requested data or an error object
@@ -2803,7 +2803,7 @@ class Particle {
      * @param {string}          params.uri        The URI to request
      * @param {string}          [params.auth]     Authorization token to use
      * @param {object}          [params.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-     * @param {string | object} [params.data]     Request body
+     * @param {object}          [params.data]     Object to send as JSON data in the body.
      * @param {object}          [params.context]  The invocation context, describing the tool and project
      * @returns {Promise<RequestResponse, RequestError>} A promise that resolves with either the requested data or an error object
      */
@@ -2819,7 +2819,7 @@ class Particle {
      * @param {String}  args.uri         The URI to request
      * @param {String}  args.method      The method used to request the URI, should be in uppercase.
      * @param {Object}  [args.headers]   Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-     * @param {object}  [args.data]      Arbitrary data to send as the body.
+     * @param {object}  [args.data]      Object to send as JSON data in the body.
      * @param {string}  [args.auth]      Authorization
      * @param {Object}  [args.query]     Query parameters
      * @param {Object}  [args.form]      Form fields

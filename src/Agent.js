@@ -71,7 +71,7 @@ class Agent {
      * @param {string} params.uri        The URI to request
      * @param {string} [params.auth]     Authorization token to use
      * @param {object} [params.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-     * @param {object} [params.data]     Request body
+     * @param {object} [params.data]     Object to send as JSON data in the body.
      * @param {object} [params.context]  The invocation context, describing the tool and project
      * @returns {Promise<RequestResponse, RequestError>} A promise that resolves with either the requested data or an error object
      */
@@ -85,8 +85,8 @@ class Agent {
      * @param {string} params.uri        The URI to request
      * @param {string} [params.auth]     Authorization token to use
      * @param {object} [params.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-     * @param {object} [params.data]     Request body
-     * @param {object}          [params.query]    Key/Value pairs of query params or a correctly formatted string
+     * @param {object} [params.data]     Object to send as JSON data in the body.
+     * @param {object} [params.query]    Key/Value pairs of query params or a correctly formatted string
      * @param {object} [params.context]  The invocation context, describing the tool and project
      * @returns {Promise<RequestResponse, RequestError>} A promise that resolves with either the requested data or an error object
      */
@@ -100,7 +100,7 @@ class Agent {
      * @param {string} params.uri        The URI to request
      * @param {string} [params.auth]     Authorization token to use
      * @param {object} [params.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-     * @param {object} [params.data]     Request body
+     * @param {object} [params.data]     Object to send as JSON data in the body.
      * @param {object} [params.context]  The invocation context, describing the tool and project
      * @returns {Promise<RequestResponse, RequestError>} A promise that resolves with either the requested data or an error object
      */
@@ -114,7 +114,7 @@ class Agent {
      * @param {string}  config.uri              The URI to request
      * @param {string}  config.method           The method used to request the URI, should be in uppercase.
      * @param {object}  [config.headers]        Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-     * @param {object}  [config.data]           Arbitrary data to send as the body.
+     * @param {object}  [config.data]           Object to send as JSON data in the body.
      * @param {string}  [config.auth]           Authorization
      * @param {object}  [config.query]          Query parameters
      * @param {object}  [config.form]           Form fields
@@ -207,7 +207,7 @@ class Agent {
      * @param {string} config.uri        The URI to request
      * @param {string} config.method     The method used to request the URI, should be in uppercase.
      * @param {object} [config.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-     * @param {object} [config.data]     Arbitrary data to send as the body.
+     * @param {object} [config.data]     Object to send as JSON data in the body.
      * @param {string} [config.auth]     Authorization
      * @param {object} [config.query]    Query parameters
      * @param {object} [config.form]     Form fields
