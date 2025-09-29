@@ -1,4 +1,5 @@
 'use strict';
+const FormData = require('form-data');
 const { sinon, expect } = require('./test-setup');
 const Agent = require('../src/Agent.js');
 
@@ -280,6 +281,14 @@ describe('Agent', () => {
 			const [, opts] = agent._buildRequest({ uri: 'uri', method: 'get', data: { a: 'abcd' } });
 			expect(opts.body).to.eql('{"a":"abcd"}');
 			expect(opts.headers).to.have.property('Content-Type', 'application/json');
+		});
+
+		it('keeps the body as provided if it is a FormData instance', () => {
+			const data = new FormData();
+			data.append('file', 'data or blob');
+			const [, opts] = agent._buildRequest({ uri: 'uri', method: 'put', data });
+			expect(opts.body).to.eql(data);
+			expect(opts.headers).to.not.have.property('Content-Type');
 		});
 
 		it('should setup form send when form data is given', () => {
