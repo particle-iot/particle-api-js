@@ -1,5 +1,10 @@
 # changelog
 
+## 11.1.6 - 20 September 2025
+* Fix request params to support `FormData` passed in the data argument
+* Update docs on queries receiving `data`
+* Update eslint configuration
+
 ## 11.1.5 - 19 September 2025
 * Ensure node 22 works as expected
 * Remove node 12 validations
