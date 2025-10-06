@@ -1,5 +1,8 @@
 # changelog
 
+## 11.1.7 - 06 October 2025
+* Add downloadManufacturingBackup method
+
 ## 11.1.6 - 20 September 2025
 * Fix request params to support `FormData` passed in the data argument
 * Update docs on queries receiving `data`
