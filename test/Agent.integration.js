@@ -3,7 +3,7 @@
  */
 'use strict';
 const { expect } = require('./test-setup');
-const Agent = require('../src/Agent');
+const Agent = require('../lib/src/Agent');
 
 describe('Agent', () => {
 	if (!process.env.SKIP_AGENT_TEST){

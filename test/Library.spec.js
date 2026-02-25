@@ -1,6 +1,6 @@
 'use strict';
 const { expect } = require('./test-setup');
-const Library = require('../src/Library');
+const Library = require('../lib/src/Library');
 
 const client = {};
 

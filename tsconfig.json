@@ -6,12 +6,16 @@
     "checkJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,
     "strict": true,
     "noImplicitAny": false,
-    "noEmit": true
+    "declaration": true,
+    "outDir": "lib",
+    "sourceMap": true,
+    "moduleResolution": "node"
   },
   "types": ["node"],
   "include": [ "src" ],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "lib"]
 }

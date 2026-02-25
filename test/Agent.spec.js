@@ -1,7 +1,7 @@
 'use strict';
 const FormData = require('form-data');
 const { sinon, expect } = require('./test-setup');
-const Agent = require('../src/Agent.js');
+const Agent = require('../lib/src/Agent');
 
 describe('Agent', () => {
 	beforeEach(() => {

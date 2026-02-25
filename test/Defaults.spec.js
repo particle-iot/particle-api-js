@@ -1,6 +1,6 @@
 'use strict';
 const { expect } = require('./test-setup');
-const Defaults = require('../src/Defaults');
+const Defaults = require('../lib/src/Defaults');
 
 describe('Default Particle constructor options', () => {
 	it('includes baseUrl', () => {
