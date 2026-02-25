@@ -6,6 +6,7 @@
   "types": "lib/src/Particle.d.ts",
   "scripts": {
     "compile": "tsc",
+    "postinstall": "npm run compile",
     "prepublishOnly": "npm run compile && npm run build",
     "test": "npm run lint && npm run typecheck && npm run test:unit",
     "test:ci": "npm run test:unit -- --forbid-only && npm run coverage",
