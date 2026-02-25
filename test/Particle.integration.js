@@ -1,6 +1,6 @@
 'use strict';
 const { expect, sinon } = require('./test-setup');
-const Particle = require('../src/Particle');
+const Particle = require('../lib/src/Particle');
 
 describe('Particle', () => {
 	let api;

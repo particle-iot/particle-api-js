@@ -3,7 +3,7 @@ const { sinon, expect } = require('./test-setup');
 const http = require('http');
 const { EventEmitter } = require('events');
 
-const EventStream = require('../src/EventStream');
+const EventStream = require('../lib/src/EventStream');
 
 describe('EventStream', () => {
 	afterEach(() => {
