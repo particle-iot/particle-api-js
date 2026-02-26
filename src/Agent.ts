@@ -16,13 +16,13 @@ import type {
 } from './types';
 
 class Agent {
-	baseUrl!: string;
+	baseUrl: string | undefined;
 
-	constructor(baseUrl: string) {
+	constructor(baseUrl?: string) {
 		this.setBaseUrl(baseUrl);
 	}
 
-	setBaseUrl(baseUrl: string): void {
+	setBaseUrl(baseUrl?: string): void {
 		this.baseUrl = baseUrl;
 	}
 
@@ -63,7 +63,7 @@ class Agent {
 		return this._promiseResponse(requestParams, isBuffer);
 	}
 
-	private _promiseResponse(
+	_promiseResponse(
 		requestParams: [string, RequestInit],
 		isBuffer: boolean,
 		makerequest: (url: string, init?: RequestInit) => Promise<Response> = fetch as (url: string, init?: RequestInit) => Promise<Response>
@@ -122,7 +122,7 @@ class Agent {
 			}) as Promise<RequestResponse>;
 	}
 
-	private _buildRequest({ uri, method, headers, data, auth, query, form, files, context }: AgentBuildRequestOptions): [string, RequestInit] {
+	_buildRequest({ uri, method, headers, data, auth, query, form, files, context }: AgentBuildRequestOptions): [string, RequestInit] {
 		let actualUri = uri;
 		if (this.baseUrl && uri[0] === '/') {
 			actualUri = `${this.baseUrl}${uri}`;
@@ -168,7 +168,7 @@ class Agent {
 		return typeof window !== 'undefined';
 	}
 
-	private _getFromData(files: AgentSanitizedFiles, form?: Record<string, string | number | boolean | undefined>): FormData {
+	_getFromData(files: AgentSanitizedFiles, form?: Record<string, string | number | boolean | undefined>): FormData {
 		const formData = new FormData();
 		for (const [name, file] of Object.entries(files)) {
 			let path: string | { filepath: string } = file.path;
@@ -190,7 +190,7 @@ class Agent {
 		return formData;
 	}
 
-	private _getNodeFormData(file: AgentFile): { file: AgentFile['data']; path: { filepath: string } } {
+	_getNodeFormData(file: AgentFile): { file: AgentFile['data']; path: { filepath: string } } {
 		let fileData: AgentFile['data'] = file.data;
 		if (typeof file.data === 'string') {
 			fileData = (fs as { createReadStream: (path: string) => NodeJS.ReadableStream }).createReadStream(file.data);
@@ -201,14 +201,14 @@ class Agent {
 		};
 	}
 
-	private _getContextHeaders(context: { tool?: ToolContext; project?: ProjectContext } = {}): Record<string, string> {
+	_getContextHeaders(context: { tool?: ToolContext; project?: ProjectContext } = {}): Record<string, string> {
 		return Object.assign({},
 			this._getToolContext(context.tool),
 			this._getProjectContext(context.project)
 		);
 	}
 
-	private _getToolContext(tool: ToolContext = { name: '' }): Record<string, string> {
+	_getToolContext(tool: ToolContext = { name: '' }): Record<string, string> {
 		let value = '';
 		if (tool.name) {
 			value += this._toolIdent(tool);
@@ -224,11 +224,11 @@ class Agent {
 		return {};
 	}
 
-	private _toolIdent(tool: Omit<ToolContext, 'components'>): string {
+	_toolIdent(tool: Omit<ToolContext, 'components'>): string {
 		return this._nameAtVersion(tool.name, tool.version);
 	}
 
-	private _nameAtVersion(name: string, version?: string | number): string {
+	_nameAtVersion(name: string, version?: string | number): string {
 		let value = '';
 		if (name) {
 			value += name;
@@ -239,7 +239,7 @@ class Agent {
 		return value;
 	}
 
-	private _getProjectContext(project: ProjectContext = { name: '' }): Record<string, string> {
+	_getProjectContext(project: ProjectContext = { name: '' }): Record<string, string> {
 		const value = this._buildSemicolonSeparatedProperties(project, 'name');
 		if (value) {
 			return { 'X-Particle-Project': value };
@@ -247,7 +247,7 @@ class Agent {
 		return {};
 	}
 
-	private _buildSemicolonSeparatedProperties(obj: Record<string, string | number>, primaryProperty: string): string {
+	_buildSemicolonSeparatedProperties(obj: Record<string, string | number>, primaryProperty = ''): string {
 		let value = '';
 		if (obj[primaryProperty]) {
 			value += obj[primaryProperty];
@@ -260,14 +260,14 @@ class Agent {
 		return value;
 	}
 
-	private _getAuthorizationHeader(auth?: string): Record<string, string> {
+	_getAuthorizationHeader(auth?: string): Record<string, string> {
 		if (typeof auth === 'string') {
 			return { Authorization: `Bearer ${auth}` };
 		}
 		return {};
 	}
 
-	private _sanitizeFiles(files?: AgentRequestOptions['files']): AgentSanitizedFiles | undefined {
+	_sanitizeFiles(files?: AgentRequestOptions['files']): AgentSanitizedFiles | undefined {
 		let requestFiles: AgentSanitizedFiles | undefined;
 		if (files) {
 			requestFiles = {};

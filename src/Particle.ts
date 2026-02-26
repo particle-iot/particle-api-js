@@ -392,12 +392,10 @@ class Particle {
 	}
 
 	flashTinker({ deviceId, auth, headers, context }: { deviceId: string; auth?: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
-		/* eslint-disable no-console */
 		const consoleWithWarning = console as { warning?: (...args: string[]) => void };
 		if (console && consoleWithWarning.warning) {
 			consoleWithWarning.warning('Particle.flashTinker is deprecated');
 		}
-		/* eslint-enable no-console */
 		return this.put({
 			uri: `/v1/devices/${deviceId}`,
 			headers,

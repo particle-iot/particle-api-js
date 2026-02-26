@@ -1,18 +1,18 @@
-'use strict';
-const { expect, sinon } = require('./test-setup');
-const Client = require('../lib/src/Client');
-const fixtures = require('./fixtures');
-const Library = require('../lib/src/Library');
+import { sinon, expect } from './test-setup';
+import Client from '../src/Client';
+import * as fixtures from './fixtures';
+import Library from '../src/Library';
 
-let api;
 const token = 'tok';
-let client;
-
 
 describe('Client', () => {
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
+	let api: Record<string, Function>;
+	let client: Client;
+
 	beforeEach(() => {
 		api = {};
-		client = new Client({ api: api, auth: token });
+		client = new Client({ api: api as object as Client.Api, auth: token });
 	});
 
 	describe('constructor', () => {
@@ -57,17 +57,20 @@ describe('Client', () => {
 
 	describe('downloadFile', () => {
 		it('delegates to api', () => {
-			api.downloadFile = ({ uri }) => Promise.resolve(`${uri} delegated`);
+			api.downloadFile = ({ uri }: { uri: string }) => Promise.resolve(`${uri} delegated`);
 			return expect(client.downloadFile('uri')).to.eventually.equal('uri delegated');
 		});
 	});
 
 	describe('compileCode', () => {
 		it('delegates to api', () => {
-			api.compileCode = ({ files, platformId, targetVersion, auth }) => {
+			api.compileCode = ({ files, platformId, targetVersion, auth }: Record<string, string | number | object>) => {
 				return Promise.resolve([files, platformId, targetVersion, auth]);
 			};
-			return expect(client.compileCode('a', 'b', 'c')).to.eventually.eql(['a', 'b', 'c', client.auth]);
+			const files = { 'main.ino': 'code' };
+			return expect(
+				client.compileCode(files, 6, '1.2.3')
+			).to.eventually.eql([files, 6, '1.2.3', client.auth]);
 		});
 	});
 
@@ -85,17 +88,17 @@ describe('Client', () => {
 		it('delegates to api and returns the library metadata on success', () => {
 			const name = 'fred';
 			const metadata = { name };
-			const library = new Library(client, metadata);
+			const library = new Library(client as object as Library.ClientInterface, metadata as object as Library.ApiData);
 			api.publishLibrary = sinon.stub().resolves({ body: { data: metadata } });
 			return client.publishLibrary(name)
 				.then(actual => {
 					expect(actual).to.eql(library);
-					expect(api.publishLibrary).to.have.been.calledWith({ name, auth:token });
+					expect(api.publishLibrary).to.have.been.calledWith({ name, auth: token });
 				});
 		});
 
 		it('delegates to api and calls _throwError to handle the error', () => {
-			const error = { message:'I don\'t like vegetables' };
+			const error = { message: 'I don\'t like vegetables' };
 			api.publishLibrary = sinon.stub().rejects(error);
 			const name = 'notused';
 			return client.publishLibrary(name)
@@ -104,27 +107,27 @@ describe('Client', () => {
 				})
 				.catch(actual => {
 					expect(actual).to.eql(error);
-					expect(api.publishLibrary).to.have.been.calledWith({ name, auth:token });
+					expect(api.publishLibrary).to.have.been.calledWith({ name, auth: token });
 				});
 		});
 	});
 
 	describe('contributeLibrary', () => {
 		it('delegates to api and returns the library metadata on success', () => {
-			const archive = {};
-			const metadata = { name:'' };
-			const library = new Library(client, metadata);
+			const archive = 'test-archive';
+			const metadata = { name: '' };
+			const library = new Library(client as object as Library.ClientInterface, metadata as object as Library.ApiData);
 			api.contributeLibrary = sinon.stub().resolves({ body: { data: metadata } });
 			return client.contributeLibrary(archive)
 				.then(actual => {
 					expect(actual).to.eql(library);
-					expect(api.contributeLibrary).to.have.been.calledWith({ archive, auth:token });
+					expect(api.contributeLibrary).to.have.been.calledWith({ archive, auth: token });
 				});
 		});
 
 		it('delegates to api and calls _throwError to handle the error', () => {
-			const archive = {};
-			const error = { message:'I don\'t like vegetables' };
+			const archive = 'test-archive';
+			const error = { message: 'I don\'t like vegetables' };
 			api.contributeLibrary = sinon.stub().rejects(error);
 			return client.contributeLibrary(archive)
 				.then(() => {
@@ -132,14 +135,14 @@ describe('Client', () => {
 				})
 				.catch(actual => {
 					expect(actual).to.eql(error);
-					expect(api.contributeLibrary).to.have.been.calledWith({ archive, auth:token });
+					expect(api.contributeLibrary).to.have.been.calledWith({ archive, auth: token });
 				});
 		});
 	});
 
 	describe('listDevices', () => {
 		it('delegates to api', () => {
-			api.listDevices = ({ auth }) => {
+			api.listDevices = ({ auth }: { auth: string }) => {
 				return Promise.resolve([auth]);
 			};
 			return expect(client.listDevices()).to.eventually.eql([client.auth]);
@@ -173,7 +176,6 @@ describe('Client', () => {
 					version: '1.2.3',
 					platform: 6,
 					prerelease: false,
-
 					firmware_vendor: 'Foo'
 				}, {
 					version: '4.5.6',
@@ -196,21 +198,23 @@ describe('Client', () => {
 
 	describe('trackingIdentity', () => {
 		it('delegates to api and unpacks the body', () => {
-			api.trackingIdentity = ({ auth, full, context }) => {
+			api.trackingIdentity = ({ auth, full, context }: Record<string, string | boolean | object>) => {
 				return Promise.resolve({ body: { auth, full, context } });
 			};
-			const context = { abd:123 };
-			const full = 456;
-			return expect(client.trackingIdentity({ full, context })).to.eventually.eql({ auth: client.auth, full, context });
+			const context = { abd: 123 };
+			const full = true;
+			return expect(
+				client.trackingIdentity({ full, context })
+			).to.eventually.eql({ auth: client.auth, full, context });
 		});
 
 		it('delegates to api with default parameters and unpacks the body', () => {
-			api.trackingIdentity = ({ auth, full, context }) => {
+			api.trackingIdentity = ({ auth, full, context }: Record<string, string | boolean | object | undefined>) => {
 				return Promise.resolve({ body: { auth, full, context } });
 			};
 			const context = undefined;
 			const full = false;
-			return expect(client.trackingIdentity()).to.eventually.eql({ auth:client.auth, full, context });
+			return expect(client.trackingIdentity()).to.eventually.eql({ auth: client.auth, full, context });
 		});
 	});
 });

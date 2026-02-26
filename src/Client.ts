@@ -57,7 +57,7 @@ class Client {
 			});
 	}
 
-	libraryVersions(name: string, query: Record<string, string | number | boolean | undefined> = {}): Promise<Library[]> {
+	libraryVersions(name?: string, query: Record<string, string | number | boolean | undefined> = {}): Promise<Library[]> {
 		return this.api.getLibraryVersions(Object.assign({}, query, { name, auth: this.auth }))
 			.then((payload) => {
 				const libraries = (payload as JSONResponse<{ data: LibraryApiData[] }>).body.data || [];

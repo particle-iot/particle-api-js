@@ -1,9 +1,7 @@
-'use strict';
-const { expect } = require('./test-setup');
-const Library = require('../lib/src/Library');
+import { expect } from './test-setup';
+import Library from '../src/Library';
 
-const client = {};
-
+const client = {} as Library.ClientInterface;
 
 describe('Library', () => {
 	describe('constructor', () => {
@@ -11,7 +9,8 @@ describe('Library', () => {
 			const library = new Library(client, {
 				attributes: {
 					name: 'testlib',
-					version: '1.0.0'
+					version: '1.0.0',
+					author: 'test'
 				}
 			});
 			expect(library.name).to.equal('testlib');
@@ -21,20 +20,21 @@ describe('Library', () => {
 
 	describe('download', () => {
 		it('return the file contents', () => {
-			client.downloadFile = (url) => {
-				return Promise.resolve(`${url}-content`);
+			client.downloadFile = (url: string) => {
+				return Promise.resolve(Buffer.from(`${url}-content`));
 			};
 
 			const library = new Library(client, {
 				attributes: {
 					name: 'testlib',
-					version: '1.0.0'
+					version: '1.0.0',
+					author: 'test'
 				},
 				links: {
 					download: 'url'
 				}
 			});
-			expect(library.download()).to.eventually.equal('url-content');
+			return expect(library.download()).to.eventually.deep.equal(Buffer.from('url-content'));
 		});
 	});
 });

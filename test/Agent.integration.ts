@@ -1,9 +1,6 @@
-/**
- * Tests for real the Agent class using an external service.
- */
-'use strict';
-const { expect } = require('./test-setup');
-const Agent = require('../lib/src/Agent');
+import { expect } from './test-setup';
+import Agent from '../src/Agent';
+import type { JSONResponse } from '../src/types';
 
 describe('Agent', () => {
 	if (!process.env.SKIP_AGENT_TEST){
@@ -14,9 +11,10 @@ describe('Agent', () => {
 			const query = { a: '1', b: '2' };
 			const result = agent.get({ uri: 'https://postman-echo.com/get', query });
 			return result.then((res) => {
-				expect(res.statusCode).to.equal(200);
-				expect(res).has.property('body');
-				expect(res.body.args).to.deep.equal(query);
+				const jsonRes = res as JSONResponse<{ args: Record<string, string> }>;
+				expect(jsonRes.statusCode).to.equal(200);
+				expect(jsonRes).has.property('body');
+				expect(jsonRes.body.args).to.deep.equal(query);
 			});
 		});
 	}

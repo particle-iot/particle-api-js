@@ -16,8 +16,8 @@ module.exports = function karmaCfg(config){
 		// list of files / patterns to load in the browser
 		files: [
 			'dist/particle.min.js',
-			'test/*.spec.js',
-			'test/*.integration.js'
+			'lib/test/*.spec.js',
+			'lib/test/*.integration.js'
 		],
 
 		// list of files to exclude
@@ -27,8 +27,8 @@ module.exports = function karmaCfg(config){
 		// preprocess matching files before serving them to the browser
 		// available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
 		preprocessors: {
-			'src/**/*.js': ['webpack'],
-			'test/**/*.js': ['webpack']
+			'lib/src/**/*.js': ['webpack'],
+			'lib/test/**/*.js': ['webpack']
 		},
 
 		// Transform test files to a single browser consumable file

@@ -9,9 +9,9 @@
     "resolveJsonModule": true,
     "strict": true,
     "noImplicitAny": true,
-    "noEmit": true
+    "noEmit": true,
+    "types": ["node", "mocha", "chai", "chai-subset"]
   },
-  "types": ["node"],
-  "include": ["src"],
+  "include": ["src", "test"],
   "exclude": ["node_modules"]
 }

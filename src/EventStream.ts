@@ -17,7 +17,7 @@ class EventStream extends EventEmitter {
 	event?: boolean;
 	eventName?: string;
 
-	constructor(uri: string, token: string) {
+	constructor(uri = '', token = '') {
 		super();
 		this.uri = uri;
 		this.token = token;
@@ -182,7 +182,7 @@ class EventStream extends EventEmitter {
 		}
 	}
 
-	private parse(chunk: Buffer): void {
+	parse(chunk: Buffer | string): void {
 		this.startIdleTimeout();
 
 		this.buf += chunk.toString();
@@ -231,7 +231,7 @@ class EventStream extends EventEmitter {
 		}
 	}
 
-	private parseEventStreamLine(pos: number, fieldLength: number, lineLength: number): void {
+	parseEventStreamLine(pos: number, fieldLength: number, lineLength: number): void {
 		if (lineLength === 0) {
 			try {
 				if (this.data.length > 0 && this.event) {

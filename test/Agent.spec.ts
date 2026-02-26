@@ -1,7 +1,6 @@
-'use strict';
-const FormData = require('form-data');
-const { sinon, expect } = require('./test-setup');
-const Agent = require('../lib/src/Agent');
+import FormData from 'form-data';
+import { sinon, expect } from './test-setup';
+import Agent from '../src/Agent';
 
 describe('Agent', () => {
 	beforeEach(() => {
@@ -14,8 +13,8 @@ describe('Agent', () => {
 			sinon.stub(Agent.prototype, 'setBaseUrl');
 			const agent = new Agent(baseUrl);
 			expect(agent.setBaseUrl).to.have.property('callCount', 1);
-			expect(agent.setBaseUrl.firstCall.args).to.have.lengthOf(1);
-			expect(agent.setBaseUrl.firstCall.args[0]).to.eql(baseUrl);
+			expect((agent.setBaseUrl as sinon.SinonStub).firstCall.args).to.have.lengthOf(1);
+			expect((agent.setBaseUrl as sinon.SinonStub).firstCall.args[0]).to.eql(baseUrl);
 		});
 	});
 
@@ -43,7 +42,8 @@ describe('Agent', () => {
 	});
 
 	describe('resource operations', () => {
-		let uri, method, auth, headers, query, data, context, agent;
+		let uri: string, method: string, auth: string, headers: Record<string, string>,
+			query: string, data: Record<string, boolean>, context: Record<string, object>, agent: Agent;
 
 		beforeEach(() => {
 			uri = 'http://example.com/v1';
@@ -54,47 +54,47 @@ describe('Agent', () => {
 			data = { foo: true, bar: false };
 			context = { blah: {} };
 			agent = new Agent();
-			agent.request = sinon.stub();
-			agent.request.resolves('fake-response');
+			agent.request = sinon.stub() as object as Agent['request'];
+			(agent.request as object as sinon.SinonStub).resolves('fake-response');
 		});
 
 		it('can GET a resource', () => {
-			return agent.get({ uri, auth, headers, query, context }).then(() => {
+			return agent.get({ uri, auth, headers, query, context } as object as Parameters<Agent['get']>[0]).then(() => {
 				expect(agent.request).to.be.calledWith({ uri, method, auth, headers, query, context });
 			});
 		});
 
 		it('can HEAD a resource', () => {
 			method = 'head';
-			return agent.head({ uri, auth, headers, query, context }).then(() => {
+			return agent.head({ uri, auth, headers, query, context } as object as Parameters<Agent['head']>[0]).then(() => {
 				expect(agent.request).to.be.calledWith({ uri, method, auth, headers, query, context });
 			});
 		});
 
 		it('can POST a resource', () => {
 			method = 'post';
-			return agent.post({ uri, auth, headers, data, context }).then(() => {
+			return agent.post({ uri, auth, headers, data, context } as object as Parameters<Agent['post']>[0]).then(() => {
 				expect(agent.request).to.be.calledWith({ uri, method, auth, headers, data, context });
 			});
 		});
 
 		it('can PUT a resource', () => {
 			method = 'put';
-			return agent.put({ uri, auth, headers, data, context, query }).then(() => {
+			return agent.put({ uri, auth, headers, data, context, query } as object as Parameters<Agent['put']>[0]).then(() => {
 				expect(agent.request).to.be.calledWith({ uri, method, auth, headers, data, context, query });
 			});
 		});
 
 		it('can DELETE a resource', () => {
 			method = 'delete';
-			return agent.delete({ uri, auth, headers, data, context }).then(() => {
+			return agent.delete({ uri, auth, headers, data, context } as object as Parameters<Agent['delete']>[0]).then(() => {
 				expect(agent.request).to.be.calledWith({ uri, method, auth, headers, data, context });
 			});
 		});
 	});
 
 	describe('authorize', () => {
-		let agent;
+		let agent: Agent;
 
 		beforeEach(() => {
 			agent = new Agent();
@@ -113,23 +113,23 @@ describe('Agent', () => {
 	});
 
 	describe('request', () => {
-		let agent;
+		let agent: Agent;
 
 		beforeEach(() => {
 			agent = new Agent();
-			agent._promiseResponse = sinon.stub();
-			agent._promiseResponse.resolves('fake-response');
-			agent._buildRequest = sinon.stub();
-			agent._sanitizeFiles = sinon.stub();
+			agent._promiseResponse = sinon.stub() as object as Agent['_promiseResponse'];
+			(agent._promiseResponse as object as sinon.SinonStub).resolves('fake-response');
+			agent._buildRequest = sinon.stub() as object as Agent['_buildRequest'];
+			agent._sanitizeFiles = sinon.stub() as object as Agent['_sanitizeFiles'];
 		});
 
 		it('sanitizes files from a request', () => {
-			const sanitizedFiles = { a:'a' };
+			const sanitizedFiles = { a: 'a' };
 			const files = {};
 			const form = {};
-			agent._sanitizeFiles.returns(sanitizedFiles);
+			(agent._sanitizeFiles as object as sinon.SinonStub).returns(sanitizedFiles);
 
-			return agent.request({ uri: 'abc', method: 'post', data: '123', query: 'all', form, files })
+			return agent.request({ uri: 'abc', method: 'post', data: '123', query: 'all', form, files } as object as Parameters<Agent['request']>[0])
 				.then((res) => {
 					expect(res).to.be.equal('fake-response');
 					expect(agent._sanitizeFiles).calledOnce.calledWith(sinon.match.same(files));
@@ -138,8 +138,8 @@ describe('Agent', () => {
 
 		it('uses default arguments for request', () => {
 			const args = ['abc', { args: '123' }];
-			agent._buildRequest.returns(args);
-			return agent.request({ uri: 'abc', method:'post' })
+			(agent._buildRequest as object as sinon.SinonStub).returns(args);
+			return agent.request({ uri: 'abc', method: 'post' })
 				.then((res) => {
 					expect(res).to.be.equal('fake-response');
 					expect(agent._promiseResponse).calledOnce.calledWith(args);
@@ -150,21 +150,21 @@ describe('Agent', () => {
 			const agent = new Agent();
 			const options = {
 				uri: 'http://example.com/v1',
-				method: 'get',
+				method: 'get' as const,
 				auth: 'fake-token',
 				headers: { 'X-FOO': 'foo', 'X-BAR': 'bar' },
 				query: 'foo=1&bar=2',
 				data: { foo: true, bar: false },
 				files: undefined,
 				form: undefined,
-				context
+				context: undefined
 			};
-			agent._buildRequest = sinon.stub();
-			agent._buildRequest.returns('fake-request');
-			agent._promiseResponse = sinon.stub();
-			agent._promiseResponse.resolves('fake-response');
+			agent._buildRequest = sinon.stub() as object as Agent['_buildRequest'];
+			(agent._buildRequest as object as sinon.SinonStub).returns('fake-request');
+			agent._promiseResponse = sinon.stub() as object as Agent['_promiseResponse'];
+			(agent._promiseResponse as object as sinon.SinonStub).resolves('fake-response');
 
-			return agent.request(options).then((res) => {
+			return agent.request(options as object as Parameters<Agent['request']>[0]).then((res) => {
 				expect(res).to.be.equal('fake-response');
 				expect(agent._buildRequest).calledOnce;
 				expect(agent._buildRequest).calledWith(options);
@@ -182,7 +182,7 @@ describe('Agent', () => {
 				json: () => Promise.resolve('response')
 			};
 			req.resolves(response);
-			const promise = agent._promiseResponse([], false, req);
+			const promise = agent._promiseResponse([] as object as [string, RequestInit], false, req);
 			expect(promise).has.property('then');
 			return promise.then((resp) => {
 				expect(resp).to.be.eql({
@@ -213,7 +213,7 @@ describe('Agent', () => {
 				},
 				{
 					name: 'error text with no status',
-					response: {},
+					response: {} as Record<string, string | number | undefined>,
 					errorDescription: 'Network error from 123.url'
 				}
 			];
@@ -224,8 +224,8 @@ describe('Agent', () => {
 					ok: false
 				}, failData.response);
 				req.resolves(response);
-				const promise = agent._promiseResponse(['123.url'] , false, req);
-				return promise.catch((resp) => {
+				const promise = agent._promiseResponse(['123.url'] as object as [string, RequestInit], false, req);
+				return promise.catch((resp: { statusCode: number; errorDescription: string; shortErrorDescription: string }) => {
 					expect(resp.statusCode).to.eql(failData.response.status);
 					expect(resp.errorDescription).to.eql(failData.errorDescription);
 					expect(resp.shortErrorDescription).to.eql(failData.response.statusText);
@@ -236,7 +236,7 @@ describe('Agent', () => {
 	});
 
 	describe('build request', () => {
-		let agent;
+		let agent: Agent;
 
 		beforeEach(() => {
 			agent = new Agent('abc');
@@ -286,7 +286,7 @@ describe('Agent', () => {
 		it('keeps the body as provided if it is a FormData instance', () => {
 			const data = new FormData();
 			data.append('file', 'data or blob');
-			const [, opts] = agent._buildRequest({ uri: 'uri', method: 'put', data });
+			const [, opts] = agent._buildRequest({ uri: 'uri', method: 'put', data: data as object as Record<string, string> });
 			expect(opts.body).to.eql(data);
 			expect(opts.headers).to.not.have.property('Content-Type');
 		});
@@ -302,9 +302,9 @@ describe('Agent', () => {
 				file2: { data: makeFile('file2data'), path: 'file2path' }
 			};
 			const [, opts] = agent._buildRequest({ uri: 'uri', method: 'get', files });
-			expect(opts.body.toString()).to.equal('[object FormData]');
-			expect(extractFilename(opts.body, 'file', 0)).to.eql('filepath');
-			expect(extractFilename(opts.body, 'file2', 3)).to.eql('file2path');
+			expect(opts.body!.toString()).to.equal('[object FormData]');
+			expect(extractFilename(opts.body as object as FormData, 'file', 0)).to.eql('filepath');
+			expect(extractFilename(opts.body as object as FormData, 'file2', 3)).to.eql('file2path');
 			expect(opts.headers).to.not.have.property('Content-Type');
 		});
 
@@ -315,11 +315,11 @@ describe('Agent', () => {
 			};
 			const form = { form1: 'value1', form2: 'value2' };
 			const [, opts] = agent._buildRequest({ uri: 'uri', method: 'get', files, form });
-			expect(opts.body.toString()).to.equal('[object FormData]');
-			expect(extractFilename(opts.body, 'file', 0)).to.eql('filepath');
-			expect(extractFilename(opts.body, 'file2', 3)).to.eql('file2path');
-			expect(extractFormName(opts.body, 'form1', 6, true)).to.eql('value1');
-			expect(extractFormName(opts.body, 'form2', 9, true)).to.eql('value2');
+			expect(opts.body!.toString()).to.equal('[object FormData]');
+			expect(extractFilename(opts.body as object as FormData, 'file', 0)).to.eql('filepath');
+			expect(extractFilename(opts.body as object as FormData, 'file2', 3)).to.eql('file2path');
+			expect(extractFormName(opts.body as object as FormData, 'form1', 6)).to.eql('value1');
+			expect(extractFormName(opts.body as object as FormData, 'form2', 9)).to.eql('value2');
 			expect(opts.headers).to.not.have.property('Content-Type');
 		});
 
@@ -329,8 +329,8 @@ describe('Agent', () => {
 				file2: { data: makeFile('file2data'), path: 'dir/file2path.cpp' }
 			};
 			const [, opts] = agent._buildRequest({ uri: 'uri', method: 'get', files });
-			expect(extractFilename(opts.body, 'file', 0)).to.eql('filepath.ino');
-			expect(extractFilename(opts.body, 'file2', 3)).to.eql('dir/file2path.cpp');
+			expect(extractFilename(opts.body as object as FormData, 'file', 0)).to.eql('filepath.ino');
+			expect(extractFilename(opts.body as object as FormData, 'file2', 3)).to.eql('dir/file2path.cpp');
 		});
 
 		it('sets the user agent to particle-api-js', () => {
@@ -338,47 +338,47 @@ describe('Agent', () => {
 			expect(opts.headers).to.have.property('User-Agent').that.match(/^particle-api-js/);
 		});
 
-		if (!inBrowser()){
+		if (!inBrowser()) {
 			it('should handle Windows nested dirs', () => {
 				const files = {
 					file: { data: makeFile('filedata'), path: 'dir\\windowsfilepath.cpp' }
 				};
 				const [, opts] = agent._buildRequest({ uri: 'uri', method: 'get', files });
-				expect(extractFilename(opts.body, 'file', 0)).to.eql('dir/windowsfilepath.cpp');
+				expect(extractFilename(opts.body as object as FormData, 'file', 0)).to.eql('dir/windowsfilepath.cpp');
 			});
 		}
 
-		function inBrowser(){
+		function inBrowser() {
 			return typeof window !== 'undefined';
 		}
 
-		function makeFile(data){
-			if (inBrowser()){
+		function makeFile(data: string) {
+			if (inBrowser()) {
 				return new Blob([data]);
 			} else {
 				return data;
 			}
 		}
 
-		function extractFilename(formData, fieldName, fieldIndex){
-			if (inBrowser()){
-				return formData.get(fieldName).name;
+		function extractFilename(formData: FormData, _fieldName: string, fieldIndex: number) {
+			if (inBrowser()) {
+				return (formData as object as globalThis.FormData).get(_fieldName);
 			} else {
-				return /filename="([^"]*)"/.exec(formData._streams[fieldIndex])[1];
+				return /filename="([^"]*)"/.exec((formData as object as { _streams: string[] })._streams[fieldIndex])![1];
 			}
 		}
 
-		function extractFormName(formData, fieldName, fieldIndex){
-			if (inBrowser()){
-				return formData.get(fieldName);
+		function extractFormName(formData: FormData, _fieldName: string, fieldIndex: number) {
+			if (inBrowser()) {
+				return (formData as object as globalThis.FormData).get(_fieldName);
 			} else {
-				return formData._streams[fieldIndex + 1];
+				return (formData as object as { _streams: string[] })._streams[fieldIndex + 1];
 			}
 		}
 	});
 
 	describe('context', () => {
-		let agent;
+		let agent: Agent;
 
 		beforeEach(() => {
 			agent = new Agent();
@@ -405,21 +405,21 @@ describe('Agent', () => {
 				expect(subject).to.have.property('X-Particle-Tool', 'spanner');
 			});
 
-			it('does not add the tool context header when not defined',() => {
+			it('does not add the tool context header when not defined', () => {
 				const context = { tool: { name2: 'spanner' } };
-				const subject = agent._getContextHeaders(context);
+				const subject = agent._getContextHeaders(context as object as Parameters<Agent['_getContextHeaders']>[0]);
 				expect(subject).to.not.have.property('X-Particle-Tool');
 			});
 
-			it('generates the project context header when defined',() => {
+			it('generates the project context header when defined', () => {
 				const context = { project: { name: 'blinky' } };
 				const subject = agent._getContextHeaders(context);
 				expect(subject).to.have.property('X-Particle-Project', 'blinky');
 			});
 
-			it('does not generate the project context header when not defined',() => {
+			it('does not generate the project context header when not defined', () => {
 				const context = { project: { name2: 'blinky' } };
-				const subject = agent._getContextHeaders(context);
+				const subject = agent._getContextHeaders(context as object as Parameters<Agent['_getContextHeaders']>[0]);
 				expect(subject).to.not.have.property('X-Particle-Project');
 			});
 		});
@@ -427,7 +427,7 @@ describe('Agent', () => {
 		describe('_getToolContext', () => {
 			it('does not add a header when the tool name is not defined', () => {
 				const tool = { noname: 'cli' };
-				const subject = agent._getToolContext(tool);
+				const subject = agent._getToolContext(tool as object as Parameters<Agent['_getToolContext']>[0]);
 				expect(subject).to.eql({});
 			});
 
@@ -460,7 +460,7 @@ describe('Agent', () => {
 
 			it('does not set the header when the project has no name', () => {
 				const project = { noname: 'blinky' };
-				const subject = agent._getProjectContext(project);
+				const subject = agent._getProjectContext(project as object as Parameters<Agent['_getProjectContext']>[0]);
 				expect(subject).to.not.have.property('X-Particle-Project');
 			});
 		});
@@ -477,7 +477,7 @@ describe('Agent', () => {
 			});
 
 			it('returns the default property only', () => {
-				expect(agent._buildSemicolonSeparatedProperties({ name:'fred' }, 'name')).eql('fred');
+				expect(agent._buildSemicolonSeparatedProperties({ name: 'fred' }, 'name')).eql('fred');
 			});
 
 			it('returns the default property plus additional properties', () => {

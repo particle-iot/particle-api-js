@@ -1,7 +1,6 @@
-'use strict';
-// Type-checking stubs — verify compiled output exports are accessible
-const Particle = require('../lib/src/Particle');
-const { expect } = require('./test-setup');
+import { expect } from './test-setup';
+import Particle from '../src/Particle';
+import Client from '../src/Client';
 
 describe('Types', () => {
 	it('can instantiate Particle with auth option', () => {
@@ -21,7 +20,6 @@ describe('Types', () => {
 	});
 
 	it('client() returns a Client instance', () => {
-		const Client = require('../lib/src/Client');
 		const p = new Particle({ auth: 'token' });
 		const c = p.client();
 		expect(c).to.be.instanceOf(Client);
