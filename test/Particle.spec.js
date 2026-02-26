@@ -1,9 +1,9 @@
 'use strict';
 const should = require('should'); // monkeypatch the world~!1
-const Particle = require('../src/Particle');
-const Defaults = require('../src/Defaults');
-const Client = require('../src/Client');
-const EventStream = require('../src/EventStream');
+const Particle = require('../lib/src/Particle');
+const Defaults = require('../lib/src/Defaults');
+const Client = require('../lib/src/Client');
+const EventStream = require('../lib/src/EventStream');
 const FakeAgent = require('./FakeAgent');
 const { sinon, expect } = require('./test-setup');
 

@@ -1,8 +1,8 @@
 'use strict';
 const { expect, sinon } = require('./test-setup');
-const Client = require('../src/Client');
+const Client = require('../lib/src/Client');
 const fixtures = require('./fixtures');
-const Library = require('../src/Library');
+const Library = require('../lib/src/Library');
 
 let api;
 const token = 'tok';

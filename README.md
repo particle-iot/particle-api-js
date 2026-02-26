@@ -5,6 +5,28 @@ JS Library for the Particle Cloud API for Node.js and the browser
 
 [Installation](#installation) | [Development](#development)  | [Conventions](#conventions) | [Docs](#docs--resources) | [Examples](#examples) | [Building](#building) | [Releasing](#releasing) | [License](#license)
 
+## TypeScript Support
+
+`particle-api-js` is written in TypeScript and ships with full type declarations. Type information is available automatically when using TypeScript:
+
+```typescript
+import Particle from 'particle-api-js';
+import type { DeviceInfo, LoginResponse, RequestResponse } from 'particle-api-js';
+
+const particle = new Particle({ auth: 'your-token' });
+
+particle.getDevice({ deviceId: 'abc123' }).then((response: RequestResponse) => {
+    const device = (response as { body: DeviceInfo }).body;
+    console.log(device.name);
+});
+```
+
+All request option types are exported from the package:
+
+```typescript
+import type { GetDeviceOptions, ListDevicesOptions } from 'particle-api-js';
+```
+
 ## Installation
 
 `particle-api-js` is available from `npm` to use in Node.js, `bower` or jsDelivr CDN for use in the browser.

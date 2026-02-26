@@ -13,3 +13,5 @@ lib/
 *.tgz
 .vscode
 tmp
+.DS_Store
+.claude/
