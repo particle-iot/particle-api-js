@@ -34,10 +34,10 @@ describe('EventStream', () => {
 			sinon.useFakeTimers({ shouldAdvanceTime: true });
 			const fakeRequest = makeRequest();
 			sinon.stub(http, 'request').callsFake(() => {
-				setImmediate(() => {
+				setTimeout(() => {
 					const fakeResponse = makeResponse(200);
 					fakeRequest.emit('response', fakeResponse);
-				});
+				}, 0);
 
 				return fakeRequest as object as http.ClientRequest;
 			});
@@ -63,14 +63,14 @@ describe('EventStream', () => {
 			sinon.useFakeTimers({ shouldAdvanceTime: true });
 			const fakeRequest = makeRequest();
 			sinon.stub(http, 'request').callsFake(() => {
-				setImmediate(() => {
+				setTimeout(() => {
 					const fakeResponse = makeResponse(500);
 					fakeRequest.emit('response', fakeResponse);
-					setImmediate(() => {
+					setTimeout(() => {
 						fakeResponse.emit('data', '{"error":"unknown"}');
 						fakeResponse.emit('end');
-					});
-				});
+					}, 0);
+				}, 0);
 
 				return fakeRequest as object as http.ClientRequest;
 			});

@@ -362,7 +362,8 @@ describe('Agent', () => {
 
 		function extractFilename(formData: FormData, _fieldName: string, fieldIndex: number) {
 			if (inBrowser()) {
-				return (formData as object as globalThis.FormData).get(_fieldName);
+				const entry = (formData as object as globalThis.FormData).get(_fieldName);
+				return entry instanceof File ? entry.name : entry;
 			} else {
 				return /filename="([^"]*)"/.exec((formData as object as { _streams: string[] })._streams[fieldIndex])![1];
 			}
