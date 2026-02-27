@@ -16,3 +16,4 @@ tmp
 test/out.tmp
 .DS_Store
 .claude/
+api-service
