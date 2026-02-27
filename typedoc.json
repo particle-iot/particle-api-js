@@ -1,0 +1,20 @@
+{
+	"entryPoints": ["src/Particle.ts"],
+	"tsconfig": "tsconfig.build.json",
+	"plugin": ["typedoc-plugin-markdown"],
+	"out": "docs",
+	"router": "module",
+	"entryFileName": "api",
+	"fileExtension": ".md",
+	"parametersFormat": "list",
+	"sourceLinkTemplate": "https://github.com/particle-iot/particle-api-js/blob/{gitRevision}/{path}#L{line}",
+	"sort": ["source-order"],
+	"excludeInternal": true,
+	"excludePrivate": true,
+	"excludeNotDocumented": true,
+	"expandObjects": true,
+	"expandParameters": true,
+	"hidePageHeader": true,
+	"hideBreadcrumbs": true,
+	"readme": "none"
+}

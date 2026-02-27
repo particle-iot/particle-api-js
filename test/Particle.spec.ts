@@ -6,6 +6,13 @@ import EventStream from '../src/EventStream';
 import FakeAgent from './FakeAgent';
 import type { ToolContext, ProjectContext } from '../src/types';
 
+interface ParticleInternal {
+	_isValidContext(name: string, context: ToolContext | ProjectContext | undefined): boolean;
+	_buildContext(context: { tool?: ToolContext; project?: ProjectContext } | undefined): { tool?: ToolContext; project?: ProjectContext };
+	_getActiveAuthToken(auth?: string): string | undefined;
+	_defaultAuth: string | undefined;
+}
+
 let api: Particle;
 
 type R = Record<string, string | number | boolean | object | Buffer | string[] | null | undefined>;
@@ -1078,9 +1085,9 @@ describe('ParticleAPI', () => {
 
 			it('calls _getActiveAuthToken(auth)', () => {
 				const fakeToken = 'abc123';
-				sinon.stub(api, '_getActiveAuthToken').returns(fakeToken);
+				sinon.stub(api as object as ParticleInternal, '_getActiveAuthToken').returns(fakeToken);
 				void api.getEventStream({});
-				expect(api._getActiveAuthToken).to.have.property('callCount', 1);
+				expect((api as object as ParticleInternal)._getActiveAuthToken).to.have.property('callCount', 1);
 			});
 		});
 
@@ -3013,20 +3020,20 @@ describe('ParticleAPI', () => {
 			});
 
 			it('is valid for known types and non-empty object', () => {
-				expect(api._isValidContext('tool', { abc:'123' } as object as ToolContext)).to.be.ok;
-				expect(api._isValidContext('project', { abc:'123' } as object as ProjectContext)).to.be.ok;
+				expect((api as object as ParticleInternal)._isValidContext('tool', { abc:'123' } as object as ToolContext)).to.be.ok;
+				expect((api as object as ParticleInternal)._isValidContext('project', { abc:'123' } as object as ProjectContext)).to.be.ok;
 			});
 
 			it('is not valid for unknown types and non-empty object', () => {
-				expect(api._isValidContext('tool1', { abc:'123' } as object as ToolContext)).to.not.be.ok;
-				expect(api._isValidContext('project1', { abc:'123' } as object as ProjectContext)).to.not.be.ok;
+				expect((api as object as ParticleInternal)._isValidContext('tool1', { abc:'123' } as object as ToolContext)).to.not.be.ok;
+				expect((api as object as ParticleInternal)._isValidContext('project1', { abc:'123' } as object as ProjectContext)).to.not.be.ok;
 			});
 
 			it('is not valid for known types and falsey object', () => {
-				expect(api._isValidContext('tool', {} as object as ToolContext)).to.be.ok;
-				expect(api._isValidContext('tool', a<undefined>(0))).to.be.ok;
-				expect(api._isValidContext('tool', a<undefined>(null))).to.be.ok;
-				expect(api._isValidContext('tool', undefined)).to.not.be.ok;
+				expect((api as object as ParticleInternal)._isValidContext('tool', {} as object as ToolContext)).to.be.ok;
+				expect((api as object as ParticleInternal)._isValidContext('tool', a<undefined>(0))).to.be.ok;
+				expect((api as object as ParticleInternal)._isValidContext('tool', a<undefined>(null))).to.be.ok;
+				expect((api as object as ParticleInternal)._isValidContext('tool', undefined)).to.not.be.ok;
 			});
 
 			it('sets a valid context', () => {
@@ -3039,14 +3046,14 @@ describe('ParticleAPI', () => {
 			it('uses the api context when no context provided', () => {
 				const tool = { name:'spanner' };
 				api.setContext('tool', tool);
-				expect(api._buildContext(undefined)).to.deep.equal({ tool });
+				expect((api as object as ParticleInternal)._buildContext(undefined)).to.deep.equal({ tool });
 			});
 
 			it('overrides the api context completely for a given context item', () => {
 				const tool = { name:'spanner', version:'1.2.3' };
 				api.setContext('tool', tool);
 				const newTool = { name:'pliers' };
-				expect(api._buildContext({ tool:newTool })).to.deep.equal({ tool:newTool });
+				expect((api as object as ParticleInternal)._buildContext({ tool:newTool })).to.deep.equal({ tool:newTool });
 			});
 		});
 
@@ -3062,13 +3069,13 @@ describe('ParticleAPI', () => {
 				context = { abc: 123 };
 				contextResult = { def: 456 };
 				result = 'fake-result';
-				api._buildContext = sinon.stub().returns(contextResult) as object as typeof api._buildContext;
-				api._getActiveAuthToken = sinon.stub().returns(auth) as object as typeof api._getActiveAuthToken;
+				(api as object as ParticleInternal)._buildContext = sinon.stub().returns(contextResult) as object as ParticleInternal['_buildContext'];
+				(api as object as ParticleInternal)._getActiveAuthToken = sinon.stub().returns(auth) as object as ParticleInternal['_getActiveAuthToken'];
 			});
 
 			afterEach(() => {
-				expect(api._buildContext).to.have.been.calledWith(context);
-				expect(api._getActiveAuthToken).to.have.been.calledWith(auth);
+				expect((api as object as ParticleInternal)._buildContext).to.have.been.calledWith(context);
+				expect((api as object as ParticleInternal)._getActiveAuthToken).to.have.been.calledWith(auth);
 			});
 
 			it('calls _buildContext and _getActiveAuthToken from get', () => {
@@ -3201,21 +3208,21 @@ describe('ParticleAPI', () => {
 
 		it('returns provided value when provided value is truthy', () => {
 			const expectedReturnValue = 'pass through';
-			expect(api._getActiveAuthToken(expectedReturnValue)).to.eql(expectedReturnValue);
+			expect((api as object as ParticleInternal)._getActiveAuthToken(expectedReturnValue)).to.eql(expectedReturnValue);
 		});
 
 		it('returns value of _defaultAuth when provided value is NOT truthy', () => {
 			const providedValue = undefined;
 			const expectedReturnValue = 'default auth value';
 			api.setDefaultAuth(expectedReturnValue);
-			expect(api._getActiveAuthToken(providedValue)).to.eql(expectedReturnValue);
+			expect((api as object as ParticleInternal)._getActiveAuthToken(providedValue)).to.eql(expectedReturnValue);
 		});
 
 		it('returns undefined when both provided value and _defaultAuth are NOT truthy', () => {
 			const providedValue = undefined;
 			const expectedReturnValue = undefined;
-			api._defaultAuth = undefined;
-			expect(api._getActiveAuthToken(providedValue)).to.eql(expectedReturnValue);
+			(api as object as ParticleInternal)._defaultAuth = undefined;
+			expect((api as object as ParticleInternal)._getActiveAuthToken(providedValue)).to.eql(expectedReturnValue);
 		});
 	});
 });

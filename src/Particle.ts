@@ -82,7 +82,7 @@ class Particle {
 		this.agent = new Agent(this.baseUrl);
 	}
 
-	_isValidContext(name: string, context: ToolContext | ProjectContext | undefined): boolean {
+	private _isValidContext(name: string, context: ToolContext | ProjectContext | undefined): boolean {
 		return (name === 'tool' || name === 'project') && context !== undefined;
 	}
 
@@ -98,13 +98,7 @@ class Particle {
      * @property {string} name
      */
 
-	/**
-     * Allows setting a tool or project context which will be sent as headers with every request.
-     * Tool- x-particle-tool
-     * Project- x-particle-project
-     * @param {'tool' | 'project'} name
-     * @param {ToolContext | ProjectContext | undefined} context
-     */
+	/** @internal */
 	setContext(name: 'tool' | 'project', context: ToolContext | ProjectContext | undefined): void {
 		if (context !== undefined) {
 			if (this._isValidContext(name, context)) {
@@ -119,7 +113,7 @@ class Particle {
 		}
 	}
 
-	_buildContext(context: { tool?: ToolContext; project?: ProjectContext } | undefined): { tool?: ToolContext; project?: ProjectContext } {
+	private _buildContext(context: { tool?: ToolContext; project?: ProjectContext } | undefined): { tool?: ToolContext; project?: ProjectContext } {
 		return Object.assign(this.context, context);
 	}
 
@@ -1380,7 +1374,7 @@ class Particle {
 		});
 	}
 
-	_asList(value: string[] | string | undefined): string | undefined {
+	private _asList(value: string[] | string | undefined): string | undefined {
 		return (Array.isArray(value) ? value.join(',') : value);
 	}
 
@@ -2693,10 +2687,11 @@ class Particle {
 		}
 	}
 
-	_getActiveAuthToken(auth?: string): string | undefined {
+	private _getActiveAuthToken(auth?: string): string | undefined {
 		return auth || this._defaultAuth;
 	}
 
+	/** @internal */
 	deviceUri({ deviceId, product, org }: { deviceId: string; product?: string | number; org?: string }): string {
 		if (org) {
 			return `/v1/orgs/${org}/devices/${deviceId}`;
@@ -2707,7 +2702,7 @@ class Particle {
 		return `/v1/devices/${deviceId}`;
 	}
 
-	_namespacedPath(org: string | undefined, path: string): string {
+	private _namespacedPath(org: string | undefined, path: string): string {
 		return org ? `/v1/orgs/${org}/${path}` : `/v1/${path}`;
 	}
 
@@ -2813,10 +2808,12 @@ class Particle {
 		return this.agent.request(args);
 	}
 
+	/** @internal */
 	client(options: { auth?: string } = {}): Client {
 		return new Client(Object.assign({ api: this as object as Client.Api }, options));
 	}
 
+	/** @internal */
 	setBaseUrl(baseUrl: string): void {
 		this.baseUrl = baseUrl;
 		this.agent.setBaseUrl(baseUrl);
