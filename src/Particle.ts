@@ -271,23 +271,6 @@ class Particle {
 	}
 
 	/**
-     * Verify new user account via verification email
-     * @param {Object} options            Options for this API call
-     * @param {String} options.token      The string token sent in the verification email
-     * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-     * @param {Object} [options.context]  Request context
-     * @returns {Promise} A promise
-     */
-	verifyUser({ token, headers, context }: { token: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
-		return this.post({
-			uri: '/v1/user/verify',
-			headers,
-			data: { token },
-			context
-		});
-	}
-
-	/**
      * Send reset password email for a Particle Cloud user account
      * @param {Object} options            Options for this API call
      * @param {String} options.username   Email of the user
@@ -727,15 +710,6 @@ class Particle {
 		return this.post({ uri, auth, headers, data: { iccid }, context });
 	}
 
-	validatePromoCode({ promoCode, auth, headers, context }: { promoCode: string; auth?: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
-		return this.get({
-			uri: `/v1/promo_code/${promoCode}`,
-			auth,
-			headers,
-			context
-		});
-	}
-
 	/**
      * Get the value of a device variable
      * @param {Object} options            Options for this API call
@@ -778,29 +752,6 @@ class Particle {
 		}
 
 		return this.request({ uri, method: 'put', auth, headers, files, form, context });
-	}
-
-	/**
-     * DEPRECATED: Flash the Tinker application to a device. Instead compile and flash the Tinker source code.
-     * @param {Object} options            Options for this API call
-     * @param {String} options.deviceId   Device ID or Name
-     * @param {string} [options.auth]     The access token. Can be ignored if provided in constructor
-     * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-     * @param {Object} [options.context]  Request context
-     * @returns {Promise} A promise
-     */
-	flashTinker({ deviceId, auth, headers, context }: { deviceId: string; auth?: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
-		const consoleWithWarning = console as { warning?: (...args: string[]) => void };
-		if (console && consoleWithWarning.warning) {
-			consoleWithWarning.warning('Particle.flashTinker is deprecated');
-		}
-		return this.put({
-			uri: `/v1/devices/${deviceId}`,
-			headers,
-			data: { app: 'tinker' },
-			auth,
-			context
-		});
 	}
 
 	/**
