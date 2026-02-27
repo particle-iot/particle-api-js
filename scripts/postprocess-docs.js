@@ -280,7 +280,11 @@ const toc = `### Table of Contents\n\n-   [Particle](#particle)\n${tocEntries.ma
 // Insert TOC at the very top of the file
 content = toc + '\n' + content;
 
-// 13. Clean up multiple consecutive blank lines
+// 13. Unescape angle brackets: \< and \> -> < and >
+content = content.replace(/\\</g, '<');
+content = content.replace(/\\>/g, '>');
+
+// 14. Clean up multiple consecutive blank lines
 content = content.replace(/\n{3,}/g, '\n\n');
 
 fs.writeFileSync(docsPath, content, 'utf8');
