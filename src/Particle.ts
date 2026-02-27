@@ -2,7 +2,42 @@ import Defaults = require('./Defaults');
 import EventStream = require('./EventStream');
 import Agent = require('./Agent');
 import Client = require('./Client');
-import type { RequestResponse, AgentRequestOptions, GetHeadOptions, MutateOptions, ToolContext, ProjectContext } from './types';
+import type { RequestResponse, AgentRequestOptions, GetHeadOptions, MutateOptions, ToolContext, ProjectContext,
+	LoginOptions, SendOtpOptions, LoginAsClientOwnerOptions, EnableMfaOptions, ConfirmMfaOptions, DisableMfaOptions,
+	ResetPasswordOptions, ChangeUsernameOptions, ChangeUserPasswordOptions, DeleteUserOptions,
+	TrackingIdentityOptions, DeleteAccessTokenOptions, DeleteCurrentAccessTokenOptions, DeleteActiveAccessTokensOptions,
+	ListDevicesOptions, GetDeviceOptions, ClaimDeviceOptions, RemoveDeviceOptions, RemoveDeviceOwnerOptions,
+	UpdateDeviceOptions, RenameDeviceOptions, SignalDeviceOptions, FlashDeviceOptions,
+	CallFunctionOptions, GetVariableOptions, UnprotectDeviceOptions, DownloadManufacturingBackupOptions,
+	CompileCodeOptions, DownloadFirmwareBinaryOptions, ProvisionDeviceOptions,
+	GetEventStreamOptions, ListProductFirmwareOptions, UploadProductFirmwareOptions,
+	GetProductFirmwareOptions, UpdateProductFirmwareOptions, ReleaseFirmwareOptions,
+	DownloadProductFirmwareOptions, AddDeviceToProductOptions,
+	ListWebhooksOptions, DeleteWebhookOptions,
+	ListIntegrationsOptions, CreateIntegrationOptions, EditIntegrationOptions, DeleteIntegrationOptions,
+	ListSIMsOptions, CheckSIMOptions, ActivateSIMOptions, DeactivateSIMOptions, ReactivateSIMOptions,
+	UpdateSIMOptions, RemoveSIMOptions, GetSIMDataUsageOptions, GetFleetDataUsageOptions,
+	ListProductsOptions, GetProductOptions,
+	GetProductConfigurationOptions, GetProductConfigurationSchemaOptions,
+	GetProductDeviceConfigurationOptions, GetProductDeviceConfigurationSchemaOptions,
+	SetProductConfigurationOptions, SetProductDeviceConfigurationOptions,
+	GetProductLocationsOptions, GetProductDeviceLocationsOptions,
+	ListMeshNetworksOptions, CreateMeshNetworkOptions, GetMeshNetworkOptions,
+	UpdateMeshNetworkOptions, RemoveMeshNetworkOptions, ListMeshNetworkDevicesOptions,
+	RemoveMeshNetworkDeviceOptions,
+	ListOAuthClientsOptions, UpdateOAuthClientOptions, DeleteOAuthClientOptions,
+	ListLibrariesOptions, GetLibraryOptions, GetLibraryVersionsOptions,
+	ContributeLibraryOptions, PublishLibraryOptions, DeleteLibraryOptions,
+	ListBuildTargetsOptions, ListDeviceOsVersionsOptions, GetDeviceOsVersionOptions,
+	GetClaimCodeOptions, LookupSerialNumberOptions, DownloadFileOptions,
+	ListTeamMembersOptions, InviteTeamMemberOptions, RemoveTeamMemberOptions,
+	CreateCustomerOptions, ExecuteLogicOptions,
+	ListLogicFunctionsOptions, GetLogicFunctionOptions, DeleteLogicFunctionOptions,
+	ListLogicRunsOptions, GetLogicRunOptions, GetLogicRunLogsOptions,
+	ListLedgersOptions, CreateLedgerOptions, GetLedgerOptions, UpdateLedgerOptions, ArchiveLedgerOptions,
+	ListLedgerInstancesOptions, GetLedgerInstanceOptions, SetLedgerInstanceOptions, DeleteLedgerInstanceOptions,
+	ListLedgerInstanceVersionsOptions, GetLedgerInstanceVersionOptions
+} from './types';
 
 /**
  * Particle Cloud API wrapper.
@@ -98,7 +133,7 @@ class Particle {
      * @param  {Number} [options.context]      Request context
      * @returns {Promise} A promise
      */
-	login({ username, password, tokenDuration = this.tokenDuration, headers, context }: { username: string; password: string; tokenDuration?: number; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	login({ username, password, tokenDuration = this.tokenDuration, headers, context }: LoginOptions): Promise<RequestResponse> {
 		return this.request({
 			uri: '/oauth/token',
 			method: 'post',
@@ -124,7 +159,7 @@ class Particle {
      * @param  {Number} [options.context]  Request context
      * @returns {Promise} A promise
      */
-	sendOtp({ mfaToken, otp, headers, context }: { mfaToken: string; otp: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	sendOtp({ mfaToken, otp, headers, context }: SendOtpOptions): Promise<RequestResponse> {
 		return this.request({
 			uri: '/oauth/token',
 			method: 'post',
@@ -148,7 +183,7 @@ class Particle {
      * @param {Object} [options.context]  Request context
      * @returns {Promise} A promise
      */
-	enableMfa({ auth, headers, context }: { auth?: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	enableMfa({ auth, headers, context }: EnableMfaOptions): Promise<RequestResponse> {
 		return this.get({ uri: '/v1/user/mfa-enable', auth, headers, context });
 	}
 
@@ -163,7 +198,7 @@ class Particle {
      * @param {Object} [options.context]          Request context
      * @returns {Promise} A promise
      */
-	confirmMfa({ mfaToken, otp, invalidateTokens = false, auth, headers, context }: { mfaToken: string; otp: string; invalidateTokens?: boolean; auth?: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	confirmMfa({ mfaToken, otp, invalidateTokens = false, auth, headers, context }: ConfirmMfaOptions): Promise<RequestResponse> {
 		const data: { mfa_token: string; otp: string; invalidate_tokens?: boolean } = { mfa_token: mfaToken, otp };
 
 		if (invalidateTokens) {
@@ -188,7 +223,7 @@ class Particle {
      * @param {Object} [options.context]        Request context
      * @returns {Promise} A promise
      */
-	disableMfa({ currentPassword, auth, headers, context }: { currentPassword: string; auth?: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	disableMfa({ currentPassword, auth, headers, context }: DisableMfaOptions): Promise<RequestResponse> {
 		return this.put({
 			uri: '/v1/user/mfa-disable',
 			auth,
@@ -208,7 +243,7 @@ class Particle {
      * @param {Object} [options.context]  Request context
      * @returns {Promise} A promise
      */
-	createCustomer({ email, password, product, headers, context }: { email: string; password: string; product: string | number; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	createCustomer({ email, password, product, headers, context }: CreateCustomerOptions): Promise<RequestResponse> {
 		return this.request({
 			uri: `/v1/products/${product}/customers`,
 			method: 'post',
@@ -231,7 +266,7 @@ class Particle {
      * @param {Object} [options.context]  Request context
      * @returns {Promise} A promise
      */
-	loginAsClientOwner({ headers, context }: { headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } } = {}): Promise<RequestResponse> {
+	loginAsClientOwner({ headers, context }: LoginAsClientOwnerOptions = {}): Promise<RequestResponse> {
 		return this.request({
 			uri: '/oauth/token',
 			method: 'post',
@@ -278,7 +313,7 @@ class Particle {
      * @param {Object} [options.context]  Request context
      * @returns {Promise} A promise
      */
-	resetPassword({ username, headers, context }: { username: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	resetPassword({ username, headers, context }: ResetPasswordOptions): Promise<RequestResponse> {
 		return this.post({
 			uri: '/v1/user/password-reset',
 			headers,
@@ -295,7 +330,7 @@ class Particle {
      * @param {Object} [options.context]  Request context
      * @returns {Promise} A promise
      */
-	deleteAccessToken({ token, headers, context }: { token: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	deleteAccessToken({ token, headers, context }: DeleteAccessTokenOptions): Promise<RequestResponse> {
 		return this.delete({
 			uri: `/v1/access_tokens/${token}`,
 			headers,
@@ -311,7 +346,7 @@ class Particle {
      * @param {Object} [options.context]  Request context
      * @returns {Promise} A promise
      */
-	deleteCurrentAccessToken({ auth, headers, context }: { auth?: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	deleteCurrentAccessToken({ auth, headers, context }: DeleteCurrentAccessTokenOptions): Promise<RequestResponse> {
 		return this.delete({
 			uri: '/v1/access_tokens/current',
 			auth,
@@ -328,7 +363,7 @@ class Particle {
      * @param {Object} [options.context]  Request context
      * @returns {Promise} A promise
      */
-	deleteActiveAccessTokens({ auth, headers, context }: { auth?: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	deleteActiveAccessTokens({ auth, headers, context }: DeleteActiveAccessTokensOptions): Promise<RequestResponse> {
 		return this.delete({
 			uri: '/v1/access_tokens',
 			auth,
@@ -346,7 +381,7 @@ class Particle {
      * @param {Object} [options.context]  Request context
      * @returns {Promise} A promise
      */
-	deleteUser({ auth, password, headers, context }: { auth?: string; password: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	deleteUser({ auth, password, headers, context }: DeleteUserOptions): Promise<RequestResponse> {
 		return this.delete({
 			uri: '/v1/user',
 			data: { password },
@@ -366,7 +401,7 @@ class Particle {
      * @param {Object}  [options.context]  Request context
      * @returns {Promise<Object>} Resolve the tracking identify of the current login
      */
-	trackingIdentity({ full = false, auth, headers, context }: { full?: boolean; auth?: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } } = {}): Promise<RequestResponse> {
+	trackingIdentity({ full = false, auth, headers, context }: TrackingIdentityOptions = {}): Promise<RequestResponse> {
 		return this.get({
 			uri: '/v1/user/identify',
 			auth,
@@ -424,7 +459,7 @@ class Particle {
      * @param {Object} [options.context]  Request context
      * @returns {Promise} A promise
      */
-	getDevice({ deviceId, product, auth, headers, context }: { deviceId: string; product?: string | number; auth?: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	getDevice({ deviceId, product, auth, headers, context }: GetDeviceOptions): Promise<RequestResponse> {
 		const uri = this.deviceUri({ deviceId, product });
 		return this.get({ uri, auth, headers, context });
 	}
@@ -439,7 +474,7 @@ class Particle {
      * @param {Object}  [options.context]        Request context
      * @returns {Promise} A promise
      */
-	claimDevice({ deviceId, requestTransfer, auth, headers, context }: { deviceId: string; requestTransfer?: boolean; auth?: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	claimDevice({ deviceId, requestTransfer, auth, headers, context }: ClaimDeviceOptions): Promise<RequestResponse> {
 		return this.post({
 			uri: '/v1/devices',
 			auth,
@@ -464,7 +499,7 @@ class Particle {
      * @param {Object} [options.context]  Request context
      * @returns {Promise} A promise
      */
-	addDeviceToProduct({ deviceId, product, file, auth, headers, context }: { deviceId?: string; product: string | number; file?: string | Buffer | NodeJS.ReadableStream | Blob; auth?: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	addDeviceToProduct({ deviceId, product, file, auth, headers, context }: AddDeviceToProductOptions): Promise<RequestResponse> {
 		let files: Record<string, string | Buffer | NodeJS.ReadableStream | Blob> | undefined;
 		let data: Record<string, string> | undefined;
 
@@ -496,7 +531,7 @@ class Particle {
      * @param {Object}  [options.context]  Request context
      * @returns {Promise} A promise
      */
-	removeDevice({ deviceId, deny, product, auth, headers, context }: { deviceId: string; deny?: boolean; product?: string | number; auth?: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	removeDevice({ deviceId, deny, product, auth, headers, context }: RemoveDeviceOptions): Promise<RequestResponse> {
 		const uri = this.deviceUri({ deviceId, product });
 		const data = product ? { deny } : undefined;
 		return this.delete({ uri, data, auth, headers, context });
@@ -512,7 +547,7 @@ class Particle {
      * @param {Object} [options.context]  Request context
      * @returns {Promise} A promise
      */
-	removeDeviceOwner({ deviceId, product, auth, headers, context }: { deviceId: string; product: string | number; auth?: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	removeDeviceOwner({ deviceId, product, auth, headers, context }: RemoveDeviceOwnerOptions): Promise<RequestResponse> {
 		const uri = `/v1/products/${product}/devices/${deviceId}/owner`;
 		return this.delete({ uri, auth, headers, context });
 	}
@@ -528,7 +563,7 @@ class Particle {
      * @param {Object} [options.context]  Request context
      * @returns {Promise} A promise
      */
-	renameDevice({ deviceId, name, product, auth, headers, context }: { deviceId: string; name: string; product?: string | number; auth?: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	renameDevice({ deviceId, name, product, auth, headers, context }: RenameDeviceOptions): Promise<RequestResponse> {
 		return this.updateDevice({ deviceId, name, product, auth, headers, context });
 	}
 
@@ -543,7 +578,7 @@ class Particle {
      * @param {Object} [options.context]  Request context
      * @returns {Promise} A promise
      */
-	signalDevice({ deviceId, signal, product, auth, headers, context }: { deviceId: string; signal: boolean; product?: string | number; auth?: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	signalDevice({ deviceId, signal, product, auth, headers, context }: SignalDeviceOptions): Promise<RequestResponse> {
 		return this.updateDevice({ deviceId, signal, product, auth, headers, context });
 	}
 
@@ -624,7 +659,7 @@ class Particle {
      * @param {Object}        [options.context]                 Request context
      * @returns {Promise} A promise
      */
-	updateDevice({ deviceId, name, signal, notes, development, desiredFirmwareVersion, flash, product, auth, headers, context }: { deviceId: string; name?: string; signal?: boolean; notes?: string; development?: boolean; desiredFirmwareVersion?: number | null; flash?: boolean; product?: string | number; auth?: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	updateDevice({ deviceId, name, signal, notes, development, desiredFirmwareVersion, flash, product, auth, headers, context }: UpdateDeviceOptions): Promise<RequestResponse> {
 		let signalValue: string | undefined;
 		if (signal !== undefined) {
 			signalValue = signal ? '1' : '0';
@@ -656,7 +691,7 @@ class Particle {
      * @param {Object} [options.context]         Request context.
      * @returns {Promise} A promise
      */
-	unprotectDevice({ deviceId, org, product, action, serverNonce, deviceNonce, deviceSignature, devicePublicKeyFingerprint, auth, headers, context }: { deviceId: string; org?: string; product?: string | number; action: 'prepare' | 'confirm'; serverNonce?: string; deviceNonce?: string; deviceSignature?: string; devicePublicKeyFingerprint?: string; auth?: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	unprotectDevice({ deviceId, org, product, action, serverNonce, deviceNonce, deviceSignature, devicePublicKeyFingerprint, auth, headers, context }: UnprotectDeviceOptions): Promise<RequestResponse> {
 		const data: { action: string; device_nonce?: string; server_nonce?: string; device_signature?: string; device_public_key_fingerprint?: string } = { action };
 		if (deviceNonce !== undefined) {
 			data.device_nonce = deviceNonce;
@@ -683,7 +718,7 @@ class Particle {
      * @param {Object} [options.context]  Request context
      * @returns {Promise} A promise
      */
-	provisionDevice({ productId, auth, headers, context }: { productId: string | number; auth?: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	provisionDevice({ productId, auth, headers, context }: ProvisionDeviceOptions): Promise<RequestResponse> {
 		return this.post({
 			uri: '/v1/devices',
 			auth,
@@ -705,7 +740,7 @@ class Particle {
      * @param {Object} [options.context]  Request context
      * @returns {Promise} A promise
      */
-	getClaimCode({ iccid, product, auth, headers, context }: { iccid?: string; product?: string | number; auth?: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	getClaimCode({ iccid, product, auth, headers, context }: GetClaimCodeOptions): Promise<RequestResponse> {
 		const uri = product ? `/v1/products/${product}/device_claims` : '/v1/device_claims';
 		return this.post({ uri, auth, headers, data: { iccid }, context });
 	}
@@ -721,7 +756,7 @@ class Particle {
      * @param {Object} [options.context]  Request context
      * @returns {Promise} A promise
      */
-	getVariable({ deviceId, name, product, auth, headers, context }: { deviceId: string; name: string; product?: string | number; auth?: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	getVariable({ deviceId, name, product, auth, headers, context }: GetVariableOptions): Promise<RequestResponse> {
 		const uri = product ?
 			`/v1/products/${product}/devices/${deviceId}/${name}` :
 			`/v1/devices/${deviceId}/${name}`;
@@ -741,7 +776,7 @@ class Particle {
      * @param {Object} [options.context]               Request context
      * @returns {Promise} A promise
      */
-	flashDevice({ deviceId, product, files, targetVersion, auth, headers, context }: { deviceId: string; product?: string | number; files: Record<string, string | Buffer | NodeJS.ReadableStream | Blob>; targetVersion?: string; auth?: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	flashDevice({ deviceId, product, files, targetVersion, auth, headers, context }: FlashDeviceOptions): Promise<RequestResponse> {
 		const uri = this.deviceUri({ deviceId, product });
 		const form: Record<string, string> = {};
 
@@ -765,7 +800,7 @@ class Particle {
      * @param {Object} [options.context]               Request context
      * @returns {Promise} A promise
      */
-	compileCode({ files, platformId, targetVersion, auth, headers, context }: { files: Record<string, string | Buffer | NodeJS.ReadableStream | Blob>; platformId?: number; targetVersion?: string; auth?: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	compileCode({ files, platformId, targetVersion, auth, headers, context }: CompileCodeOptions): Promise<RequestResponse> {
 		const form: Record<string, string | number | undefined> = { platform_id: platformId };
 
 		if (targetVersion) {
@@ -794,7 +829,7 @@ class Particle {
      * @param {Object} [options.context]  Request context
      * @returns {Promise<RequestResponse, RequestError>} A promise
      */
-	downloadFirmwareBinary({ binaryId, auth, headers, context }: { binaryId: string; auth?: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	downloadFirmwareBinary({ binaryId, auth, headers, context }: DownloadFirmwareBinaryOptions): Promise<RequestResponse> {
 		return this.request({
 			uri: `/v1/binaries/${binaryId}`,
 			method: 'get',
@@ -844,7 +879,7 @@ class Particle {
      * @param {Object} [options.context]  Request context
      * @returns {Promise} A promise
      */
-	callFunction({ deviceId, name, argument, product, auth, headers, context }: { deviceId: string; name: string; argument?: string; product?: string | number; auth?: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	callFunction({ deviceId, name, argument, product, auth, headers, context }: CallFunctionOptions): Promise<RequestResponse> {
 		const uri = product ?
 			`/v1/products/${product}/devices/${deviceId}/${name}` :
 			`/v1/devices/${deviceId}/${name}`;
@@ -862,7 +897,7 @@ class Particle {
      * @returns {Promise} If the promise resolves, the resolution value will be an EventStream object that will
      * emit 'event' events.
      */
-	getEventStream({ deviceId, name, org, product, auth }: { deviceId?: string; name?: string; org?: string; product?: string | number; auth?: string }): Promise<EventStream> {
+	getEventStream({ deviceId, name, org, product, auth }: GetEventStreamOptions): Promise<EventStream> {
 		let uri = '/v1/';
 		if (org) {
 			uri += `orgs/${org}/`;
@@ -970,7 +1005,7 @@ class Particle {
      * @param {Object} [options.context]  Request context
      * @returns {Promise} A promise
      */
-	deleteWebhook({ hookId, product, auth, headers, context }: { hookId: string; product?: string | number; auth?: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	deleteWebhook({ hookId, product, auth, headers, context }: DeleteWebhookOptions): Promise<RequestResponse> {
 		const uri = product ? `/v1/products/${product}/webhooks/${hookId}` : `/v1/webhooks/${hookId}`;
 		return this.delete({ uri, auth, headers, context });
 	}
@@ -984,7 +1019,7 @@ class Particle {
      * @param {Object} [options.context]  Request context
      * @returns {Promise} A promise
      */
-	listWebhooks({ product, auth, headers, context }: { product?: string | number; auth?: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	listWebhooks({ product, auth, headers, context }: ListWebhooksOptions): Promise<RequestResponse> {
 		const uri = product ? `/v1/products/${product}/webhooks` : '/v1/webhooks';
 		return this.get({ uri, auth, headers, context });
 	}
@@ -1004,7 +1039,7 @@ class Particle {
      * @param {Object} [options.context]   Request context
      * @returns {Promise} A promise
      */
-	createIntegration({ event, settings, deviceId, product, auth, headers, context }: { event: string; settings: Record<string, string | number | boolean | object>; deviceId?: string; product?: string | number; auth?: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	createIntegration({ event, settings, deviceId, product, auth, headers, context }: CreateIntegrationOptions): Promise<RequestResponse> {
 		const uri = product ? `/v1/products/${product}/integrations` : '/v1/integrations';
 		const data = Object.assign({ event, deviceid: deviceId }, settings);
 		return this.post({ uri, data, auth, headers, context });
@@ -1026,7 +1061,7 @@ class Particle {
      * @param {Object} [options.context]      Request context
      * @returns {Promise} A promise
      */
-	editIntegration({ integrationId, event, settings, deviceId, product, auth, headers, context }: { integrationId: string; event?: string; settings?: Record<string, string | number | boolean | object>; deviceId?: string; product?: string | number; auth?: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	editIntegration({ integrationId, event, settings, deviceId, product, auth, headers, context }: EditIntegrationOptions): Promise<RequestResponse> {
 		const uri = product ? `/v1/products/${product}/integrations/${integrationId}` : `/v1/integrations/${integrationId}`;
 		const data = Object.assign({ event, deviceid: deviceId }, settings);
 		return this.put({ uri, auth, headers, data, context });
@@ -1043,7 +1078,7 @@ class Particle {
      * @param {Object} [options.context]      Request context
      * @returns {Promise} A promise
      */
-	deleteIntegration({ integrationId, product, auth, headers, context }: { integrationId: string; product?: string | number; auth?: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	deleteIntegration({ integrationId, product, auth, headers, context }: DeleteIntegrationOptions): Promise<RequestResponse> {
 		const uri = product ? `/v1/products/${product}/integrations/${integrationId}` : `/v1/integrations/${integrationId}`;
 		return this.delete({ uri, auth, headers, context });
 	}
@@ -1057,7 +1092,7 @@ class Particle {
      * @param {Object} [options.context]  Request context
      * @returns {Promise} A promise
      */
-	listIntegrations({ product, auth, headers, context }: { product?: string | number; auth?: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	listIntegrations({ product, auth, headers, context }: ListIntegrationsOptions): Promise<RequestResponse> {
 		const uri = product ? `/v1/products/${product}/integrations` : '/v1/integrations';
 		return this.get({ uri, auth, headers, context });
 	}
@@ -1099,7 +1134,7 @@ class Particle {
      * @param {Object}  [options.context]         Request context
      * @returns {Promise} A promise
      */
-	changeUsername({ currentPassword, username, invalidateTokens = false, auth, headers, context }: { currentPassword: string; username: string; invalidateTokens?: boolean; auth?: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	changeUsername({ currentPassword, username, invalidateTokens = false, auth, headers, context }: ChangeUsernameOptions): Promise<RequestResponse> {
 		const data: { username: string; current_password: string; invalidate_tokens?: boolean } = { username, current_password: currentPassword };
 
 		if (invalidateTokens) {
@@ -1120,7 +1155,7 @@ class Particle {
      * @param {Object}  [options.context]         Request context
      * @returns {Promise} A promise
      */
-	changeUserPassword({ currentPassword, password, invalidateTokens = false, auth, headers, context }: { currentPassword: string; password: string; invalidateTokens?: boolean; auth?: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	changeUserPassword({ currentPassword, password, invalidateTokens = false, auth, headers, context }: ChangeUserPasswordOptions): Promise<RequestResponse> {
 		const data: { password: string; current_password: string; invalidate_tokens?: boolean } = { password, current_password: currentPassword };
 
 		if (invalidateTokens) {
@@ -1144,7 +1179,7 @@ class Particle {
      * @param {Object} [options.context]     Request context
      * @returns {Promise} A promise
      */
-	listSIMs({ iccid, deviceId, deviceName, page, perPage, product, auth, headers, context }: { iccid?: string; deviceId?: string; deviceName?: string; page?: number; perPage?: number; product?: string | number; auth?: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	listSIMs({ iccid, deviceId, deviceName, page, perPage, product, auth, headers, context }: ListSIMsOptions): Promise<RequestResponse> {
 		const uri = product ? `/v1/products/${product}/sims` : '/v1/sims';
 		const query = product ? { iccid, deviceId, deviceName, page, per_page: perPage } : undefined;
 		return this.get({ uri, auth, headers, query, context });
@@ -1160,7 +1195,7 @@ class Particle {
      * @param {Object} [options.context]  Request context
      * @returns {Promise} A promise
      */
-	getSIMDataUsage({ iccid, product, auth, headers, context }: { iccid: string; product?: string | number; auth?: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	getSIMDataUsage({ iccid, product, auth, headers, context }: GetSIMDataUsageOptions): Promise<RequestResponse> {
 		const uri = product ?
 			`/v1/products/${product}/sims/${iccid}/data_usage` :
 			`/v1/sims/${iccid}/data_usage`;
@@ -1177,7 +1212,7 @@ class Particle {
      * @param {Object} [options.context]  Request context
      * @returns {Promise} A promise
      */
-	getFleetDataUsage({ product, auth, headers, context }: { product: string | number; auth?: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	getFleetDataUsage({ product, auth, headers, context }: GetFleetDataUsageOptions): Promise<RequestResponse> {
 		return this.get({
 			uri: `/v1/products/${product}/sims/data_usage`,
 			auth,
@@ -1195,7 +1230,7 @@ class Particle {
      * @param {Object} [options.context]  Request context
      * @returns {Promise} A promise
      */
-	checkSIM({ iccid, auth, headers, context }: { iccid: string; auth?: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	checkSIM({ iccid, auth, headers, context }: CheckSIMOptions): Promise<RequestResponse> {
 		return this.head({ uri: `/v1/sims/${iccid}`, auth, headers, context });
 	}
 
@@ -1212,7 +1247,7 @@ class Particle {
      * @param {any}           [options.promoCode]
      * @returns {Promise} A promise
      */
-	activateSIM({ iccid, iccids, country, promoCode, product, auth, headers, context }: { iccid?: string; iccids?: string[]; country: string; promoCode?: string; product?: string | number; auth?: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	activateSIM({ iccid, iccids, country, promoCode, product, auth, headers, context }: ActivateSIMOptions): Promise<RequestResponse> {
 		const resolvedIccids = iccids || [iccid];
 		const uri = product ? `/v1/products/${product}/sims` : `/v1/sims/${iccid}`;
 		const data = product ?
@@ -1233,7 +1268,7 @@ class Particle {
      * @param {Object} [options.context]  Request context
      * @returns {Promise} A promise
      */
-	deactivateSIM({ iccid, product, auth, headers, context }: { iccid: string; product?: string | number; auth?: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	deactivateSIM({ iccid, product, auth, headers, context }: DeactivateSIMOptions): Promise<RequestResponse> {
 		const uri = product ? `/v1/products/${product}/sims/${iccid}` : `/v1/sims/${iccid}`;
 		const data = { action: 'deactivate' };
 		return this.put({ uri, auth, headers, data, context });
@@ -1250,7 +1285,7 @@ class Particle {
      * @param {Object} [options.context]  Request context
      * @returns {Promise} A promise
      */
-	reactivateSIM({ iccid, mbLimit, product, auth, headers, context }: { iccid: string; mbLimit?: number; product?: string | number; auth?: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	reactivateSIM({ iccid, mbLimit, product, auth, headers, context }: ReactivateSIMOptions): Promise<RequestResponse> {
 		const uri = product ? `/v1/products/${product}/sims/${iccid}` : `/v1/sims/${iccid}`;
 		const data = { mb_limit: mbLimit, action: 'reactivate' };
 		return this.put({ uri, auth, headers, data, context });
@@ -1267,7 +1302,7 @@ class Particle {
      * @param {Object} [options.context]  Request context
      * @returns {Promise} A promise
      */
-	updateSIM({ iccid, mbLimit, product, auth, headers, context }: { iccid: string; mbLimit: number; product?: string | number; auth?: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	updateSIM({ iccid, mbLimit, product, auth, headers, context }: UpdateSIMOptions): Promise<RequestResponse> {
 		const uri = product ? `/v1/products/${product}/sims/${iccid}` : `/v1/sims/${iccid}`;
 		const data = { mb_limit: mbLimit };
 		return this.put({ uri, auth, headers, data, context });
@@ -1283,7 +1318,7 @@ class Particle {
      * @param {Object} [options.context]  Request context
      * @returns {Promise} A promise
      */
-	removeSIM({ iccid, product, auth, headers, context }: { iccid: string; product?: string | number; auth?: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	removeSIM({ iccid, product, auth, headers, context }: RemoveSIMOptions): Promise<RequestResponse> {
 		const uri = product ? `/v1/products/${product}/sims/${iccid}` : `/v1/sims/${iccid}`;
 		return this.delete({ uri, auth, headers, context });
 	}
@@ -1297,7 +1332,7 @@ class Particle {
      * @param {Object}  [options.context]             Request context
      * @returns {Promise} A promise
      */
-	listBuildTargets({ onlyFeatured, auth, headers, context }: { onlyFeatured?: boolean; auth?: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	listBuildTargets({ onlyFeatured, auth, headers, context }: ListBuildTargetsOptions): Promise<RequestResponse> {
 		const query = onlyFeatured ? { featured: !!onlyFeatured } : undefined;
 		return this.get({ uri: '/v1/build_targets', auth, headers, query, context });
 	}
@@ -1326,7 +1361,7 @@ class Particle {
      * @param {Object}         [options.context]      Request context
      * @returns {Promise} A promise
      */
-	listLibraries({ page, limit, filter, sort, architectures, category, scope, excludeScopes, auth, headers, context }: { page?: number; limit?: number; filter?: string; sort?: string; architectures?: string[]; category?: string; scope?: string; excludeScopes?: string[]; auth?: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	listLibraries({ page, limit, filter, sort, architectures, category, scope, excludeScopes, auth, headers, context }: ListLibrariesOptions): Promise<RequestResponse> {
 		return this.get({
 			uri: '/v1/libraries',
 			auth,
@@ -1359,7 +1394,7 @@ class Particle {
      * @param {Object} [options.context]  Request context
      * @returns {Promise} A promise
      */
-	getLibrary({ name, version, auth, headers, context }: { name: string; version?: string; auth?: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	getLibrary({ name, version, auth, headers, context }: GetLibraryOptions): Promise<RequestResponse> {
 		return this.get({
 			uri: `/v1/libraries/${name}`,
 			auth,
@@ -1380,7 +1415,7 @@ class Particle {
      * @param {Object} [options.context]  Request context
      * @returns {Promise} A promise
      */
-	getLibraryVersions({ name, page, limit, auth, headers, context }: { name: string; page?: number; limit?: number; auth?: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	getLibraryVersions({ name, page, limit, auth, headers, context }: GetLibraryVersionsOptions): Promise<RequestResponse> {
 		return this.get({
 			uri: `/v1/libraries/${name}/versions`,
 			auth,
@@ -1400,7 +1435,7 @@ class Particle {
      * @param {Object}          [options.context]  Request context
      * @returns {Promise} A promise
      */
-	contributeLibrary({ archive, auth, headers, context }: { archive: string | Buffer | NodeJS.ReadableStream | Blob; auth?: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	contributeLibrary({ archive, auth, headers, context }: ContributeLibraryOptions): Promise<RequestResponse> {
 		const files = {
 			'archive.tar.gz': archive
 		};
@@ -1424,7 +1459,7 @@ class Particle {
      * @param {Object} [options.context]  Request context
      * @returns {Promise} A promise
      */
-	publishLibrary({ name, auth, headers, context }: { name: string; auth?: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	publishLibrary({ name, auth, headers, context }: PublishLibraryOptions): Promise<RequestResponse> {
 		return this.request({
 			uri: `/v1/libraries/${name}`,
 			method: 'patch',
@@ -1445,7 +1480,7 @@ class Particle {
      * @param {Object} [options.context]  Request context
      * @returns {Promise} A promise
      */
-	deleteLibrary({ name, force, auth, headers, context }: { name: string; force?: string; auth?: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	deleteLibrary({ name, force, auth, headers, context }: DeleteLibraryOptions): Promise<RequestResponse> {
 		return this.delete({
 			uri: `/v1/libraries/${name}`,
 			auth,
@@ -1463,7 +1498,7 @@ class Particle {
      * @param {Object} [options.context]  Request context
      * @returns {Promise} Resolves to a buffer with the file data
      */
-	downloadFile({ uri, headers, context }: { uri: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	downloadFile({ uri, headers, context }: DownloadFileOptions): Promise<RequestResponse> {
 		return this.request({ uri, method: 'get', headers, context, isBuffer: true });
 	}
 
@@ -1476,7 +1511,7 @@ class Particle {
      * @param {Object} [options.context]  Request context
      * @returns {Promise} A promise
      */
-	listOAuthClients({ product, auth, headers, context }: { product?: string | number; auth?: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	listOAuthClients({ product, auth, headers, context }: ListOAuthClientsOptions): Promise<RequestResponse> {
 		const uri = product ? `/v1/products/${product}/clients` : '/v1/clients';
 		return this.get({ uri, auth, headers, context });
 	}
@@ -1512,7 +1547,7 @@ class Particle {
      * @param {Object} [options.context]  Request context
      * @returns {Promise} A promise
      */
-	updateOAuthClient({ clientId, name, scope, product, auth, headers, context }: { clientId: string; name?: string; scope?: Record<string, string>; product?: string | number; auth?: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	updateOAuthClient({ clientId, name, scope, product, auth, headers, context }: UpdateOAuthClientOptions): Promise<RequestResponse> {
 		const uri = product ? `/v1/products/${product}/clients/${clientId}` : `/v1/clients/${clientId}`;
 		const data = { name, scope };
 		return this.put({ uri, data, auth, headers, context });
@@ -1528,7 +1563,7 @@ class Particle {
      * @param {Object} [options.context]  Request context
      * @returns {Promise} A promise
      */
-	deleteOAuthClient({ clientId, product, auth, headers, context }: { clientId: string; product?: string | number; auth?: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	deleteOAuthClient({ clientId, product, auth, headers, context }: DeleteOAuthClientOptions): Promise<RequestResponse> {
 		const uri = product ? `/v1/products/${product}/clients/${clientId}` : `/v1/clients/${clientId}`;
 		return this.delete({ uri, auth, headers, context });
 	}
@@ -1541,7 +1576,7 @@ class Particle {
      * @param {Object} [options.context]  Request context
      * @returns {Promise} A promise
      */
-	listProducts({ auth, headers, context }: { auth?: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	listProducts({ auth, headers, context }: ListProductsOptions): Promise<RequestResponse> {
 		return this.get({ uri: '/v1/products', auth, headers, context });
 	}
 
@@ -1554,7 +1589,7 @@ class Particle {
      * @param {Object} [options.context]  Request context
      * @returns {Promise} A promise
      */
-	getProduct({ product, auth, headers, context }: { product: string | number; auth?: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	getProduct({ product, auth, headers, context }: GetProductOptions): Promise<RequestResponse> {
 		return this.get({ uri: `/v1/products/${product}`, auth, headers, context });
 	}
 
@@ -1567,7 +1602,7 @@ class Particle {
      * @param {Object} [options.context]  Request context
      * @returns {Promise} A promise
      */
-	listProductFirmware({ product, auth, headers, context }: { product: string | number; auth?: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	listProductFirmware({ product, auth, headers, context }: ListProductFirmwareOptions): Promise<RequestResponse> {
 		return this.get({ uri: `/v1/products/${product}/firmware`, auth, headers, context });
 	}
 
@@ -1585,7 +1620,7 @@ class Particle {
      * @param {Object} [options.context]      Request context
      * @returns {Promise} A promise
      */
-	uploadProductFirmware({ file, version, title, description, product, auth, headers, context }: { file: string | Buffer | NodeJS.ReadableStream | Blob; version: number; title: string; description?: string; product: string | number; auth?: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	uploadProductFirmware({ file, version, title, description, product, auth, headers, context }: UploadProductFirmwareOptions): Promise<RequestResponse> {
 		return this.request({
 			uri: `/v1/products/${product}/firmware`,
 			method: 'post',
@@ -1613,7 +1648,7 @@ class Particle {
      * @param {Object} [options.context]  Request context
      * @returns {Promise} A promise
      */
-	getProductFirmware({ version, product, auth, headers, context }: { version: number; product: string | number; auth?: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	getProductFirmware({ version, product, auth, headers, context }: GetProductFirmwareOptions): Promise<RequestResponse> {
 		return this.get({
 			uri: `/v1/products/${product}/firmware/${version}`,
 			auth,
@@ -1634,7 +1669,7 @@ class Particle {
      * @param {Object} [options.context]      Request context
      * @returns {Promise} A promise
      */
-	updateProductFirmware({ version, title, description, product, auth, headers, context }: { version: number; title?: string; description?: string; product: string | number; auth?: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	updateProductFirmware({ version, title, description, product, auth, headers, context }: UpdateProductFirmwareOptions): Promise<RequestResponse> {
 		const uri = `/v1/products/${product}/firmware/${version}`;
 		return this.put({ uri, auth, headers, data: { title, description }, context });
 	}
@@ -1649,7 +1684,7 @@ class Particle {
      * @param {Object} [options.context]  Request context
      * @returns {Promise<RequestResponse, RequestError>} A promise that resolves with either the requested data or an error object
      */
-	downloadProductFirmware({ version, product, auth, headers, context }: { version: number; product: string | number; auth?: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	downloadProductFirmware({ version, product, auth, headers, context }: DownloadProductFirmwareOptions): Promise<RequestResponse> {
 		return this.request({
 			uri: `/v1/products/${product}/firmware/${version}/binary`,
 			method: 'get',
@@ -1669,7 +1704,7 @@ class Particle {
       * @param {Object} [options.context]         Request context
       * @returns {Promise<RequestResponse, RequestError>} A promise with a zip file that contains all manufacturing backup files for the specific device.
       */
-	downloadManufacturingBackup({ deviceId, auth, headers, context }: { deviceId: string; auth?: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	downloadManufacturingBackup({ deviceId, auth, headers, context }: DownloadManufacturingBackupOptions): Promise<RequestResponse> {
 		return this.request({
 			uri: `/v1/devices/${deviceId}/backup_files`,
 			method: 'put',
@@ -1690,7 +1725,7 @@ class Particle {
      * @param {Object} [options.context]  Request context
      * @returns {Promise} A promise
      */
-	releaseProductFirmware({ version, product, auth, headers, context }: { version: number; product: string | number; auth?: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	releaseProductFirmware({ version, product, auth, headers, context }: ReleaseFirmwareOptions): Promise<RequestResponse> {
 		const uri = `/v1/products/${product}/firmware/release`;
 		return this.put({ uri, auth, headers, data: { version }, context });
 	}
@@ -1704,7 +1739,7 @@ class Particle {
      * @param {Object} [options.context]  Request context
      * @returns {Promise} A promise
      */
-	listTeamMembers({ product, auth, headers, context }: { product: string | number; auth?: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	listTeamMembers({ product, auth, headers, context }: ListTeamMembersOptions): Promise<RequestResponse> {
 		return this.get({
 			uri: `/v1/products/${product}/team`,
 			auth,
@@ -1723,7 +1758,7 @@ class Particle {
      * @param {Object} [options.context]  Request context
      * @returns {Promise} A promise
      */
-	inviteTeamMember({ username, product, auth, headers, context }: { username: string; product: string | number; auth?: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	inviteTeamMember({ username, product, auth, headers, context }: InviteTeamMemberOptions): Promise<RequestResponse> {
 		return this.post({
 			uri: `/v1/products/${product}/team`,
 			auth,
@@ -1743,7 +1778,7 @@ class Particle {
      * @param {Object} [options.context]  Request context
      * @returns {Promise} A promise
      */
-	removeTeamMember({ username, product, auth, headers, context }: { username: string; product: string | number; auth?: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	removeTeamMember({ username, product, auth, headers, context }: RemoveTeamMemberOptions): Promise<RequestResponse> {
 		return this.delete({
 			uri: `/v1/products/${product}/team/${username}`,
 			auth,
@@ -1761,7 +1796,7 @@ class Particle {
      * @param {Object} [options.context]     Request context
      * @returns {Promise} A promise
      */
-	lookupSerialNumber({ serialNumber, auth, headers, context }: { serialNumber: string; auth?: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	lookupSerialNumber({ serialNumber, auth, headers, context }: LookupSerialNumberOptions): Promise<RequestResponse> {
 		return this.get({
 			uri: `/v1/serial_numbers/${serialNumber}`,
 			auth,
@@ -1781,7 +1816,7 @@ class Particle {
      * @param {Object} [options.context]  Request context
      * @returns {Promise<Object>} A promise
      */
-	createMeshNetwork({ name, deviceId, iccid, auth, headers, context }: { name: string; deviceId: string; iccid?: string; auth?: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	createMeshNetwork({ name, deviceId, iccid, auth, headers, context }: CreateMeshNetworkOptions): Promise<RequestResponse> {
 		return this.post({
 			uri: '/v1/networks',
 			auth,
@@ -1800,7 +1835,7 @@ class Particle {
      * @param {Object} [options.context]  Request context
      * @returns {Promise<Object>} A promise
      */
-	removeMeshNetwork({ networkId, auth, headers, context }: { networkId: string; auth?: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	removeMeshNetwork({ networkId, auth, headers, context }: RemoveMeshNetworkOptions): Promise<RequestResponse> {
 		return this.delete({ uri: `/v1/networks/${networkId}`, auth, headers, context });
 	}
 
@@ -1814,7 +1849,7 @@ class Particle {
      * @param {Object} [options.context]  Request context
      * @returns {Promise<Object>} A promise
      */
-	listMeshNetworks({ page, perPage, auth, headers, context }: { page?: number; perPage?: number; auth?: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	listMeshNetworks({ page, perPage, auth, headers, context }: ListMeshNetworksOptions): Promise<RequestResponse> {
 		const query = page ? { page, per_page: perPage } : undefined;
 		return this.get({ uri: '/v1/networks', auth, headers, query, context });
 	}
@@ -1828,7 +1863,7 @@ class Particle {
      * @param {Object} [options.context]  Request context
      * @returns {Promise<Object>} A promise
      */
-	getMeshNetwork({ networkId, auth, headers, context }: { networkId: string; auth?: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	getMeshNetwork({ networkId, auth, headers, context }: GetMeshNetworkOptions): Promise<RequestResponse> {
 		return this.get({ uri: `/v1/networks/${networkId}`, auth, headers, context });
 	}
 
@@ -1843,7 +1878,7 @@ class Particle {
      * @param {Object} [options.context]  Request context
      * @returns {Promise<Object>} A promise
      */
-	updateMeshNetwork({ networkId, action, deviceId, auth, headers, context }: { networkId: string; action: string; deviceId: string; auth?: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	updateMeshNetwork({ networkId, action, deviceId, auth, headers, context }: UpdateMeshNetworkOptions): Promise<RequestResponse> {
 		return this.put({
 			uri: `/v1/networks/${networkId}`,
 			auth,
@@ -1884,7 +1919,7 @@ class Particle {
      * @param {Object} [options.context]    Request context
      * @returns {Promise<Object>} A promise
      */
-	removeMeshNetworkDevice({ networkId, deviceId, auth, headers, context }: { networkId?: string; deviceId: string; auth?: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	removeMeshNetworkDevice({ networkId, deviceId, auth, headers, context }: RemoveMeshNetworkDeviceOptions): Promise<RequestResponse> {
 		if (!networkId) {
 			return this.delete({
 				uri: `/v1/devices/${deviceId}/network`,
@@ -1915,7 +1950,7 @@ class Particle {
      * @param {Object} [options.context]  Request context
      * @returns {Promise<Object>} A promise
      */
-	listMeshNetworkDevices({ networkId, role, page, perPage, auth, headers, context }: { networkId: string; role?: string; page?: number; perPage?: number; auth?: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	listMeshNetworkDevices({ networkId, role, page, perPage, auth, headers, context }: ListMeshNetworkDevicesOptions): Promise<RequestResponse> {
 		const query = (role || page) ? { role, page, per_page: perPage } : undefined;
 		return this.get({
 			uri: `/v1/networks/${networkId}/devices`,
@@ -1935,7 +1970,7 @@ class Particle {
      * @param {Object} [options.context]  Request context
      * @returns {Promise} A promise
      */
-	getProductConfiguration({ auth, product, headers, context }: { auth?: string; product: string | number; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	getProductConfiguration({ auth, product, headers, context }: GetProductConfigurationOptions): Promise<RequestResponse> {
 		return this.get({
 			uri: `/v1/products/${product}/config`,
 			auth,
@@ -1953,7 +1988,7 @@ class Particle {
      * @param {Object} [options.context]  Request context
      * @returns {Promise} A promise
      */
-	getProductConfigurationSchema({ auth, product, headers = {}, context }: { auth?: string; product: string | number; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	getProductConfigurationSchema({ auth, product, headers = {}, context }: GetProductConfigurationSchemaOptions): Promise<RequestResponse> {
 		headers.accept = 'application/schema+json';
 		return this.get({
 			uri: `/v1/products/${product}/config`,
@@ -1973,7 +2008,7 @@ class Particle {
      * @param {Object} [options.context]  Request context
      * @returns {Promise} A promise
      */
-	getProductDeviceConfiguration({ auth, product, deviceId, headers, context }: { auth?: string; product: string | number; deviceId: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	getProductDeviceConfiguration({ auth, product, deviceId, headers, context }: GetProductDeviceConfigurationOptions): Promise<RequestResponse> {
 		return this.get({
 			uri: `/v1/products/${product}/config/${deviceId}`,
 			auth,
@@ -1992,7 +2027,7 @@ class Particle {
      * @param {Object} [options.context]  Request context
      * @returns {Promise} A promise
      */
-	getProductDeviceConfigurationSchema({ auth, product, deviceId, headers = {}, context }: { auth?: string; product: string | number; deviceId: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	getProductDeviceConfigurationSchema({ auth, product, deviceId, headers = {}, context }: GetProductDeviceConfigurationSchemaOptions): Promise<RequestResponse> {
 		headers.accept = 'application/schema+json';
 		return this.get({
 			uri: `/v1/products/${product}/config/${deviceId}`,
@@ -2012,7 +2047,7 @@ class Particle {
      * @param {Object} [options.context]  Request context
      * @returns {Promise} A promise
      */
-	setProductConfiguration({ auth, product, config, headers, context }: { auth?: string; product: string | number; config: Record<string, string | number | boolean | object | null>; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	setProductConfiguration({ auth, product, config, headers, context }: SetProductConfigurationOptions): Promise<RequestResponse> {
 		return this.put({
 			uri: `/v1/products/${product}/config`,
 			auth,
@@ -2033,7 +2068,7 @@ class Particle {
      * @param {Object} [options.context]  Request context
      * @returns {Promise} A promise
      */
-	setProductDeviceConfiguration({ auth, product, deviceId, config, headers, context }: { auth?: string; product: string | number; deviceId: string; config: Record<string, string | number | boolean | object | null>; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	setProductDeviceConfiguration({ auth, product, deviceId, config, headers, context }: SetProductDeviceConfigurationOptions): Promise<RequestResponse> {
 		return this.put({
 			uri: `/v1/products/${product}/config/${deviceId}`,
 			data: config,
@@ -2060,7 +2095,7 @@ class Particle {
      * @param {Object} [options.context]   Request context
      * @returns {Promise} A promise
      */
-	getProductLocations({ auth, product, dateRange, rectBl, rectTr, deviceId, deviceName, groups, page, perPage, headers, context }: { auth?: string; product: string | number; dateRange?: string; rectBl?: string; rectTr?: string; deviceId?: string; deviceName?: string; groups?: string[]; page?: number; perPage?: number; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	getProductLocations({ auth, product, dateRange, rectBl, rectTr, deviceId, deviceName, groups, page, perPage, headers, context }: GetProductLocationsOptions): Promise<RequestResponse> {
 		return this.get({
 			uri: `/v1/products/${product}/locations`,
 			query: {
@@ -2094,7 +2129,7 @@ class Particle {
      * @param {Object} [options.context]  Request context
      * @returns {Promise} A promise
      */
-	getProductDeviceLocations({ auth, product, dateRange, rectBl, rectTr, deviceId, headers, context }: { auth?: string; product: string | number; dateRange?: string; rectBl?: string; rectTr?: string; deviceId: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	getProductDeviceLocations({ auth, product, dateRange, rectBl, rectTr, deviceId, headers, context }: GetProductDeviceLocationsOptions): Promise<RequestResponse> {
 		return this.get({
 			uri: `/v1/products/${product}/locations/${deviceId}`,
 			query: {
@@ -2122,7 +2157,7 @@ class Particle {
      *
      * @returns {Promise<RequestResponse>} A promise that resolves to the created logic function data.
      */
-	executeLogic({ auth, org, logic, headers, context }: { auth?: string; org?: string; logic: { source: { type: 'JavaScript'; code: string }; event?: { event_name?: string; event_data?: string; device_id?: string; product_id?: string }; api_username?: string }; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	executeLogic({ auth, org, logic, headers, context }: ExecuteLogicOptions): Promise<RequestResponse> {
 		return this.post({
 			uri: this._namespacedPath(org, 'logic/execute'),
 			auth,
@@ -2172,7 +2207,7 @@ class Particle {
      *
      * @returns {Promise<RequestResponse>} A promise that resolves to the specified logic function data.
      */
-	getLogicFunction({ auth, org, logicFunctionId, headers, context }: { auth?: string; org?: string; logicFunctionId: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	getLogicFunction({ auth, org, logicFunctionId, headers, context }: GetLogicFunctionOptions): Promise<RequestResponse> {
 		return this.get({
 			uri: this._namespacedPath(org, `logic/functions/${logicFunctionId}`),
 			auth,
@@ -2218,7 +2253,7 @@ class Particle {
      *
      * @returns {Promise<RequestResponse>} A promise that resolves to an object containing the deleted logic function ID.
      */
-	deleteLogicFunction({ auth, org, logicFunctionId, headers, context }: { auth?: string; org?: string; logicFunctionId: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	deleteLogicFunction({ auth, org, logicFunctionId, headers, context }: DeleteLogicFunctionOptions): Promise<RequestResponse> {
 		return this.delete({
 			uri: this._namespacedPath(org, `logic/functions/${logicFunctionId}`),
 			auth,
@@ -2239,7 +2274,7 @@ class Particle {
      *
      * @returns {Promise<RequestResponse>} A promise that resolves to an array of logic functions data.
      */
-	listLogicFunctions({ auth, org, todayStats, headers, context }: { auth?: string; org?: string; todayStats?: boolean; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	listLogicFunctions({ auth, org, todayStats, headers, context }: ListLogicFunctionsOptions): Promise<RequestResponse> {
 		return this.get({
 			uri: this._namespacedPath(org, 'logic/functions'),
 			query: {
@@ -2263,7 +2298,7 @@ class Particle {
      *
      * @returns {Promise<RequestResponse>} A promise that resolves to an array of logic run data.
      */
-	listLogicRuns({ auth, org, logicFunctionId, headers, context }: { auth?: string; org?: string; logicFunctionId: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	listLogicRuns({ auth, org, logicFunctionId, headers, context }: ListLogicRunsOptions): Promise<RequestResponse> {
 		return this.get({
 			uri: this._namespacedPath(org, `logic/functions/${logicFunctionId}/runs`),
 			auth,
@@ -2285,7 +2320,7 @@ class Particle {
      *
      * @returns {Promise<RequestResponse>} A promise that resolves to an array of logic run data for the specified logic run ID.
      */
-	getLogicRun({ auth, org, logicFunctionId, logicRunId, headers, context }: { auth?: string; org?: string; logicFunctionId: string; logicRunId: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	getLogicRun({ auth, org, logicFunctionId, logicRunId, headers, context }: GetLogicRunOptions): Promise<RequestResponse> {
 		return this.get({
 			uri: this._namespacedPath(org, `logic/functions/${logicFunctionId}/runs/${logicRunId}`),
 			auth,
@@ -2307,7 +2342,7 @@ class Particle {
      *
      * @returns {Promise<RequestResponse>} A promise that resolves to the logs for the specified logic run ID.
      */
-	getLogicRunLogs({ auth, org, logicFunctionId, logicRunId, headers, context }: { auth?: string; org?: string; logicFunctionId: string; logicRunId: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	getLogicRunLogs({ auth, org, logicFunctionId, logicRunId, headers, context }: GetLogicRunLogsOptions): Promise<RequestResponse> {
 		return this.get({
 			uri: this._namespacedPath(org, `logic/functions/${logicFunctionId}/runs/${logicRunId}/logs`),
 			auth,
@@ -2328,7 +2363,7 @@ class Particle {
      *
      * @returns {Promise<RequestResponse>} A promise that resolves to the created ledger definition data.
      */
-	createLedger({ auth, org, ledger, headers, context }: { auth?: string; org?: string; ledger: { name: string; description?: string; scope: 'Owner' | 'Device' | 'Product'; direction: 'Upstream' | 'Downstream' }; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	createLedger({ auth, org, ledger, headers, context }: CreateLedgerOptions): Promise<RequestResponse> {
 		return this.post({
 			uri: this._namespacedPath(org, 'ledgers'),
 			auth,
@@ -2350,7 +2385,7 @@ class Particle {
      *
      * @returns {Promise<RequestResponse>} A promise that resolves to the specified ledger definition data.
      */
-	getLedger({ auth, org, ledgerName, headers, context }: { auth?: string; org?: string; ledgerName: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	getLedger({ auth, org, ledgerName, headers, context }: GetLedgerOptions): Promise<RequestResponse> {
 		return this.get({
 			uri: this._namespacedPath(org, `ledgers/${ledgerName}`),
 			auth,
@@ -2372,7 +2407,7 @@ class Particle {
      *
      * @returns {Promise<RequestResponse>} A promise that resolves to the updated ledger definition data.
      */
-	updateLedger({ auth, org, ledgerName, ledger, headers, context }: { auth?: string; org?: string; ledgerName: string; ledger: { description?: string; direction?: 'Upstream' | 'Downstream' }; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	updateLedger({ auth, org, ledgerName, ledger, headers, context }: UpdateLedgerOptions): Promise<RequestResponse> {
 		return this.put({
 			uri: this._namespacedPath(org, `ledgers/${ledgerName}`),
 			auth,
@@ -2394,7 +2429,7 @@ class Particle {
      *
      * @returns {Promise<RequestResponse>} A promise that resolves to an object confirming the ledger definition was archived.
      */
-	archiveLedger({ auth, org, ledgerName, headers, context }: { auth?: string; org?: string; ledgerName: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	archiveLedger({ auth, org, ledgerName, headers, context }: ArchiveLedgerOptions): Promise<RequestResponse> {
 		return this.delete({
 			uri: this._namespacedPath(org, `ledgers/${ledgerName}`),
 			auth,
@@ -2422,7 +2457,7 @@ class Particle {
      *
      * @returns {Promise<RequestResponse>} A promise that resolves to an array of ledger definition data.
      */
-	listLedgers({ auth, org, scope, page, perPage, archived, headers, context }: { auth?: string; org?: string; scope?: 'Owner' | 'Device' | 'Product'; page?: number; perPage?: number; archived?: boolean; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	listLedgers({ auth, org, scope, page, perPage, archived, headers, context }: ListLedgersOptions): Promise<RequestResponse> {
 		return this.get({
 			uri: this._namespacedPath(org, 'ledgers'),
 			query: {
@@ -2450,7 +2485,7 @@ class Particle {
      *
      * @returns {Promise<RequestResponse>} A promise that resolves to the specified ledger instance data.
      */
-	getLedgerInstance({ auth, org, ledgerName, scopeValue, headers, context }: { auth?: string; org?: string; ledgerName: string; scopeValue: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	getLedgerInstance({ auth, org, ledgerName, scopeValue, headers, context }: GetLedgerInstanceOptions): Promise<RequestResponse> {
 		return this.get({
 			uri: this._namespacedPath(org, `ledgers/${ledgerName}/instances/${scopeValue}`),
 			auth,
@@ -2478,7 +2513,7 @@ class Particle {
      *
      * @returns {Promise<RequestResponse>} A promise that resolves to the updated ledger instance data.
      */
-	setLedgerInstance({ auth, org, ledgerName, scopeValue, instance, setMode, headers, context }: { auth?: string; org?: string; ledgerName: string; scopeValue: string; instance: { data: Record<string, string | number | boolean | object | null> }; setMode?: 'Replace' | 'Merge'; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	setLedgerInstance({ auth, org, ledgerName, scopeValue, instance, setMode, headers, context }: SetLedgerInstanceOptions): Promise<RequestResponse> {
 		return this.put({
 			uri: this._namespacedPath(org, `ledgers/${ledgerName}/instances/${scopeValue}`),
 			query: {
@@ -2504,7 +2539,7 @@ class Particle {
      *
      * @returns {Promise<RequestResponse>} A promise that resolves to an object confirming the ledger instance was deleted.
      */
-	deleteLedgerInstance({ auth, org, ledgerName, scopeValue, headers, context }: { auth?: string; org?: string; ledgerName: string; scopeValue: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	deleteLedgerInstance({ auth, org, ledgerName, scopeValue, headers, context }: DeleteLedgerInstanceOptions): Promise<RequestResponse> {
 		return this.delete({
 			uri: this._namespacedPath(org, `ledgers/${ledgerName}/instances/${scopeValue}`),
 			auth,
@@ -2527,7 +2562,7 @@ class Particle {
      *
      * @returns {Promise<RequestResponse>} A promise that resolves to an array of ledger instance data.
      */
-	listLedgerInstances({ auth, org, ledgerName, page, perPage, headers, context }: { auth?: string; org?: string; ledgerName: string; page?: number; perPage?: number; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	listLedgerInstances({ auth, org, ledgerName, page, perPage, headers, context }: ListLedgerInstancesOptions): Promise<RequestResponse> {
 		return this.get({
 			uri: this._namespacedPath(org, `ledgers/${ledgerName}/instances`),
 			query: {
@@ -2555,7 +2590,7 @@ class Particle {
      *
      * @returns {Promise<RequestResponse>} A promise that resolves to an array of ledger instance data.
      */
-	listLedgerInstanceVersions({ auth, org, ledgerName, scopeValue, replacedBefore, replacedAfter, headers, context }: { auth?: string; org?: string; ledgerName: string; scopeValue: string; replacedBefore?: string; replacedAfter?: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	listLedgerInstanceVersions({ auth, org, ledgerName, scopeValue, replacedBefore, replacedAfter, headers, context }: ListLedgerInstanceVersionsOptions): Promise<RequestResponse> {
 		return this.get({
 			uri: this._namespacedPath(org, `ledgers/${ledgerName}/instances/${scopeValue}/versions`),
 			query: {
@@ -2582,7 +2617,7 @@ class Particle {
      *
      * @returns {Promise<RequestResponse>} A promise that resolves to the specified ledger instance data.
      */
-	getLedgerInstanceVersion({ auth, org, ledgerName, scopeValue, version, headers, context }: { auth?: string; org?: string; ledgerName: string; scopeValue: string; version: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	getLedgerInstanceVersion({ auth, org, ledgerName, scopeValue, version, headers, context }: GetLedgerInstanceVersionOptions): Promise<RequestResponse> {
 		return this.get({
 			uri: this._namespacedPath(org, `ledgers/${ledgerName}/instances/${scopeValue}/versions/${version}`),
 			auth,
@@ -2605,7 +2640,7 @@ class Particle {
      *
      * @returns {Promise<RequestResponse>}        A promise that resolves to the list of Device OS versions.
      */
-	listDeviceOsVersions({ platformId, internalVersion, page, perPage, auth, headers, context }: { platformId?: number; internalVersion?: number; page?: number; perPage?: number; auth?: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	listDeviceOsVersions({ platformId, internalVersion, page, perPage, auth, headers, context }: ListDeviceOsVersionsOptions): Promise<RequestResponse> {
 		const query = {
 			platform_id: platformId,
 			internal_version: internalVersion,
@@ -2634,7 +2669,7 @@ class Particle {
      *
      * @returns {Promise<RequestResponse>}        A promise that resolves to the specified Device OS version data.
      */
-	getDeviceOsVersion({ version, platformId, auth, headers, context }: { version: string; platformId?: number; auth?: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<RequestResponse> {
+	getDeviceOsVersion({ version, platformId, auth, headers, context }: GetDeviceOsVersionOptions): Promise<RequestResponse> {
 		const query = platformId ? { platform_id: platformId } : {};
 		return this.get({
 			uri: `/v1/device-os/versions/${version}`,
