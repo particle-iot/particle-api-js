@@ -97,24 +97,30 @@ while (i < lines.length) {
 					let paramDesc = '';
 
 					// Skip blank lines
-					while (i < lines.length && lines[i].trim() === '') i++;
+					while (i < lines.length && lines[i].trim() === '') {
+						i++;
+					}
 
 					// Check if next line is a type (starts with ` or \{)
 					if (i < lines.length && (lines[i].startsWith('`') || lines[i].startsWith('\\{'))) {
 						paramType = lines[i].trim();
 						i++;
-						// Skip blank lines
-						while (i < lines.length && lines[i].trim() === '') i++;
+						while (i < lines.length && lines[i].trim() === '') {
+							i++;
+						}
 					}
 
 					// Collect description lines until next heading or blank+heading
 					const descLines = [];
 					while (i < lines.length && !lines[i].startsWith('#') && !(lines[i].trim() === '' && i + 1 < lines.length && lines[i + 1].startsWith('#'))) {
 						if (lines[i].trim() === '') {
-							// Look ahead - if next non-blank is a heading, stop
 							let j = i;
-							while (j < lines.length && lines[j].trim() === '') j++;
-							if (j >= lines.length || lines[j].startsWith('#')) break;
+							while (j < lines.length && lines[j].trim() === '') {
+								j++;
+							}
+							if (j >= lines.length || lines[j].startsWith('#')) {
+								break;
+							}
 						}
 						descLines.push(lines[i]);
 						i++;
@@ -122,7 +128,9 @@ while (i < lines.length) {
 					paramDesc = descLines.join(' ').trim();
 
 					// Skip trailing blank lines
-					while (i < lines.length && lines[i].trim() === '') i++;
+					while (i < lines.length && lines[i].trim() === '') {
+						i++;
+					}
 
 					// Determine indentation:
 					// - First param (options/params/args) is top-level
@@ -158,8 +166,9 @@ while (i < lines.length) {
 
 		if (heading === 'Returns') {
 			i++;
-			// Skip blank lines
-			while (i < lines.length && lines[i].trim() === '') i++;
+			while (i < lines.length && lines[i].trim() === '') {
+				i++;
+			}
 
 			let returnType = '';
 			let returnDesc = '';
@@ -167,24 +176,30 @@ while (i < lines.length) {
 			if (i < lines.length && (lines[i].startsWith('`') || lines[i].startsWith('\\{'))) {
 				returnType = lines[i].trim();
 				i++;
-				while (i < lines.length && lines[i].trim() === '') i++;
+				while (i < lines.length && lines[i].trim() === '') {
+					i++;
+				}
 			}
 
-			// Collect description
 			const descLines = [];
 			while (i < lines.length && !lines[i].startsWith('#')) {
 				if (lines[i].trim() === '') {
 					let j = i;
-					while (j < lines.length && lines[j].trim() === '') j++;
-					if (j >= lines.length || lines[j].startsWith('#')) break;
+					while (j < lines.length && lines[j].trim() === '') {
+						j++;
+					}
+					if (j >= lines.length || lines[j].startsWith('#')) {
+						break;
+					}
 				}
 				descLines.push(lines[i]);
 				i++;
 			}
 			returnDesc = descLines.join(' ').trim();
 
-			// Skip trailing blank lines
-			while (i < lines.length && lines[i].trim() === '') i++;
+			while (i < lines.length && lines[i].trim() === '') {
+				i++;
+			}
 
 			let returnsLine = `Returns **${returnType}**`;
 			if (returnDesc) {

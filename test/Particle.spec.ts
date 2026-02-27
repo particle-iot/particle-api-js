@@ -838,20 +838,6 @@ describe('ParticleAPI', () => {
 			});
 		});
 
-		describe('.flashTinker', () => {
-			it('generates request', () => {
-				return api.flashTinker(props).then((r) => Common.expectDeviceUrlAndToken(r as object as R));
-			});
-
-			it('sends proper data', () => {
-				return api.flashTinker(props).then((_results) => {
-					const { data } = _results as object as R;
-					expect(data).to.be.instanceOf(Object);
-					expect((data as R).app).to.equal('tinker');
-				});
-			});
-		});
-
 		describe('.flashDevice', () => {
 			describe('user scope', () => {
 				it('generates request', () => {
@@ -1440,16 +1426,6 @@ describe('ParticleAPI', () => {
 					const { auth, query } = _results as object as R;
 					expect(auth).to.equal(props.auth);
 					expect(query).to.deep.equal({ featured: true });
-				});
-			});
-		});
-
-		describe('.validatePromoCode', () => {
-			it('generates request', () => {
-				return api.validatePromoCode({ auth: 'X', promoCode: '123ABCD' }).then((_results) => {
-					const results = _results as object as R;
-					expect(results.uri).to.be.a('string');
-					expect(results.auth).to.equal('X');
 				});
 			});
 		});

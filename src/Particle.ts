@@ -6,7 +6,7 @@ import type { RequestResponse, AgentRequestOptions, GetHeadOptions, MutateOption
 	LoginOptions, SendOtpOptions, LoginAsClientOwnerOptions, EnableMfaOptions, ConfirmMfaOptions, DisableMfaOptions,
 	ResetPasswordOptions, ChangeUsernameOptions, ChangeUserPasswordOptions, DeleteUserOptions,
 	TrackingIdentityOptions, DeleteAccessTokenOptions, DeleteCurrentAccessTokenOptions, DeleteActiveAccessTokensOptions,
-	ListDevicesOptions, GetDeviceOptions, ClaimDeviceOptions, RemoveDeviceOptions, RemoveDeviceOwnerOptions,
+	GetDeviceOptions, ClaimDeviceOptions, RemoveDeviceOptions, RemoveDeviceOwnerOptions,
 	UpdateDeviceOptions, RenameDeviceOptions, SignalDeviceOptions, FlashDeviceOptions,
 	CallFunctionOptions, GetVariableOptions, UnprotectDeviceOptions, DownloadManufacturingBackupOptions,
 	CompileCodeOptions, DownloadFirmwareBinaryOptions, ProvisionDeviceOptions,

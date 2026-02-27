@@ -26,7 +26,7 @@ describe('Particle', () => {
 			api.setContext('project', { name: 'blinky', version: '0.0.1' });
 			api.agent._promiseResponse = sinon.stub() as object as typeof api.agent._promiseResponse;
 			(api.agent._promiseResponse as object as sinon.SinonStub).resolves();
-			return api.flashTinker({ deviceId: 'deviceID', auth: 'auth' }).then(() => {
+			return api.callFunction({ name: 'fn', deviceId: 'deviceID', auth: 'auth' }).then(() => {
 				expect(api.agent._promiseResponse).to.have.been.calledOnce;
 				const req = (api.agent._promiseResponse as object as sinon.SinonStub).firstCall.args[0] as [string, RequestInit];
 				const options = req[1];
