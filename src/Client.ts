@@ -1,21 +1,21 @@
 import Library = require('./Library');
-import type { JSONResponse, RequestResponse } from './types';
+import type { JSONResponse, BuildTargetsResponse, CompileResponse, DeviceInfo, LibraryInfo, OKResponse, TrackingIdentityResponse } from './types';
 
 type LibraryApiData = Library.ApiData;
 
 interface ParticleApi {
-	listLibraries(options: Record<string, string | number | boolean | undefined>): Promise<RequestResponse>;
-	getLibrary(options: Record<string, string | number | boolean | undefined>): Promise<RequestResponse>;
-	getLibraryVersions(options: Record<string, string | number | boolean | undefined>): Promise<RequestResponse>;
-	contributeLibrary(options: Record<string, string | number | boolean | Buffer | undefined>): Promise<RequestResponse>;
-	publishLibrary(options: Record<string, string | number | boolean | undefined>): Promise<RequestResponse>;
-	deleteLibrary(options: Record<string, string | number | boolean | undefined>): Promise<RequestResponse>;
-	downloadFile(options: { uri: string; headers?: Record<string, string> }): Promise<Buffer>;
-	compileCode(options: Record<string, string | number | boolean | object | undefined>): Promise<RequestResponse>;
-	signalDevice(options: Record<string, string | number | boolean | undefined>): Promise<RequestResponse>;
-	listDevices(options: Record<string, string | number | boolean | undefined>): Promise<RequestResponse>;
-	listBuildTargets(options: Record<string, string | number | boolean | undefined>): Promise<RequestResponse>;
-	trackingIdentity(options: Record<string, string | number | boolean | object | undefined>): Promise<RequestResponse>;
+	listLibraries(options: Record<string, string | number | boolean | undefined>): Promise<JSONResponse<{ data: LibraryInfo[] }>>;
+	getLibrary(options: Record<string, string | number | boolean | undefined>): Promise<JSONResponse<{ data: LibraryInfo }>>;
+	getLibraryVersions(options: Record<string, string | number | boolean | undefined>): Promise<JSONResponse<{ data: LibraryInfo[] }>>;
+	contributeLibrary(options: Record<string, string | number | boolean | Buffer | undefined>): Promise<JSONResponse<{ data: LibraryInfo }>>;
+	publishLibrary(options: Record<string, string | number | boolean | undefined>): Promise<JSONResponse<{ data: LibraryInfo }>>;
+	deleteLibrary(options: Record<string, string | number | boolean | undefined>): Promise<JSONResponse<OKResponse>>;
+	downloadFile(options: { uri: string; headers?: Record<string, string> }): Promise<Buffer | ArrayBuffer>;
+	compileCode(options: Record<string, string | number | boolean | object | undefined>): Promise<JSONResponse<CompileResponse>>;
+	signalDevice(options: Record<string, string | number | boolean | undefined>): Promise<JSONResponse<DeviceInfo>>;
+	listDevices(options: Record<string, string | number | boolean | undefined>): Promise<JSONResponse<DeviceInfo[]>>;
+	listBuildTargets(options: Record<string, string | number | boolean | undefined>): Promise<JSONResponse<BuildTargetsResponse>>;
+	trackingIdentity(options: Record<string, string | number | boolean | object | undefined>): Promise<JSONResponse<TrackingIdentityResponse>>;
 }
 
 interface ClientOptions {
@@ -44,7 +44,7 @@ class Client {
 	libraries(query: Record<string, string | number | boolean | undefined> = {}): Promise<Library[]> {
 		return this.api.listLibraries(Object.assign({}, query, { auth: this.auth }))
 			.then((payload) => {
-				const libraries = (payload as JSONResponse<{ data: LibraryApiData[] }>).body.data || [];
+				const libraries = payload.body.data || [];
 				return libraries.map((l) => new Library(this, l));
 			});
 	}
@@ -52,7 +52,7 @@ class Client {
 	library(name: string, query: Record<string, string | number | boolean | undefined> = {}): Promise<Library> {
 		return this.api.getLibrary(Object.assign({}, query, { name, auth: this.auth }))
 			.then((payload) => {
-				const library = (payload as JSONResponse<{ data: LibraryApiData }>).body.data || {} as LibraryApiData;
+				const library = payload.body.data || {} as LibraryApiData;
 				return new Library(this, library as LibraryApiData);
 			});
 	}
@@ -60,7 +60,7 @@ class Client {
 	libraryVersions(name?: string, query: Record<string, string | number | boolean | undefined> = {}): Promise<Library[]> {
 		return this.api.getLibraryVersions(Object.assign({}, query, { name, auth: this.auth }))
 			.then((payload) => {
-				const libraries = (payload as JSONResponse<{ data: LibraryApiData[] }>).body.data || [];
+				const libraries = payload.body.data || [];
 				return libraries.map((l) => new Library(this, l));
 			});
 	}
@@ -68,7 +68,7 @@ class Client {
 	contributeLibrary(archive: string | Buffer): Promise<Library | undefined> {
 		return this.api.contributeLibrary({ archive, auth: this.auth })
 			.then((payload) => {
-				const library = (payload as JSONResponse<{ data: LibraryApiData }>).body.data || {} as LibraryApiData;
+				const library = payload.body.data || {} as LibraryApiData;
 				return new Library(this, library as LibraryApiData);
 			}, (error: { body?: { errors?: Array<{ message: string }> } }) => {
 				this._throwError(error);
@@ -78,7 +78,7 @@ class Client {
 	publishLibrary(name: string): Promise<Library | undefined> {
 		return this.api.publishLibrary({ name, auth: this.auth })
 			.then((payload) => {
-				const library = (payload as JSONResponse<{ data: LibraryApiData }>).body.data || {} as LibraryApiData;
+				const library = payload.body.data || {} as LibraryApiData;
 				return new Library(this, library as LibraryApiData);
 			}, (error: { body?: { errors?: Array<{ message: string }> } }) => {
 				this._throwError(error);
@@ -102,15 +102,15 @@ class Client {
 		return this.api.downloadFile({ uri }) as Promise<Buffer>;
 	}
 
-	compileCode(files: Record<string, string | Buffer>, platformId: number, targetVersion: string): Promise<RequestResponse> {
+	compileCode(files: Record<string, string | Buffer>, platformId: number, targetVersion: string): Promise<JSONResponse<CompileResponse>> {
 		return this.api.compileCode({ files, platformId, targetVersion, auth: this.auth });
 	}
 
-	signalDevice({ signal, deviceId }: { signal: boolean; deviceId: string }): Promise<RequestResponse> {
+	signalDevice({ signal, deviceId }: { signal: boolean; deviceId: string }): Promise<JSONResponse<DeviceInfo>> {
 		return this.api.signalDevice({ signal, deviceId, auth: this.auth });
 	}
 
-	listDevices(): Promise<RequestResponse> {
+	listDevices(): Promise<JSONResponse<DeviceInfo[]>> {
 		return this.api.listDevices({ auth: this.auth });
 	}
 
@@ -118,7 +118,7 @@ class Client {
 		return this.api.listBuildTargets({ onlyFeatured: true, auth: this.auth })
 			.then((payload) => {
 				const targets: Array<{ version: string; platform: number; prerelease: boolean; firmware_vendor: string }> = [];
-				for (const target of (payload as JSONResponse<{ targets: Array<{ version: string; platforms: number[]; prereleases: number[]; firmware_vendor: string }> }>).body.targets) {
+				for (const target of payload.body.targets) {
 					for (const platform of target.platforms) {
 						targets.push({
 							version: target.version,
@@ -135,7 +135,7 @@ class Client {
 	trackingIdentity({ full = false, context }: { full?: boolean; context?: object } = {}): Promise<{ id: string; email: string }> {
 		return this.api.trackingIdentity({ full, context, auth: this.auth })
 			.then((payload) => {
-				return (payload as JSONResponse<{ id: string; email: string }>).body;
+				return payload.body;
 			});
 	}
 }

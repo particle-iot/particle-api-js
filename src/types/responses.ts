@@ -230,7 +230,7 @@ export interface OAuthClientInfo {
 
 export interface BuildTarget {
 	platforms: number[];
-	prereleases: string[];
+	prereleases: number[];
 	firmware_vendor: string;
 	version: string;
 }
@@ -408,4 +408,43 @@ export interface DeviceOsVersion {
 	platform_id: number;
 	release_date?: string;
 	module_version?: number;
+}
+
+export interface EnableMfaResponse {
+	mfa_token: string;
+	qr_url: string;
+	secret?: string;
+}
+
+export interface ConfirmMfaResponse {
+	enrolled: boolean;
+	tokens?: string[];
+}
+
+export interface CreateCustomerResponse {
+	token_type: string;
+	access_token: string;
+	expires_in: number;
+	refresh_token: string;
+}
+
+export interface TrackingIdentityResponse {
+	id: string;
+	email: string;
+}
+
+export interface ClaimCodeResponse {
+	claim_code: string;
+	device_ids: string[];
+}
+
+export interface SerialNumberResponse {
+	serial_number: string;
+	device_id: string;
+	platform_id?: number;
+}
+
+export interface ProductConfigurationResponse {
+	configuration: Record<string, string | number | boolean | object | null>;
+	[key: string]: string | number | boolean | object | null | undefined;
 }
