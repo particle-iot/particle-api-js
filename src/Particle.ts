@@ -37,6 +37,8 @@ import type { JSONResponse, RequestResponse, AgentRequestOptions, GetHeadOptions
 	ListLedgersOptions, CreateLedgerOptions, GetLedgerOptions, UpdateLedgerOptions, ArchiveLedgerOptions,
 	ListLedgerInstancesOptions, GetLedgerInstanceOptions, SetLedgerInstanceOptions, DeleteLedgerInstanceOptions,
 	ListLedgerInstanceVersionsOptions, GetLedgerInstanceVersionOptions,
+	ListEnvVarsOptions, UpdateEnvVarsOptions, SetEnvVarOptions, DeleteEnvVarOptions,
+	RenderEnvVarsOptions, ReviewEnvVarsRolloutOptions, StartEnvVarsRolloutOptions,
 	OKResponse, LoginResponse, EnableMfaResponse, ConfirmMfaResponse, CreateCustomerResponse,
 	TrackingIdentityResponse, UserInfo, DeviceInfo, ClaimResponse, ClaimCodeResponse,
 	DeviceVariableResponse, FunctionCallResponse, CompileResponse, ProductFirmwareInfo,
@@ -45,7 +47,8 @@ import type { JSONResponse, RequestResponse, AgentRequestOptions, GetHeadOptions
 	LibraryInfo, OAuthClientInfo, NetworkInfo, ProductConfigurationResponse,
 	LocationListResponse, DeviceLocationInfo, ExecuteLogicResponse, LogicFunction,
 	LogicRun, LogicRunLog, LedgerDefinition, LedgerInstance,
-	LedgerInstanceListResponse, LedgerVersionListResponse, DeviceOsVersion
+	LedgerInstanceListResponse, LedgerVersionListResponse, DeviceOsVersion,
+	EnvVarsResponse, EnvVarsRenderResponse, EnvVarsRolloutResponse
 } from './types';
 
 /**
@@ -2684,6 +2687,161 @@ class Particle {
 	}
 
 	/**
+     * List environment variables for the given scope.
+     *
+     * @param {Object} options                          Options for this API call
+     * @param {string} [options.product]               Product ID or slug.
+     * @param {string} [options.org]                   Organization ID or slug.
+     * @param {string} [options.deviceId]              Device ID.
+     * @param {boolean} [options.sandbox]              Set to `true` to target the user sandbox scope.
+     * @param {string} [options.auth]                  The access token. Can be ignored if provided in constructor
+     * @param {Object} [options.headers]               Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+     * @param {Object} [options.context]               Request context
+     *
+     * @returns {Promise<JSONResponse<EnvVarsResponse>>} A promise that resolves with the env vars data
+     */
+	listEnvVars({ product, org, deviceId, sandbox, auth, headers, context }: ListEnvVarsOptions): Promise<JSONResponse<EnvVarsResponse>> {
+		return this.get<EnvVarsResponse>({
+			uri: this._envVarUri({ product, org, deviceId, sandbox }),
+			auth, headers, context
+		});
+	}
+
+	/**
+     * Bulk update environment variables with set/unset operations.
+     *
+     * @param {Object} options                          Options for this API call
+     * @param {Array}  options.ops                     Array of operations. Each op: `{ op: "Set", key: "KEY", value: "val" }` or `{ op: "Unset", key: "KEY" }`. Max 50.
+     * @param {string} [options.product]               Product ID or slug.
+     * @param {string} [options.org]                   Organization ID or slug.
+     * @param {string} [options.deviceId]              Device ID.
+     * @param {boolean} [options.sandbox]              Set to `true` to target the user sandbox scope.
+     * @param {string} [options.auth]                  The access token. Can be ignored if provided in constructor
+     * @param {Object} [options.headers]               Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+     * @param {Object} [options.context]               Request context
+     *
+     * @returns {Promise<JSONResponse<EnvVarsResponse>>} A promise that resolves with the updated env vars data
+     */
+	updateEnvVars({ ops, product, org, deviceId, sandbox, auth, headers, context }: UpdateEnvVarsOptions): Promise<JSONResponse<EnvVarsResponse>> {
+		return this.patch<EnvVarsResponse>({
+			uri: this._envVarUri({ product, org, deviceId, sandbox }),
+			auth, headers, context,
+			data: { ops }
+		});
+	}
+
+	/**
+     * Set a single environment variable.
+     *
+     * @param {Object} options                          Options for this API call
+     * @param {string} options.key                     Environment variable name.
+     * @param {string} options.value                   Environment variable value.
+     * @param {string} [options.product]               Product ID or slug.
+     * @param {string} [options.org]                   Organization ID or slug.
+     * @param {string} [options.deviceId]              Device ID.
+     * @param {boolean} [options.sandbox]              Set to `true` to target the user sandbox scope.
+     * @param {string} [options.auth]                  The access token. Can be ignored if provided in constructor
+     * @param {Object} [options.headers]               Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+     * @param {Object} [options.context]               Request context
+     *
+     * @returns {Promise<JSONResponse<EnvVarsResponse>>} A promise that resolves with the updated env vars data
+     */
+	setEnvVar({ key, value, product, org, deviceId, sandbox, auth, headers, context }: SetEnvVarOptions): Promise<JSONResponse<EnvVarsResponse>> {
+		return this.put<EnvVarsResponse>({
+			uri: `${this._envVarUri({ product, org, deviceId, sandbox })}/${key}`,
+			auth, headers, context,
+			data: { value }
+		});
+	}
+
+	/**
+     * Delete a single environment variable.
+     *
+     * @param {Object} options                          Options for this API call
+     * @param {string} options.key                     Environment variable name to delete.
+     * @param {string} [options.product]               Product ID or slug.
+     * @param {string} [options.org]                   Organization ID or slug.
+     * @param {string} [options.deviceId]              Device ID.
+     * @param {boolean} [options.sandbox]              Set to `true` to target the user sandbox scope.
+     * @param {string} [options.auth]                  The access token. Can be ignored if provided in constructor
+     * @param {Object} [options.headers]               Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+     * @param {Object} [options.context]               Request context
+     *
+     * @returns {Promise<JSONResponse<EnvVarsResponse>>} A promise that resolves with the updated env vars data
+     */
+	deleteEnvVar({ key, product, org, deviceId, sandbox, auth, headers, context }: DeleteEnvVarOptions): Promise<JSONResponse<EnvVarsResponse>> {
+		return this.delete<EnvVarsResponse>({
+			uri: `${this._envVarUri({ product, org, deviceId, sandbox })}/${key}`,
+			auth, headers, context
+		});
+	}
+
+	/**
+     * Get the rendered (flattened) environment variables for the given scope.
+     *
+     * @param {Object} options                          Options for this API call
+     * @param {string} [options.product]               Product ID or slug.
+     * @param {string} [options.org]                   Organization ID or slug.
+     * @param {string} [options.deviceId]              Device ID.
+     * @param {boolean} [options.sandbox]              Set to `true` to target the user sandbox scope.
+     * @param {string} [options.auth]                  The access token. Can be ignored if provided in constructor
+     * @param {Object} [options.headers]               Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+     * @param {Object} [options.context]               Request context
+     *
+     * @returns {Promise<JSONResponse<EnvVarsRenderResponse>>} A promise that resolves with the rendered env vars
+     */
+	renderEnvVars({ product, org, deviceId, sandbox, auth, headers, context }: RenderEnvVarsOptions): Promise<JSONResponse<EnvVarsRenderResponse>> {
+		return this.get<EnvVarsRenderResponse>({
+			uri: `${this._envVarUri({ product, org, deviceId, sandbox })}/render`,
+			auth, headers, context
+		});
+	}
+
+	/**
+     * Review the pending environment variables rollout changes.
+     *
+     * @param {Object} options                          Options for this API call
+     * @param {string} [options.product]               Product ID or slug.
+     * @param {string} [options.org]                   Organization ID or slug.
+     * @param {string} [options.deviceId]              Device ID.
+     * @param {boolean} [options.sandbox]              Set to `true` to target the user sandbox scope.
+     * @param {string} [options.auth]                  The access token. Can be ignored if provided in constructor
+     * @param {Object} [options.headers]               Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+     * @param {Object} [options.context]               Request context
+     *
+     * @returns {Promise<JSONResponse<EnvVarsRolloutResponse>>} A promise that resolves with the rollout diff
+     */
+	reviewEnvVarsRollout({ product, org, deviceId, sandbox, auth, headers, context }: ReviewEnvVarsRolloutOptions): Promise<JSONResponse<EnvVarsRolloutResponse>> {
+		return this.get<EnvVarsRolloutResponse>({
+			uri: `${this._envVarUri({ product, org, deviceId, sandbox })}/rollout`,
+			auth, headers, context
+		});
+	}
+
+	/**
+     * Start rolling out environment variables to devices.
+     *
+     * @param {Object} options                          Options for this API call
+     * @param {string} options.when                    When to apply: `"Immediate"` or `"Connect"`.
+     * @param {string} [options.product]               Product ID or slug.
+     * @param {string} [options.org]                   Organization ID or slug.
+     * @param {string} [options.deviceId]              Device ID.
+     * @param {boolean} [options.sandbox]              Set to `true` to target the user sandbox scope.
+     * @param {string} [options.auth]                  The access token. Can be ignored if provided in constructor
+     * @param {Object} [options.headers]               Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+     * @param {Object} [options.context]               Request context
+     *
+     * @returns {Promise<JSONResponse<OKResponse>>} A promise that resolves with success status
+     */
+	startEnvVarsRollout({ when, product, org, deviceId, sandbox, auth, headers, context }: StartEnvVarsRolloutOptions): Promise<JSONResponse<OKResponse>> {
+		return this.post<OKResponse>({
+			uri: `${this._envVarUri({ product, org, deviceId, sandbox })}/rollout`,
+			auth, headers, context,
+			data: { when }
+		});
+	}
+
+	/**
      * Set default auth token that will be used in each method if `auth` is not provided
      * @param {string} auth The access token
      * @throws {Error} When not auth string is provided
@@ -2713,6 +2871,26 @@ class Particle {
 
 	private _namespacedPath(org: string | undefined, path: string): string {
 		return org ? `/v1/orgs/${org}/${path}` : `/v1/${path}`;
+	}
+
+	private _envVarUri({ product, org, deviceId, sandbox }: { product?: string | number; org?: string; deviceId?: string; sandbox?: boolean }): string {
+		const scopeCount = [product, org, deviceId, sandbox].filter(Boolean).length;
+		if (scopeCount === 0) {
+			throw new Error('Specify one of: product, org, deviceId, or sandbox');
+		}
+		if (scopeCount > 1) {
+			throw new Error('Specify only one of: product, org, deviceId, or sandbox');
+		}
+		if (product) {
+			return `/v1/products/${product}/env`;
+		}
+		if (org) {
+			return `/v1/orgs/${org}/env`;
+		}
+		if (deviceId) {
+			return `/v1/env/${deviceId}`;
+		}
+		return '/v1/env';
 	}
 
 	/**
@@ -2778,6 +2956,22 @@ class Particle {
 		context = this._buildContext(context);
 		auth = this._getActiveAuthToken(auth);
 		return this.agent.put({ uri, auth, headers, data, query, context }) as Promise<JSONResponse<T>>;
+	}
+
+	/**
+     * Make a PATCH request
+     * @param {object}          params
+     * @param {string}          params.uri        The URI to request
+     * @param {string}          [params.auth]     Authorization token to use
+     * @param {object}          [params.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+     * @param {object}          [params.data]     Object to send as JSON data in the body.
+     * @param {object}          [params.context]  The invocation context, describing the tool and project
+     * @returns {Promise<JSONResponse<T>>} A promise that resolves with the response data
+     */
+	patch<T = object>({ uri, auth, headers, data, context }: MutateOptions): Promise<JSONResponse<T>> {
+		context = this._buildContext(context);
+		auth = this._getActiveAuthToken(auth);
+		return this.agent.patch({ uri, auth, headers, data, context }) as Promise<JSONResponse<T>>;
 	}
 
 	/**

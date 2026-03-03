@@ -42,6 +42,10 @@ class Agent {
 		return this.request({ ...options, method: 'put' });
 	}
 
+	patch(options: MutateOptions): Promise<RequestResponse> {
+		return this.request({ ...options, method: 'patch' });
+	}
+
 	delete(options: MutateOptions): Promise<RequestResponse> {
 		return this.request({ ...options, method: 'delete' });
 	}

@@ -448,3 +448,64 @@ export interface ProductConfigurationResponse {
 	configuration: Record<string, string | number | boolean | object | null>;
 	[key: string]: string | number | boolean | object | null | undefined;
 }
+
+export interface EnvVarValue {
+	value: string;
+}
+
+export interface EnvVarInherited {
+	from: 'Owner' | 'Product' | 'Firmware';
+	value: string;
+}
+
+export interface EnvVarsOnDevice {
+	rendered: Record<string, string>;
+	last_reported_at: string;
+	development_env?: boolean;
+}
+
+export interface EnvVarsSnapshot {
+	own: Record<string, EnvVarValue>;
+	inherited?: Record<string, EnvVarInherited>;
+	rollout_at: string | null;
+	rollout_by: string | null;
+}
+
+export interface EnvVarsLatest {
+	own: Record<string, EnvVarValue>;
+	inherited?: Record<string, EnvVarInherited>;
+	created_at: string | null;
+	updated_at: string | null;
+	created_by: string | null;
+	updated_by: string | null;
+}
+
+export interface EnvVarsResponse {
+	on_device?: EnvVarsOnDevice;
+	last_snapshot: EnvVarsSnapshot;
+	latest: EnvVarsLatest;
+}
+
+export interface EnvVarsRenderResponse {
+	env: Record<string, string>;
+	last_updated_at: string | null;
+	rollout_at: string | null;
+	rollout_by: string | null;
+}
+
+export interface EnvVarsRolloutChange {
+	op: 'Added' | 'Changed' | 'Removed';
+	key: string;
+	before?: string;
+	after?: string;
+}
+
+export interface EnvVarsRolloutDiff {
+	changes: EnvVarsRolloutChange[];
+	unchanged: Record<string, string>;
+}
+
+export interface EnvVarsRolloutResponse {
+	from_snapshot: EnvVarsRolloutDiff;
+	from_device?: EnvVarsRolloutDiff;
+}

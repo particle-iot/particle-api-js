@@ -744,3 +744,39 @@ export interface DeleteSecretOptions extends SharedRequestOptions {
 	org?: string;
 	secretName: string;
 }
+
+export interface EnvVarScopeOptions extends SharedRequestOptions {
+	product?: string | number;
+	org?: string;
+	deviceId?: string;
+	sandbox?: boolean;
+}
+
+export interface ListEnvVarsOptions extends EnvVarScopeOptions {}
+
+export interface EnvVarOp {
+	op: 'Set' | 'Unset';
+	key: string;
+	value?: string;
+}
+
+export interface UpdateEnvVarsOptions extends EnvVarScopeOptions {
+	ops: EnvVarOp[];
+}
+
+export interface SetEnvVarOptions extends EnvVarScopeOptions {
+	key: string;
+	value: string;
+}
+
+export interface DeleteEnvVarOptions extends EnvVarScopeOptions {
+	key: string;
+}
+
+export interface RenderEnvVarsOptions extends EnvVarScopeOptions {}
+
+export interface ReviewEnvVarsRolloutOptions extends EnvVarScopeOptions {}
+
+export interface StartEnvVarsRolloutOptions extends EnvVarScopeOptions {
+	when: 'Immediate' | 'Connect';
+}
