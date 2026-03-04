@@ -482,8 +482,12 @@ export interface EnvVarsLatest {
 
 export interface EnvVarsResponse {
 	on_device?: EnvVarsOnDevice;
-	last_snapshot: EnvVarsSnapshot;
+	last_snapshot: EnvVarsSnapshot | null;
 	latest: EnvVarsLatest;
+}
+
+export interface EnvVarsRolloutStartResponse {
+	success: boolean;
 }
 
 export interface EnvVarsRenderResponse {

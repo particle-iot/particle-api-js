@@ -48,7 +48,7 @@ import type { JSONResponse, RequestResponse, AgentRequestOptions, GetHeadOptions
 	LocationListResponse, DeviceLocationInfo, ExecuteLogicResponse, LogicFunction,
 	LogicRun, LogicRunLog, LedgerDefinition, LedgerInstance,
 	LedgerInstanceListResponse, LedgerVersionListResponse, DeviceOsVersion,
-	EnvVarsResponse, EnvVarsRenderResponse, EnvVarsRolloutResponse
+	EnvVarsResponse, EnvVarsRenderResponse, EnvVarsRolloutResponse, EnvVarsRolloutStartResponse
 } from './types';
 
 /**
@@ -2831,10 +2831,10 @@ class Particle {
      * @param {Object} [options.headers]               Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]               Request context
      *
-     * @returns {Promise<JSONResponse<OKResponse>>} A promise that resolves with success status
+     * @returns {Promise<JSONResponse<EnvVarsRolloutStartResponse>>} A promise that resolves with success status
      */
-	startEnvVarsRollout({ when, product, org, deviceId, sandbox, auth, headers, context }: StartEnvVarsRolloutOptions): Promise<JSONResponse<OKResponse>> {
-		return this.post<OKResponse>({
+	startEnvVarsRollout({ when, product, org, deviceId, sandbox, auth, headers, context }: StartEnvVarsRolloutOptions): Promise<JSONResponse<EnvVarsRolloutStartResponse>> {
+		return this.post<EnvVarsRolloutStartResponse>({
 			uri: `${this._envVarUri({ product, org, deviceId, sandbox })}/rollout`,
 			auth, headers, context,
 			data: { when }
