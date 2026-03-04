@@ -497,12 +497,26 @@ export interface EnvVarsRenderResponse {
 	rollout_by: string | null;
 }
 
-export interface EnvVarsRolloutChange {
-	op: 'Added' | 'Changed' | 'Removed';
+export interface EnvVarsRolloutChanged {
+	op: 'Changed';
 	key: string;
-	before?: string;
-	after?: string;
+	before: string;
+	after: string;
 }
+
+export interface EnvVarsRolloutAdded {
+	op: 'Added';
+	key: string;
+	after: string;
+}
+
+export interface EnvVarsRolloutRemoved {
+	op: 'Removed';
+	key: string;
+	before: string;
+}
+
+export type EnvVarsRolloutChange = EnvVarsRolloutChanged | EnvVarsRolloutAdded | EnvVarsRolloutRemoved;
 
 export interface EnvVarsRolloutDiff {
 	changes: EnvVarsRolloutChange[];
