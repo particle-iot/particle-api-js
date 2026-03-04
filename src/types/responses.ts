@@ -466,14 +466,14 @@ export interface EnvVarsOnDevice {
 
 export interface EnvVarsSnapshot {
 	own: Record<string, EnvVarValue>;
-	inherited?: Record<string, EnvVarInherited>;
+	inherited: Record<string, EnvVarInherited>;
 	rollout_at: string | null;
 	rollout_by: string | null;
 }
 
 export interface EnvVarsLatest {
 	own: Record<string, EnvVarValue>;
-	inherited?: Record<string, EnvVarInherited>;
+	inherited: Record<string, EnvVarInherited>;
 	created_at: string | null;
 	updated_at: string | null;
 	created_by: string | null;
