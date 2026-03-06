@@ -2239,6 +2239,28 @@ describe('ParticleAPI', () => {
 					});
 				});
 			});
+			it('generates request with product_default, groups and intelligent', () => {
+				return api.releaseProductFirmware({
+					product,
+					version: 42,
+					product_default: true,
+					groups: ['foo', 'bar'],
+					intelligent: true,
+					auth: props.auth
+				}).then((_results) => {
+					const results = _results as object as R;
+					expect(results).to.containSubset({
+						uri: `/v1/products/${product}/firmware/release`,
+						method: 'put',
+						data: {
+							version: 42,
+							product_default: true,
+							groups: ['foo', 'bar'],
+							intelligent: true
+						}
+					});
+				});
+			});
 		});
 
 		describe('.listTeamMembers', () => {

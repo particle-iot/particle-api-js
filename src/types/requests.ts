@@ -351,6 +351,9 @@ export interface UpdateProductFirmwareOptions extends SharedRequestOptions {
 export interface ReleaseFirmwareOptions extends SharedRequestOptions {
 	product: string | number;
 	version: number;
+	product_default?: boolean;
+	groups?: string[];
+	intelligent?: boolean;
 }
 
 export interface DownloadProductFirmwareOptions extends SharedRequestOptions {

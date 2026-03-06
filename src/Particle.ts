@@ -1728,9 +1728,9 @@ class Particle {
      * @param {Object} [options.context]  Request context
      * @returns {Promise<JSONResponse<OKResponse>>} A promise that resolves with the response data
      */
-	releaseProductFirmware({ version, product, auth, headers, context }: ReleaseFirmwareOptions): Promise<JSONResponse<OKResponse>> {
+	releaseProductFirmware({ version, product, product_default, groups, intelligent, auth, headers, context }: ReleaseFirmwareOptions): Promise<JSONResponse<OKResponse>> {
 		const uri = `/v1/products/${product}/firmware/release`;
-		return this.put<OKResponse>({ uri, auth, headers, data: { version }, context });
+		return this.put<OKResponse>({ uri, auth, headers, data: { version, product_default, groups, intelligent }, context });
 	}
 
 	/**
