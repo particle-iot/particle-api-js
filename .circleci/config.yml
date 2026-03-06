@@ -48,7 +48,7 @@ jobs:
                   SKIP_AGENT_TEST: true
   publish-npm:
     docker:
-      - image: cimg/node:16.20.0 # Primary execution image
+      - image: cimg/node:22.18 # Primary execution image
         auth:
           username: $DOCKERHUB_USERNAME
           password: $DOCKERHUB_PASSWORD
