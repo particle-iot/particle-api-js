@@ -1,9 +1,7 @@
-'use strict';
-const { sinon, expect } = require('./test-setup');
-const http = require('http');
-const { EventEmitter } = require('events');
-
-const EventStream = require('../src/EventStream');
+import { sinon, expect } from './test-setup';
+import http from 'http';
+import { EventEmitter } from 'events';
+import EventStream from '../src/EventStream';
 
 describe('EventStream', () => {
 	afterEach(() => {
@@ -11,14 +9,14 @@ describe('EventStream', () => {
 	});
 
 	function makeRequest() {
-		const fakeRequest = new EventEmitter();
+		const fakeRequest = new EventEmitter() as EventEmitter & { end: sinon.SinonSpy; setTimeout: sinon.SinonSpy };
 		fakeRequest.end = sinon.spy();
 		fakeRequest.setTimeout = sinon.spy();
 		return fakeRequest;
 	}
 
-	function makeResponse(statusCode) {
-		const fakeResponse = new EventEmitter();
+	function makeResponse(statusCode: number) {
+		const fakeResponse = new EventEmitter() as EventEmitter & { statusCode: number };
 		fakeResponse.statusCode = statusCode;
 		return fakeResponse;
 	}
@@ -36,12 +34,12 @@ describe('EventStream', () => {
 			sinon.useFakeTimers({ shouldAdvanceTime: true });
 			const fakeRequest = makeRequest();
 			sinon.stub(http, 'request').callsFake(() => {
-				setImmediate(() => {
+				setTimeout(() => {
 					const fakeResponse = makeResponse(200);
 					fakeRequest.emit('response', fakeResponse);
-				});
+				}, 0);
 
-				return fakeRequest;
+				return fakeRequest as object as http.ClientRequest;
 			});
 
 			const eventStream = new EventStream('http://hostname:8080/path', 'token');
@@ -65,16 +63,16 @@ describe('EventStream', () => {
 			sinon.useFakeTimers({ shouldAdvanceTime: true });
 			const fakeRequest = makeRequest();
 			sinon.stub(http, 'request').callsFake(() => {
-				setImmediate(() => {
+				setTimeout(() => {
 					const fakeResponse = makeResponse(500);
 					fakeRequest.emit('response', fakeResponse);
-					setImmediate(() => {
+					setTimeout(() => {
 						fakeResponse.emit('data', '{"error":"unknown"}');
 						fakeResponse.emit('end');
-					});
-				});
+					}, 0);
+				}, 0);
 
-				return fakeRequest;
+				return fakeRequest as object as http.ClientRequest;
 			});
 
 			const eventStream = new EventStream('http://hostname:8080/path', 'token');
@@ -94,7 +92,7 @@ describe('EventStream', () => {
 	});
 
 	describe('parse', () => {
-		let eventStream;
+		let eventStream: EventStream;
 		beforeEach(() => {
 			eventStream = new EventStream();
 			sinon.stub(eventStream, 'parseEventStreamLine');
@@ -125,7 +123,6 @@ describe('EventStream', () => {
 			expect(eventStream.parseEventStreamLine).to.have.been.calledWith(0, line1.indexOf(':'), line1.indexOf('\n'));
 			expect(eventStream.parseEventStreamLine).to.have.been.calledWith(line1.length, line2.indexOf(':'), line2.indexOf('\n'));
 		});
-
 
 		it('parses a line ending with \\r\\n', () => {
 			const line = 'field: value\r\n';
@@ -159,13 +156,12 @@ describe('EventStream', () => {
 	});
 
 	describe('parseEventStreamLine', () => {
-		let eventStream;
+		let eventStream: EventStream;
 		beforeEach(() => {
 			eventStream = new EventStream();
 		});
 
 		it('ignores comments', () => {
-			// comments starts with : at column 0
 			const line = ':ok\n';
 			eventStream.buf = line;
 

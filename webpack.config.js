@@ -7,7 +7,7 @@ module.exports = (env) => {
 	return {
 		mode: env.mode,
 		target: 'web',
-		entry: './src/Particle.js',
+		entry: './lib/src/Particle.js',
 		devtool: 'source-map',
 		output: {
 			filename: `particle${env.mode === 'production' ? '.min' : ''}.js`,

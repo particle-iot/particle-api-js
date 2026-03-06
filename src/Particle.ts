@@ -1,8 +1,52 @@
-'use strict';
-const Defaults = require('./Defaults');
-const EventStream = require('./EventStream');
-const Agent = require('./Agent');
-const Client = require('./Client');
+import Defaults = require('./Defaults');
+import EventStream = require('./EventStream');
+import Agent = require('./Agent');
+import Client = require('./Client');
+import type { JSONResponse, RequestResponse, AgentRequestOptions, GetHeadOptions, MutateOptions, ToolContext, ProjectContext,
+	LoginOptions, SendOtpOptions, LoginAsClientOwnerOptions, EnableMfaOptions, ConfirmMfaOptions, DisableMfaOptions,
+	ResetPasswordOptions, ChangeUsernameOptions, ChangeUserPasswordOptions, DeleteUserOptions,
+	TrackingIdentityOptions, DeleteAccessTokenOptions, DeleteCurrentAccessTokenOptions, DeleteActiveAccessTokensOptions,
+	GetDeviceOptions, ClaimDeviceOptions, RemoveDeviceOptions, RemoveDeviceOwnerOptions,
+	UpdateDeviceOptions, RenameDeviceOptions, SignalDeviceOptions, FlashDeviceOptions,
+	CallFunctionOptions, GetVariableOptions, UnprotectDeviceOptions, DownloadManufacturingBackupOptions,
+	CompileCodeOptions, DownloadFirmwareBinaryOptions, ProvisionDeviceOptions,
+	GetEventStreamOptions, ListProductFirmwareOptions, UploadProductFirmwareOptions,
+	GetProductFirmwareOptions, UpdateProductFirmwareOptions, ReleaseFirmwareOptions,
+	DownloadProductFirmwareOptions, AddDeviceToProductOptions,
+	ListWebhooksOptions, DeleteWebhookOptions,
+	ListIntegrationsOptions, CreateIntegrationOptions, EditIntegrationOptions, DeleteIntegrationOptions,
+	ListSIMsOptions, CheckSIMOptions, ActivateSIMOptions, DeactivateSIMOptions, ReactivateSIMOptions,
+	UpdateSIMOptions, RemoveSIMOptions, GetSIMDataUsageOptions, GetFleetDataUsageOptions,
+	ListProductsOptions, GetProductOptions,
+	GetProductConfigurationOptions, GetProductConfigurationSchemaOptions,
+	GetProductDeviceConfigurationOptions, GetProductDeviceConfigurationSchemaOptions,
+	SetProductConfigurationOptions, SetProductDeviceConfigurationOptions,
+	GetProductLocationsOptions, GetProductDeviceLocationsOptions,
+	ListMeshNetworksOptions, CreateMeshNetworkOptions, GetMeshNetworkOptions,
+	UpdateMeshNetworkOptions, RemoveMeshNetworkOptions, ListMeshNetworkDevicesOptions,
+	RemoveMeshNetworkDeviceOptions,
+	ListOAuthClientsOptions, UpdateOAuthClientOptions, DeleteOAuthClientOptions,
+	ListLibrariesOptions, GetLibraryOptions, GetLibraryVersionsOptions,
+	ContributeLibraryOptions, PublishLibraryOptions, DeleteLibraryOptions,
+	ListBuildTargetsOptions, ListDeviceOsVersionsOptions, GetDeviceOsVersionOptions,
+	GetClaimCodeOptions, LookupSerialNumberOptions, DownloadFileOptions,
+	ListTeamMembersOptions, InviteTeamMemberOptions, RemoveTeamMemberOptions,
+	CreateCustomerOptions, ExecuteLogicOptions,
+	ListLogicFunctionsOptions, GetLogicFunctionOptions, DeleteLogicFunctionOptions,
+	ListLogicRunsOptions, GetLogicRunOptions, GetLogicRunLogsOptions,
+	ListLedgersOptions, CreateLedgerOptions, GetLedgerOptions, UpdateLedgerOptions, ArchiveLedgerOptions,
+	ListLedgerInstancesOptions, GetLedgerInstanceOptions, SetLedgerInstanceOptions, DeleteLedgerInstanceOptions,
+	ListLedgerInstanceVersionsOptions, GetLedgerInstanceVersionOptions,
+	OKResponse, LoginResponse, EnableMfaResponse, ConfirmMfaResponse, CreateCustomerResponse,
+	TrackingIdentityResponse, UserInfo, DeviceInfo, ClaimResponse, ClaimCodeResponse,
+	DeviceVariableResponse, FunctionCallResponse, CompileResponse, ProductFirmwareInfo,
+	WebhookInfo, CreateWebhookResponse, IntegrationInfo, SimInfo, SimDataUsage,
+	ProductInfo, TeamMember, SerialNumberResponse, BuildTargetsResponse,
+	LibraryInfo, OAuthClientInfo, NetworkInfo, ProductConfigurationResponse,
+	LocationListResponse, DeviceLocationInfo, ExecuteLogicResponse, LogicFunction,
+	LogicRun, LogicRunLog, LedgerDefinition, LedgerInstance,
+	LedgerInstanceListResponse, LedgerVersionListResponse, DeviceOsVersion
+} from './types';
 
 /**
  * Particle Cloud API wrapper.
@@ -13,11 +57,17 @@ const Client = require('./Client');
  * Most Particle methods take a single unnamed argument object documented as
  * `options` with key/value pairs for each option.
  *
- * @typedef {import('./Agent').RequestResponse} RequestResponse
- * @typedef {import('./Agent').RequestError} RequestError
  */
-// These typedef avoid importing the type on every @return statement
 class Particle {
+	baseUrl!: string;
+	clientId!: string;
+	clientSecret!: string;
+	tokenDuration!: number;
+	auth: string | undefined;
+	context: { tool?: ToolContext; project?: ProjectContext };
+	agent: Agent;
+	_defaultAuth?: string;
+
 	/**
      * Contructor for the Cloud API wrapper.
      *
@@ -30,19 +80,18 @@ class Particle {
      * @param {number} [options.tokenDuration]
      * @param {string} [options.auth]            The access token. If not specified here, will have to be added to every request
      */
-	constructor(options = {}){
+	constructor(options: { baseUrl?: string; clientId?: string; clientSecret?: string; tokenDuration?: number; auth?: string } = {}) {
 		if (options.auth) {
 			this.setDefaultAuth(options.auth);
 		}
 
-		// todo - this seems a bit dangerous - would be better to put all options/context in a contained object
 		Object.assign(this, Defaults, options);
 		this.context = {};
 
 		this.agent = new Agent(this.baseUrl);
 	}
 
-	_isValidContext(name, context){
+	private _isValidContext(name: string, context: ToolContext | ProjectContext | undefined): boolean {
 		return (name === 'tool' || name === 'project') && context !== undefined;
 	}
 
@@ -58,30 +107,22 @@ class Particle {
      * @property {string} name
      */
 
-	/**
-     * Allows setting a tool or project context which will be sent as headers with every request.
-     * Tool- x-particle-tool
-     * Project- x-particle-project
-     * @param {'tool' | 'project'} name
-     * @param {ToolContext | ProjectContext | undefined} context
-     */
-	setContext(name, context){
-		if (context !== undefined){
-			if (this._isValidContext(name, context)){
-				this.context[name] = context;
+	/** @internal */
+	setContext(name: 'tool' | 'project', context: ToolContext | ProjectContext | undefined): void {
+		if (context !== undefined) {
+			if (this._isValidContext(name, context)) {
+				if (name === 'tool') {
+					this.context.tool = context as ToolContext;
+				} else {
+					this.context.project = context as ProjectContext;
+				}
 			} else {
 				throw Error('unknown context name or undefined context: ' + name);
 			}
 		}
 	}
 
-	/**
-     * Builds the final context from the context parameter and the context items in the api.
-     * @param   {Object} context  The invocation context, this takes precedence over the local context.
-     * @returns {Object} The context to use.
-     * @private
-     */
-	_buildContext(context){
+	private _buildContext(context: { tool?: ToolContext; project?: ProjectContext } | undefined): { tool?: ToolContext; project?: ProjectContext } {
 		return Object.assign(this.context, context);
 	}
 
@@ -93,10 +134,9 @@ class Particle {
      * @param  {Number} options.tokenDuration  How long the access token should last in seconds
      * @param  {Object} [options.headers]      Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param  {Number} [options.context]      Request context
-     * @returns {Promise} A promise
+     * @returns {Promise<JSONResponse<LoginResponse>>} A promise that resolves with the response data
      */
-	// @ts-ignore
-	login({ username, password, tokenDuration = this.tokenDuration, headers, context }){
+	login({ username, password, tokenDuration = this.tokenDuration, headers, context }: LoginOptions): Promise<JSONResponse<LoginResponse>> {
 		return this.request({
 			uri: '/oauth/token',
 			method: 'post',
@@ -105,14 +145,12 @@ class Particle {
 				username,
 				password,
 				grant_type: 'password',
-				// @ts-ignore
 				client_id: this.clientId,
-				// @ts-ignore
 				client_secret: this.clientSecret,
 				expires_in: tokenDuration
 			},
 			context
-		});
+		}) as Promise<JSONResponse<LoginResponse>>;
 	}
 
 	/**
@@ -122,9 +160,9 @@ class Particle {
      * @param  {String} options.otp        Current one-time-password generated from the authentication application
      * @param  {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param  {Number} [options.context]  Request context
-     * @returns {Promise} A promise
+     * @returns {Promise<JSONResponse<LoginResponse>>} A promise that resolves with the response data
      */
-	sendOtp({ mfaToken, otp, headers, context }){
+	sendOtp({ mfaToken, otp, headers, context }: SendOtpOptions): Promise<JSONResponse<LoginResponse>> {
 		return this.request({
 			uri: '/oauth/token',
 			method: 'post',
@@ -133,13 +171,11 @@ class Particle {
 				grant_type: 'urn:custom:mfa-otp',
 				mfa_token: mfaToken,
 				otp,
-				// @ts-ignore
 				client_id: this.clientId,
-				// @ts-ignore
 				client_secret: this.clientSecret
 			},
 			context
-		});
+		}) as Promise<JSONResponse<LoginResponse>>;
 	}
 
 	/**
@@ -148,10 +184,10 @@ class Particle {
      * @param {string} [options.auth]     The access token. Can be ignored if provided in constructor
      * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]  Request context
-     * @returns {Promise} A promise
+     * @returns {Promise<JSONResponse<EnableMfaResponse>>} A promise that resolves with the response data
      */
-	enableMfa({ auth, headers, context }){
-		return this.get({ uri: '/v1/user/mfa-enable', auth, headers, context });
+	enableMfa({ auth, headers, context }: EnableMfaOptions): Promise<JSONResponse<EnableMfaResponse>> {
+		return this.get<EnableMfaResponse>({ uri: '/v1/user/mfa-enable', auth, headers, context });
 	}
 
 	/**
@@ -163,16 +199,16 @@ class Particle {
      * @param {Boolean} options.invalidateTokens  Should all tokens be invalidated
      * @param {Object} [options.headers]          Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]          Request context
-     * @returns {Promise} A promise
+     * @returns {Promise<JSONResponse<ConfirmMfaResponse>>} A promise that resolves with the response data
      */
-	confirmMfa({ mfaToken, otp, invalidateTokens = false, auth, headers, context }){
-		const data = { mfa_token: mfaToken, otp };
+	confirmMfa({ mfaToken, otp, invalidateTokens = false, auth, headers, context }: ConfirmMfaOptions): Promise<JSONResponse<ConfirmMfaResponse>> {
+		const data: { mfa_token: string; otp: string; invalidate_tokens?: boolean } = { mfa_token: mfaToken, otp };
 
 		if (invalidateTokens) {
 			data.invalidate_tokens = true;
 		}
 
-		return this.post({
+		return this.post<ConfirmMfaResponse>({
 			uri: '/v1/user/mfa-enable',
 			auth,
 			headers,
@@ -188,10 +224,10 @@ class Particle {
      * @param {Object} options.currentPassword  User's current password
      * @param {Object} [options.headers]        Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]        Request context
-     * @returns {Promise} A promise
+     * @returns {Promise<JSONResponse<OKResponse>>} A promise that resolves with the response data
      */
-	disableMfa({ currentPassword, auth, headers, context }){
-		return this.put({
+	disableMfa({ currentPassword, auth, headers, context }: DisableMfaOptions): Promise<JSONResponse<OKResponse>> {
+		return this.put<OKResponse>({
 			uri: '/v1/user/mfa-disable',
 			auth,
 			headers,
@@ -208,9 +244,9 @@ class Particle {
      * @param {String} options.product    Create the customer in this product ID or slug
      * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]  Request context
-     * @returns {Promise} A promise
+     * @returns {Promise<JSONResponse<CreateCustomerResponse>>} A promise that resolves with the response data
      */
-	createCustomer({ email, password, product, headers, context }){
+	createCustomer({ email, password, product, headers, context }: CreateCustomerOptions): Promise<JSONResponse<CreateCustomerResponse>> {
 		return this.request({
 			uri: `/v1/products/${product}/customers`,
 			method: 'post',
@@ -219,13 +255,11 @@ class Particle {
 				email,
 				password,
 				grant_type: 'client_credentials',
-				// @ts-ignore
 				client_id: this.clientId,
-				// @ts-ignore
 				client_secret: this.clientSecret
 			},
 			context
-		});
+		}) as Promise<JSONResponse<CreateCustomerResponse>>;
 	}
 
 	/**
@@ -233,22 +267,20 @@ class Particle {
      * @param {Object} options            Options for this API call
      * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]  Request context
-     * @returns {Promise} A promise
+     * @returns {Promise<JSONResponse<LoginResponse>>} A promise that resolves with the response data
      */
-	loginAsClientOwner({ headers, context }){
+	loginAsClientOwner({ headers, context }: LoginAsClientOwnerOptions = {}): Promise<JSONResponse<LoginResponse>> {
 		return this.request({
 			uri: '/oauth/token',
 			method: 'post',
 			headers,
 			form: {
 				grant_type: 'client_credentials',
-				// @ts-ignore
 				client_id: this.clientId,
-				// @ts-ignore
 				client_secret: this.clientSecret
 			},
 			context
-		});
+		}) as Promise<JSONResponse<LoginResponse>>;
 	}
 
 	/**
@@ -260,10 +292,10 @@ class Particle {
      * @param {Object} [options.utm]        Object that contains info about the campaign that lead to this user creation
      * @param {Object} [options.headers]    Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]    Request context
-     * @returns {Promise} A promise
+     * @returns {Promise<JSONResponse<OKResponse>>} A promise that resolves with the response data
      */
-	createUser({ username, password, accountInfo, utm, headers, context }){
-		return this.post({
+	createUser({ username, password, accountInfo, utm, headers, context }: { username: string; password: string; accountInfo?: Record<string, string | number | boolean>; utm?: Record<string, string>; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<JSONResponse<OKResponse>> {
+		return this.post<OKResponse>({
 			uri: '/v1/users',
 			headers,
 			data: {
@@ -277,32 +309,15 @@ class Particle {
 	}
 
 	/**
-     * Verify new user account via verification email
-     * @param {Object} options            Options for this API call
-     * @param {String} options.token      The string token sent in the verification email
-     * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-     * @param {Object} [options.context]  Request context
-     * @returns {Promise} A promise
-     */
-	verifyUser({ token, headers, context }){
-		return this.post({
-			uri: '/v1/user/verify',
-			headers,
-			data: { token },
-			context
-		});
-	}
-
-	/**
      * Send reset password email for a Particle Cloud user account
      * @param {Object} options            Options for this API call
      * @param {String} options.username   Email of the user
      * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]  Request context
-     * @returns {Promise} A promise
+     * @returns {Promise<JSONResponse<OKResponse>>} A promise that resolves with the response data
      */
-	resetPassword({ username, headers, context }){
-		return this.post({
+	resetPassword({ username, headers, context }: ResetPasswordOptions): Promise<JSONResponse<OKResponse>> {
+		return this.post<OKResponse>({
 			uri: '/v1/user/password-reset',
 			headers,
 			data: { username },
@@ -316,10 +331,10 @@ class Particle {
      * @param {String} options.token      Access token you wish to revoke
      * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]  Request context
-     * @returns {Promise} A promise
+     * @returns {Promise<JSONResponse<OKResponse>>} A promise that resolves with the response data
      */
-	deleteAccessToken({ token, headers, context }){
-		return this.delete({
+	deleteAccessToken({ token, headers, context }: DeleteAccessTokenOptions): Promise<JSONResponse<OKResponse>> {
+		return this.delete<OKResponse>({
 			uri: `/v1/access_tokens/${token}`,
 			headers,
 			context
@@ -332,10 +347,10 @@ class Particle {
      * @param {string} [options.auth]     The access token. Can be ignored if provided in constructor
      * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]  Request context
-     * @returns {Promise} A promise
+     * @returns {Promise<JSONResponse<OKResponse>>} A promise that resolves with the response data
      */
-	deleteCurrentAccessToken({ auth, headers, context }){
-		return this.delete({
+	deleteCurrentAccessToken({ auth, headers, context }: DeleteCurrentAccessTokenOptions): Promise<JSONResponse<OKResponse>> {
+		return this.delete<OKResponse>({
 			uri: '/v1/access_tokens/current',
 			auth,
 			headers,
@@ -349,10 +364,10 @@ class Particle {
      * @param {string} [options.auth]     The access token. Can be ignored if provided in constructor
      * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]  Request context
-     * @returns {Promise} A promise
+     * @returns {Promise<JSONResponse<OKResponse>>} A promise that resolves with the response data
      */
-	deleteActiveAccessTokens({ auth, headers, context }){
-		return this.delete({
+	deleteActiveAccessTokens({ auth, headers, context }: DeleteActiveAccessTokensOptions): Promise<JSONResponse<OKResponse>> {
+		return this.delete<OKResponse>({
 			uri: '/v1/access_tokens',
 			auth,
 			headers,
@@ -367,10 +382,10 @@ class Particle {
      * @param {String} options.password   Password
      * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]  Request context
-     * @returns {Promise} A promise
+     * @returns {Promise<JSONResponse<OKResponse>>} A promise that resolves with the response data
      */
-	deleteUser({ auth, password, headers, context }){
-		return this.delete({
+	deleteUser({ auth, password, headers, context }: DeleteUserOptions): Promise<JSONResponse<OKResponse>> {
+		return this.delete<OKResponse>({
 			uri: '/v1/user',
 			data: { password },
 			auth,
@@ -387,10 +402,10 @@ class Particle {
      *                                     retrieve only the unique tracking ID for the current login.
      * @param {Object}  [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object}  [options.context]  Request context
-     * @returns {Promise<Object>} Resolve the tracking identify of the current login
+     * @returns {Promise<JSONResponse<TrackingIdentityResponse>>} A promise that resolves with the response data
      */
-	trackingIdentity({ full = false, auth, headers, context } = {}){
-		return this.get({
+	trackingIdentity({ full = false, auth, headers, context }: TrackingIdentityOptions = {}): Promise<JSONResponse<TrackingIdentityResponse>> {
+		return this.get<TrackingIdentityResponse>({
 			uri: '/v1/user/identify',
 			auth,
 			headers,
@@ -413,12 +428,13 @@ class Particle {
      * @param {string}         [options.auth]        The access token. Can be ignored if provided in constructor
      * @param {Object}         [options.headers]     Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object}         [options.context]     Request context
-     * @returns {Promise} A promise
+     * @returns {Promise<JSONResponse<DeviceInfo[]>>} A promise that resolves with the response data
      */
-	listDevices({ deviceId, deviceName, groups, sortAttr, sortDir, page, perPage, product, auth, headers, context }){
-		let uri, query;
+	listDevices({ deviceId, deviceName, groups, sortAttr, sortDir, page, perPage, product, auth, headers, context }: { deviceId?: string; deviceName?: string; groups?: string[]; sortAttr?: string; sortDir?: string; page?: number; perPage?: number; product?: string | number; auth?: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<JSONResponse<DeviceInfo[]>> {
+		let uri: string;
+		let query: Record<string, string | number | string[] | undefined> | undefined;
 
-		if (product){
+		if (product) {
 			uri = `/v1/products/${product}/devices`;
 			query = {
 				deviceId,
@@ -433,7 +449,7 @@ class Particle {
 			uri = '/v1/devices';
 		}
 
-		return this.get({ uri, auth, headers, query, context });
+		return this.get<DeviceInfo[]>({ uri, auth, headers, query, context });
 	}
 
 	/**
@@ -444,11 +460,11 @@ class Particle {
      * @param {string} [options.auth]     The access token. Can be ignored if provided in constructor
      * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]  Request context
-     * @returns {Promise} A promise
+     * @returns {Promise<JSONResponse<DeviceInfo>>} A promise that resolves with the response data
      */
-	getDevice({ deviceId, product, auth, headers, context }){
+	getDevice({ deviceId, product, auth, headers, context }: GetDeviceOptions): Promise<JSONResponse<DeviceInfo>> {
 		const uri = this.deviceUri({ deviceId, product });
-		return this.get({ uri, auth, headers, context });
+		return this.get<DeviceInfo>({ uri, auth, headers, context });
 	}
 
 	/**
@@ -459,10 +475,10 @@ class Particle {
      * @param {boolean} options.requestTransfer  True to request the device be transfered from another user
      * @param {Object}  [options.headers]        Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object}  [options.context]        Request context
-     * @returns {Promise} A promise
+     * @returns {Promise<JSONResponse<ClaimResponse>>} A promise that resolves with the response data
      */
-	claimDevice({ deviceId, requestTransfer, auth, headers, context }){
-		return this.post({
+	claimDevice({ deviceId, requestTransfer, auth, headers, context }: ClaimDeviceOptions): Promise<JSONResponse<ClaimResponse>> {
+		return this.post<ClaimResponse>({
 			uri: '/v1/devices',
 			auth,
 			headers,
@@ -484,14 +500,15 @@ class Particle {
      * @param {string} [options.auth]     The access token. Can be ignored if provided in constructor
      * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]  Request context
-     * @returns {Promise} A promise
+     * @returns {Promise<JSONResponse<OKResponse>>} A promise that resolves with the response data
      */
-	addDeviceToProduct({ deviceId, product, file, auth, headers, context }){
-		let files, data;
+	addDeviceToProduct({ deviceId, product, file, auth, headers, context }: AddDeviceToProductOptions): Promise<JSONResponse<OKResponse>> {
+		let files: Record<string, string | Buffer | NodeJS.ReadableStream | Blob> | undefined;
+		let data: Record<string, string> | undefined;
 
-		if (file){
+		if (file) {
 			files = { file };
-		} else if (deviceId){
+		} else if (deviceId) {
 			data = { id: deviceId };
 		}
 
@@ -503,7 +520,7 @@ class Particle {
 			files,
 			auth,
 			context
-		});
+		}) as Promise<JSONResponse<OKResponse>>;
 	}
 
 	/**
@@ -515,12 +532,12 @@ class Particle {
      * @param {string}  [options.auth]     The access token. Can be ignored if provided in constructor
      * @param {Object}  [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object}  [options.context]  Request context
-     * @returns {Promise} A promise
+     * @returns {Promise<JSONResponse<OKResponse>>} A promise that resolves with the response data
      */
-	removeDevice({ deviceId, deny, product, auth, headers, context }){
+	removeDevice({ deviceId, deny, product, auth, headers, context }: RemoveDeviceOptions): Promise<JSONResponse<OKResponse>> {
 		const uri = this.deviceUri({ deviceId, product });
 		const data = product ? { deny } : undefined;
-		return this.delete({ uri, data, auth, headers, context });
+		return this.delete<OKResponse>({ uri, data, auth, headers, context });
 	}
 
 	/**
@@ -531,11 +548,11 @@ class Particle {
      * @param {string} [options.auth]     The access token. Can be ignored if provided in constructor
      * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]  Request context
-     * @returns {Promise} A promise
+     * @returns {Promise<JSONResponse<OKResponse>>} A promise that resolves with the response data
      */
-	removeDeviceOwner({ deviceId, product, auth, headers, context }){
+	removeDeviceOwner({ deviceId, product, auth, headers, context }: RemoveDeviceOwnerOptions): Promise<JSONResponse<OKResponse>> {
 		const uri = `/v1/products/${product}/devices/${deviceId}/owner`;
-		return this.delete({ uri, auth, headers, context });
+		return this.delete<OKResponse>({ uri, auth, headers, context });
 	}
 
 	/**
@@ -547,9 +564,9 @@ class Particle {
      * @param {string} [options.auth]     The access token. Can be ignored if provided in constructor
      * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]  Request context
-     * @returns {Promise} A promise
+     * @returns {Promise<JSONResponse<DeviceInfo>>} A promise that resolves with the response data
      */
-	renameDevice({ deviceId, name, product, auth, headers, context }){
+	renameDevice({ deviceId, name, product, auth, headers, context }: RenameDeviceOptions): Promise<JSONResponse<DeviceInfo>> {
 		return this.updateDevice({ deviceId, name, product, auth, headers, context });
 	}
 
@@ -562,9 +579,9 @@ class Particle {
      * @param {string} [options.auth]     The access token. Can be ignored if provided in constructor
      * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]  Request context
-     * @returns {Promise} A promise
+     * @returns {Promise<JSONResponse<DeviceInfo>>} A promise that resolves with the response data
      */
-	signalDevice({ deviceId, signal, product, auth, headers, context }){
+	signalDevice({ deviceId, signal, product, auth, headers, context }: SignalDeviceOptions): Promise<JSONResponse<DeviceInfo>> {
 		return this.updateDevice({ deviceId, signal, product, auth, headers, context });
 	}
 
@@ -577,9 +594,9 @@ class Particle {
      * @param {string} [options.auth]     The access token. Can be ignored if provided in constructor
      * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]  Request context
-     * @returns {Promise} A promise
+     * @returns {Promise<JSONResponse<DeviceInfo>>} A promise that resolves with the response data
      */
-	setDeviceNotes({ deviceId, notes, product, auth, headers, context }){
+	setDeviceNotes({ deviceId, notes, product, auth, headers, context }: { deviceId: string; notes: string; product?: string | number; auth?: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<JSONResponse<DeviceInfo>> {
 		return this.updateDevice({ deviceId, notes, product, auth, headers, context });
 	}
 
@@ -592,9 +609,9 @@ class Particle {
      * @param {string} [options.auth]        The access token. Can be ignored if provided in constructor
      * @param {Object} [options.headers]     Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]     Request context
-     * @returns {Promise} A promise
+     * @returns {Promise<JSONResponse<DeviceInfo>>} A promise that resolves with the response data
      */
-	markAsDevelopmentDevice({ deviceId, development = true, product, auth, headers, context }){
+	markAsDevelopmentDevice({ deviceId, development = true, product, auth, headers, context }: { deviceId: string; development?: boolean; product: string | number; auth?: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<JSONResponse<DeviceInfo>> {
 		return this.updateDevice({ deviceId, development, product, auth, headers, context });
 	}
 
@@ -608,9 +625,9 @@ class Particle {
      * @param {string}  [options.auth]                  The access token. Can be ignored if provided in constructor
      * @param {Object}  [options.headers]               Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object}  [options.context]               Request context
-     * @returns {Promise} A promise
+     * @returns {Promise<JSONResponse<DeviceInfo>>} A promise that resolves with the response data
      */
-	lockDeviceProductFirmware({ deviceId, desiredFirmwareVersion, flash, product, auth, headers, context }){
+	lockDeviceProductFirmware({ deviceId, desiredFirmwareVersion, flash, product, auth, headers, context }: { deviceId: string; desiredFirmwareVersion: number; flash?: boolean; product: string | number; auth?: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<JSONResponse<DeviceInfo>> {
 		return this.updateDevice({ deviceId, desiredFirmwareVersion, flash, product, auth, headers, context });
 	}
 
@@ -622,9 +639,9 @@ class Particle {
      * @param {string} [options.auth]     The access token. Can be ignored if provided in constructor
      * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]  Request context
-     * @returns {Promise} A promise
+     * @returns {Promise<JSONResponse<DeviceInfo>>} A promise that resolves with the response data
      */
-	unlockDeviceProductFirmware({ deviceId, product, auth, headers, context }){
+	unlockDeviceProductFirmware({ deviceId, product, auth, headers, context }: { deviceId: string; product: string | number; auth?: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<JSONResponse<DeviceInfo>> {
 		return this.updateDevice({ deviceId, desiredFirmwareVersion: null, product, auth, headers, context });
 	}
 
@@ -643,11 +660,11 @@ class Particle {
      * @param {string}        [options.auth]                    The access token. Can be ignored if provided in constructor
      * @param {Object}        [options.headers]                 Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object}        [options.context]                 Request context
-     * @returns {Promise} A promise
+     * @returns {Promise<JSONResponse<DeviceInfo>>} A promise that resolves with the response data
      */
-	updateDevice({ deviceId, name, signal, notes, development, desiredFirmwareVersion, flash, product, auth, headers, context }){
-		let signalValue;
-		if (signal !== undefined){
+	updateDevice({ deviceId, name, signal, notes, development, desiredFirmwareVersion, flash, product, auth, headers, context }: UpdateDeviceOptions): Promise<JSONResponse<DeviceInfo>> {
+		let signalValue: string | undefined;
+		if (signal !== undefined) {
 			signalValue = signal ? '1' : '0';
 		}
 
@@ -656,7 +673,7 @@ class Particle {
 			{ name, signal: signalValue, notes, development, desired_firmware_version: desiredFirmwareVersion, flash } :
 			{ name, signal: signalValue, notes };
 
-		return this.put({ uri, auth, headers, data, context });
+		return this.put<DeviceInfo>({ uri, auth, headers, data, context });
 	}
 
 	/**
@@ -675,10 +692,10 @@ class Particle {
      * @param {string} [options.auth]            The access token. Can be ignored if provided in constructor.
      * @param {Object} [options.headers]         Key/value pairs to send as headers.
      * @param {Object} [options.context]         Request context.
-     * @returns {Promise} A promise
+     * @returns {Promise<JSONResponse<OKResponse>>} A promise that resolves with the response data
      */
-	unprotectDevice({ deviceId, org, product, action, serverNonce, deviceNonce, deviceSignature, devicePublicKeyFingerprint, auth, headers, context }) {
-		const data = { action };
+	unprotectDevice({ deviceId, org, product, action, serverNonce, deviceNonce, deviceSignature, devicePublicKeyFingerprint, auth, headers, context }: UnprotectDeviceOptions): Promise<JSONResponse<OKResponse>> {
+		const data: { action: string; device_nonce?: string; server_nonce?: string; device_signature?: string; device_public_key_fingerprint?: string } = { action };
 		if (deviceNonce !== undefined) {
 			data.device_nonce = deviceNonce;
 		}
@@ -692,7 +709,7 @@ class Particle {
 			data.device_public_key_fingerprint = devicePublicKeyFingerprint;
 		}
 		const uri = this.deviceUri({ deviceId, product, org }) + '/unprotect';
-		return this.put({ uri, data, auth, headers, context });
+		return this.put<OKResponse>({ uri, data, auth, headers, context });
 	}
 
 	/**
@@ -702,10 +719,10 @@ class Particle {
      * @param {string} [options.auth]     The access token. Can be ignored if provided in constructor
      * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]  Request context
-     * @returns {Promise} A promise
+     * @returns {Promise<JSONResponse<DeviceInfo>>} A promise that resolves with the response data
      */
-	provisionDevice({ productId, auth, headers, context }){
-		return this.post({
+	provisionDevice({ productId, auth, headers, context }: ProvisionDeviceOptions): Promise<JSONResponse<DeviceInfo>> {
+		return this.post<DeviceInfo>({
 			uri: '/v1/devices',
 			auth,
 			headers,
@@ -724,20 +741,11 @@ class Particle {
      * @param {string} [options.auth]     The access token. Can be ignored if provided in constructor
      * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]  Request context
-     * @returns {Promise} A promise
+     * @returns {Promise<JSONResponse<ClaimCodeResponse>>} A promise that resolves with the response data
      */
-	getClaimCode({ iccid, product, auth, headers, context }){
+	getClaimCode({ iccid, product, auth, headers, context }: GetClaimCodeOptions): Promise<JSONResponse<ClaimCodeResponse>> {
 		const uri = product ? `/v1/products/${product}/device_claims` : '/v1/device_claims';
-		return this.post({ uri, auth, headers, data: { iccid }, context });
-	}
-
-	validatePromoCode({ promoCode, auth, headers, context }){
-		return this.get({
-			uri: `/v1/promo_code/${promoCode}`,
-			auth,
-			headers,
-			context
-		});
+		return this.post<ClaimCodeResponse>({ uri, auth, headers, data: { iccid }, context });
 	}
 
 	/**
@@ -749,14 +757,14 @@ class Particle {
      * @param {string} [options.auth]     The access token. Can be ignored if provided in constructor
      * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]  Request context
-     * @returns {Promise} A promise
+     * @returns {Promise<JSONResponse<DeviceVariableResponse>>} A promise that resolves with the response data
      */
-	getVariable({ deviceId, name, product, auth, headers, context }){
+	getVariable({ deviceId, name, product, auth, headers, context }: GetVariableOptions): Promise<JSONResponse<DeviceVariableResponse>> {
 		const uri = product ?
 			`/v1/products/${product}/devices/${deviceId}/${name}` :
 			`/v1/devices/${deviceId}/${name}`;
 
-		return this.get({ uri, auth, headers, context });
+		return this.get<DeviceVariableResponse>({ uri, auth, headers, context });
 	}
 
 	/**
@@ -769,45 +777,19 @@ class Particle {
      * @param {string} [options.auth]                  The access token. Can be ignored if provided in constructor
      * @param {Object} [options.headers]               Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]               Request context
-     * @returns {Promise} A promise
+     * @returns {Promise<JSONResponse<OKResponse>>} A promise that resolves with the response data
      */
-	flashDevice({ deviceId, product, files, targetVersion, auth, headers, context }){
+	flashDevice({ deviceId, product, files, targetVersion, auth, headers, context }: FlashDeviceOptions): Promise<JSONResponse<OKResponse>> {
 		const uri = this.deviceUri({ deviceId, product });
-		const form = {};
+		const form: Record<string, string> = {};
 
-		if (targetVersion){
+		if (targetVersion) {
 			form.build_target_version = targetVersion;
 		} else {
 			form.latest = 'true';
 		}
 
-		return this.request({ uri, method: 'put', auth, headers, files, form, context });
-	}
-
-	/**
-     * DEPRECATED: Flash the Tinker application to a device. Instead compile and flash the Tinker source code.
-     * @param {Object} options            Options for this API call
-     * @param {String} options.deviceId   Device ID or Name
-     * @param {string} [options.auth]     The access token. Can be ignored if provided in constructor
-     * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-     * @param {Object} [options.context]  Request context
-     * @returns {Promise} A promise
-     */
-	flashTinker({ deviceId, auth, headers, context }){
-		/* eslint-disable no-console */
-		/* @ts-ignore */
-		if (console && console.warning){
-			// @ts-ignore
-			console.warning('Particle.flashTinker is deprecated');
-		}
-		/* eslint-enable no-console */
-		return this.put({
-			uri: `/v1/devices/${deviceId}`,
-			headers,
-			data: { app: 'tinker' },
-			auth,
-			context
-		});
+		return this.request({ uri, method: 'put', auth, headers, files, form, context }) as Promise<JSONResponse<OKResponse>>;
 	}
 
 	/**
@@ -819,12 +801,12 @@ class Particle {
      * @param {string} [options.auth]                  The access token. Can be ignored if provided in constructor
      * @param {Object} [options.headers]               Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]               Request context
-     * @returns {Promise} A promise
+     * @returns {Promise<JSONResponse<CompileResponse>>} A promise that resolves with the response data
      */
-	compileCode({ files, platformId, targetVersion, auth, headers, context }){
-		const form = { platform_id: platformId };
+	compileCode({ files, platformId, targetVersion, auth, headers, context }: CompileCodeOptions): Promise<JSONResponse<CompileResponse>> {
+		const form: Record<string, string | number | undefined> = { platform_id: platformId };
 
-		if (targetVersion){
+		if (targetVersion) {
 			form.build_target_version = targetVersion;
 		} else {
 			form.latest = 'true';
@@ -836,9 +818,9 @@ class Particle {
 			auth,
 			headers,
 			files,
-			form,
+			form: form as Record<string, string | number | boolean | undefined>,
 			context
-		});
+		}) as Promise<JSONResponse<CompileResponse>>;
 	}
 
 	/**
@@ -848,9 +830,9 @@ class Particle {
      * @param {string} [options.auth]     The access token. Can be ignored if provided in constructor
      * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]  Request context
-     * @returns {Promise<RequestResponse, RequestError>} A promise
+     * @returns {Promise<Buffer | ArrayBuffer>} A promise that resolves with the binary data
      */
-	downloadFirmwareBinary({ binaryId, auth, headers, context }){
+	downloadFirmwareBinary({ binaryId, auth, headers, context }: DownloadFirmwareBinaryOptions): Promise<Buffer | ArrayBuffer> {
 		return this.request({
 			uri: `/v1/binaries/${binaryId}`,
 			method: 'get',
@@ -858,7 +840,7 @@ class Particle {
 			headers,
 			context,
 			isBuffer: true
-		});
+		}) as Promise<Buffer | ArrayBuffer>;
 	}
 
 	/**
@@ -870,10 +852,10 @@ class Particle {
      * @param {string}          [options.auth]           The access token. Can be ignored if provided in constructor
      * @param {Object}          [options.headers]        Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object}          [options.context]        Request context
-     * @returns {Promise} A promise
+     * @returns {Promise<JSONResponse<OKResponse>>} A promise that resolves with the response data
      */
-	sendPublicKey({ deviceId, key, algorithm, auth, headers, context }){
-		return this.post({
+	sendPublicKey({ deviceId, key, algorithm, auth, headers, context }: { deviceId: string; key: string | Buffer; algorithm?: string; auth?: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<JSONResponse<OKResponse>> {
+		return this.post<OKResponse>({
 			uri: `/v1/provisioning/${deviceId}`,
 			auth,
 			headers,
@@ -881,7 +863,7 @@ class Particle {
 				deviceID: deviceId,
 				publicKey: (typeof key === 'string' ? key : key.toString()),
 				filename: 'particle-api',
-				order: `manual_${ Date.now() }`,
+				order: `manual_${Date.now()}`,
 				algorithm: algorithm || 'rsa'
 			},
 			context
@@ -898,13 +880,13 @@ class Particle {
      * @param {string} [options.auth]     The access token. Can be ignored if provided in constructor
      * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]  Request context
-     * @returns {Promise} A promise
+     * @returns {Promise<JSONResponse<FunctionCallResponse>>} A promise that resolves with the response data
      */
-	callFunction({ deviceId, name, argument, product, auth, headers, context }){
+	callFunction({ deviceId, name, argument, product, auth, headers, context }: CallFunctionOptions): Promise<JSONResponse<FunctionCallResponse>> {
 		const uri = product ?
 			`/v1/products/${product}/devices/${deviceId}/${name}` :
 			`/v1/devices/${deviceId}/${name}`;
-		return this.post({ uri, auth, headers, data: { args: argument }, context });
+		return this.post<FunctionCallResponse>({ uri, auth, headers, data: { args: argument }, context });
 	}
 
 	/**
@@ -915,34 +897,34 @@ class Particle {
      * @param {String} [options.org]       Organization Slug
      * @param {String} [options.product]   Events for this product ID or slug
      * @param {string} [options.auth]      The access token. Can be ignored if provided in constructor
-     * @returns {Promise} If the promise resolves, the resolution value will be an EventStream object that will
+     * @returns {Promise<EventStream>} A promise that resolves with the response data
      * emit 'event' events.
      */
-	getEventStream({ deviceId, name, org, product, auth }){
+	getEventStream({ deviceId, name, org, product, auth }: GetEventStreamOptions): Promise<EventStream> {
 		let uri = '/v1/';
-		if (org){
+		if (org) {
 			uri += `orgs/${org}/`;
 		}
 
-		if (product){
+		if (product) {
 			uri += `products/${product}/`;
 		}
 
-		if (deviceId){
+		if (deviceId) {
 			uri += 'devices/';
-			if (!(deviceId.toLowerCase() === 'mine')){
+			if (!(deviceId.toLowerCase() === 'mine')) {
 				uri += `${deviceId}/`;
 			}
 		}
 
 		uri += 'events';
 
-		if (name){
+		if (name) {
 			uri += `/${encodeURIComponent(name)}`;
 		}
 
-		auth = this._getActiveAuthToken(auth);
-		return new EventStream(`${this.baseUrl}${uri}`, auth).connect();
+		const activeAuth = this._getActiveAuthToken(auth) || '';
+		return new EventStream(`${this.baseUrl}${uri}`, activeAuth).connect();
 	}
 
 	/**
@@ -955,12 +937,12 @@ class Particle {
      * @param {string}  [options.auth]     The access token. Can be ignored if provided in constructor
      * @param {Object}  [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object}  [options.context]  Request context
-     * @returns {Promise} A promise
+     * @returns {Promise<JSONResponse<OKResponse>>} A promise that resolves with the response data
      */
-	publishEvent({ name, data, isPrivate, product, auth, headers, context }){
+	publishEvent({ name, data, isPrivate, product, auth, headers, context }: { name: string; data?: string; isPrivate?: boolean; product?: string | number; auth?: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<JSONResponse<OKResponse>> {
 		const uri = product ? `/v1/products/${product}/events` : '/v1/devices/events';
 		const postData = { name, data, private: isPrivate };
-		return this.post({ uri, auth, headers, data: postData, context });
+		return this.post<OKResponse>({ uri, auth, headers, data: postData, context });
 	}
 
 	/**
@@ -990,13 +972,13 @@ class Particle {
      * @param {string}  [options.auth]                The access token. Can be ignored if provided in constructor
      * @param {Object}  [options.headers]             Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object}  [options.context]             Request context
-     * @returns {Promise} A promise
+     * @returns {Promise<JSONResponse<CreateWebhookResponse>>} A promise that resolves with the response data
      */
-	createWebhook({ event, url, device, rejectUnauthorized, noDefaults, hook, product, auth, headers, context }){
+	createWebhook({ event, url, device, rejectUnauthorized, noDefaults, hook, product, auth, headers, context }: { event: string; url: string; device?: string; rejectUnauthorized?: boolean; noDefaults?: boolean; hook?: { method?: string; auth?: Record<string, string>; headers?: Record<string, string>; query?: Record<string, string>; json?: object; form?: object; body?: string; responseTemplate?: string; responseEvent?: string; errorResponseEvent?: string }; product?: string | number; auth?: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<JSONResponse<CreateWebhookResponse>> {
 		const uri = product ? `/v1/products/${product}/webhooks` : '/v1/webhooks';
-		const data = { event, url, deviceId: device, rejectUnauthorized, noDefaults };
+		const data: Record<string, string | boolean | object | undefined> = { event, url, deviceId: device, rejectUnauthorized, noDefaults };
 
-		if (hook){
+		if (hook) {
 			data.requestType = hook.method;
 			data.auth = hook.auth;
 			data.headers = hook.headers;
@@ -1009,11 +991,11 @@ class Particle {
 			data.errorResponseTopic = hook.errorResponseEvent;
 		}
 
-		if (!data.requestType){
+		if (!data.requestType) {
 			data.requestType = 'POST';
 		}
 
-		return this.post({ uri, auth, headers, data, context });
+		return this.post<CreateWebhookResponse>({ uri, auth, headers, data, context });
 	}
 
 	/**
@@ -1024,11 +1006,11 @@ class Particle {
      * @param {string} [options.auth] The access token. Can be ignored if provided in constructor
      * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]  Request context
-     * @returns {Promise} A promise
+     * @returns {Promise<JSONResponse<OKResponse>>} A promise that resolves with the response data
      */
-	deleteWebhook({ hookId, product, auth, headers, context }){
+	deleteWebhook({ hookId, product, auth, headers, context }: DeleteWebhookOptions): Promise<JSONResponse<OKResponse>> {
 		const uri = product ? `/v1/products/${product}/webhooks/${hookId}` : `/v1/webhooks/${hookId}`;
-		return this.delete({ uri, auth, headers, context });
+		return this.delete<OKResponse>({ uri, auth, headers, context });
 	}
 
 	/**
@@ -1038,11 +1020,11 @@ class Particle {
      * @param {string} [options.auth] The access token. Can be ignored if provided in constructor
      * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]  Request context
-     * @returns {Promise} A promise
+     * @returns {Promise<JSONResponse<WebhookInfo[]>>} A promise that resolves with the response data
      */
-	listWebhooks({ product, auth, headers, context }){
+	listWebhooks({ product, auth, headers, context }: ListWebhooksOptions): Promise<JSONResponse<WebhookInfo[]>> {
 		const uri = product ? `/v1/products/${product}/webhooks` : '/v1/webhooks';
-		return this.get({ uri, auth, headers, context });
+		return this.get<WebhookInfo[]>({ uri, auth, headers, context });
 	}
 
 	/**
@@ -1058,12 +1040,12 @@ class Particle {
      * @param {string} [options.auth]      The access token. Can be ignored if provided in constructor
      * @param {Object} [options.headers]   Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]   Request context
-     * @returns {Promise} A promise
+     * @returns {Promise<JSONResponse<IntegrationInfo>>} A promise that resolves with the response data
      */
-	createIntegration({ event, settings, deviceId, product, auth, headers, context }){
+	createIntegration({ event, settings, deviceId, product, auth, headers, context }: CreateIntegrationOptions): Promise<JSONResponse<IntegrationInfo>> {
 		const uri = product ? `/v1/products/${product}/integrations` : '/v1/integrations';
 		const data = Object.assign({ event, deviceid: deviceId }, settings);
-		return this.post({ uri, data, auth, headers, context });
+		return this.post<IntegrationInfo>({ uri, data, auth, headers, context });
 	}
 
 	/**
@@ -1080,12 +1062,12 @@ class Particle {
      * @param {string} [options.auth]         The access token. Can be ignored if provided in constructor
      * @param {Object} [options.headers]      Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]      Request context
-     * @returns {Promise} A promise
+     * @returns {Promise<JSONResponse<IntegrationInfo>>} A promise that resolves with the response data
      */
-	editIntegration({ integrationId, event, settings, deviceId, product, auth, headers, context }){
+	editIntegration({ integrationId, event, settings, deviceId, product, auth, headers, context }: EditIntegrationOptions): Promise<JSONResponse<IntegrationInfo>> {
 		const uri = product ? `/v1/products/${product}/integrations/${integrationId}` : `/v1/integrations/${integrationId}`;
 		const data = Object.assign({ event, deviceid: deviceId }, settings);
-		return this.put({ uri, auth, headers, data, context });
+		return this.put<IntegrationInfo>({ uri, auth, headers, data, context });
 	}
 
 	/**
@@ -1097,11 +1079,11 @@ class Particle {
      * @param {string} [options.auth]         The access token. Can be ignored if provided in constructor
      * @param {Object} [options.headers]      Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]      Request context
-     * @returns {Promise} A promise
+     * @returns {Promise<JSONResponse<OKResponse>>} A promise that resolves with the response data
      */
-	deleteIntegration({ integrationId, product, auth, headers, context }){
+	deleteIntegration({ integrationId, product, auth, headers, context }: DeleteIntegrationOptions): Promise<JSONResponse<OKResponse>> {
 		const uri = product ? `/v1/products/${product}/integrations/${integrationId}` : `/v1/integrations/${integrationId}`;
-		return this.delete({ uri, auth, headers, context });
+		return this.delete<OKResponse>({ uri, auth, headers, context });
 	}
 
 	/**
@@ -1111,11 +1093,11 @@ class Particle {
      * @param {string} [options.auth]     The access token. Can be ignored if provided in constructor
      * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]  Request context
-     * @returns {Promise} A promise
+     * @returns {Promise<JSONResponse<IntegrationInfo[]>>} A promise that resolves with the response data
      */
-	listIntegrations({ product, auth, headers, context }){
+	listIntegrations({ product, auth, headers, context }: ListIntegrationsOptions): Promise<JSONResponse<IntegrationInfo[]>> {
 		const uri = product ? `/v1/products/${product}/integrations` : '/v1/integrations';
-		return this.get({ uri, auth, headers, context });
+		return this.get<IntegrationInfo[]>({ uri, auth, headers, context });
 	}
 
 	/**
@@ -1124,10 +1106,10 @@ class Particle {
      * @param {string} [options.auth]     The access token. Can be ignored if provided in constructor
      * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]  Request context
-     * @returns {Promise} A promise
+     * @returns {Promise<JSONResponse<UserInfo>>} A promise that resolves with the response data
      */
-	getUserInfo({ auth, headers, context }){
-		return this.get({ uri: '/v1/user', auth, headers, context });
+	getUserInfo({ auth, headers, context }: { auth?: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<JSONResponse<UserInfo>> {
+		return this.get<UserInfo>({ uri: '/v1/user', auth, headers, context });
 	}
 
 	/**
@@ -1137,11 +1119,11 @@ class Particle {
      * @param {String} options.accountInfo  Set user's extended info fields (name, business account, company name, etc)
      * @param {Object} [options.headers]    Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]    Request context
-     * @returns {Promise} A promise
+     * @returns {Promise<JSONResponse<UserInfo>>} A promise that resolves with the response data
      */
-	setUserInfo({ accountInfo, auth, headers, context }){
+	setUserInfo({ accountInfo, auth, headers, context }: { accountInfo?: Record<string, string | number | boolean>; auth?: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<JSONResponse<UserInfo>> {
 		const data = { account_info: accountInfo };
-		return this.put({ uri: '/v1/user', auth, headers, data, context });
+		return this.put<UserInfo>({ uri: '/v1/user', auth, headers, data, context });
 	}
 
 	/**
@@ -1153,16 +1135,16 @@ class Particle {
      * @param {Boolean} options.invalidateTokens  Should all tokens be invalidated
      * @param {Object}  [options.headers]         Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object}  [options.context]         Request context
-     * @returns {Promise} A promise
+     * @returns {Promise<JSONResponse<OKResponse>>} A promise that resolves with the response data
      */
-	changeUsername({ currentPassword, username, invalidateTokens = false, auth, headers, context }){
-		const data = { username, current_password: currentPassword };
+	changeUsername({ currentPassword, username, invalidateTokens = false, auth, headers, context }: ChangeUsernameOptions): Promise<JSONResponse<OKResponse>> {
+		const data: { username: string; current_password: string; invalidate_tokens?: boolean } = { username, current_password: currentPassword };
 
 		if (invalidateTokens) {
 			data.invalidate_tokens = true;
 		}
 
-		return this.put({ uri: '/v1/user', auth, headers, data, context });
+		return this.put<OKResponse>({ uri: '/v1/user', auth, headers, data, context });
 	}
 
 	/**
@@ -1174,16 +1156,16 @@ class Particle {
      * @param {Boolean} options.invalidateTokens  Should all tokens be invalidated
      * @param {Object}  [options.headers]         Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object}  [options.context]         Request context
-     * @returns {Promise} A promise
+     * @returns {Promise<JSONResponse<OKResponse>>} A promise that resolves with the response data
      */
-	changeUserPassword({ currentPassword, password, invalidateTokens = false, auth, headers, context }){
-		const data = { password, current_password: currentPassword };
+	changeUserPassword({ currentPassword, password, invalidateTokens = false, auth, headers, context }: ChangeUserPasswordOptions): Promise<JSONResponse<OKResponse>> {
+		const data: { password: string; current_password: string; invalidate_tokens?: boolean } = { password, current_password: currentPassword };
 
 		if (invalidateTokens) {
 			data.invalidate_tokens = true;
 		}
 
-		return this.put({ uri: '/v1/user', auth, headers, data, context });
+		return this.put<OKResponse>({ uri: '/v1/user', auth, headers, data, context });
 	}
 
 	/**
@@ -1198,12 +1180,12 @@ class Particle {
      * @param {string} [options.auth]        The access token. Can be ignored if provided in constructor
      * @param {Object} [options.headers]     Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]     Request context
-     * @returns {Promise} A promise
+     * @returns {Promise<JSONResponse<SimInfo[]>>} A promise that resolves with the response data
      */
-	listSIMs({ iccid, deviceId, deviceName, page, perPage, product, auth, headers, context }){
+	listSIMs({ iccid, deviceId, deviceName, page, perPage, product, auth, headers, context }: ListSIMsOptions): Promise<JSONResponse<SimInfo[]>> {
 		const uri = product ? `/v1/products/${product}/sims` : '/v1/sims';
 		const query = product ? { iccid, deviceId, deviceName, page, per_page: perPage } : undefined;
-		return this.get({ uri, auth, headers, query, context });
+		return this.get<SimInfo[]>({ uri, auth, headers, query, context });
 	}
 
 	/**
@@ -1214,14 +1196,14 @@ class Particle {
      * @param {string} [options.auth]     The access token. Can be ignored if provided in constructor
      * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]  Request context
-     * @returns {Promise} A promise
+     * @returns {Promise<JSONResponse<SimDataUsage>>} A promise that resolves with the response data
      */
-	getSIMDataUsage({ iccid, product, auth, headers, context }){
+	getSIMDataUsage({ iccid, product, auth, headers, context }: GetSIMDataUsageOptions): Promise<JSONResponse<SimDataUsage>> {
 		const uri = product ?
 			`/v1/products/${product}/sims/${iccid}/data_usage` :
 			`/v1/sims/${iccid}/data_usage`;
 
-		return this.get({ uri, auth, headers, context });
+		return this.get<SimDataUsage>({ uri, auth, headers, context });
 	}
 
 	/**
@@ -1231,10 +1213,10 @@ class Particle {
      * @param {string} [options.auth]     The access token. Can be ignored if provided in constructor
      * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]  Request context
-     * @returns {Promise} A promise
+     * @returns {Promise<JSONResponse<SimDataUsage>>} A promise that resolves with the response data
      */
-	getFleetDataUsage({ product, auth, headers, context }){
-		return this.get({
+	getFleetDataUsage({ product, auth, headers, context }: GetFleetDataUsageOptions): Promise<JSONResponse<SimDataUsage>> {
+		return this.get<SimDataUsage>({
 			uri: `/v1/products/${product}/sims/data_usage`,
 			auth,
 			headers,
@@ -1249,10 +1231,10 @@ class Particle {
      * @param {string} [options.auth]     The access token. Can be ignored if provided in constructor
      * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]  Request context
-     * @returns {Promise} A promise
+     * @returns {Promise<JSONResponse<SimInfo>>} A promise that resolves with the response data
      */
-	checkSIM({ iccid, auth, headers, context }){
-		return this.head({ uri: `/v1/sims/${iccid}`, auth, headers, context });
+	checkSIM({ iccid, auth, headers, context }: CheckSIMOptions): Promise<JSONResponse<SimInfo>> {
+		return this.head<SimInfo>({ uri: `/v1/sims/${iccid}`, auth, headers, context });
 	}
 
 	/**
@@ -1266,18 +1248,17 @@ class Particle {
      * @param {Object}        [options.headers]    Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object}        [options.context]    Request context
      * @param {any}           [options.promoCode]
-     * @returns {Promise} A promise
+     * @returns {Promise<JSONResponse<OKResponse>>} A promise that resolves with the response data
      */
-	activateSIM({ iccid, iccids, country, promoCode, product, auth, headers, context }){
-		// promoCode is deprecated
-		iccids = iccids || [iccid];
+	activateSIM({ iccid, iccids, country, promoCode, product, auth, headers, context }: ActivateSIMOptions): Promise<JSONResponse<OKResponse>> {
+		const resolvedIccids = iccids || [iccid];
 		const uri = product ? `/v1/products/${product}/sims` : `/v1/sims/${iccid}`;
 		const data = product ?
-			{ sims: iccids, country } :
+			{ sims: resolvedIccids, country } :
 			{ country, promoCode, action: 'activate' };
-		const method = product ? 'post' : 'put';
+		const method: AgentRequestOptions['method'] = product ? 'post' : 'put';
 
-		return this.request({ uri, method, headers, data, auth, context });
+		return this.request({ uri, method, headers, data, auth, context }) as Promise<JSONResponse<OKResponse>>;
 	}
 
 	/**
@@ -1288,12 +1269,12 @@ class Particle {
      * @param {string} [options.auth]     The access token. Can be ignored if provided in constructor
      * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]  Request context
-     * @returns {Promise} A promise
+     * @returns {Promise<JSONResponse<OKResponse>>} A promise that resolves with the response data
      */
-	deactivateSIM({ iccid, product, auth, headers, context }){
+	deactivateSIM({ iccid, product, auth, headers, context }: DeactivateSIMOptions): Promise<JSONResponse<OKResponse>> {
 		const uri = product ? `/v1/products/${product}/sims/${iccid}` : `/v1/sims/${iccid}`;
 		const data = { action: 'deactivate' };
-		return this.put({ uri, auth, headers, data, context });
+		return this.put<OKResponse>({ uri, auth, headers, data, context });
 	}
 
 	/**
@@ -1305,12 +1286,12 @@ class Particle {
      * @param {string} [options.auth]     The access token. Can be ignored if provided in constructor
      * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]  Request context
-     * @returns {Promise} A promise
+     * @returns {Promise<JSONResponse<OKResponse>>} A promise that resolves with the response data
      */
-	reactivateSIM({ iccid, mbLimit, product, auth, headers, context }){
+	reactivateSIM({ iccid, mbLimit, product, auth, headers, context }: ReactivateSIMOptions): Promise<JSONResponse<OKResponse>> {
 		const uri = product ? `/v1/products/${product}/sims/${iccid}` : `/v1/sims/${iccid}`;
 		const data = { mb_limit: mbLimit, action: 'reactivate' };
-		return this.put({ uri, auth, headers, data, context });
+		return this.put<OKResponse>({ uri, auth, headers, data, context });
 	}
 
 	/**
@@ -1322,12 +1303,12 @@ class Particle {
      * @param {string} [options.auth]     The access token. Can be ignored if provided in constructor
      * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]  Request context
-     * @returns {Promise} A promise
+     * @returns {Promise<JSONResponse<SimInfo>>} A promise that resolves with the response data
      */
-	updateSIM({ iccid, mbLimit, product, auth, headers, context }){
+	updateSIM({ iccid, mbLimit, product, auth, headers, context }: UpdateSIMOptions): Promise<JSONResponse<SimInfo>> {
 		const uri = product ? `/v1/products/${product}/sims/${iccid}` : `/v1/sims/${iccid}`;
 		const data = { mb_limit: mbLimit };
-		return this.put({ uri, auth, headers, data, context });
+		return this.put<SimInfo>({ uri, auth, headers, data, context });
 	}
 
 	/**
@@ -1338,11 +1319,11 @@ class Particle {
      * @param {string} [options.auth]     The access token. Can be ignored if provided in constructor
      * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]  Request context
-     * @returns {Promise} A promise
+     * @returns {Promise<JSONResponse<OKResponse>>} A promise that resolves with the response data
      */
-	removeSIM({ iccid, product, auth, headers, context }){
+	removeSIM({ iccid, product, auth, headers, context }: RemoveSIMOptions): Promise<JSONResponse<OKResponse>> {
 		const uri = product ? `/v1/products/${product}/sims/${iccid}` : `/v1/sims/${iccid}`;
-		return this.delete({ uri, auth, headers, context });
+		return this.delete<OKResponse>({ uri, auth, headers, context });
 	}
 
 	/**
@@ -1352,11 +1333,11 @@ class Particle {
      * @param {string}  [options.auth]                The access token. Can be ignored if provided in constructor
      * @param {Object}  [options.headers]             Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object}  [options.context]             Request context
-     * @returns {Promise} A promise
+     * @returns {Promise<JSONResponse<BuildTargetsResponse>>} A promise that resolves with the response data
      */
-	listBuildTargets({ onlyFeatured, auth, headers, context }){
+	listBuildTargets({ onlyFeatured, auth, headers, context }: ListBuildTargetsOptions): Promise<JSONResponse<BuildTargetsResponse>> {
 		const query = onlyFeatured ? { featured: !!onlyFeatured } : undefined;
-		return this.get({ uri: '/v1/build_targets', auth, headers, query, context });
+		return this.get<BuildTargetsResponse>({ uri: '/v1/build_targets', auth, headers, query, context });
 	}
 
 	/**
@@ -1383,8 +1364,8 @@ class Particle {
      * @param {Object}         [options.context]      Request context
      * @returns {Promise} A promise
      */
-	listLibraries({ page, limit, filter, sort, architectures, category, scope, excludeScopes, auth, headers, context }){
-		return this.get({
+	listLibraries({ page, limit, filter, sort, architectures, category, scope, excludeScopes, auth, headers, context }: ListLibrariesOptions): Promise<JSONResponse<{ data: LibraryInfo[] }>> {
+		return this.get<{ data: LibraryInfo[] }>({
 			uri: '/v1/libraries',
 			auth,
 			headers,
@@ -1402,7 +1383,7 @@ class Particle {
 		});
 	}
 
-	_asList(value){
+	private _asList(value: string[] | string | undefined): string | undefined {
 		return (Array.isArray(value) ? value.join(',') : value);
 	}
 
@@ -1416,8 +1397,8 @@ class Particle {
      * @param {Object} [options.context]  Request context
      * @returns {Promise} A promise
      */
-	getLibrary({ name, version, auth, headers, context }){
-		return this.get({
+	getLibrary({ name, version, auth, headers, context }: GetLibraryOptions): Promise<JSONResponse<{ data: LibraryInfo }>> {
+		return this.get<{ data: LibraryInfo }>({
 			uri: `/v1/libraries/${name}`,
 			auth,
 			headers,
@@ -1437,8 +1418,8 @@ class Particle {
      * @param {Object} [options.context]  Request context
      * @returns {Promise} A promise
      */
-	getLibraryVersions({ name, page, limit, auth, headers, context }){
-		return this.get({
+	getLibraryVersions({ name, page, limit, auth, headers, context }: GetLibraryVersionsOptions): Promise<JSONResponse<{ data: LibraryInfo[] }>> {
+		return this.get<{ data: LibraryInfo[] }>({
 			uri: `/v1/libraries/${name}/versions`,
 			auth,
 			headers,
@@ -1457,7 +1438,7 @@ class Particle {
      * @param {Object}          [options.context]  Request context
      * @returns {Promise} A promise
      */
-	contributeLibrary({ archive, auth, headers, context }){
+	contributeLibrary({ archive, auth, headers, context }: ContributeLibraryOptions): Promise<JSONResponse<{ data: LibraryInfo }>> {
 		const files = {
 			'archive.tar.gz': archive
 		};
@@ -1469,7 +1450,7 @@ class Particle {
 			headers,
 			files,
 			context
-		});
+		}) as Promise<JSONResponse<{ data: LibraryInfo }>>;
 	}
 
 	/**
@@ -1481,7 +1462,7 @@ class Particle {
      * @param {Object} [options.context]  Request context
      * @returns {Promise} A promise
      */
-	publishLibrary({ name, auth, headers, context }){
+	publishLibrary({ name, auth, headers, context }: PublishLibraryOptions): Promise<JSONResponse<{ data: LibraryInfo }>> {
 		return this.request({
 			uri: `/v1/libraries/${name}`,
 			method: 'patch',
@@ -1489,7 +1470,7 @@ class Particle {
 			headers,
 			data: { visibility: 'public' },
 			context
-		});
+		}) as Promise<JSONResponse<{ data: LibraryInfo }>>;
 	}
 
 	/**
@@ -1500,10 +1481,10 @@ class Particle {
      * @param {string} [options.auth]     The access token. Can be ignored if provided in constructor
      * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]  Request context
-     * @returns {Promise} A promise
+     * @returns {Promise<JSONResponse<OKResponse>>} A promise that resolves with the response data
      */
-	deleteLibrary({ name, force, auth, headers, context }){
-		return this.delete({
+	deleteLibrary({ name, force, auth, headers, context }: DeleteLibraryOptions): Promise<JSONResponse<OKResponse>> {
+		return this.delete<OKResponse>({
 			uri: `/v1/libraries/${name}`,
 			auth,
 			headers,
@@ -1518,10 +1499,10 @@ class Particle {
      * @param {String} options.uri        URL of the file.
      * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]  Request context
-     * @returns {Promise} Resolves to a buffer with the file data
+     * @returns {Promise<Buffer | ArrayBuffer>} A promise that resolves with the binary data
      */
-	downloadFile({ uri, headers, context }){
-		return this.request({ uri, method: 'get', headers, context, isBuffer: true });
+	downloadFile({ uri, headers, context }: DownloadFileOptions): Promise<Buffer | ArrayBuffer> {
+		return this.request({ uri, method: 'get', headers, context, isBuffer: true }) as Promise<Buffer | ArrayBuffer>;
 	}
 
 	/**
@@ -1533,9 +1514,9 @@ class Particle {
      * @param {Object} [options.context]  Request context
      * @returns {Promise} A promise
      */
-	listOAuthClients({ product, auth, headers, context }){
+	listOAuthClients({ product, auth, headers, context }: ListOAuthClientsOptions): Promise<JSONResponse<{ clients: OAuthClientInfo[] }>> {
 		const uri = product ? `/v1/products/${product}/clients` : '/v1/clients';
-		return this.get({ uri, auth, headers, context });
+		return this.get<{ clients: OAuthClientInfo[] }>({ uri, auth, headers, context });
 	}
 
 	/**
@@ -1549,12 +1530,12 @@ class Particle {
      * @param {string} [options.auth]          The access token. Can be ignored if provided in constructor
      * @param {Object} [options.headers]       Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]       Request context
-     * @returns {Promise} A promise
+     * @returns {Promise<JSONResponse<OAuthClientInfo>>} A promise that resolves with the response data
      */
-	createOAuthClient({ name, type, redirect_uri, scope, product, auth, headers, context }){
+	createOAuthClient({ name, type, redirect_uri, scope, product, auth, headers, context }: { name: string; type: string; redirect_uri?: string; scope?: Record<string, string>; product?: string | number; auth?: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<JSONResponse<OAuthClientInfo>> {
 		const uri = product ? `/v1/products/${product}/clients` : '/v1/clients';
 		const data = { name, type, redirect_uri, scope };
-		return this.post({ uri, auth, headers, data, context });
+		return this.post<OAuthClientInfo>({ uri, auth, headers, data, context });
 	}
 
 	/**
@@ -1567,12 +1548,12 @@ class Particle {
      * @param {string} [options.auth]     The access token. Can be ignored if provided in constructor
      * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]  Request context
-     * @returns {Promise} A promise
+     * @returns {Promise<JSONResponse<OAuthClientInfo>>} A promise that resolves with the response data
      */
-	updateOAuthClient({ clientId, name, scope, product, auth, headers, context }){
+	updateOAuthClient({ clientId, name, scope, product, auth, headers, context }: UpdateOAuthClientOptions): Promise<JSONResponse<OAuthClientInfo>> {
 		const uri = product ? `/v1/products/${product}/clients/${clientId}` : `/v1/clients/${clientId}`;
 		const data = { name, scope };
-		return this.put({ uri, data, auth, headers, context });
+		return this.put<OAuthClientInfo>({ uri, data, auth, headers, context });
 	}
 
 	/**
@@ -1583,11 +1564,11 @@ class Particle {
      * @param {string} [options.auth]     The access token. Can be ignored if provided in constructor
      * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]  Request context
-     * @returns {Promise} A promise
+     * @returns {Promise<JSONResponse<OKResponse>>} A promise that resolves with the response data
      */
-	deleteOAuthClient({ clientId, product, auth, headers, context }){
+	deleteOAuthClient({ clientId, product, auth, headers, context }: DeleteOAuthClientOptions): Promise<JSONResponse<OKResponse>> {
 		const uri = product ? `/v1/products/${product}/clients/${clientId}` : `/v1/clients/${clientId}`;
-		return this.delete({ uri, auth, headers, context });
+		return this.delete<OKResponse>({ uri, auth, headers, context });
 	}
 
 	/**
@@ -1598,8 +1579,8 @@ class Particle {
      * @param {Object} [options.context]  Request context
      * @returns {Promise} A promise
      */
-	listProducts({ auth, headers, context }){
-		return this.get({ uri: '/v1/products', auth, headers, context });
+	listProducts({ auth, headers, context }: ListProductsOptions): Promise<JSONResponse<{ products: ProductInfo[] }>> {
+		return this.get<{ products: ProductInfo[] }>({ uri: '/v1/products', auth, headers, context });
 	}
 
 	/**
@@ -1611,8 +1592,8 @@ class Particle {
      * @param {Object} [options.context]  Request context
      * @returns {Promise} A promise
      */
-	getProduct({ product, auth, headers, context }){
-		return this.get({ uri: `/v1/products/${product}`, auth, headers, context });
+	getProduct({ product, auth, headers, context }: GetProductOptions): Promise<JSONResponse<{ product: ProductInfo }>> {
+		return this.get<{ product: ProductInfo }>({ uri: `/v1/products/${product}`, auth, headers, context });
 	}
 
 	/**
@@ -1622,10 +1603,10 @@ class Particle {
      * @param {string} [options.auth]     The access token. Can be ignored if provided in constructor
      * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]  Request context
-     * @returns {Promise} A promise
+     * @returns {Promise<JSONResponse<ProductFirmwareInfo[]>>} A promise that resolves with the response data
      */
-	listProductFirmware({ product, auth, headers, context }){
-		return this.get({ uri: `/v1/products/${product}/firmware`, auth, headers, context });
+	listProductFirmware({ product, auth, headers, context }: ListProductFirmwareOptions): Promise<JSONResponse<ProductFirmwareInfo[]>> {
+		return this.get<ProductFirmwareInfo[]>({ uri: `/v1/products/${product}/firmware`, auth, headers, context });
 	}
 
 	/**
@@ -1640,9 +1621,9 @@ class Particle {
      * @param {string} [options.auth]         The access token. Can be ignored if provided in constructor
      * @param {Object} [options.headers]      Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]      Request context
-     * @returns {Promise} A promise
+     * @returns {Promise<JSONResponse<ProductFirmwareInfo>>} A promise that resolves with the response data
      */
-	uploadProductFirmware({ file, version, title, description, product, auth, headers, context }){
+	uploadProductFirmware({ file, version, title, description, product, auth, headers, context }: UploadProductFirmwareOptions): Promise<JSONResponse<ProductFirmwareInfo>> {
 		return this.request({
 			uri: `/v1/products/${product}/firmware`,
 			method: 'post',
@@ -1657,7 +1638,7 @@ class Particle {
 				'firmware.bin': file
 			},
 			context
-		});
+		}) as Promise<JSONResponse<ProductFirmwareInfo>>;
 	}
 
 	/**
@@ -1668,10 +1649,10 @@ class Particle {
      * @param {string} [options.auth]     The access token. Can be ignored if provided in constructor
      * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]  Request context
-     * @returns {Promise} A promise
+     * @returns {Promise<JSONResponse<ProductFirmwareInfo>>} A promise that resolves with the response data
      */
-	getProductFirmware({ version, product, auth, headers, context }){
-		return this.get({
+	getProductFirmware({ version, product, auth, headers, context }: GetProductFirmwareOptions): Promise<JSONResponse<ProductFirmwareInfo>> {
+		return this.get<ProductFirmwareInfo>({
 			uri: `/v1/products/${product}/firmware/${version}`,
 			auth,
 			headers,
@@ -1689,11 +1670,11 @@ class Particle {
      * @param {string} [options.auth]         The access token. Can be ignored if provided in constructor
      * @param {Object} [options.headers]      Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]      Request context
-     * @returns {Promise} A promise
+     * @returns {Promise<JSONResponse<ProductFirmwareInfo>>} A promise that resolves with the response data
      */
-	updateProductFirmware({ version, title, description, product, auth, headers, context }){
+	updateProductFirmware({ version, title, description, product, auth, headers, context }: UpdateProductFirmwareOptions): Promise<JSONResponse<ProductFirmwareInfo>> {
 		const uri = `/v1/products/${product}/firmware/${version}`;
-		return this.put({ uri, auth, headers, data: { title, description }, context });
+		return this.put<ProductFirmwareInfo>({ uri, auth, headers, data: { title, description }, context });
 	}
 
 	/**
@@ -1704,9 +1685,9 @@ class Particle {
      * @param {string} [options.auth]     The access token. Can be ignored if provided in constructor
      * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]  Request context
-     * @returns {Promise<RequestResponse, RequestError>} A promise that resolves with either the requested data or an error object
+     * @returns {Promise<Buffer | ArrayBuffer>} A promise that resolves with the binary data
      */
-	downloadProductFirmware({ version, product, auth, headers, context }){
+	downloadProductFirmware({ version, product, auth, headers, context }: DownloadProductFirmwareOptions): Promise<Buffer | ArrayBuffer> {
 		return this.request({
 			uri: `/v1/products/${product}/firmware/${version}/binary`,
 			method: 'get',
@@ -1714,7 +1695,7 @@ class Particle {
 			headers,
 			context,
 			isBuffer: true
-		});
+		}) as Promise<Buffer | ArrayBuffer>;
 	}
 
 	/**
@@ -1724,17 +1705,17 @@ class Particle {
       * @param {String} [options.auth]            The access token. Can be ignored if provided in constructor
       * @param {Object} [options.headers]         Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
       * @param {Object} [options.context]         Request context
-      * @returns {Promise<RequestResponse, RequestError>} A promise with a zip file that contains all manufacturing backup files for the specific device.
+     * @returns {Promise<Buffer | ArrayBuffer>} A promise that resolves with the binary data
       */
-	downloadManufacturingBackup({ deviceId, auth, headers, context }) {
+	downloadManufacturingBackup({ deviceId, auth, headers, context }: DownloadManufacturingBackupOptions): Promise<Buffer | ArrayBuffer> {
 		return this.request({
-			uri:`/v1/devices/${deviceId}/backup_files`,
+			uri: `/v1/devices/${deviceId}/backup_files`,
 			method: 'put',
 			auth,
 			headers,
 			context,
 			isBuffer: true
-		});
+		}) as Promise<Buffer | ArrayBuffer>;
 	}
 
 	/**
@@ -1745,11 +1726,11 @@ class Particle {
      * @param {string} [options.auth]     The access token. Can be ignored if provided in constructor
      * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]  Request context
-     * @returns {Promise} A promise
+     * @returns {Promise<JSONResponse<OKResponse>>} A promise that resolves with the response data
      */
-	releaseProductFirmware({ version, product, auth, headers, context }){
+	releaseProductFirmware({ version, product, product_default, groups, intelligent, auth, headers, context }: ReleaseFirmwareOptions): Promise<JSONResponse<OKResponse>> {
 		const uri = `/v1/products/${product}/firmware/release`;
-		return this.put({ uri, auth, headers, data: { version }, context });
+		return this.put<OKResponse>({ uri, auth, headers, data: { version, product_default, groups, intelligent }, context });
 	}
 
 	/**
@@ -1759,10 +1740,10 @@ class Particle {
      * @param {string} [options.auth]     The access token. Can be ignored if provided in constructor
      * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]  Request context
-     * @returns {Promise} A promise
+     * @returns {Promise<JSONResponse<TeamMember[]>>} A promise that resolves with the response data
      */
-	listTeamMembers({ product, auth, headers, context }){
-		return this.get({
+	listTeamMembers({ product, auth, headers, context }: ListTeamMembersOptions): Promise<JSONResponse<TeamMember[]>> {
+		return this.get<TeamMember[]>({
 			uri: `/v1/products/${product}/team`,
 			auth,
 			headers,
@@ -1778,10 +1759,10 @@ class Particle {
      * @param {string} [options.auth]     The access token. Can be ignored if provided in constructor
      * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]  Request context
-     * @returns {Promise} A promise
+     * @returns {Promise<JSONResponse<OKResponse>>} A promise that resolves with the response data
      */
-	inviteTeamMember({ username, product, auth, headers, context }){
-		return this.post({
+	inviteTeamMember({ username, product, auth, headers, context }: InviteTeamMemberOptions): Promise<JSONResponse<OKResponse>> {
+		return this.post<OKResponse>({
 			uri: `/v1/products/${product}/team`,
 			auth,
 			headers,
@@ -1798,10 +1779,10 @@ class Particle {
      * @param {string} [options.auth]     The access token. Can be ignored if provided in constructor
      * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]  Request context
-     * @returns {Promise} A promise
+     * @returns {Promise<JSONResponse<OKResponse>>} A promise that resolves with the response data
      */
-	removeTeamMember({ username, product, auth, headers, context }){
-		return this.delete({
+	removeTeamMember({ username, product, auth, headers, context }: RemoveTeamMemberOptions): Promise<JSONResponse<OKResponse>> {
+		return this.delete<OKResponse>({
 			uri: `/v1/products/${product}/team/${username}`,
 			auth,
 			headers,
@@ -1816,10 +1797,10 @@ class Particle {
      * @param {string} [options.auth]        The access token. Can be ignored if provided in constructor
      * @param {Object} [options.headers]     Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]     Request context
-     * @returns {Promise} A promise
+     * @returns {Promise<JSONResponse<SerialNumberResponse>>} A promise that resolves with the response data
      */
-	lookupSerialNumber({ serialNumber, auth, headers, context }){
-		return this.get({
+	lookupSerialNumber({ serialNumber, auth, headers, context }: LookupSerialNumberOptions): Promise<JSONResponse<SerialNumberResponse>> {
+		return this.get<SerialNumberResponse>({
 			uri: `/v1/serial_numbers/${serialNumber}`,
 			auth,
 			headers,
@@ -1836,10 +1817,10 @@ class Particle {
      * @param {string} [options.auth]     The access token. Can be ignored if provided in constructor
      * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]  Request context
-     * @returns {Promise<Object>} A promise
+     * @returns {Promise<JSONResponse<NetworkInfo>>} A promise that resolves with the response data
      */
-	createMeshNetwork({ name, deviceId, iccid, auth, headers, context }){
-		return this.post({
+	createMeshNetwork({ name, deviceId, iccid, auth, headers, context }: CreateMeshNetworkOptions): Promise<JSONResponse<NetworkInfo>> {
+		return this.post<NetworkInfo>({
 			uri: '/v1/networks',
 			auth,
 			headers,
@@ -1855,10 +1836,10 @@ class Particle {
      * @param {string} [options.auth]     The access token. Can be ignored if provided in constructor
      * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]  Request context
-     * @returns {Promise<Object>} A promise
+     * @returns {Promise<JSONResponse<OKResponse>>} A promise that resolves with the response data
      */
-	removeMeshNetwork({ networkId, auth, headers, context }){
-		return this.delete({ uri: `/v1/networks/${networkId}`, auth, headers, context });
+	removeMeshNetwork({ networkId, auth, headers, context }: RemoveMeshNetworkOptions): Promise<JSONResponse<OKResponse>> {
+		return this.delete<OKResponse>({ uri: `/v1/networks/${networkId}`, auth, headers, context });
 	}
 
 	/**
@@ -1869,11 +1850,11 @@ class Particle {
      * @param {Number} [options.perPage]  Records per page
      * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]  Request context
-     * @returns {Promise<Object>} A promise
+     * @returns {Promise<JSONResponse<NetworkInfo[]>>} A promise that resolves with the response data
      */
-	listMeshNetworks({ page, perPage, auth, headers, context }){
+	listMeshNetworks({ page, perPage, auth, headers, context }: ListMeshNetworksOptions): Promise<JSONResponse<NetworkInfo[]>> {
 		const query = page ? { page, per_page: perPage } : undefined;
-		return this.get({ uri: '/v1/networks', auth, headers, query, context });
+		return this.get<NetworkInfo[]>({ uri: '/v1/networks', auth, headers, query, context });
 	}
 
 	/**
@@ -1883,10 +1864,10 @@ class Particle {
      * @param {string} [options.auth]     The access token. Can be ignored if provided in constructor
      * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]  Request context
-     * @returns {Promise<Object>} A promise
+     * @returns {Promise<JSONResponse<NetworkInfo>>} A promise that resolves with the response data
      */
-	getMeshNetwork({ networkId, auth, headers, context }){
-		return this.get({ uri: `/v1/networks/${networkId}`, auth, headers, context });
+	getMeshNetwork({ networkId, auth, headers, context }: GetMeshNetworkOptions): Promise<JSONResponse<NetworkInfo>> {
+		return this.get<NetworkInfo>({ uri: `/v1/networks/${networkId}`, auth, headers, context });
 	}
 
 	/**
@@ -1898,10 +1879,10 @@ class Particle {
      * @param {string} [options.auth]     The access token. Can be ignored if provided in constructor
      * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]  Request context
-     * @returns {Promise<Object>} A promise
+     * @returns {Promise<JSONResponse<NetworkInfo>>} A promise that resolves with the response data
      */
-	updateMeshNetwork({ networkId, action, deviceId, auth, headers, context }){
-		return this.put({
+	updateMeshNetwork({ networkId, action, deviceId, auth, headers, context }: UpdateMeshNetworkOptions): Promise<JSONResponse<NetworkInfo>> {
+		return this.put<NetworkInfo>({
 			uri: `/v1/networks/${networkId}`,
 			auth,
 			headers,
@@ -1918,9 +1899,9 @@ class Particle {
      * @param {string} [options.auth]     The access token. Can be ignored if provided in constructor
      * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]  Request context
-     * @returns {Promise<Object>} A promise
+     * @returns {Promise<JSONResponse<NetworkInfo>>} A promise that resolves with the response data
      */
-	addMeshNetworkDevice({ networkId, deviceId, auth, headers, context }){
+	addMeshNetworkDevice({ networkId, deviceId, auth, headers, context }: { networkId: string; deviceId: string; auth?: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<JSONResponse<NetworkInfo>> {
 		return this.updateMeshNetwork({
 			action: 'add-device',
 			networkId,
@@ -1939,14 +1920,15 @@ class Particle {
      * @param {string} [options.auth]       The access token. Can be ignored if provided in constructor
      * @param {Object} [options.headers]    Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]    Request context
-     * @returns {Promise<Object>} A promise
+     * @returns {Promise<JSONResponse<OKResponse>>} A promise that resolves with the response data
      */
-	removeMeshNetworkDevice({ networkId, deviceId, auth, headers, context }){
-		if (!networkId){
-			return this.delete({
+	removeMeshNetworkDevice({ networkId, deviceId, auth, headers, context }: RemoveMeshNetworkDeviceOptions): Promise<JSONResponse<OKResponse>> {
+		if (!networkId) {
+			return this.delete<OKResponse>({
 				uri: `/v1/devices/${deviceId}/network`,
 				auth,
-				headers, context
+				headers,
+				context
 			});
 		}
 		return this.updateMeshNetwork({
@@ -1956,7 +1938,7 @@ class Particle {
 			auth,
 			headers,
 			context
-		});
+		}) as object as Promise<JSONResponse<OKResponse>>;
 	}
 
 	/**
@@ -1969,11 +1951,11 @@ class Particle {
      * @param {Number} [options.perPage]  Records per page
      * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]  Request context
-     * @returns {Promise<Object>} A promise
+     * @returns {Promise<JSONResponse<DeviceInfo[]>>} A promise that resolves with the response data
      */
-	listMeshNetworkDevices({ networkId, role, page, perPage, auth, headers, context }){
+	listMeshNetworkDevices({ networkId, role, page, perPage, auth, headers, context }: ListMeshNetworkDevicesOptions): Promise<JSONResponse<DeviceInfo[]>> {
 		const query = (role || page) ? { role, page, per_page: perPage } : undefined;
-		return this.get({
+		return this.get<DeviceInfo[]>({
 			uri: `/v1/networks/${networkId}/devices`,
 			auth,
 			headers,
@@ -1989,10 +1971,10 @@ class Particle {
      * @param {string} [options.auth]     The access token. Can be ignored if provided in constructor
      * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]  Request context
-     * @returns {Promise} A promise
+     * @returns {Promise<JSONResponse<ProductConfigurationResponse>>} A promise that resolves with the response data
      */
-	getProductConfiguration({ auth, product, headers, context }){
-		return this.get({
+	getProductConfiguration({ auth, product, headers, context }: GetProductConfigurationOptions): Promise<JSONResponse<ProductConfigurationResponse>> {
+		return this.get<ProductConfigurationResponse>({
 			uri: `/v1/products/${product}/config`,
 			auth,
 			headers,
@@ -2007,11 +1989,11 @@ class Particle {
      * @param {string} [options.auth]     The access token. Can be ignored if provided in constructor
      * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]  Request context
-     * @returns {Promise} A promise
+     * @returns {Promise<JSONResponse<object>>} A promise that resolves with the response data
      */
-	getProductConfigurationSchema({ auth, product, headers = {}, context }){
+	getProductConfigurationSchema({ auth, product, headers = {}, context }: GetProductConfigurationSchemaOptions): Promise<JSONResponse<object>> {
 		headers.accept = 'application/schema+json';
-		return this.get({
+		return this.get<object>({
 			uri: `/v1/products/${product}/config`,
 			auth,
 			headers,
@@ -2027,10 +2009,10 @@ class Particle {
      * @param {String} options.deviceId   Device ID to access
      * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]  Request context
-     * @returns {Promise} A promise
+     * @returns {Promise<JSONResponse<ProductConfigurationResponse>>} A promise that resolves with the response data
      */
-	getProductDeviceConfiguration({ auth, product, deviceId, headers, context }){
-		return this.get({
+	getProductDeviceConfiguration({ auth, product, deviceId, headers, context }: GetProductDeviceConfigurationOptions): Promise<JSONResponse<ProductConfigurationResponse>> {
+		return this.get<ProductConfigurationResponse>({
 			uri: `/v1/products/${product}/config/${deviceId}`,
 			auth,
 			headers,
@@ -2046,11 +2028,11 @@ class Particle {
      * @param {String} options.deviceId   Device ID to access
      * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]  Request context
-     * @returns {Promise} A promise
+     * @returns {Promise<JSONResponse<object>>} A promise that resolves with the response data
      */
-	getProductDeviceConfigurationSchema({ auth, product, deviceId, headers, context }){
+	getProductDeviceConfigurationSchema({ auth, product, deviceId, headers = {}, context }: GetProductDeviceConfigurationSchemaOptions): Promise<JSONResponse<object>> {
 		headers.accept = 'application/schema+json';
-		return this.get({
+		return this.get<object>({
 			uri: `/v1/products/${product}/config/${deviceId}`,
 			auth,
 			headers,
@@ -2066,10 +2048,10 @@ class Particle {
      * @param {Object} options.config     Product configuration to update
      * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]  Request context
-     * @returns {Promise} A promise
+     * @returns {Promise<JSONResponse<ProductConfigurationResponse>>} A promise that resolves with the response data
      */
-	setProductConfiguration({ auth, product, config, headers, context }){
-		return this.put({
+	setProductConfiguration({ auth, product, config, headers, context }: SetProductConfigurationOptions): Promise<JSONResponse<ProductConfigurationResponse>> {
+		return this.put<ProductConfigurationResponse>({
 			uri: `/v1/products/${product}/config`,
 			auth,
 			data: config,
@@ -2087,10 +2069,10 @@ class Particle {
      * @param {String} options.deviceId   Device ID to access
      * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]  Request context
-     * @returns {Promise} A promise
+     * @returns {Promise<JSONResponse<ProductConfigurationResponse>>} A promise that resolves with the response data
      */
-	setProductDeviceConfiguration({ auth, product, deviceId, config, headers, context }){
-		return this.put({
+	setProductDeviceConfiguration({ auth, product, deviceId, config, headers, context }: SetProductDeviceConfigurationOptions): Promise<JSONResponse<ProductConfigurationResponse>> {
+		return this.put<ProductConfigurationResponse>({
 			uri: `/v1/products/${product}/config/${deviceId}`,
 			data: config,
 			auth,
@@ -2114,10 +2096,10 @@ class Particle {
      * @param {String} options.perPage     Number of results per page. Defaults to 20. Maximum of 100
      * @param {Object} [options.headers]   Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]   Request context
-     * @returns {Promise} A promise
+     * @returns {Promise<JSONResponse<LocationListResponse>>} A promise that resolves with the response data
      */
-	getProductLocations({ auth, product, dateRange, rectBl, rectTr, deviceId, deviceName, groups, page, perPage, headers, context }){
-		return this.get({
+	getProductLocations({ auth, product, dateRange, rectBl, rectTr, deviceId, deviceName, groups, page, perPage, headers, context }: GetProductLocationsOptions): Promise<JSONResponse<LocationListResponse>> {
+		return this.get<LocationListResponse>({
 			uri: `/v1/products/${product}/locations`,
 			query: {
 				date_range: dateRange,
@@ -2148,10 +2130,10 @@ class Particle {
      * @param {Object} [options.context]  Request context
      * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]  Request context
-     * @returns {Promise} A promise
+     * @returns {Promise<JSONResponse<DeviceLocationInfo>>} A promise that resolves with the response data
      */
-	getProductDeviceLocations({ auth, product, dateRange, rectBl, rectTr, deviceId, headers, context }){
-		return this.get({
+	getProductDeviceLocations({ auth, product, dateRange, rectBl, rectTr, deviceId, headers, context }: GetProductDeviceLocationsOptions): Promise<JSONResponse<DeviceLocationInfo>> {
+		return this.get<DeviceLocationInfo>({
 			uri: `/v1/products/${product}/locations/${deviceId}`,
 			query: {
 				date_range: dateRange,
@@ -2176,10 +2158,10 @@ class Particle {
      * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]  Request context
      *
-     * @returns {Promise<RequestResponse>} A promise that resolves to the created logic function data.
+     * @returns {Promise<JSONResponse<ExecuteLogicResponse>>} A promise that resolves with the response data
      */
-	executeLogic({ auth, org, logic, headers, context }) {
-		return this.post({
+	executeLogic({ auth, org, logic, headers, context }: ExecuteLogicOptions): Promise<JSONResponse<ExecuteLogicResponse>> {
+		return this.post<ExecuteLogicResponse>({
 			uri: this._namespacedPath(org, 'logic/execute'),
 			auth,
 			data: logic,
@@ -2206,8 +2188,8 @@ class Particle {
      *
      * @returns {Promise<RequestResponse>} A promise that resolves to the created logic function data.
      */
-	createLogicFunction({ auth, org, logicFunction, headers, context }) {
-		return this.post({
+	createLogicFunction({ auth, org, logicFunction, headers, context }: { auth?: string; org?: string; logicFunction: { name: string; description?: string; enabled?: boolean; source: { type: 'JavaScript'; code: string }; logic_triggers?: object[]; api_username?: string }; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<JSONResponse<{ logic_function: LogicFunction }>> {
+		return this.post<{ logic_function: LogicFunction }>({
 			uri: this._namespacedPath(org, 'logic/functions'),
 			auth,
 			data: { logic_function: logicFunction },
@@ -2228,8 +2210,8 @@ class Particle {
      *
      * @returns {Promise<RequestResponse>} A promise that resolves to the specified logic function data.
      */
-	getLogicFunction({ auth, org, logicFunctionId, headers, context }) {
-		return this.get({
+	getLogicFunction({ auth, org, logicFunctionId, headers, context }: GetLogicFunctionOptions): Promise<JSONResponse<{ logic_function: LogicFunction }>> {
+		return this.get<{ logic_function: LogicFunction }>({
 			uri: this._namespacedPath(org, `logic/functions/${logicFunctionId}`),
 			auth,
 			headers,
@@ -2252,8 +2234,8 @@ class Particle {
      *
      * @returns {Promise<RequestResponse>} A promise that resolves to the updated logic function data.
      */
-	updateLogicFunction({ auth, org, logicFunctionId, logicFunction, headers, context }) {
-		return this.put({
+	updateLogicFunction({ auth, org, logicFunctionId, logicFunction, headers, context }: { auth?: string; org?: string; logicFunctionId: string; logicFunction: { name?: string; description?: string; enabled?: boolean; source?: { type: 'JavaScript'; code: string }; logic_triggers?: object[] }; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<JSONResponse<{ logic_function: LogicFunction }>> {
+		return this.put<{ logic_function: LogicFunction }>({
 			uri: this._namespacedPath(org, `logic/functions/${logicFunctionId}`),
 			auth,
 			data: { logic_function: logicFunction },
@@ -2272,10 +2254,10 @@ class Particle {
      * @param {Object} [options.headers]        Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]        Request context.
      *
-     * @returns {Promise<RequestResponse>} A promise that resolves to an object containing the deleted logic function ID.
+     * @returns {Promise<JSONResponse<OKResponse>>} A promise that resolves with the response data
      */
-	deleteLogicFunction({ auth, org, logicFunctionId, headers, context }) {
-		return this.delete({
+	deleteLogicFunction({ auth, org, logicFunctionId, headers, context }: DeleteLogicFunctionOptions): Promise<JSONResponse<OKResponse>> {
+		return this.delete<OKResponse>({
 			uri: this._namespacedPath(org, `logic/functions/${logicFunctionId}`),
 			auth,
 			headers,
@@ -2295,8 +2277,8 @@ class Particle {
      *
      * @returns {Promise<RequestResponse>} A promise that resolves to an array of logic functions data.
      */
-	listLogicFunctions({ auth, org, todayStats, headers, context }) {
-		return this.get({
+	listLogicFunctions({ auth, org, todayStats, headers, context }: ListLogicFunctionsOptions): Promise<JSONResponse<{ logic_functions: LogicFunction[] }>> {
+		return this.get<{ logic_functions: LogicFunction[] }>({
 			uri: this._namespacedPath(org, 'logic/functions'),
 			query: {
 				today_stats: todayStats
@@ -2319,8 +2301,8 @@ class Particle {
      *
      * @returns {Promise<RequestResponse>} A promise that resolves to an array of logic run data.
      */
-	listLogicRuns({ auth, org, logicFunctionId, headers, context }) {
-		return this.get({
+	listLogicRuns({ auth, org, logicFunctionId, headers, context }: ListLogicRunsOptions): Promise<JSONResponse<{ logic_runs: LogicRun[] }>> {
+		return this.get<{ logic_runs: LogicRun[] }>({
 			uri: this._namespacedPath(org, `logic/functions/${logicFunctionId}/runs`),
 			auth,
 			headers,
@@ -2341,8 +2323,8 @@ class Particle {
      *
      * @returns {Promise<RequestResponse>} A promise that resolves to an array of logic run data for the specified logic run ID.
      */
-	getLogicRun({ auth, org, logicFunctionId, logicRunId, headers, context }) {
-		return this.get({
+	getLogicRun({ auth, org, logicFunctionId, logicRunId, headers, context }: GetLogicRunOptions): Promise<JSONResponse<{ logic_run: LogicRun }>> {
+		return this.get<{ logic_run: LogicRun }>({
 			uri: this._namespacedPath(org, `logic/functions/${logicFunctionId}/runs/${logicRunId}`),
 			auth,
 			headers,
@@ -2363,8 +2345,8 @@ class Particle {
      *
      * @returns {Promise<RequestResponse>} A promise that resolves to the logs for the specified logic run ID.
      */
-	getLogicRunLogs({ auth, org, logicFunctionId, logicRunId, headers, context }) {
-		return this.get({
+	getLogicRunLogs({ auth, org, logicFunctionId, logicRunId, headers, context }: GetLogicRunLogsOptions): Promise<JSONResponse<{ logs: LogicRunLog[] }>> {
+		return this.get<{ logs: LogicRunLog[] }>({
 			uri: this._namespacedPath(org, `logic/functions/${logicFunctionId}/runs/${logicRunId}/logs`),
 			auth,
 			headers,
@@ -2382,10 +2364,10 @@ class Particle {
      * @param {Object} [options.headers]    Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]    Request context
      *
-     * @returns {Promise<RequestResponse>} A promise that resolves to the created ledger definition data.
+     * @returns {Promise<JSONResponse<LedgerDefinition>>} A promise that resolves with the response data
      */
-	createLedger({ auth, org, ledger, headers, context }) {
-		return this.post({
+	createLedger({ auth, org, ledger, headers, context }: CreateLedgerOptions): Promise<JSONResponse<LedgerDefinition>> {
+		return this.post<LedgerDefinition>({
 			uri: this._namespacedPath(org, 'ledgers'),
 			auth,
 			data: { ledger },
@@ -2404,10 +2386,10 @@ class Particle {
      * @param {Object} [options.headers]   Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]   Request context
      *
-     * @returns {Promise<RequestResponse>} A promise that resolves to the specified ledger definition data.
+     * @returns {Promise<JSONResponse<LedgerDefinition>>} A promise that resolves with the response data
      */
-	getLedger({ auth, org, ledgerName, headers, context }) {
-		return this.get({
+	getLedger({ auth, org, ledgerName, headers, context }: GetLedgerOptions): Promise<JSONResponse<LedgerDefinition>> {
+		return this.get<LedgerDefinition>({
 			uri: this._namespacedPath(org, `ledgers/${ledgerName}`),
 			auth,
 			headers,
@@ -2426,10 +2408,10 @@ class Particle {
      * @param {Object} [options.headers]   Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]   Request context.
      *
-     * @returns {Promise<RequestResponse>} A promise that resolves to the updated ledger definition data.
+     * @returns {Promise<JSONResponse<LedgerDefinition>>} A promise that resolves with the response data
      */
-	updateLedger({ auth, org, ledgerName, ledger, headers, context }) {
-		return this.put({
+	updateLedger({ auth, org, ledgerName, ledger, headers, context }: UpdateLedgerOptions): Promise<JSONResponse<LedgerDefinition>> {
+		return this.put<LedgerDefinition>({
 			uri: this._namespacedPath(org, `ledgers/${ledgerName}`),
 			auth,
 			data: { ledger },
@@ -2448,10 +2430,10 @@ class Particle {
      * @param {Object} [options.headers]   Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]   Request context.
      *
-     * @returns {Promise<RequestResponse>} A promise that resolves to an object confirming the ledger definition was archived.
+     * @returns {Promise<JSONResponse<OKResponse>>} A promise that resolves with the response data
      */
-	archiveLedger({ auth, org, ledgerName, headers, context }) {
-		return this.delete({
+	archiveLedger({ auth, org, ledgerName, headers, context }: ArchiveLedgerOptions): Promise<JSONResponse<OKResponse>> {
+		return this.delete<OKResponse>({
 			uri: this._namespacedPath(org, `ledgers/${ledgerName}`),
 			auth,
 			headers,
@@ -2478,8 +2460,8 @@ class Particle {
      *
      * @returns {Promise<RequestResponse>} A promise that resolves to an array of ledger definition data.
      */
-	listLedgers({ auth, org, scope, page, perPage, archived, headers, context }) {
-		return this.get({
+	listLedgers({ auth, org, scope, page, perPage, archived, headers, context }: ListLedgersOptions): Promise<JSONResponse<{ ledger_definitions: LedgerDefinition[] }>> {
+		return this.get<{ ledger_definitions: LedgerDefinition[] }>({
 			uri: this._namespacedPath(org, 'ledgers'),
 			query: {
 				scope,
@@ -2504,10 +2486,10 @@ class Particle {
      * @param {Object} [options.headers]   Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]   Request context
      *
-     * @returns {Promise<RequestResponse>} A promise that resolves to the specified ledger instance data.
+     * @returns {Promise<JSONResponse<LedgerInstance>>} A promise that resolves with the response data
      */
-	getLedgerInstance({ auth, org, ledgerName, scopeValue, headers, context }) {
-		return this.get({
+	getLedgerInstance({ auth, org, ledgerName, scopeValue, headers, context }: GetLedgerInstanceOptions): Promise<JSONResponse<LedgerInstance>> {
+		return this.get<LedgerInstance>({
 			uri: this._namespacedPath(org, `ledgers/${ledgerName}/instances/${scopeValue}`),
 			auth,
 			headers,
@@ -2532,10 +2514,10 @@ class Particle {
      * @param {Object}  [options.headers]   Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object}  [options.context]   Request context.
      *
-     * @returns {Promise<RequestResponse>} A promise that resolves to the updated ledger instance data.
+     * @returns {Promise<JSONResponse<LedgerInstance>>} A promise that resolves with the response data
      */
-	setLedgerInstance({ auth, org, ledgerName, scopeValue, instance, setMode, headers, context }) {
-		return this.put({
+	setLedgerInstance({ auth, org, ledgerName, scopeValue, instance, setMode, headers, context }: SetLedgerInstanceOptions): Promise<JSONResponse<LedgerInstance>> {
+		return this.put<LedgerInstance>({
 			uri: this._namespacedPath(org, `ledgers/${ledgerName}/instances/${scopeValue}`),
 			query: {
 				set_mode: setMode
@@ -2558,10 +2540,10 @@ class Particle {
      * @param {Object} [options.headers]   Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]   Request context.
      *
-     * @returns {Promise<RequestResponse>} A promise that resolves to an object confirming the ledger instance was deleted.
+     * @returns {Promise<JSONResponse<OKResponse>>} A promise that resolves with the response data
      */
-	deleteLedgerInstance({ auth, org, ledgerName, scopeValue, headers, context }) {
-		return this.delete({
+	deleteLedgerInstance({ auth, org, ledgerName, scopeValue, headers, context }: DeleteLedgerInstanceOptions): Promise<JSONResponse<OKResponse>> {
+		return this.delete<OKResponse>({
 			uri: this._namespacedPath(org, `ledgers/${ledgerName}/instances/${scopeValue}`),
 			auth,
 			headers,
@@ -2581,10 +2563,10 @@ class Particle {
      * @param {Object} [options.headers]   Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]   Request context.
      *
-     * @returns {Promise<RequestResponse>} A promise that resolves to an array of ledger instance data.
+     * @returns {Promise<JSONResponse<LedgerInstanceListResponse>>} A promise that resolves with the response data
      */
-	listLedgerInstances({ auth, org, ledgerName, page, perPage, headers, context }) {
-		return this.get({
+	listLedgerInstances({ auth, org, ledgerName, page, perPage, headers, context }: ListLedgerInstancesOptions): Promise<JSONResponse<LedgerInstanceListResponse>> {
+		return this.get<LedgerInstanceListResponse>({
 			uri: this._namespacedPath(org, `ledgers/${ledgerName}/instances`),
 			query: {
 				page,
@@ -2609,10 +2591,10 @@ class Particle {
      * @param {Object} [options.headers]         Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]         Request context
      *
-     * @returns {Promise<RequestResponse>} A promise that resolves to an array of ledger instance data.
+     * @returns {Promise<JSONResponse<LedgerVersionListResponse>>} A promise that resolves with the response data
      */
-	listLedgerInstanceVersions({ auth, org, ledgerName, scopeValue, replacedBefore, replacedAfter, headers, context }) {
-		return this.get({
+	listLedgerInstanceVersions({ auth, org, ledgerName, scopeValue, replacedBefore, replacedAfter, headers, context }: ListLedgerInstanceVersionsOptions): Promise<JSONResponse<LedgerVersionListResponse>> {
+		return this.get<LedgerVersionListResponse>({
 			uri: this._namespacedPath(org, `ledgers/${ledgerName}/instances/${scopeValue}/versions`),
 			query: {
 				replaced_before: replacedBefore,
@@ -2636,10 +2618,10 @@ class Particle {
      * @param {Object} [options.headers]   Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]   Request context
      *
-     * @returns {Promise<RequestResponse>} A promise that resolves to the specified ledger instance data.
+     * @returns {Promise<JSONResponse<LedgerInstance>>} A promise that resolves with the response data
      */
-	getLedgerInstanceVersion({ auth, org, ledgerName, scopeValue, version, headers, context }) {
-		return this.get({
+	getLedgerInstanceVersion({ auth, org, ledgerName, scopeValue, version, headers, context }: GetLedgerInstanceVersionOptions): Promise<JSONResponse<LedgerInstance>> {
+		return this.get<LedgerInstance>({
 			uri: this._namespacedPath(org, `ledgers/${ledgerName}/instances/${scopeValue}/versions/${version}`),
 			auth,
 			headers,
@@ -2659,9 +2641,9 @@ class Particle {
      * @param {Object} [options.headers]          Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]          Request context
      *
-     * @returns {Promise<RequestResponse>}        A promise that resolves to the list of Device OS versions.
+     * @returns {Promise<JSONResponse<DeviceOsVersion[]>>} A promise that resolves with the response data
      */
-	listDeviceOsVersions({ platformId, internalVersion, page, perPage, auth, headers, context }) {
+	listDeviceOsVersions({ platformId, internalVersion, page, perPage, auth, headers, context }: ListDeviceOsVersionsOptions): Promise<JSONResponse<DeviceOsVersion[]>> {
 		const query = {
 			platform_id: platformId,
 			internal_version: internalVersion,
@@ -2669,7 +2651,7 @@ class Particle {
 			per_page: perPage
 		};
 
-		return this.get({
+		return this.get<DeviceOsVersion[]>({
 			uri: '/v1/device-os/versions',
 			query,
 			auth,
@@ -2688,11 +2670,11 @@ class Particle {
      * @param {Object} [options.headers]     Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]     Request context
      *
-     * @returns {Promise<RequestResponse>}        A promise that resolves to the specified Device OS version data.
+     * @returns {Promise<JSONResponse<DeviceOsVersion>>} A promise that resolves with the response data
      */
-	getDeviceOsVersion({ version, platformId, auth, headers, context }) {
+	getDeviceOsVersion({ version, platformId, auth, headers, context }: GetDeviceOsVersionOptions): Promise<JSONResponse<DeviceOsVersion>> {
 		const query = platformId ? { platform_id: platformId } : {};
-		return this.get({
+		return this.get<DeviceOsVersion>({
 			uri: `/v1/device-os/versions/${version}`,
 			query,
 			auth,
@@ -2706,32 +2688,20 @@ class Particle {
      * @param {string} auth The access token
      * @throws {Error} When not auth string is provided
      */
-	setDefaultAuth(auth){
+	setDefaultAuth(auth: string): void {
 		if (typeof auth === 'string' && auth.length !== 0) {
 			this._defaultAuth = auth;
 		} else {
 			throw new Error('Must pass a non-empty string representing an auth token!');
 		}
 	}
-	/**
-     * Return provided token if truthy else use default auth if truthy else undefined
-     * @param {any} auth Optional auth token or undefined
-     * @private
-     * @returns {String|undefined} a Particle auth token or undefined
-     */
-	_getActiveAuthToken(auth) {
+
+	private _getActiveAuthToken(auth?: string): string | undefined {
 		return auth || this._defaultAuth;
 	}
-	/**
-     * API URI to access a device
-     * @param {Object} options           Options for this API call
-     * @param {String} options.deviceId  Device ID to access
-     * @param {String} [options.product] Device only in this product ID or slug
-     * @param {String} [options.org]     Device only in this organization ID or slug
-     * @private
-     * @returns {string} URI
-     */
-	deviceUri({ deviceId, product, org }){
+
+	/** @internal */
+	deviceUri({ deviceId, product, org }: { deviceId: string; product?: string | number; org?: string }): string {
 		if (org) {
 			return `/v1/orgs/${org}/devices/${deviceId}`;
 		}
@@ -2741,14 +2711,7 @@ class Particle {
 		return `/v1/devices/${deviceId}`;
 	}
 
-	/**
-     * Helper for building API paths that support sandbox and org prefixes based on org presence
-     * @param {string | undefined} org slug or ID
-     * @param {string}             path will be appended to the end of the org/sandbox prefix
-     * @returns {string} the full combined path
-     * @private
-     */
-	_namespacedPath(org, path) {
+	private _namespacedPath(org: string | undefined, path: string): string {
 		return org ? `/v1/orgs/${org}/${path}` : `/v1/${path}`;
 	}
 
@@ -2760,12 +2723,12 @@ class Particle {
      * @param {object} [params.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {object} [params.query]    Key/Value pairs of query params or a correctly formatted string
      * @param {object} [params.context]  The invocation context, describing the tool and project
-     * @returns {Promise<RequestResponse, RequestError>} A promise that resolves with either the requested data or an error object
+     * @returns {Promise<JSONResponse<T>>} A promise that resolves with the response data
      */
-	get({ uri, auth, headers, query, context }){
+	get<T = object>({ uri, auth, headers, query, context }: GetHeadOptions): Promise<JSONResponse<T>> {
 		context = this._buildContext(context);
 		auth = this._getActiveAuthToken(auth);
-		return this.agent.get({ uri, auth, headers, query, context });
+		return this.agent.get({ uri, auth, headers, query, context }) as Promise<JSONResponse<T>>;
 	}
 
 	/**
@@ -2776,12 +2739,12 @@ class Particle {
      * @param {object} [params.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {object} [params.query]    Key/Value pairs of query params or a correctly formatted string
      * @param {object} [params.context]  The invocation context, describing the tool and project
-     * @returns {Promise<RequestResponse, RequestError>} A promise that resolves with either the requested data or an error object
+     * @returns {Promise<JSONResponse<T>>} A promise that resolves with the response data
      */
-	head({ uri, auth, headers, query, context }){
+	head<T = object>({ uri, auth, headers, query, context }: GetHeadOptions): Promise<JSONResponse<T>> {
 		context = this._buildContext(context);
 		auth = this._getActiveAuthToken(auth);
-		return this.agent.head({ uri, auth, headers, query, context });
+		return this.agent.head({ uri, auth, headers, query, context }) as Promise<JSONResponse<T>>;
 	}
 
 	/**
@@ -2792,12 +2755,12 @@ class Particle {
      * @param {object}          [params.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {object}          [params.data]     Object to send as JSON data in the body.
      * @param {object}          [params.context]  The invocation context, describing the tool and project
-     * @returns {Promise<RequestResponse, RequestError>} A promise that resolves with either the requested data or an error object
+     * @returns {Promise<JSONResponse<T>>} A promise that resolves with the response data
      */
-	post({ uri, auth, headers, data, context }){
+	post<T = object>({ uri, auth, headers, data, context }: MutateOptions): Promise<JSONResponse<T>> {
 		context = this._buildContext(context);
 		auth = this._getActiveAuthToken(auth);
-		return this.agent.post({ uri, auth, headers, data, context });
+		return this.agent.post({ uri, auth, headers, data, context }) as Promise<JSONResponse<T>>;
 	}
 
 	/**
@@ -2809,12 +2772,12 @@ class Particle {
      * @param {object}          [params.data]     Object to send as JSON data in the body.
      * @param {object}          [params.query]    Key/Value pairs of query params or a correctly formatted string
      * @param {object}          [params.context]  The invocation context, describing the tool and project
-     * @returns {Promise<RequestResponse, RequestError>} A promise that resolves with either the requested data or an error object
+     * @returns {Promise<JSONResponse<T>>} A promise that resolves with the response data
      */
-	put({ uri, auth, headers, data, query, context }){
+	put<T = object>({ uri, auth, headers, data, query, context }: MutateOptions): Promise<JSONResponse<T>> {
 		context = this._buildContext(context);
 		auth = this._getActiveAuthToken(auth);
-		return this.agent.put({ uri, auth, headers, data, query, context });
+		return this.agent.put({ uri, auth, headers, data, query, context }) as Promise<JSONResponse<T>>;
 	}
 
 	/**
@@ -2825,12 +2788,12 @@ class Particle {
      * @param {object}          [params.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {object}          [params.data]     Object to send as JSON data in the body.
      * @param {object}          [params.context]  The invocation context, describing the tool and project
-     * @returns {Promise<RequestResponse, RequestError>} A promise that resolves with either the requested data or an error object
+     * @returns {Promise<JSONResponse<T>>} A promise that resolves with the response data
      */
-	delete({ uri, auth, headers, data, context }){
+	delete<T = object>({ uri, auth, headers, data, context }: MutateOptions): Promise<JSONResponse<T>> {
 		context = this._buildContext(context);
 		auth = this._getActiveAuthToken(auth);
-		return this.agent.delete({ uri, auth, headers, data, context });
+		return this.agent.delete({ uri, auth, headers, data, context }) as Promise<JSONResponse<T>>;
 	}
 
 	/**
@@ -2846,24 +2809,24 @@ class Particle {
      * @param {Object}  [args.files]     Array of file names and file content
      * @param {Object}  [args.context]   The invocation context, describing the tool and project.
      * @param {boolean} [args.isBuffer]  Indicate if the response should be treated as Buffer instead of JSON
-     * @returns {Promise<RequestResponse, RequestError>} A promise that resolves with either the requested data or an error object
+     * @returns {Promise<RequestResponse>} A promise that resolves with the response data
      */
-	request(args){
+	request(args: AgentRequestOptions): Promise<RequestResponse> {
 		args.context = this._buildContext(args.context);
 		args.auth = this._getActiveAuthToken(args.auth);
 		return this.agent.request(args);
 	}
 
-	client(options = {}){
-		// @ts-ignore
-		return new Client(Object.assign({ api: this }, options));
+	/** @internal */
+	client(options: { auth?: string } = {}): Client {
+		return new Client(Object.assign({ api: this as object as Client.Api }, options));
 	}
 
-	// Internal method used to target Particle's APIs other than the default
-	setBaseUrl(baseUrl){
+	/** @internal */
+	setBaseUrl(baseUrl: string): void {
 		this.baseUrl = baseUrl;
 		this.agent.setBaseUrl(baseUrl);
 	}
 }
 
-module.exports = Particle;
+export = Particle;

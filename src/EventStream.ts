@@ -1,16 +1,28 @@
-'use strict';
-const http = require('http');
-const https = require('https');
-const url = require('url');
-const { EventEmitter } = require('events');
+import * as http from 'http';
+import * as https from 'https';
+import * as url from 'url';
+import { EventEmitter } from 'events';
+import type { EventData } from './types';
 
 class EventStream extends EventEmitter {
-	constructor(uri, token) {
+	uri: string;
+	token: string;
+	reconnectInterval: number;
+	timeout: number;
+	data: string;
+	buf: string;
+	origin?: string;
+	req?: http.ClientRequest;
+	idleTimeout?: ReturnType<typeof setTimeout> | null;
+	event?: boolean;
+	eventName?: string;
+
+	constructor(uri = '', token = '') {
 		super();
 		this.uri = uri;
 		this.token = token;
 		this.reconnectInterval = 2000;
-		this.timeout = 13000; // keep alive can be sent up to 12 seconds after last event
+		this.timeout = 13000;
 		this.data = '';
 		this.buf = '';
 
@@ -19,40 +31,38 @@ class EventStream extends EventEmitter {
 		this.idleTimeoutExpired = this.idleTimeoutExpired.bind(this);
 	}
 
-	connect() {
+	connect(): Promise<EventStream> {
 		return new Promise((resolve, reject) => {
-			const { hostname, protocol, port, path } = url.parse(this.uri);
+			const parsed = url.parse(this.uri);
+			const { hostname, protocol, port, path } = parsed;
 			this.origin = `${protocol}//${hostname}${port ? (':' + port) : ''}`;
 
 			const isSecure = protocol === 'https:';
 			const requestor = isSecure ? https : http;
-			const nonce = global.performance ? global.performance.now() : 0;
+			const nonce = typeof performance !== 'undefined' ? performance.now() : 0;
 			const req = requestor.request({
 				hostname,
 				protocol,
-				// Firefox has issues making multiple fetch requests with the same parameters so add a nonce
 				path: `${path}?nonce=${nonce}`,
 				headers: {
 					'Authorization': `Bearer ${this.token}`
 				},
 				method: 'get',
-				// @ts-ignore
-				port: parseInt(port, 10) || (isSecure ? 443 : 80),
-				// @ts-ignore
+				port: parseInt(port ?? '', 10) || (isSecure ? 443 : 80),
 				mode: 'prefer-streaming'
-			});
+			} as http.RequestOptions);
 
 			this.req = req;
 
 			let connected = false;
 			const connectionTimeout = setTimeout(() => {
 				if (this.req) {
-					this.req.abort();
+					this.req.destroy();
 				}
 				reject({ error: new Error('Timeout'), errorDescription: `Timeout connecting to ${this.uri}` });
 			}, this.timeout);
 
-			req.on('error', e => {
+			req.on('error', (e: Error) => {
 				clearTimeout(connectionTimeout);
 
 				if (connected) {
@@ -62,25 +72,22 @@ class EventStream extends EventEmitter {
 				}
 			});
 
-			req.on('response', res => {
+			req.on('response', (res: http.IncomingMessage) => {
 				clearTimeout(connectionTimeout);
 
 				const statusCode = res.statusCode;
 				if (statusCode !== 200) {
-					let body = '';
-					res.on('data', chunk => body += chunk);
+					let body: string | object = '';
+					res.on('data', (chunk: Buffer) => body += chunk.toString());
 					res.on('end', () => {
 						try {
-							body = JSON.parse(body);
+							body = JSON.parse(body as string);
 						} catch (_err) {
-							// don't bother doing anything special if the JSON.parse fails
-							// since we are already about to reject the promise anyway
+							// ignore
 						} finally {
 							let errorDescription = `HTTP error ${statusCode} from ${this.uri}`;
-							// @ts-ignore
-							if (body && body.error_description) {
-								// @ts-ignore
-								errorDescription += ' - ' + body.error_description;
+							if (body && typeof body === 'object' && 'error_description' in body) {
+								errorDescription += ' - ' + (body as Record<string, string>).error_description;
 							}
 							reject({ statusCode, errorDescription, body });
 							this.req = undefined;
@@ -102,32 +109,28 @@ class EventStream extends EventEmitter {
 		});
 	}
 
-	abort() {
+	abort(): void {
 		if (this.req) {
-			this.req.abort();
+			this.req.destroy();
 			this.req = undefined;
 		}
 		this.removeAllListeners();
 	}
 
-	/* Private methods */
-
-	emitSafe(event, param) {
+	private emitSafe(event: string, param?: EventData | Error): void {
 		try {
 			this.emit(event, param);
 		} catch (error) {
 			if (event !== 'error') {
-				this.emitSafe('error', error);
+				this.emitSafe('error', error as Error);
 			}
 		}
 	}
 
-	end() {
+	private end(): void {
 		this.stopIdleTimeout();
 
 		if (!this.req) {
-			// request was ended intentionally by abort
-			// do not auto reconnect.
 			return;
 		}
 
@@ -136,7 +139,7 @@ class EventStream extends EventEmitter {
 		this.reconnect();
 	}
 
-	reconnect() {
+	private reconnect(): void {
 		setTimeout(() => {
 			if (this.isOffline()) {
 				this.reconnect();
@@ -146,43 +149,43 @@ class EventStream extends EventEmitter {
 			this.emitSafe('reconnect');
 			this.connect().then(() => {
 				this.emitSafe('reconnect-success');
-			}).catch(err => {
+			}).catch((err: Error) => {
 				this.emitSafe('reconnect-error', err);
 				this.reconnect();
 			});
 		}, this.reconnectInterval);
 	}
 
-	isOffline() {
+	private isOffline(): boolean {
 		if (typeof navigator === 'undefined' || Object.hasOwnProperty.call(navigator, 'onLine')) {
 			return false;
 		}
 		return !navigator.onLine;
 	}
 
-	startIdleTimeout() {
+	private startIdleTimeout(): void {
 		this.stopIdleTimeout();
 		this.idleTimeout = setTimeout(this.idleTimeoutExpired, this.timeout);
 	}
 
-	stopIdleTimeout() {
+	private stopIdleTimeout(): void {
 		if (this.idleTimeout) {
 			clearTimeout(this.idleTimeout);
 			this.idleTimeout = null;
 		}
 	}
 
-	idleTimeoutExpired() {
+	private idleTimeoutExpired(): void {
 		if (this.req) {
-			this.req.abort();
+			this.req.destroy();
 			this.end();
 		}
 	}
 
-	parse(chunk) {
+	parse(chunk: Buffer | string): void {
 		this.startIdleTimeout();
 
-		this.buf += chunk;
+		this.buf += chunk.toString();
 		let pos = 0;
 		const length = this.buf.length;
 		let discardTrailingNewline = false;
@@ -228,16 +231,16 @@ class EventStream extends EventEmitter {
 		}
 	}
 
-	parseEventStreamLine(pos, fieldLength, lineLength) {
+	parseEventStreamLine(pos: number, fieldLength: number, lineLength: number): void {
 		if (lineLength === 0) {
 			try {
 				if (this.data.length > 0 && this.event) {
-					const event = JSON.parse(this.data);
+					const event = JSON.parse(this.data) as EventData;
 					event.name = this.eventName || '';
 					this.emitSafe('event', event);
 				}
 			} catch (_err) {
-				// do nothing if JSON.parse fails
+				// ignore
 			} finally {
 				this.data = '';
 				this.eventName = undefined;
@@ -266,4 +269,4 @@ class EventStream extends EventEmitter {
 	}
 }
 
-module.exports = EventStream;
+export = EventStream;
