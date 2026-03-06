@@ -1,5 +1,9 @@
 # changelog
 
+## 12.0.0 - 06 March 2026
+* Migrate to typescript
+* Add Environment Variables endpoints
+
 ## 11.1.7 - 06 October 2025
 * Add downloadManufacturingBackup method
 
