@@ -17,6 +17,10 @@ class FakeAgent {
 		return this.request({ uri, method: 'put', auth, headers, data, query, context });
 	}
 
+	patch({ uri, auth, headers, data, context }: MutateOptions) {
+		return this.request({ uri, method: 'patch', auth, headers, data, context });
+	}
+
 	delete({ uri, auth, headers, data, context }: MutateOptions) {
 		return this.request({ uri, method: 'delete', auth, headers, data, context });
 	}

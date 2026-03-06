@@ -4,7 +4,7 @@ import Defaults from '../src/Defaults';
 import Client from '../src/Client';
 import EventStream from '../src/EventStream';
 import FakeAgent from './FakeAgent';
-import type { ToolContext, ProjectContext } from '../src/types';
+import type { ToolContext, ProjectContext, EnvVarOp } from '../src/types';
 
 interface ParticleInternal {
 	_isValidContext(name: string, context: ToolContext | ProjectContext | undefined): boolean;
@@ -160,6 +160,13 @@ const props = {
 		property: 'yes'
 	},
 	setMode: 'Replace',
+	envVarKey: 'MY_VAR',
+	envVarValue: 'hello',
+	envVarOps: [
+		{ op: 'Set', key: 'MY_VAR', value: 'hello' },
+		{ op: 'Unset', key: 'OLD_VAR' }
+	],
+	envVarWhen: 'Immediate',
 	utm: undefined as undefined | Record<string, string>
 };
 
@@ -2949,6 +2956,368 @@ describe('ParticleAPI', () => {
 						}
 					});
 				});
+			});
+		});
+
+		describe('.listEnvVars', () => {
+			it('generates request for sandbox scope', () => {
+				return api.listEnvVars({ auth: props.auth as string, sandbox: true }).then((results) => {
+					expect(results).to.containSubset({
+						method: 'get',
+						uri: '/v1/env',
+						auth: props.auth
+					});
+				});
+			});
+
+			it('generates request for device scope', () => {
+				return api.listEnvVars({ auth: props.auth as string, deviceId: props.deviceId }).then((results) => {
+					expect(results).to.containSubset({
+						method: 'get',
+						uri: `/v1/env/${props.deviceId}`,
+						auth: props.auth
+					});
+				});
+			});
+
+			it('generates request for product scope', () => {
+				return api.listEnvVars({ auth: props.auth as string, product }).then((results) => {
+					expect(results).to.containSubset({
+						method: 'get',
+						uri: `/v1/products/${product}/env`,
+						auth: props.auth
+					});
+				});
+			});
+
+			it('generates request for org scope', () => {
+				return api.listEnvVars({ auth: props.auth as string, org }).then((results) => {
+					expect(results).to.containSubset({
+						method: 'get',
+						uri: `/v1/orgs/${org}/env`,
+						auth: props.auth
+					});
+				});
+			});
+
+			it('throws when no scope is specified', () => {
+				expect(() => api.listEnvVars({ auth: props.auth as string })).to.throw('Specify one of');
+			});
+
+			it('throws when multiple scopes are specified', () => {
+				expect(() => api.listEnvVars({ auth: props.auth as string, product, org })).to.throw('Specify only one of');
+			});
+		});
+
+		describe('.updateEnvVars', () => {
+			it('generates request for sandbox scope', () => {
+				return api.updateEnvVars({ auth: props.auth as string, sandbox: true, ops: props.envVarOps as EnvVarOp[] }).then((results) => {
+					expect(results).to.containSubset({
+						method: 'patch',
+						uri: '/v1/env',
+						auth: props.auth,
+						data: { ops: props.envVarOps }
+					});
+				});
+			});
+
+			it('generates request for device scope', () => {
+				return api.updateEnvVars({ auth: props.auth as string, deviceId: props.deviceId, ops: props.envVarOps as EnvVarOp[] }).then((results) => {
+					expect(results).to.containSubset({
+						method: 'patch',
+						uri: `/v1/env/${props.deviceId}`,
+						auth: props.auth,
+						data: { ops: props.envVarOps }
+					});
+				});
+			});
+
+			it('generates request for product scope', () => {
+				return api.updateEnvVars({ auth: props.auth as string, product, ops: props.envVarOps as EnvVarOp[] }).then((results) => {
+					expect(results).to.containSubset({
+						method: 'patch',
+						uri: `/v1/products/${product}/env`,
+						auth: props.auth,
+						data: { ops: props.envVarOps }
+					});
+				});
+			});
+
+			it('generates request for org scope', () => {
+				return api.updateEnvVars({ auth: props.auth as string, org, ops: props.envVarOps as EnvVarOp[] }).then((results) => {
+					expect(results).to.containSubset({
+						method: 'patch',
+						uri: `/v1/orgs/${org}/env`,
+						auth: props.auth,
+						data: { ops: props.envVarOps }
+					});
+				});
+			});
+
+			it('throws when no scope is specified', () => {
+				expect(() => api.updateEnvVars({ auth: props.auth as string, ops: props.envVarOps as EnvVarOp[] })).to.throw('Specify one of');
+			});
+
+			it('throws when multiple scopes are specified', () => {
+				expect(() => api.updateEnvVars({ auth: props.auth as string, product, org, ops: props.envVarOps as EnvVarOp[] })).to.throw('Specify only one of');
+			});
+		});
+
+		describe('.setEnvVar', () => {
+			it('generates request for sandbox scope', () => {
+				return api.setEnvVar({ auth: props.auth as string, sandbox: true, key: props.envVarKey, value: props.envVarValue }).then((results) => {
+					expect(results).to.containSubset({
+						method: 'put',
+						uri: `/v1/env/${props.envVarKey}`,
+						auth: props.auth,
+						data: { value: props.envVarValue }
+					});
+				});
+			});
+
+			it('generates request for device scope', () => {
+				return api.setEnvVar({ auth: props.auth as string, deviceId: props.deviceId, key: props.envVarKey, value: props.envVarValue }).then((results) => {
+					expect(results).to.containSubset({
+						method: 'put',
+						uri: `/v1/env/${props.deviceId}/${props.envVarKey}`,
+						auth: props.auth,
+						data: { value: props.envVarValue }
+					});
+				});
+			});
+
+			it('generates request for product scope', () => {
+				return api.setEnvVar({ auth: props.auth as string, product, key: props.envVarKey, value: props.envVarValue }).then((results) => {
+					expect(results).to.containSubset({
+						method: 'put',
+						uri: `/v1/products/${product}/env/${props.envVarKey}`,
+						auth: props.auth,
+						data: { value: props.envVarValue }
+					});
+				});
+			});
+
+			it('generates request for org scope', () => {
+				return api.setEnvVar({ auth: props.auth as string, org, key: props.envVarKey, value: props.envVarValue }).then((results) => {
+					expect(results).to.containSubset({
+						method: 'put',
+						uri: `/v1/orgs/${org}/env/${props.envVarKey}`,
+						auth: props.auth,
+						data: { value: props.envVarValue }
+					});
+				});
+			});
+
+			it('throws when no scope is specified', () => {
+				expect(() => api.setEnvVar({ auth: props.auth as string, key: props.envVarKey, value: props.envVarValue })).to.throw('Specify one of');
+			});
+
+			it('throws when multiple scopes are specified', () => {
+				expect(() => api.setEnvVar({ auth: props.auth as string, product, org, key: props.envVarKey, value: props.envVarValue })).to.throw('Specify only one of');
+			});
+		});
+
+		describe('.deleteEnvVar', () => {
+			it('generates request for sandbox scope', () => {
+				return api.deleteEnvVar({ auth: props.auth as string, sandbox: true, key: props.envVarKey }).then((results) => {
+					expect(results).to.containSubset({
+						method: 'delete',
+						uri: `/v1/env/${props.envVarKey}`,
+						auth: props.auth
+					});
+				});
+			});
+
+			it('generates request for device scope', () => {
+				return api.deleteEnvVar({ auth: props.auth as string, deviceId: props.deviceId, key: props.envVarKey }).then((results) => {
+					expect(results).to.containSubset({
+						method: 'delete',
+						uri: `/v1/env/${props.deviceId}/${props.envVarKey}`,
+						auth: props.auth
+					});
+				});
+			});
+
+			it('generates request for product scope', () => {
+				return api.deleteEnvVar({ auth: props.auth as string, product, key: props.envVarKey }).then((results) => {
+					expect(results).to.containSubset({
+						method: 'delete',
+						uri: `/v1/products/${product}/env/${props.envVarKey}`,
+						auth: props.auth
+					});
+				});
+			});
+
+			it('generates request for org scope', () => {
+				return api.deleteEnvVar({ auth: props.auth as string, org, key: props.envVarKey }).then((results) => {
+					expect(results).to.containSubset({
+						method: 'delete',
+						uri: `/v1/orgs/${org}/env/${props.envVarKey}`,
+						auth: props.auth
+					});
+				});
+			});
+
+			it('throws when no scope is specified', () => {
+				expect(() => api.deleteEnvVar({ auth: props.auth as string, key: props.envVarKey })).to.throw('Specify one of');
+			});
+
+			it('throws when multiple scopes are specified', () => {
+				expect(() => api.deleteEnvVar({ auth: props.auth as string, product, org, key: props.envVarKey })).to.throw('Specify only one of');
+			});
+		});
+
+		describe('.renderEnvVars', () => {
+			it('generates request for sandbox scope', () => {
+				return api.renderEnvVars({ auth: props.auth as string, sandbox: true }).then((results) => {
+					expect(results).to.containSubset({
+						method: 'get',
+						uri: '/v1/env/render',
+						auth: props.auth
+					});
+				});
+			});
+
+			it('generates request for device scope', () => {
+				return api.renderEnvVars({ auth: props.auth as string, deviceId: props.deviceId }).then((results) => {
+					expect(results).to.containSubset({
+						method: 'get',
+						uri: `/v1/env/${props.deviceId}/render`,
+						auth: props.auth
+					});
+				});
+			});
+
+			it('generates request for product scope', () => {
+				return api.renderEnvVars({ auth: props.auth as string, product }).then((results) => {
+					expect(results).to.containSubset({
+						method: 'get',
+						uri: `/v1/products/${product}/env/render`,
+						auth: props.auth
+					});
+				});
+			});
+
+			it('generates request for org scope', () => {
+				return api.renderEnvVars({ auth: props.auth as string, org }).then((results) => {
+					expect(results).to.containSubset({
+						method: 'get',
+						uri: `/v1/orgs/${org}/env/render`,
+						auth: props.auth
+					});
+				});
+			});
+
+			it('throws when no scope is specified', () => {
+				expect(() => api.renderEnvVars({ auth: props.auth as string })).to.throw('Specify one of');
+			});
+
+			it('throws when multiple scopes are specified', () => {
+				expect(() => api.renderEnvVars({ auth: props.auth as string, product, org })).to.throw('Specify only one of');
+			});
+		});
+
+		describe('.reviewEnvVarsRollout', () => {
+			it('generates request for sandbox scope', () => {
+				return api.reviewEnvVarsRollout({ auth: props.auth as string, sandbox: true }).then((results) => {
+					expect(results).to.containSubset({
+						method: 'get',
+						uri: '/v1/env/rollout',
+						auth: props.auth
+					});
+				});
+			});
+
+			it('generates request for device scope', () => {
+				return api.reviewEnvVarsRollout({ auth: props.auth as string, deviceId: props.deviceId }).then((results) => {
+					expect(results).to.containSubset({
+						method: 'get',
+						uri: `/v1/env/${props.deviceId}/rollout`,
+						auth: props.auth
+					});
+				});
+			});
+
+			it('generates request for product scope', () => {
+				return api.reviewEnvVarsRollout({ auth: props.auth as string, product }).then((results) => {
+					expect(results).to.containSubset({
+						method: 'get',
+						uri: `/v1/products/${product}/env/rollout`,
+						auth: props.auth
+					});
+				});
+			});
+
+			it('generates request for org scope', () => {
+				return api.reviewEnvVarsRollout({ auth: props.auth as string, org }).then((results) => {
+					expect(results).to.containSubset({
+						method: 'get',
+						uri: `/v1/orgs/${org}/env/rollout`,
+						auth: props.auth
+					});
+				});
+			});
+
+			it('throws when no scope is specified', () => {
+				expect(() => api.reviewEnvVarsRollout({ auth: props.auth as string })).to.throw('Specify one of');
+			});
+
+			it('throws when multiple scopes are specified', () => {
+				expect(() => api.reviewEnvVarsRollout({ auth: props.auth as string, product, org })).to.throw('Specify only one of');
+			});
+		});
+
+		describe('.startEnvVarsRollout', () => {
+			it('generates request for sandbox scope', () => {
+				return api.startEnvVarsRollout({ auth: props.auth as string, sandbox: true, when: 'Immediate' }).then((results) => {
+					expect(results).to.containSubset({
+						method: 'post',
+						uri: '/v1/env/rollout',
+						auth: props.auth,
+						data: { when: 'Immediate' }
+					});
+				});
+			});
+
+			it('generates request for device scope', () => {
+				return api.startEnvVarsRollout({ auth: props.auth as string, deviceId: props.deviceId, when: 'Connect' }).then((results) => {
+					expect(results).to.containSubset({
+						method: 'post',
+						uri: `/v1/env/${props.deviceId}/rollout`,
+						auth: props.auth,
+						data: { when: 'Connect' }
+					});
+				});
+			});
+
+			it('generates request for product scope', () => {
+				return api.startEnvVarsRollout({ auth: props.auth as string, product, when: 'Immediate' }).then((results) => {
+					expect(results).to.containSubset({
+						method: 'post',
+						uri: `/v1/products/${product}/env/rollout`,
+						auth: props.auth,
+						data: { when: 'Immediate' }
+					});
+				});
+			});
+
+			it('generates request for org scope', () => {
+				return api.startEnvVarsRollout({ auth: props.auth as string, org, when: 'Immediate' }).then((results) => {
+					expect(results).to.containSubset({
+						method: 'post',
+						uri: `/v1/orgs/${org}/env/rollout`,
+						auth: props.auth,
+						data: { when: 'Immediate' }
+					});
+				});
+			});
+
+			it('throws when no scope is specified', () => {
+				expect(() => api.startEnvVarsRollout({ auth: props.auth as string, when: 'Immediate' })).to.throw('Specify one of');
+			});
+
+			it('throws when multiple scopes are specified', () => {
+				expect(() => api.startEnvVarsRollout({ auth: props.auth as string, product, org, when: 'Immediate' })).to.throw('Specify only one of');
 			});
 		});
 

@@ -126,17 +126,25 @@
     -   [getLedgerInstanceVersion](#getledgerinstanceversion)
     -   [listDeviceOsVersions](#listdeviceosversions)
     -   [getDeviceOsVersion](#getdeviceosversion)
+    -   [listEnvVars](#listenvvars)
+    -   [updateEnvVars](#updateenvvars)
+    -   [setEnvVar](#setenvvar)
+    -   [deleteEnvVar](#deleteenvvar)
+    -   [renderEnvVars](#renderenvvars)
+    -   [reviewEnvVarsRollout](#reviewenvvarsrollout)
+    -   [startEnvVarsRollout](#startenvvarsrollout)
     -   [setDefaultAuth](#setdefaultauth)
     -   [get](#get)
     -   [head](#head)
     -   [post](#post)
     -   [put](#put)
+    -   [patch](#patch)
     -   [delete](#delete)
     -   [request](#request)
 
 ## Particle
 
-Defined in: [Particle.ts:61](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L61)
+Defined in: [Particle.ts:64](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L64)
 
 Particle Cloud API wrapper.
 
@@ -148,7 +156,7 @@ Most Particle methods take a single unnamed argument object documented as
 
 ### constructor
 
-Defined in: [Particle.ts:83](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L83)
+Defined in: [Particle.ts:86](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L86)
 
 Contructor for the Cloud API wrapper.
 
@@ -167,7 +175,7 @@ Returns **`Particle`**
 
 ### login
 
-Defined in: [Particle.ts:139](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L139)
+Defined in: [Particle.ts:142](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L142)
 
 Login to Particle Cloud using an existing Particle acccount.
 
@@ -179,7 +187,7 @@ Returns **`Promise`<`JSONResponse`<`LoginResponse`>>** A promise that resolves w
 
 ### sendOtp
 
-Defined in: [Particle.ts:165](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L165)
+Defined in: [Particle.ts:168](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L168)
 
 If login failed with an 'mfa_required' error, this must be called with a valid OTP code to login
 
@@ -191,7 +199,7 @@ Returns **`Promise`<`JSONResponse`<`LoginResponse`>>** A promise that resolves w
 
 ### enableMfa
 
-Defined in: [Particle.ts:189](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L189)
+Defined in: [Particle.ts:192](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L192)
 
 Enable MFA on the currently logged in user
 
@@ -203,7 +211,7 @@ Returns **`Promise`<`JSONResponse`<`EnableMfaResponse`>>** A promise that resolv
 
 ### confirmMfa
 
-Defined in: [Particle.ts:204](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L204)
+Defined in: [Particle.ts:207](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L207)
 
 Confirm MFA for the user. This must be called with current TOTP code, determined from the results of enableMfa(). You will be prompted to enter an OTP code every time you login after enrollment is confirmed.
 
@@ -215,7 +223,7 @@ Returns **`Promise`<`JSONResponse`<`ConfirmMfaResponse`>>** A promise that resol
 
 ### disableMfa
 
-Defined in: [Particle.ts:229](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L229)
+Defined in: [Particle.ts:232](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L232)
 
 Disable MFA for the user.
 
@@ -227,7 +235,7 @@ Returns **`Promise`<`JSONResponse`<`OKResponse`>>** A promise that resolves with
 
 ### createCustomer
 
-Defined in: [Particle.ts:249](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L249)
+Defined in: [Particle.ts:252](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L252)
 
 Create Customer for Product.
 
@@ -239,7 +247,7 @@ Returns **`Promise`<`JSONResponse`<`CreateCustomerResponse`>>** A promise that r
 
 ### loginAsClientOwner
 
-Defined in: [Particle.ts:272](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L272)
+Defined in: [Particle.ts:275](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L275)
 
 Login to Particle Cloud using an OAuth client.
 
@@ -251,7 +259,7 @@ Returns **`Promise`<`JSONResponse`<`LoginResponse`>>** A promise that resolves w
 
 ### createUser
 
-Defined in: [Particle.ts:297](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L297)
+Defined in: [Particle.ts:300](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L300)
 
 Create a user account for the Particle Cloud
 
@@ -271,7 +279,7 @@ Returns **`Promise`<`JSONResponse`<`OKResponse`>>** A promise that resolves with
 
 ### resetPassword
 
-Defined in: [Particle.ts:319](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L319)
+Defined in: [Particle.ts:322](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L322)
 
 Send reset password email for a Particle Cloud user account
 
@@ -283,7 +291,7 @@ Returns **`Promise`<`JSONResponse`<`OKResponse`>>** A promise that resolves with
 
 ### deleteAccessToken
 
-Defined in: [Particle.ts:336](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L336)
+Defined in: [Particle.ts:339](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L339)
 
 Revoke an access token
 
@@ -295,7 +303,7 @@ Returns **`Promise`<`JSONResponse`<`OKResponse`>>** A promise that resolves with
 
 ### deleteCurrentAccessToken
 
-Defined in: [Particle.ts:352](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L352)
+Defined in: [Particle.ts:355](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L355)
 
 Revoke the current session access token
 
@@ -307,7 +315,7 @@ Returns **`Promise`<`JSONResponse`<`OKResponse`>>** A promise that resolves with
 
 ### deleteActiveAccessTokens
 
-Defined in: [Particle.ts:369](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L369)
+Defined in: [Particle.ts:372](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L372)
 
 Revoke all active access tokens
 
@@ -319,7 +327,7 @@ Returns **`Promise`<`JSONResponse`<`OKResponse`>>** A promise that resolves with
 
 ### deleteUser
 
-Defined in: [Particle.ts:387](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L387)
+Defined in: [Particle.ts:390](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L390)
 
 Delete the current user
 
@@ -331,7 +339,7 @@ Returns **`Promise`<`JSONResponse`<`OKResponse`>>** A promise that resolves with
 
 ### trackingIdentity
 
-Defined in: [Particle.ts:407](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L407)
+Defined in: [Particle.ts:410](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L410)
 
 Retrieves the information that is used to identify the current login for tracking.
 
@@ -343,7 +351,7 @@ Returns **`Promise`<`JSONResponse`<`TrackingIdentityResponse`>>** A promise that
 
 ### listDevices
 
-Defined in: [Particle.ts:433](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L433)
+Defined in: [Particle.ts:436](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L436)
 
 List devices claimed to the account or product
 
@@ -368,7 +376,7 @@ Returns **`Promise`<`JSONResponse`<`DeviceInfo`[]>>** A promise that resolves wi
 
 ### getDevice
 
-Defined in: [Particle.ts:465](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L465)
+Defined in: [Particle.ts:468](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L468)
 
 Get detailed informationa about a device
 
@@ -380,7 +388,7 @@ Returns **`Promise`<`JSONResponse`<`DeviceInfo`>>** A promise that resolves with
 
 ### claimDevice
 
-Defined in: [Particle.ts:480](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L480)
+Defined in: [Particle.ts:483](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L483)
 
 Claim a device to the account. The device must be online and unclaimed.
 
@@ -392,7 +400,7 @@ Returns **`Promise`<`JSONResponse`<`ClaimResponse`>>** A promise that resolves w
 
 ### addDeviceToProduct
 
-Defined in: [Particle.ts:505](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L505)
+Defined in: [Particle.ts:508](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L508)
 
 Add a device to a product or move device out of quarantine.
 
@@ -404,7 +412,7 @@ Returns **`Promise`<`JSONResponse`<`OKResponse`>>** A promise that resolves with
 
 ### removeDevice
 
-Defined in: [Particle.ts:537](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L537)
+Defined in: [Particle.ts:540](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L540)
 
 Unclaim / Remove a device from your account or product, or deny quarantine
 
@@ -416,7 +424,7 @@ Returns **`Promise`<`JSONResponse`<`OKResponse`>>** A promise that resolves with
 
 ### removeDeviceOwner
 
-Defined in: [Particle.ts:553](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L553)
+Defined in: [Particle.ts:556](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L556)
 
 Unclaim a product device its the owner, but keep it in the product
 
@@ -428,7 +436,7 @@ Returns **`Promise`<`JSONResponse`<`OKResponse`>>** A promise that resolves with
 
 ### renameDevice
 
-Defined in: [Particle.ts:569](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L569)
+Defined in: [Particle.ts:572](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L572)
 
 Rename a device
 
@@ -440,7 +448,7 @@ Returns **`Promise`<`JSONResponse`<`DeviceInfo`>>** A promise that resolves with
 
 ### signalDevice
 
-Defined in: [Particle.ts:584](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L584)
+Defined in: [Particle.ts:587](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L587)
 
 Instruct the device to turn on/off the LED in a rainbow pattern
 
@@ -452,7 +460,7 @@ Returns **`Promise`<`JSONResponse`<`DeviceInfo`>>** A promise that resolves with
 
 ### setDeviceNotes
 
-Defined in: [Particle.ts:599](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L599)
+Defined in: [Particle.ts:602](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L602)
 
 Store some notes about device
 
@@ -472,7 +480,7 @@ Returns **`Promise`<`JSONResponse`<`DeviceInfo`>>** A promise that resolves with
 
 ### markAsDevelopmentDevice
 
-Defined in: [Particle.ts:614](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L614)
+Defined in: [Particle.ts:617](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L617)
 
 Mark device as being used in development of a product so it opts out of automatic firmware updates
 
@@ -492,7 +500,7 @@ Returns **`Promise`<`JSONResponse`<`DeviceInfo`>>** A promise that resolves with
 
 ### lockDeviceProductFirmware
 
-Defined in: [Particle.ts:630](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L630)
+Defined in: [Particle.ts:633](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L633)
 
 Mark device as being used in development of a product, so it opts out of automatic firmware updates
 
@@ -513,7 +521,7 @@ Returns **`Promise`<`JSONResponse`<`DeviceInfo`>>** A promise that resolves with
 
 ### unlockDeviceProductFirmware
 
-Defined in: [Particle.ts:644](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L644)
+Defined in: [Particle.ts:647](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L647)
 
 Mark device as receiving automatic firmware updates
 
@@ -532,7 +540,7 @@ Returns **`Promise`<`JSONResponse`<`DeviceInfo`>>** A promise that resolves with
 
 ### updateDevice
 
-Defined in: [Particle.ts:665](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L665)
+Defined in: [Particle.ts:668](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L668)
 
 Update multiple device attributes at the same time
 
@@ -544,7 +552,7 @@ Returns **`Promise`<`JSONResponse`<`DeviceInfo`>>** A promise that resolves with
 
 ### unprotectDevice
 
-Defined in: [Particle.ts:697](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L697)
+Defined in: [Particle.ts:700](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L700)
 
 Disable device protection.
 
@@ -556,7 +564,7 @@ Returns **`Promise`<`JSONResponse`<`OKResponse`>>** A promise that resolves with
 
 ### provisionDevice
 
-Defined in: [Particle.ts:724](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L724)
+Defined in: [Particle.ts:727](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L727)
 
 Provision a new device for products that allow self-provisioning
 
@@ -568,7 +576,7 @@ Returns **`Promise`<`JSONResponse`<`DeviceInfo`>>** A promise that resolves with
 
 ### getClaimCode
 
-Defined in: [Particle.ts:746](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L746)
+Defined in: [Particle.ts:749](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L749)
 
 Generate a claim code to use in the device claiming process.
 To generate a claim code for a product, the access token MUST belong to a
@@ -582,7 +590,7 @@ Returns **`Promise`<`JSONResponse`<`ClaimCodeResponse`>>** A promise that resolv
 
 ### getVariable
 
-Defined in: [Particle.ts:762](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L762)
+Defined in: [Particle.ts:765](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L765)
 
 Get the value of a device variable
 
@@ -594,7 +602,7 @@ Returns **`Promise`<`JSONResponse`<`DeviceVariableResponse`>>** A promise that r
 
 ### flashDevice
 
-Defined in: [Particle.ts:782](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L782)
+Defined in: [Particle.ts:785](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L785)
 
 Compile and flash application firmware to a device. Pass a pre-compiled binary to flash it directly to the device.
 
@@ -606,7 +614,7 @@ Returns **`Promise`<`JSONResponse`<`OKResponse`>>** A promise that resolves with
 
 ### compileCode
 
-Defined in: [Particle.ts:806](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L806)
+Defined in: [Particle.ts:809](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L809)
 
 Compile firmware using the Particle Cloud
 
@@ -618,7 +626,7 @@ Returns **`Promise`<`JSONResponse`<`CompileResponse`>>** A promise that resolves
 
 ### downloadFirmwareBinary
 
-Defined in: [Particle.ts:835](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L835)
+Defined in: [Particle.ts:838](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L838)
 
 Download a firmware binary
 
@@ -630,7 +638,7 @@ Returns **`Promise`<`Buffer` \| `ArrayBuffer`>** A promise that resolves with th
 
 ### sendPublicKey
 
-Defined in: [Particle.ts:857](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L857)
+Defined in: [Particle.ts:860](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L860)
 
 Send a new device public key to the Particle Cloud
 
@@ -650,7 +658,7 @@ Returns **`Promise`<`JSONResponse`<`OKResponse`>>** A promise that resolves with
 
 ### callFunction
 
-Defined in: [Particle.ts:885](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L885)
+Defined in: [Particle.ts:888](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L888)
 
 Call a device function
 
@@ -662,7 +670,7 @@ Returns **`Promise`<`JSONResponse`<`FunctionCallResponse`>>** A promise that res
 
 ### getEventStream
 
-Defined in: [Particle.ts:903](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L903)
+Defined in: [Particle.ts:906](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L906)
 
 Get a stream of events
 
@@ -674,7 +682,7 @@ Returns **`Promise`<`EventStream`>** A promise that resolves with the response d
 
 ### publishEvent
 
-Defined in: [Particle.ts:942](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L942)
+Defined in: [Particle.ts:945](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L945)
 
 Publish a event to the Particle Cloud
 
@@ -695,7 +703,7 @@ Returns **`Promise`<`JSONResponse`<`OKResponse`>>** A promise that resolves with
 
 ### Hook
 
-Defined in: [Particle.ts:940](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L940)
+Defined in: [Particle.ts:940](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L940)
 
 Type: `Object`
 
@@ -714,7 +722,7 @@ Type: `Object`
 
 ### createWebhook
 
-Defined in: [Particle.ts:977](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L977)
+Defined in: [Particle.ts:980](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L980)
 
 Create a webhook
 
@@ -748,7 +756,7 @@ Returns **`Promise`<`JSONResponse`<`CreateWebhookResponse`>>** A promise that re
 
 ### deleteWebhook
 
-Defined in: [Particle.ts:1011](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L1011)
+Defined in: [Particle.ts:1014](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L1014)
 
 Delete a webhook
 
@@ -760,7 +768,7 @@ Returns **`Promise`<`JSONResponse`<`OKResponse`>>** A promise that resolves with
 
 ### listWebhooks
 
-Defined in: [Particle.ts:1025](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L1025)
+Defined in: [Particle.ts:1028](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L1028)
 
 List all webhooks owned by the account or product
 
@@ -772,7 +780,7 @@ Returns **`Promise`<`JSONResponse`<`WebhookInfo`[]>>** A promise that resolves w
 
 ### createIntegration
 
-Defined in: [Particle.ts:1045](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L1045)
+Defined in: [Particle.ts:1048](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L1048)
 
 Create an integration to send events to an external service
 
@@ -786,7 +794,7 @@ Returns **`Promise`<`JSONResponse`<`IntegrationInfo`>>** A promise that resolves
 
 ### editIntegration
 
-Defined in: [Particle.ts:1067](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L1067)
+Defined in: [Particle.ts:1070](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L1070)
 
 Edit an integration to send events to an external service
 
@@ -800,7 +808,7 @@ Returns **`Promise`<`JSONResponse`<`IntegrationInfo`>>** A promise that resolves
 
 ### deleteIntegration
 
-Defined in: [Particle.ts:1084](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L1084)
+Defined in: [Particle.ts:1087](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L1087)
 
 Delete an integration to send events to an external service
 
@@ -812,7 +820,7 @@ Returns **`Promise`<`JSONResponse`<`OKResponse`>>** A promise that resolves with
 
 ### listIntegrations
 
-Defined in: [Particle.ts:1098](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L1098)
+Defined in: [Particle.ts:1101](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L1101)
 
 List all integrations owned by the account or product
 
@@ -824,7 +832,7 @@ Returns **`Promise`<`JSONResponse`<`IntegrationInfo`[]>>** A promise that resolv
 
 ### getUserInfo
 
-Defined in: [Particle.ts:1111](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L1111)
+Defined in: [Particle.ts:1114](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L1114)
 
 Get details about the current user
 
@@ -841,7 +849,7 @@ Returns **`Promise`<`JSONResponse`<`UserInfo`>>** A promise that resolves with t
 
 ### setUserInfo
 
-Defined in: [Particle.ts:1124](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L1124)
+Defined in: [Particle.ts:1127](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L1127)
 
 Set details on the current user
 
@@ -859,7 +867,7 @@ Returns **`Promise`<`JSONResponse`<`UserInfo`>>** A promise that resolves with t
 
 ### changeUsername
 
-Defined in: [Particle.ts:1140](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L1140)
+Defined in: [Particle.ts:1143](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L1143)
 
 Change username (i.e, email)
 
@@ -871,7 +879,7 @@ Returns **`Promise`<`JSONResponse`<`OKResponse`>>** A promise that resolves with
 
 ### changeUserPassword
 
-Defined in: [Particle.ts:1161](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L1161)
+Defined in: [Particle.ts:1164](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L1164)
 
 Change user's password
 
@@ -883,7 +891,7 @@ Returns **`Promise`<`JSONResponse`<`OKResponse`>>** A promise that resolves with
 
 ### listSIMs
 
-Defined in: [Particle.ts:1185](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L1185)
+Defined in: [Particle.ts:1188](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L1188)
 
 List SIM cards owned by a user or product
 
@@ -895,7 +903,7 @@ Returns **`Promise`<`JSONResponse`<`SimInfo`[]>>** A promise that resolves with 
 
 ### getSIMDataUsage
 
-Defined in: [Particle.ts:1201](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L1201)
+Defined in: [Particle.ts:1204](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L1204)
 
 Get data usage for one SIM card for the current billing period
 
@@ -907,7 +915,7 @@ Returns **`Promise`<`JSONResponse`<`SimDataUsage`>>** A promise that resolves wi
 
 ### getFleetDataUsage
 
-Defined in: [Particle.ts:1218](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L1218)
+Defined in: [Particle.ts:1221](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L1221)
 
 Get data usage for all SIM cards in a product the current billing period
 
@@ -919,7 +927,7 @@ Returns **`Promise`<`JSONResponse`<`SimDataUsage`>>** A promise that resolves wi
 
 ### checkSIM
 
-Defined in: [Particle.ts:1236](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L1236)
+Defined in: [Particle.ts:1239](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L1239)
 
 Check SIM status
 
@@ -931,7 +939,7 @@ Returns **`Promise`<`JSONResponse`<`SimInfo`>>** A promise that resolves with th
 
 ### activateSIM
 
-Defined in: [Particle.ts:1253](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L1253)
+Defined in: [Particle.ts:1256](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L1256)
 
 Activate and add SIM cards to an account or product
 
@@ -943,7 +951,7 @@ Returns **`Promise`<`JSONResponse`<`OKResponse`>>** A promise that resolves with
 
 ### deactivateSIM
 
-Defined in: [Particle.ts:1274](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L1274)
+Defined in: [Particle.ts:1277](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L1277)
 
 Deactivate a SIM card so it doesn't incur data usage in future months.
 
@@ -955,7 +963,7 @@ Returns **`Promise`<`JSONResponse`<`OKResponse`>>** A promise that resolves with
 
 ### reactivateSIM
 
-Defined in: [Particle.ts:1291](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L1291)
+Defined in: [Particle.ts:1294](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L1294)
 
 Reactivate a SIM card the was deactivated or unpause a SIM card that was automatically paused
 
@@ -967,7 +975,7 @@ Returns **`Promise`<`JSONResponse`<`OKResponse`>>** A promise that resolves with
 
 ### updateSIM
 
-Defined in: [Particle.ts:1308](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L1308)
+Defined in: [Particle.ts:1311](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L1311)
 
 Update SIM card data limit
 
@@ -979,7 +987,7 @@ Returns **`Promise`<`JSONResponse`<`SimInfo`>>** A promise that resolves with th
 
 ### removeSIM
 
-Defined in: [Particle.ts:1324](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L1324)
+Defined in: [Particle.ts:1327](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L1327)
 
 Remove a SIM card from an account so it can be activated by a different account
 
@@ -991,7 +999,7 @@ Returns **`Promise`<`JSONResponse`<`OKResponse`>>** A promise that resolves with
 
 ### listBuildTargets
 
-Defined in: [Particle.ts:1338](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L1338)
+Defined in: [Particle.ts:1341](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L1341)
 
 List valid build targets to be used for compiling
 
@@ -1003,7 +1011,7 @@ Returns **`Promise`<`JSONResponse`<`BuildTargetsResponse`>>** A promise that res
 
 ### listLibraries
 
-Defined in: [Particle.ts:1367](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L1367)
+Defined in: [Particle.ts:1370](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L1370)
 
 List firmware libraries
 
@@ -1015,7 +1023,7 @@ Returns **`Promise`<`JSONResponse`<\{ `data`: `LibraryInfo`[]; \}>>** A promise
 
 ### getLibrary
 
-Defined in: [Particle.ts:1400](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L1400)
+Defined in: [Particle.ts:1403](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L1403)
 
 Get firmware library details
 
@@ -1027,7 +1035,7 @@ Returns **`Promise`<`JSONResponse`<\{ `data`: `LibraryInfo`; \}>>** A promise
 
 ### getLibraryVersions
 
-Defined in: [Particle.ts:1421](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L1421)
+Defined in: [Particle.ts:1424](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L1424)
 
 Firmware library details for each version
 
@@ -1039,7 +1047,7 @@ Returns **`Promise`<`JSONResponse`<\{ `data`: `LibraryInfo`[]; \}>>** A promise
 
 ### contributeLibrary
 
-Defined in: [Particle.ts:1441](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L1441)
+Defined in: [Particle.ts:1444](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L1444)
 
 Contribute a new library version from a compressed archive
 
@@ -1051,7 +1059,7 @@ Returns **`Promise`<`JSONResponse`<\{ `data`: `LibraryInfo`; \}>>** A promise
 
 ### publishLibrary
 
-Defined in: [Particle.ts:1465](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L1465)
+Defined in: [Particle.ts:1468](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L1468)
 
 Publish the latest version of a library to the public
 
@@ -1063,7 +1071,7 @@ Returns **`Promise`<`JSONResponse`<\{ `data`: `LibraryInfo`; \}>>** A promise
 
 ### deleteLibrary
 
-Defined in: [Particle.ts:1486](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L1486)
+Defined in: [Particle.ts:1489](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L1489)
 
 Delete one version of a library or an entire private library
 
@@ -1075,7 +1083,7 @@ Returns **`Promise`<`JSONResponse`<`OKResponse`>>** A promise that resolves with
 
 ### downloadFile
 
-Defined in: [Particle.ts:1504](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L1504)
+Defined in: [Particle.ts:1507](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L1507)
 
 Download an external file that may not be on the API
 
@@ -1087,7 +1095,7 @@ Returns **`Promise`<`Buffer` \| `ArrayBuffer`>** A promise that resolves with th
 
 ### listOAuthClients
 
-Defined in: [Particle.ts:1517](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L1517)
+Defined in: [Particle.ts:1520](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L1520)
 
 List OAuth client created by the account
 
@@ -1099,7 +1107,7 @@ Returns **`Promise`<`JSONResponse`<\{ `clients`: `OAuthClientInfo`[]; \}>>** A p
 
 ### createOAuthClient
 
-Defined in: [Particle.ts:1535](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L1535)
+Defined in: [Particle.ts:1538](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L1538)
 
 Create an OAuth client
 
@@ -1121,7 +1129,7 @@ Returns **`Promise`<`JSONResponse`<`OAuthClientInfo`>>** A promise that resolves
 
 ### updateOAuthClient
 
-Defined in: [Particle.ts:1553](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L1553)
+Defined in: [Particle.ts:1556](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L1556)
 
 Update an OAuth client
 
@@ -1133,7 +1141,7 @@ Returns **`Promise`<`JSONResponse`<`OAuthClientInfo`>>** A promise that resolves
 
 ### deleteOAuthClient
 
-Defined in: [Particle.ts:1569](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L1569)
+Defined in: [Particle.ts:1572](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L1572)
 
 Delete an OAuth client
 
@@ -1145,7 +1153,7 @@ Returns **`Promise`<`JSONResponse`<`OKResponse`>>** A promise that resolves with
 
 ### listProducts
 
-Defined in: [Particle.ts:1582](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L1582)
+Defined in: [Particle.ts:1585](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L1585)
 
 List products the account has access to
 
@@ -1157,7 +1165,7 @@ Returns **`Promise`<`JSONResponse`<\{ `products`: `ProductInfo`[]; \}>>** A prom
 
 ### getProduct
 
-Defined in: [Particle.ts:1595](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L1595)
+Defined in: [Particle.ts:1598](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L1598)
 
 Get detailed information about a product
 
@@ -1169,7 +1177,7 @@ Returns **`Promise`<`JSONResponse`<\{ `product`: `ProductInfo`; \}>>** A promise
 
 ### listProductFirmware
 
-Defined in: [Particle.ts:1608](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L1608)
+Defined in: [Particle.ts:1611](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L1611)
 
 List product firmware versions
 
@@ -1181,7 +1189,7 @@ Returns **`Promise`<`JSONResponse`<`ProductFirmwareInfo`[]>>** A promise that re
 
 ### uploadProductFirmware
 
-Defined in: [Particle.ts:1626](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L1626)
+Defined in: [Particle.ts:1629](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L1629)
 
 List product firmware versions
 
@@ -1193,7 +1201,7 @@ Returns **`Promise`<`JSONResponse`<`ProductFirmwareInfo`>>** A promise that reso
 
 ### getProductFirmware
 
-Defined in: [Particle.ts:1654](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L1654)
+Defined in: [Particle.ts:1657](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L1657)
 
 Get information about a product firmware version
 
@@ -1205,7 +1213,7 @@ Returns **`Promise`<`JSONResponse`<`ProductFirmwareInfo`>>** A promise that reso
 
 ### updateProductFirmware
 
-Defined in: [Particle.ts:1675](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L1675)
+Defined in: [Particle.ts:1678](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L1678)
 
 Update information for a product firmware version
 
@@ -1217,7 +1225,7 @@ Returns **`Promise`<`JSONResponse`<`ProductFirmwareInfo`>>** A promise that reso
 
 ### downloadProductFirmware
 
-Defined in: [Particle.ts:1690](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L1690)
+Defined in: [Particle.ts:1693](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L1693)
 
 Download a product firmware binary
 
@@ -1229,7 +1237,7 @@ Returns **`Promise`<`Buffer` \| `ArrayBuffer`>** A promise that resolves with th
 
 ### downloadManufacturingBackup
 
-Defined in: [Particle.ts:1710](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L1710)
+Defined in: [Particle.ts:1713](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L1713)
 
 Download a tachyon manufacturing backup files
 
@@ -1241,7 +1249,7 @@ Returns **`Promise`<`Buffer` \| `ArrayBuffer`>** A promise that resolves with th
 
 ### releaseProductFirmware
 
-Defined in: [Particle.ts:1731](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L1731)
+Defined in: [Particle.ts:1734](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L1734)
 
 Release a product firmware version as the default version
 
@@ -1253,7 +1261,7 @@ Returns **`Promise`<`JSONResponse`<`OKResponse`>>** A promise that resolves with
 
 ### listTeamMembers
 
-Defined in: [Particle.ts:1745](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L1745)
+Defined in: [Particle.ts:1748](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L1748)
 
 List product team members
 
@@ -1265,7 +1273,7 @@ Returns **`Promise`<`JSONResponse`<`TeamMember`[]>>** A promise that resolves wi
 
 ### inviteTeamMember
 
-Defined in: [Particle.ts:1764](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L1764)
+Defined in: [Particle.ts:1767](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L1767)
 
 Invite Particle user to a product team
 
@@ -1277,7 +1285,7 @@ Returns **`Promise`<`JSONResponse`<`OKResponse`>>** A promise that resolves with
 
 ### removeTeamMember
 
-Defined in: [Particle.ts:1784](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L1784)
+Defined in: [Particle.ts:1787](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L1787)
 
 Remove Particle user to a product team
 
@@ -1289,7 +1297,7 @@ Returns **`Promise`<`JSONResponse`<`OKResponse`>>** A promise that resolves with
 
 ### lookupSerialNumber
 
-Defined in: [Particle.ts:1802](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L1802)
+Defined in: [Particle.ts:1805](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L1805)
 
 Fetch details about a serial number
 
@@ -1301,7 +1309,7 @@ Returns **`Promise`<`JSONResponse`<`SerialNumberResponse`>>** A promise that res
 
 ### createMeshNetwork
 
-Defined in: [Particle.ts:1822](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L1822)
+Defined in: [Particle.ts:1825](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L1825)
 
 Create a mesh network
 
@@ -1313,7 +1321,7 @@ Returns **`Promise`<`JSONResponse`<`NetworkInfo`>>** A promise that resolves wit
 
 ### removeMeshNetwork
 
-Defined in: [Particle.ts:1841](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L1841)
+Defined in: [Particle.ts:1844](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L1844)
 
 Remove a mesh network.
 
@@ -1325,7 +1333,7 @@ Returns **`Promise`<`JSONResponse`<`OKResponse`>>** A promise that resolves with
 
 ### listMeshNetworks
 
-Defined in: [Particle.ts:1855](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L1855)
+Defined in: [Particle.ts:1858](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L1858)
 
 List all mesh networks
 
@@ -1337,7 +1345,7 @@ Returns **`Promise`<`JSONResponse`<`NetworkInfo`[]>>** A promise that resolves w
 
 ### getMeshNetwork
 
-Defined in: [Particle.ts:1869](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L1869)
+Defined in: [Particle.ts:1872](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L1872)
 
 Get information about a mesh network.
 
@@ -1349,7 +1357,7 @@ Returns **`Promise`<`JSONResponse`<`NetworkInfo`>>** A promise that resolves wit
 
 ### updateMeshNetwork
 
-Defined in: [Particle.ts:1884](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L1884)
+Defined in: [Particle.ts:1887](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L1887)
 
 Modify a mesh network.
 
@@ -1361,7 +1369,7 @@ Returns **`Promise`<`JSONResponse`<`NetworkInfo`>>** A promise that resolves wit
 
 ### addMeshNetworkDevice
 
-Defined in: [Particle.ts:1904](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L1904)
+Defined in: [Particle.ts:1907](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L1907)
 
 Add a device to a mesh network.
 
@@ -1380,7 +1388,7 @@ Returns **`Promise`<`JSONResponse`<`NetworkInfo`>>** A promise that resolves wit
 
 ### removeMeshNetworkDevice
 
-Defined in: [Particle.ts:1925](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L1925)
+Defined in: [Particle.ts:1928](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L1928)
 
 Remove a device from a mesh network.
 
@@ -1392,7 +1400,7 @@ Returns **`Promise`<`JSONResponse`<`OKResponse`>>** A promise that resolves with
 
 ### listMeshNetworkDevices
 
-Defined in: [Particle.ts:1956](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L1956)
+Defined in: [Particle.ts:1959](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L1959)
 
 List all devices of a mesh network.
 
@@ -1404,7 +1412,7 @@ Returns **`Promise`<`JSONResponse`<`DeviceInfo`[]>>** A promise that resolves wi
 
 ### getProductConfiguration
 
-Defined in: [Particle.ts:1976](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L1976)
+Defined in: [Particle.ts:1979](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L1979)
 
 Get product configuration
 
@@ -1416,7 +1424,7 @@ Returns **`Promise`<`JSONResponse`<`ProductConfigurationResponse`>>** A promise 
 
 ### getProductConfigurationSchema
 
-Defined in: [Particle.ts:1994](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L1994)
+Defined in: [Particle.ts:1997](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L1997)
 
 Get product configuration schema
 
@@ -1428,7 +1436,7 @@ Returns **`Promise`<`JSONResponse`<`object`>>** A promise that resolves with the
 
 ### getProductDeviceConfiguration
 
-Defined in: [Particle.ts:2014](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L2014)
+Defined in: [Particle.ts:2017](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L2017)
 
 Get product device's configuration
 
@@ -1440,7 +1448,7 @@ Returns **`Promise`<`JSONResponse`<`ProductConfigurationResponse`>>** A promise 
 
 ### getProductDeviceConfigurationSchema
 
-Defined in: [Particle.ts:2033](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L2033)
+Defined in: [Particle.ts:2036](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L2036)
 
 Get product device's configuration schema
 
@@ -1452,7 +1460,7 @@ Returns **`Promise`<`JSONResponse`<`object`>>** A promise that resolves with the
 
 ### setProductConfiguration
 
-Defined in: [Particle.ts:2053](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L2053)
+Defined in: [Particle.ts:2056](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L2056)
 
 Set product configuration
 
@@ -1464,7 +1472,7 @@ Returns **`Promise`<`JSONResponse`<`ProductConfigurationResponse`>>** A promise 
 
 ### setProductDeviceConfiguration
 
-Defined in: [Particle.ts:2074](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L2074)
+Defined in: [Particle.ts:2077](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L2077)
 
 Set product configuration for a specific device within the product
 
@@ -1476,7 +1484,7 @@ Returns **`Promise`<`JSONResponse`<`ProductConfigurationResponse`>>** A promise 
 
 ### getProductLocations
 
-Defined in: [Particle.ts:2101](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L2101)
+Defined in: [Particle.ts:2104](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L2104)
 
 Query location for devices within a product
 
@@ -1488,7 +1496,7 @@ Returns **`Promise`<`JSONResponse`<`LocationListResponse`>>** A promise that res
 
 ### getProductDeviceLocations
 
-Defined in: [Particle.ts:2135](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L2135)
+Defined in: [Particle.ts:2138](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L2138)
 
 Query location for one device within a product
 
@@ -1500,7 +1508,7 @@ Returns **`Promise`<`JSONResponse`<`DeviceLocationInfo`>>** A promise that resol
 
 ### executeLogic
 
-Defined in: [Particle.ts:2163](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L2163)
+Defined in: [Particle.ts:2166](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L2166)
 
 Executes the provided logic function once and returns the result. No logs, runs, etc are saved
 
@@ -1514,7 +1522,7 @@ Returns **`Promise`<`JSONResponse`<`ExecuteLogicResponse`>>** A promise that res
 
 ### createLogicFunction
 
-Defined in: [Particle.ts:2191](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L2191)
+Defined in: [Particle.ts:2194](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L2194)
 
 Creates a new logic function in the specified organization or sandbox using the provided function data.
 
@@ -1547,7 +1555,7 @@ Returns **`Promise`<`JSONResponse`<\{ `logic_function`: `LogicFunction`; \}>>** 
 
 ### getLogicFunction
 
-Defined in: [Particle.ts:2213](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L2213)
+Defined in: [Particle.ts:2216](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L2216)
 
 Get a logic function in the specified organization or sandbox by logic function ID.
 
@@ -1559,7 +1567,7 @@ Returns **`Promise`<`JSONResponse`<\{ `logic_function`: `LogicFunction`; \}>>** 
 
 ### updateLogicFunction
 
-Defined in: [Particle.ts:2237](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L2237)
+Defined in: [Particle.ts:2240](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L2240)
 
 Updates an existing logic function in the specified organization or sandbox using the provided function data.
 
@@ -1588,7 +1596,7 @@ Returns **`Promise`<`JSONResponse`<\{ `logic_function`: `LogicFunction`; \}>>** 
 
 ### deleteLogicFunction
 
-Defined in: [Particle.ts:2259](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L2259)
+Defined in: [Particle.ts:2262](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L2262)
 
 Deletes a logic function in the specified organization or sandbox by logic function ID.
 
@@ -1600,7 +1608,7 @@ Returns **`Promise`<`JSONResponse`<`OKResponse`>>** A promise that resolves with
 
 ### listLogicFunctions
 
-Defined in: [Particle.ts:2280](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L2280)
+Defined in: [Particle.ts:2283](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L2283)
 
 Lists all logic functions in the specified organization or sandbox.
 
@@ -1612,7 +1620,7 @@ Returns **`Promise`<`JSONResponse`<\{ `logic_functions`: `LogicFunction`[]; \}>>
 
 ### listLogicRuns
 
-Defined in: [Particle.ts:2304](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L2304)
+Defined in: [Particle.ts:2307](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L2307)
 
 Lists all logic runs for the specified logic function in the specified organization or sandbox.
 
@@ -1624,7 +1632,7 @@ Returns **`Promise`<`JSONResponse`<\{ `logic_runs`: `LogicRun`[]; \}>>** A promi
 
 ### getLogicRun
 
-Defined in: [Particle.ts:2326](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L2326)
+Defined in: [Particle.ts:2329](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L2329)
 
 Retrieves a logic run by its ID for the specified logic function in the specified organization or sandbox.
 
@@ -1636,7 +1644,7 @@ Returns **`Promise`<`JSONResponse`<\{ `logic_run`: `LogicRun`; \}>>** A promise 
 
 ### getLogicRunLogs
 
-Defined in: [Particle.ts:2348](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L2348)
+Defined in: [Particle.ts:2351](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L2351)
 
 Retrieves the logs for a logic run by its ID for the specified logic function in the specified organization or sandbox.
 
@@ -1648,7 +1656,7 @@ Returns **`Promise`<`JSONResponse`<\{ `logs`: `LogicRunLog`[]; \}>>** A promise 
 
 ### createLedger
 
-Defined in: [Particle.ts:2369](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L2369)
+Defined in: [Particle.ts:2372](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L2372)
 
 Creates a new ledger definition in the specified organization or sandbox.
 
@@ -1660,7 +1668,7 @@ Returns **`Promise`<`JSONResponse`<`LedgerDefinition`>>** A promise that resolve
 
 ### getLedger
 
-Defined in: [Particle.ts:2391](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L2391)
+Defined in: [Particle.ts:2394](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L2394)
 
 Get a ledger definition in the specified organization or sandbox by ledger name.
 
@@ -1672,7 +1680,7 @@ Returns **`Promise`<`JSONResponse`<`LedgerDefinition`>>** A promise that resolve
 
 ### updateLedger
 
-Defined in: [Particle.ts:2413](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L2413)
+Defined in: [Particle.ts:2416](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L2416)
 
 Updates an existing ledger definition in the specified organization or sandbox.
 
@@ -1684,7 +1692,7 @@ Returns **`Promise`<`JSONResponse`<`LedgerDefinition`>>** A promise that resolve
 
 ### archiveLedger
 
-Defined in: [Particle.ts:2435](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L2435)
+Defined in: [Particle.ts:2438](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L2438)
 
 Archives a ledger definition in the specified organization or sandbox by ledger name.
 
@@ -1696,13 +1704,13 @@ Returns **`Promise`<`JSONResponse`<`OKResponse`>>** A promise that resolves with
 
 ### Scope
 
-Defined in: [Particle.ts:2436](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L2436)
+Defined in: [Particle.ts:2436](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L2436)
 
 Type: `"Owner" | "Product" | "Device"`
 
 ### listLedgers
 
-Defined in: [Particle.ts:2463](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L2463)
+Defined in: [Particle.ts:2466](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L2466)
 
 Lists all ledger definitions in the specified organization or sandbox.
 
@@ -1714,7 +1722,7 @@ Returns **`Promise`<`JSONResponse`<\{ `ledger_definitions`: `LedgerDefinition`[]
 
 ### getLedgerInstance
 
-Defined in: [Particle.ts:2491](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L2491)
+Defined in: [Particle.ts:2494](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L2494)
 
 Get ledger instance data.
 
@@ -1726,13 +1734,13 @@ Returns **`Promise`<`JSONResponse`<`LedgerInstance`>>** A promise that resolves 
 
 ### SetMode
 
-Defined in: [Particle.ts:2492](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L2492)
+Defined in: [Particle.ts:2492](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L2492)
 
 Type: `"Replace" | "Merge"`
 
 ### setLedgerInstance
 
-Defined in: [Particle.ts:2519](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L2519)
+Defined in: [Particle.ts:2522](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L2522)
 
 Set ledger instance data.
 
@@ -1744,7 +1752,7 @@ Returns **`Promise`<`JSONResponse`<`LedgerInstance`>>** A promise that resolves 
 
 ### deleteLedgerInstance
 
-Defined in: [Particle.ts:2545](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L2545)
+Defined in: [Particle.ts:2548](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L2548)
 
 Delete a ledger instance in the specified organization or sandbox by ledger name.
 
@@ -1756,7 +1764,7 @@ Returns **`Promise`<`JSONResponse`<`OKResponse`>>** A promise that resolves with
 
 ### listLedgerInstances
 
-Defined in: [Particle.ts:2568](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L2568)
+Defined in: [Particle.ts:2571](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L2571)
 
 Lists ledger instances in the specified organization or sandbox.
 
@@ -1768,7 +1776,7 @@ Returns **`Promise`<`JSONResponse`<`LedgerInstanceListResponse`>>** A promise th
 
 ### listLedgerInstanceVersions
 
-Defined in: [Particle.ts:2596](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L2596)
+Defined in: [Particle.ts:2599](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L2599)
 
 List ledger instance versions
 
@@ -1780,7 +1788,7 @@ Returns **`Promise`<`JSONResponse`<`LedgerVersionListResponse`>>** A promise tha
 
 ### getLedgerInstanceVersion
 
-Defined in: [Particle.ts:2623](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L2623)
+Defined in: [Particle.ts:2626](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L2626)
 
 Get specific ledger instance version
 
@@ -1792,7 +1800,7 @@ Returns **`Promise`<`JSONResponse`<`LedgerInstance`>>** A promise that resolves 
 
 ### listDeviceOsVersions
 
-Defined in: [Particle.ts:2646](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L2646)
+Defined in: [Particle.ts:2649](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L2649)
 
 List Device OS versions
 
@@ -1804,7 +1812,7 @@ Returns **`Promise`<`JSONResponse`<`DeviceOsVersion`[]>>** A promise that resolv
 
 ### getDeviceOsVersion
 
-Defined in: [Particle.ts:2675](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L2675)
+Defined in: [Particle.ts:2678](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L2678)
 
 Get a specific Device OS version
 
@@ -1814,9 +1822,93 @@ Get a specific Device OS version
 
 Returns **`Promise`<`JSONResponse`<`DeviceOsVersion`>>** A promise that resolves with the response data
 
+### listEnvVars
+
+Defined in: [Particle.ts:2703](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L2703)
+
+List environment variables for the given scope.
+
+**Parameters**
+
+-   `options` **`ListEnvVarsOptions`** Options for this API call
+
+Returns **`Promise`<`JSONResponse`<`EnvVarsResponse`>>** A promise that resolves with the env vars data
+
+### updateEnvVars
+
+Defined in: [Particle.ts:2725](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L2725)
+
+Bulk update environment variables with set/unset operations.
+
+**Parameters**
+
+-   `options` **`UpdateEnvVarsOptions`** Options for this API call
+
+Returns **`Promise`<`JSONResponse`<`EnvVarsResponse`>>** A promise that resolves with the updated env vars data
+
+### setEnvVar
+
+Defined in: [Particle.ts:2749](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L2749)
+
+Set a single environment variable.
+
+**Parameters**
+
+-   `options` **`SetEnvVarOptions`** Options for this API call
+
+Returns **`Promise`<`JSONResponse`<`EnvVarsResponse`>>** A promise that resolves with the updated env vars data
+
+### deleteEnvVar
+
+Defined in: [Particle.ts:2772](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L2772)
+
+Delete a single environment variable.
+
+**Parameters**
+
+-   `options` **`DeleteEnvVarOptions`** Options for this API call
+
+Returns **`Promise`<`JSONResponse`<`EnvVarsResponse`>>** A promise that resolves with the updated env vars data
+
+### renderEnvVars
+
+Defined in: [Particle.ts:2793](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L2793)
+
+Get the rendered (flattened) environment variables for the given scope.
+
+**Parameters**
+
+-   `options` **`RenderEnvVarsOptions`** Options for this API call
+
+Returns **`Promise`<`JSONResponse`<`EnvVarsRenderResponse`>>** A promise that resolves with the rendered env vars
+
+### reviewEnvVarsRollout
+
+Defined in: [Particle.ts:2814](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L2814)
+
+Review the pending environment variables rollout changes.
+
+**Parameters**
+
+-   `options` **`ReviewEnvVarsRolloutOptions`** Options for this API call
+
+Returns **`Promise`<`JSONResponse`<`EnvVarsRolloutResponse`>>** A promise that resolves with the rollout diff
+
+### startEnvVarsRollout
+
+Defined in: [Particle.ts:2836](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L2836)
+
+Start rolling out environment variables to devices.
+
+**Parameters**
+
+-   `options` **`StartEnvVarsRolloutOptions`** Options for this API call
+
+Returns **`Promise`<`JSONResponse`<`OKResponse`>>** A promise that resolves with success status
+
 ### setDefaultAuth
 
-Defined in: [Particle.ts:2691](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L2691)
+Defined in: [Particle.ts:2849](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L2849)
 
 Set default auth token that will be used in each method if `auth` is not provided
 
@@ -1834,7 +1926,7 @@ When not auth string is provided
 
 > **get**<`T`>(`params`: `GetHeadOptions`): `Promise`<`JSONResponse`<`T`>>
 
-Defined in: [Particle.ts:2728](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L2728)
+Defined in: [Particle.ts:2906](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L2906)
 
 Make a GET request
 
@@ -1854,7 +1946,7 @@ Returns **`Promise`<`JSONResponse`<`T`>>** A promise that resolves with the resp
 
 > **head**<`T`>(`params`: `GetHeadOptions`): `Promise`<`JSONResponse`<`T`>>
 
-Defined in: [Particle.ts:2744](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L2744)
+Defined in: [Particle.ts:2922](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L2922)
 
 Make a HEAD request
 
@@ -1874,7 +1966,7 @@ Returns **`Promise`<`JSONResponse`<`T`>>** A promise that resolves with the resp
 
 > **post**<`T`>(`params`: `MutateOptions`): `Promise`<`JSONResponse`<`T`>>
 
-Defined in: [Particle.ts:2760](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L2760)
+Defined in: [Particle.ts:2938](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L2938)
 
 Make a POST request
 
@@ -1894,9 +1986,29 @@ Returns **`Promise`<`JSONResponse`<`T`>>** A promise that resolves with the resp
 
 > **put**<`T`>(`params`: `MutateOptions`): `Promise`<`JSONResponse`<`T`>>
 
-Defined in: [Particle.ts:2777](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L2777)
+Defined in: [Particle.ts:2955](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L2955)
 
 Make a PUT request
+
+###### Type Parameters
+
+###### T
+
+`T` = `object`
+
+**Parameters**
+
+-   `params` **`MutateOptions`**
+
+Returns **`Promise`<`JSONResponse`<`T`>>** A promise that resolves with the response data
+
+### patch
+
+> **patch**<`T`>(`params`: `MutateOptions`): `Promise`<`JSONResponse`<`T`>>
+
+Defined in: [Particle.ts:2971](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L2971)
+
+Make a PATCH request
 
 ###### Type Parameters
 
@@ -1914,7 +2026,7 @@ Returns **`Promise`<`JSONResponse`<`T`>>** A promise that resolves with the resp
 
 > **delete**<`T`>(`params`: `MutateOptions`): `Promise`<`JSONResponse`<`T`>>
 
-Defined in: [Particle.ts:2793](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L2793)
+Defined in: [Particle.ts:2987](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L2987)
 
 Make a DELETE request
 
@@ -1932,7 +2044,7 @@ Returns **`Promise`<`JSONResponse`<`T`>>** A promise that resolves with the resp
 
 ### request
 
-Defined in: [Particle.ts:2814](https://github.com/particle-iot/particle-api-js/blob/567dd4b3f3cd54f5be3f8b8bb4058d4e4f8fb04f/src/Particle.ts#L2814)
+Defined in: [Particle.ts:3008](https://github.com/particle-iot/particle-api-js/blob/194f00c021ea5f7bcdf8ad1b341087f245461c36/src/Particle.ts#L3008)
 
 **Parameters**
 
