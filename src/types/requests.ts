@@ -480,10 +480,6 @@ export interface LookupSerialNumberOptions extends SharedRequestOptions {
 	serialNumber: string;
 }
 
-export interface ValidatePromoCodeOptions extends SharedRequestOptions {
-	promoCode: string;
-}
-
 export interface DownloadFileOptions extends SharedRequestOptions {
 	uri: string;
 }
