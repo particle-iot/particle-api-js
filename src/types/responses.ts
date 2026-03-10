@@ -7,6 +7,25 @@ export interface LoginResponse {
 	refresh_token: string;
 }
 
+export interface MfaRequiredResponse {
+	error: 'mfa_required';
+	error_description: string;
+	mfa_token: string;
+}
+
+export interface AccessTokenInfo {
+	token: string;
+	expires_at: string;
+	client: string;
+}
+
+export interface CurrentTokenInfo {
+	expires_at: string;
+	client_id: string;
+	scopes: string[];
+	orgs: Array<{ id: string; slug: string }>;
+}
+
 export interface AccountInfo {
 	first_name?: string;
 	last_name?: string;
