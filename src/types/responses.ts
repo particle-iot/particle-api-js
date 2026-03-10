@@ -7,25 +7,6 @@ export interface LoginResponse {
 	refresh_token: string;
 }
 
-export interface MfaRequiredResponse {
-	error: 'mfa_required';
-	error_description: string;
-	mfa_token: string;
-}
-
-export interface AccessTokenInfo {
-	token: string;
-	expires_at: string;
-	client: string;
-}
-
-export interface CurrentTokenInfo {
-	expires_at: string;
-	client_id: string;
-	scopes: string[];
-	orgs: Array<{ id: string; slug: string }>;
-}
-
 export interface AccountInfo {
 	first_name?: string;
 	last_name?: string;
@@ -76,11 +57,6 @@ export interface DeviceInfo {
 	groups?: string[];
 	denied?: boolean;
 	notes?: string | null;
-}
-
-export interface DeviceListResponse {
-	devices: DeviceInfo[];
-	meta?: PaginationMeta;
 }
 
 export interface DeviceVariableResponse {
@@ -184,13 +160,6 @@ export interface ProductInfo {
 	groups?: string[];
 	settings?: ProductSettings;
 	device_protection?: string;
-}
-
-export interface OrganizationInfo {
-	id: string;
-	slug: string;
-	name: string;
-	description?: string;
 }
 
 export interface SimInfo {
@@ -339,20 +308,6 @@ export interface LedgerInstanceListResponse {
 export interface LedgerVersionListResponse {
 	versions: LedgerInstance[];
 	meta: { has_more: boolean };
-}
-
-export interface SecretUsage {
-	name: string;
-	id: string;
-}
-
-export interface SecretInfo {
-	name: string;
-	created_at: string;
-	updated_at: string;
-	last_accessed_at: string | null;
-	integrations: SecretUsage[];
-	logic_functions: SecretUsage[];
 }
 
 export interface LocationGeometry {

@@ -4,16 +4,17 @@ import Agent = require('./Agent');
 import Client = require('./Client');
 import type { JSONResponse, RequestResponse, AgentRequestOptions, GetHeadOptions, MutateOptions, ToolContext, ProjectContext,
 	LoginOptions, SendOtpOptions, LoginAsClientOwnerOptions, EnableMfaOptions, ConfirmMfaOptions, DisableMfaOptions,
+	CreateUserOptions, SetUserInfoOptions,
 	ResetPasswordOptions, ChangeUsernameOptions, ChangeUserPasswordOptions, DeleteUserOptions,
 	TrackingIdentityOptions, DeleteAccessTokenOptions, DeleteCurrentAccessTokenOptions, DeleteActiveAccessTokensOptions,
-	GetDeviceOptions, ClaimDeviceOptions, RemoveDeviceOptions, RemoveDeviceOwnerOptions,
+	ListDevicesOptions, GetDeviceOptions, ClaimDeviceOptions, RemoveDeviceOptions, RemoveDeviceOwnerOptions,
 	UpdateDeviceOptions, RenameDeviceOptions, SignalDeviceOptions, FlashDeviceOptions,
 	CallFunctionOptions, GetVariableOptions, UnprotectDeviceOptions, DownloadManufacturingBackupOptions,
-	CompileCodeOptions, DownloadFirmwareBinaryOptions, ProvisionDeviceOptions,
-	GetEventStreamOptions, ListProductFirmwareOptions, UploadProductFirmwareOptions,
+	CompileCodeOptions, DownloadFirmwareBinaryOptions, SendPublicKeyOptions, ProvisionDeviceOptions,
+	PublishEventOptions, GetEventStreamOptions, ListProductFirmwareOptions, UploadProductFirmwareOptions,
 	GetProductFirmwareOptions, UpdateProductFirmwareOptions, ReleaseFirmwareOptions,
 	DownloadProductFirmwareOptions, AddDeviceToProductOptions,
-	ListWebhooksOptions, DeleteWebhookOptions,
+	ListWebhooksOptions, CreateWebhookOptions, DeleteWebhookOptions,
 	ListIntegrationsOptions, CreateIntegrationOptions, EditIntegrationOptions, DeleteIntegrationOptions,
 	ListSIMsOptions, CheckSIMOptions,
 	RemoveSIMOptions, GetSIMDataUsageOptions, GetFleetDataUsageOptions,
@@ -22,14 +23,14 @@ import type { JSONResponse, RequestResponse, AgentRequestOptions, GetHeadOptions
 	GetProductDeviceConfigurationOptions, GetProductDeviceConfigurationSchemaOptions,
 	SetProductConfigurationOptions, SetProductDeviceConfigurationOptions,
 	GetProductLocationsOptions, GetProductDeviceLocationsOptions,
-	ListOAuthClientsOptions, UpdateOAuthClientOptions, DeleteOAuthClientOptions,
+	ListOAuthClientsOptions, CreateOAuthClientOptions, UpdateOAuthClientOptions, DeleteOAuthClientOptions,
 	ListLibrariesOptions, GetLibraryOptions, GetLibraryVersionsOptions,
 	ContributeLibraryOptions, PublishLibraryOptions, DeleteLibraryOptions,
 	ListBuildTargetsOptions, ListDeviceOsVersionsOptions, GetDeviceOsVersionOptions,
 	GetClaimCodeOptions, LookupSerialNumberOptions, DownloadFileOptions,
 	ListTeamMembersOptions, InviteTeamMemberOptions, RemoveTeamMemberOptions,
 	CreateCustomerOptions, ExecuteLogicOptions,
-	ListLogicFunctionsOptions, GetLogicFunctionOptions, DeleteLogicFunctionOptions,
+	ListLogicFunctionsOptions, GetLogicFunctionOptions, CreateLogicFunctionOptions, UpdateLogicFunctionOptions, DeleteLogicFunctionOptions,
 	ListLogicRunsOptions, GetLogicRunOptions, GetLogicRunLogsOptions,
 	ListLedgersOptions, CreateLedgerOptions, GetLedgerOptions, UpdateLedgerOptions, ArchiveLedgerOptions,
 	ListLedgerInstancesOptions, GetLedgerInstanceOptions, SetLedgerInstanceOptions, DeleteLedgerInstanceOptions,
@@ -294,7 +295,7 @@ class Particle {
      * @param {Object} [options.context]    Request context
      * @returns {Promise<JSONResponse<OKResponse>>} A promise that resolves with the response data
      */
-	createUser({ username, password, accountInfo, utm, headers, context }: { username: string; password: string; accountInfo?: Record<string, string | number | boolean>; utm?: Record<string, string>; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<JSONResponse<OKResponse>> {
+	createUser({ username, password, accountInfo, utm, headers, context }: CreateUserOptions): Promise<JSONResponse<OKResponse>> {
 		return this.post<OKResponse>({
 			uri: '/v1/users',
 			headers,
@@ -430,7 +431,7 @@ class Particle {
      * @param {Object}         [options.context]     Request context
      * @returns {Promise<JSONResponse<DeviceInfo[]>>} A promise that resolves with the response data
      */
-	listDevices({ deviceId, deviceName, groups, sortAttr, sortDir, page, perPage, product, auth, headers, context }: { deviceId?: string; deviceName?: string; groups?: string[]; sortAttr?: string; sortDir?: string; page?: number; perPage?: number; product?: string | number; auth?: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<JSONResponse<DeviceInfo[]>> {
+	listDevices({ deviceId, deviceName, groups, sortAttr, sortDir, page, perPage, product, auth, headers, context }: ListDevicesOptions): Promise<JSONResponse<DeviceInfo[]>> {
 		let uri: string;
 		let query: Record<string, string | number | string[] | undefined> | undefined;
 
@@ -854,7 +855,7 @@ class Particle {
      * @param {Object}          [options.context]        Request context
      * @returns {Promise<JSONResponse<OKResponse>>} A promise that resolves with the response data
      */
-	sendPublicKey({ deviceId, key, algorithm, auth, headers, context }: { deviceId: string; key: string | Buffer; algorithm?: string; auth?: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<JSONResponse<OKResponse>> {
+	sendPublicKey({ deviceId, key, algorithm, auth, headers, context }: SendPublicKeyOptions): Promise<JSONResponse<OKResponse>> {
 		return this.post<OKResponse>({
 			uri: `/v1/provisioning/${deviceId}`,
 			auth,
@@ -939,7 +940,7 @@ class Particle {
      * @param {Object}  [options.context]  Request context
      * @returns {Promise<JSONResponse<OKResponse>>} A promise that resolves with the response data
      */
-	publishEvent({ name, data, isPrivate, product, auth, headers, context }: { name: string; data?: string; isPrivate?: boolean; product?: string | number; auth?: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<JSONResponse<OKResponse>> {
+	publishEvent({ name, data, isPrivate, product, auth, headers, context }: PublishEventOptions): Promise<JSONResponse<OKResponse>> {
 		const uri = product ? `/v1/products/${product}/events` : '/v1/devices/events';
 		const postData = { name, data, private: isPrivate };
 		return this.post<OKResponse>({ uri, auth, headers, data: postData, context });
@@ -974,7 +975,7 @@ class Particle {
      * @param {Object}  [options.context]             Request context
      * @returns {Promise<JSONResponse<CreateWebhookResponse>>} A promise that resolves with the response data
      */
-	createWebhook({ event, url, device, rejectUnauthorized, noDefaults, hook, product, auth, headers, context }: { event: string; url: string; device?: string; rejectUnauthorized?: boolean; noDefaults?: boolean; hook?: { method?: string; auth?: Record<string, string>; headers?: Record<string, string>; query?: Record<string, string>; json?: object; form?: object; body?: string; responseTemplate?: string; responseEvent?: string; errorResponseEvent?: string }; product?: string | number; auth?: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<JSONResponse<CreateWebhookResponse>> {
+	createWebhook({ event, url, device, rejectUnauthorized, noDefaults, hook, product, auth, headers, context }: CreateWebhookOptions): Promise<JSONResponse<CreateWebhookResponse>> {
 		const uri = product ? `/v1/products/${product}/webhooks` : '/v1/webhooks';
 		const data: Record<string, string | boolean | object | undefined> = { event, url, deviceId: device, rejectUnauthorized, noDefaults };
 
@@ -1121,7 +1122,7 @@ class Particle {
      * @param {Object} [options.context]    Request context
      * @returns {Promise<JSONResponse<UserInfo>>} A promise that resolves with the response data
      */
-	setUserInfo({ accountInfo, auth, headers, context }: { accountInfo?: Record<string, string | number | boolean>; auth?: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<JSONResponse<UserInfo>> {
+	setUserInfo({ accountInfo, auth, headers, context }: SetUserInfoOptions): Promise<JSONResponse<UserInfo>> {
 		const data = { account_info: accountInfo };
 		return this.put<UserInfo>({ uri: '/v1/user', auth, headers, data, context });
 	}
@@ -1458,7 +1459,7 @@ class Particle {
      * @param {Object} [options.context]       Request context
      * @returns {Promise<JSONResponse<OAuthClientInfo>>} A promise that resolves with the response data
      */
-	createOAuthClient({ name, type, redirect_uri, scope, product, auth, headers, context }: { name: string; type: string; redirect_uri?: string; scope?: Record<string, string>; product?: string | number; auth?: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<JSONResponse<OAuthClientInfo>> {
+	createOAuthClient({ name, type, redirect_uri, scope, product, auth, headers, context }: CreateOAuthClientOptions): Promise<JSONResponse<OAuthClientInfo>> {
 		const uri = product ? `/v1/products/${product}/clients` : '/v1/clients';
 		const data = { name, type, redirect_uri, scope };
 		return this.post<OAuthClientInfo>({ uri, auth, headers, data, context });
@@ -1958,7 +1959,7 @@ class Particle {
      *
      * @returns {Promise<RequestResponse>} A promise that resolves to the created logic function data.
      */
-	createLogicFunction({ auth, org, logicFunction, headers, context }: { auth?: string; org?: string; logicFunction: { name: string; description?: string; enabled?: boolean; source: { type: 'JavaScript'; code: string }; logic_triggers?: object[]; api_username?: string }; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<JSONResponse<{ logic_function: LogicFunction }>> {
+	createLogicFunction({ auth, org, logicFunction, headers, context }: CreateLogicFunctionOptions): Promise<JSONResponse<{ logic_function: LogicFunction }>> {
 		return this.post<{ logic_function: LogicFunction }>({
 			uri: this._namespacedPath(org, 'logic/functions'),
 			auth,
@@ -2004,7 +2005,7 @@ class Particle {
      *
      * @returns {Promise<RequestResponse>} A promise that resolves to the updated logic function data.
      */
-	updateLogicFunction({ auth, org, logicFunctionId, logicFunction, headers, context }: { auth?: string; org?: string; logicFunctionId: string; logicFunction: { name?: string; description?: string; enabled?: boolean; source?: { type: 'JavaScript'; code: string }; logic_triggers?: object[] }; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<JSONResponse<{ logic_function: LogicFunction }>> {
+	updateLogicFunction({ auth, org, logicFunctionId, logicFunction, headers, context }: UpdateLogicFunctionOptions): Promise<JSONResponse<{ logic_function: LogicFunction }>> {
 		return this.put<{ logic_function: LogicFunction }>({
 			uri: this._namespacedPath(org, `logic/functions/${logicFunctionId}`),
 			auth,

@@ -33,10 +33,6 @@ export interface CreateUserOptions extends SharedRequestOptions {
 	utm?: Record<string, string>;
 }
 
-export interface VerifyUserOptions extends SharedRequestOptions {
-	token: string;
-}
-
 export interface ResetPasswordOptions extends SharedRequestOptions {
 	username: string;
 }
@@ -65,12 +61,6 @@ export interface TrackingIdentityOptions extends SharedRequestOptions {
 	full?: boolean;
 }
 
-export interface ListAccessTokensOptions extends SharedRequestOptions {
-	username: string;
-	password: string;
-	otp?: string;
-}
-
 export interface DeleteAccessTokenOptions extends SharedRequestOptions {
 	token: string;
 }
@@ -83,7 +73,7 @@ export interface ListDevicesOptions extends SharedRequestOptions {
 	deviceName?: string;
 	groups?: string[];
 	sortAttr?: string;
-	sortDir?: 'asc' | 'desc';
+	sortDir?: string;
 	page?: number;
 	perPage?: number;
 	product?: string | number;
@@ -140,10 +130,6 @@ export interface FlashDeviceOptions extends SharedRequestOptions {
 	product?: string | number;
 }
 
-export interface FlashTinkerOptions extends SharedRequestOptions {
-	deviceId: string;
-}
-
 export interface CallFunctionOptions extends SharedRequestOptions {
 	deviceId: string;
 	name: string;
@@ -185,7 +171,7 @@ export interface DownloadFirmwareBinaryOptions extends SharedRequestOptions {
 export interface SendPublicKeyOptions extends SharedRequestOptions {
 	deviceId: string;
 	key: string | Buffer;
-	algorithm?: 'rsa' | 'ecc';
+	algorithm?: string;
 }
 
 export interface ProvisionDeviceOptions extends SharedRequestOptions {
@@ -218,7 +204,7 @@ export interface CreateWebhookOptions extends SharedRequestOptions {
 	rejectUnauthorized?: boolean;
 	noDefaults?: boolean;
 	hook?: {
-		method?: 'GET' | 'POST' | 'PUT' | 'DELETE';
+		method?: string;
 		auth?: Record<string, string>;
 		headers?: Record<string, string>;
 		query?: Record<string, string>;
@@ -233,11 +219,6 @@ export interface CreateWebhookOptions extends SharedRequestOptions {
 }
 
 export interface DeleteWebhookOptions extends SharedRequestOptions {
-	hookId: string;
-	product?: string | number;
-}
-
-export interface GetWebhookOptions extends SharedRequestOptions {
 	hookId: string;
 	product?: string | number;
 }
@@ -336,11 +317,6 @@ export interface DownloadProductFirmwareOptions extends SharedRequestOptions {
 	version: number;
 }
 
-export interface DeleteProductFirmwareOptions extends SharedRequestOptions {
-	product: string | number;
-	version: number;
-}
-
 export interface AddDeviceToProductOptions extends SharedRequestOptions {
 	product: string | number;
 	deviceId?: string;
@@ -402,7 +378,7 @@ export interface ListOAuthClientsOptions extends SharedRequestOptions {
 
 export interface CreateOAuthClientOptions extends SharedRequestOptions {
 	name: string;
-	type: 'installed' | 'web';
+	type: string;
 	redirect_uri?: string;
 	scope?: Record<string, string>;
 	product?: string | number;
@@ -651,32 +627,6 @@ export interface GetLedgerInstanceVersionOptions extends SharedRequestOptions {
 	ledgerName: string;
 	scopeValue: string;
 	version: string;
-}
-
-export interface ListSecretsOptions extends SharedRequestOptions {
-	org?: string;
-	names?: string[];
-}
-
-export interface GetSecretOptions extends SharedRequestOptions {
-	org?: string;
-	secretName: string;
-}
-
-export interface CreateSecretOptions extends SharedRequestOptions {
-	org?: string;
-	secret: { name: string; value: string };
-}
-
-export interface PutSecretOptions extends SharedRequestOptions {
-	org?: string;
-	secretName: string;
-	secret: { value: string };
-}
-
-export interface DeleteSecretOptions extends SharedRequestOptions {
-	org?: string;
-	secretName: string;
 }
 
 export interface EnvVarScopeOptions extends SharedRequestOptions {
