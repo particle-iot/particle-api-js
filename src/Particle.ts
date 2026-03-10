@@ -22,9 +22,6 @@ import type { JSONResponse, RequestResponse, AgentRequestOptions, GetHeadOptions
 	GetProductDeviceConfigurationOptions, GetProductDeviceConfigurationSchemaOptions,
 	SetProductConfigurationOptions, SetProductDeviceConfigurationOptions,
 	GetProductLocationsOptions, GetProductDeviceLocationsOptions,
-	ListMeshNetworksOptions, CreateMeshNetworkOptions, GetMeshNetworkOptions,
-	UpdateMeshNetworkOptions, RemoveMeshNetworkOptions, ListMeshNetworkDevicesOptions,
-	RemoveMeshNetworkDeviceOptions,
 	ListOAuthClientsOptions, UpdateOAuthClientOptions, DeleteOAuthClientOptions,
 	ListLibrariesOptions, GetLibraryOptions, GetLibraryVersionsOptions,
 	ContributeLibraryOptions, PublishLibraryOptions, DeleteLibraryOptions,
@@ -44,7 +41,7 @@ import type { JSONResponse, RequestResponse, AgentRequestOptions, GetHeadOptions
 	DeviceVariableResponse, FunctionCallResponse, CompileResponse, ProductFirmwareInfo,
 	WebhookInfo, CreateWebhookResponse, IntegrationInfo, SimInfo, SimDataUsage,
 	ProductInfo, TeamMember, SerialNumberResponse, BuildTargetsResponse,
-	LibraryInfo, OAuthClientInfo, NetworkInfo, ProductConfigurationResponse,
+	LibraryInfo, OAuthClientInfo, ProductConfigurationResponse,
 	LocationListResponse, DeviceLocationInfo, ExecuteLogicResponse, LogicFunction,
 	LogicRun, LogicRunLog, LedgerDefinition, LedgerInstance,
 	LedgerInstanceListResponse, LedgerVersionListResponse, DeviceOsVersion,
@@ -1733,162 +1730,6 @@ class Particle {
 			uri: `/v1/serial_numbers/${serialNumber}`,
 			auth,
 			headers,
-			context
-		});
-	}
-
-	/**
-     * Create a mesh network
-     * @param {Object} options            Options for this API call
-     * @param {String} options.name       Network name
-     * @param {String} options.deviceId   Gateway device ID
-     * @param {String} [options.iccid]    ICCID of the active SIM card (only for cellular gateway devices)
-     * @param {string} [options.auth]     The access token. Can be ignored if provided in constructor
-     * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-     * @param {Object} [options.context]  Request context
-     * @returns {Promise<JSONResponse<NetworkInfo>>} A promise that resolves with the response data
-     */
-	createMeshNetwork({ name, deviceId, iccid, auth, headers, context }: CreateMeshNetworkOptions): Promise<JSONResponse<NetworkInfo>> {
-		return this.post<NetworkInfo>({
-			uri: '/v1/networks',
-			auth,
-			headers,
-			data: { name, device_id: deviceId, iccid },
-			context
-		});
-	}
-
-	/**
-     * Remove a mesh network.
-     * @param {Object} options            Options for this API call
-     * @param {String} options.networkId  Network ID or name
-     * @param {string} [options.auth]     The access token. Can be ignored if provided in constructor
-     * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-     * @param {Object} [options.context]  Request context
-     * @returns {Promise<JSONResponse<OKResponse>>} A promise that resolves with the response data
-     */
-	removeMeshNetwork({ networkId, auth, headers, context }: RemoveMeshNetworkOptions): Promise<JSONResponse<OKResponse>> {
-		return this.delete<OKResponse>({ uri: `/v1/networks/${networkId}`, auth, headers, context });
-	}
-
-	/**
-     * List all mesh networks
-     * @param {Object} options            Options for this API call
-     * @param {string} [options.auth]     The access token. Can be ignored if provided in constructor
-     * @param {Number} [options.page]     Current page of results
-     * @param {Number} [options.perPage]  Records per page
-     * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-     * @param {Object} [options.context]  Request context
-     * @returns {Promise<JSONResponse<NetworkInfo[]>>} A promise that resolves with the response data
-     */
-	listMeshNetworks({ page, perPage, auth, headers, context }: ListMeshNetworksOptions): Promise<JSONResponse<NetworkInfo[]>> {
-		const query = page ? { page, per_page: perPage } : undefined;
-		return this.get<NetworkInfo[]>({ uri: '/v1/networks', auth, headers, query, context });
-	}
-
-	/**
-     * Get information about a mesh network.
-     * @param {Object} options            Options for this API call
-     * @param {String} options.networkId  Network ID or name
-     * @param {string} [options.auth]     The access token. Can be ignored if provided in constructor
-     * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-     * @param {Object} [options.context]  Request context
-     * @returns {Promise<JSONResponse<NetworkInfo>>} A promise that resolves with the response data
-     */
-	getMeshNetwork({ networkId, auth, headers, context }: GetMeshNetworkOptions): Promise<JSONResponse<NetworkInfo>> {
-		return this.get<NetworkInfo>({ uri: `/v1/networks/${networkId}`, auth, headers, context });
-	}
-
-	/**
-     * Modify a mesh network.
-     * @param {Object} options            Options for this API call
-     * @param {String} options.networkId  Network ID or name
-     * @param {String} options.action     'add-device', 'remove-device', 'gateway-enable' or 'gateway-disable'
-     * @param {String} options.deviceId   Device ID
-     * @param {string} [options.auth]     The access token. Can be ignored if provided in constructor
-     * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-     * @param {Object} [options.context]  Request context
-     * @returns {Promise<JSONResponse<NetworkInfo>>} A promise that resolves with the response data
-     */
-	updateMeshNetwork({ networkId, action, deviceId, auth, headers, context }: UpdateMeshNetworkOptions): Promise<JSONResponse<NetworkInfo>> {
-		return this.put<NetworkInfo>({
-			uri: `/v1/networks/${networkId}`,
-			auth,
-			headers,
-			data: { action, device_id: deviceId },
-			context
-		});
-	}
-
-	/**
-     * Add a device to a mesh network.
-     * @param {Object} options            Options for this API call
-     * @param {String} options.networkId  Network ID or name
-     * @param {String} options.deviceId   Device ID
-     * @param {string} [options.auth]     The access token. Can be ignored if provided in constructor
-     * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-     * @param {Object} [options.context]  Request context
-     * @returns {Promise<JSONResponse<NetworkInfo>>} A promise that resolves with the response data
-     */
-	addMeshNetworkDevice({ networkId, deviceId, auth, headers, context }: { networkId: string; deviceId: string; auth?: string; headers?: Record<string, string>; context?: { tool?: ToolContext; project?: ProjectContext } }): Promise<JSONResponse<NetworkInfo>> {
-		return this.updateMeshNetwork({
-			action: 'add-device',
-			networkId,
-			deviceId,
-			auth,
-			headers,
-			context
-		});
-	}
-
-	/**
-     * Remove a device from a mesh network.
-     * @param {Object} options              Options for this API call
-     * @param {String} [options.networkId]  Network ID or name
-     * @param {String} options.deviceId     Device ID
-     * @param {string} [options.auth]       The access token. Can be ignored if provided in constructor
-     * @param {Object} [options.headers]    Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-     * @param {Object} [options.context]    Request context
-     * @returns {Promise<JSONResponse<OKResponse>>} A promise that resolves with the response data
-     */
-	removeMeshNetworkDevice({ networkId, deviceId, auth, headers, context }: RemoveMeshNetworkDeviceOptions): Promise<JSONResponse<OKResponse>> {
-		if (!networkId) {
-			return this.delete<OKResponse>({
-				uri: `/v1/devices/${deviceId}/network`,
-				auth,
-				headers,
-				context
-			});
-		}
-		return this.updateMeshNetwork({
-			action: 'remove-device',
-			networkId,
-			deviceId,
-			auth,
-			headers,
-			context
-		}) as object as Promise<JSONResponse<OKResponse>>;
-	}
-
-	/**
-     * List all devices of a mesh network.
-     * @param {Object} options            Options for this API call
-     * @param {String} options.networkId  Network ID or name
-     * @param {string} [options.auth]     The access token. Can be ignored if provided in constructor
-     * @param {Number} [options.role]     Device role: 'gateway' or 'node'
-     * @param {Number} [options.page]     Current page of results
-     * @param {Number} [options.perPage]  Records per page
-     * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-     * @param {Object} [options.context]  Request context
-     * @returns {Promise<JSONResponse<DeviceInfo[]>>} A promise that resolves with the response data
-     */
-	listMeshNetworkDevices({ networkId, role, page, perPage, auth, headers, context }: ListMeshNetworkDevicesOptions): Promise<JSONResponse<DeviceInfo[]>> {
-		const query = (role || page) ? { role, page, per_page: perPage } : undefined;
-		return this.get<DeviceInfo[]>({
-			uri: `/v1/networks/${networkId}/devices`,
-			auth,
-			headers,
-			query,
 			context
 		});
 	}

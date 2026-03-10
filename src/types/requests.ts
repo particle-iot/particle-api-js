@@ -396,43 +396,6 @@ export interface GetProductDeviceLocationsOptions extends SharedRequestOptions {
 	rectTr?: string;
 }
 
-export interface ListMeshNetworksOptions extends SharedRequestOptions {
-	page?: number;
-	perPage?: number;
-}
-
-export interface CreateMeshNetworkOptions extends SharedRequestOptions {
-	name: string;
-	deviceId: string;
-	iccid?: string;
-}
-
-export interface GetMeshNetworkOptions extends SharedRequestOptions {
-	networkId: string;
-}
-
-export interface UpdateMeshNetworkOptions extends SharedRequestOptions {
-	networkId: string;
-	action: string;
-	deviceId: string;
-}
-
-export interface RemoveMeshNetworkOptions extends SharedRequestOptions {
-	networkId: string;
-}
-
-export interface ListMeshNetworkDevicesOptions extends SharedRequestOptions {
-	networkId: string;
-	role?: string;
-	page?: number;
-	perPage?: number;
-}
-
-export interface RemoveMeshNetworkDeviceOptions extends SharedRequestOptions {
-	networkId?: string;
-	deviceId: string;
-}
-
 export interface ListOAuthClientsOptions extends SharedRequestOptions {
 	product?: string | number;
 }

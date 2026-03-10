@@ -193,12 +193,6 @@ export interface OrganizationInfo {
 	description?: string;
 }
 
-export interface NetworkInfo {
-	id: string;
-	name: string;
-	[key: string]: string | number | boolean | object | null | undefined;
-}
-
 export interface SimInfo {
 	iccid: string;
 	status: 'active' | 'inactive' | 'deactivated';
