@@ -73,7 +73,7 @@ export interface ListDevicesOptions extends SharedRequestOptions {
 	deviceName?: string;
 	groups?: string[];
 	sortAttr?: string;
-	sortDir?: string;
+	sortDir?: 'asc' | 'desc';
 	page?: number;
 	perPage?: number;
 	product?: string | number;
@@ -171,7 +171,7 @@ export interface DownloadFirmwareBinaryOptions extends SharedRequestOptions {
 export interface SendPublicKeyOptions extends SharedRequestOptions {
 	deviceId: string;
 	key: string | Buffer;
-	algorithm?: string;
+	algorithm?: 'rsa' | 'ecc';
 }
 
 export interface ProvisionDeviceOptions extends SharedRequestOptions {
@@ -204,7 +204,7 @@ export interface CreateWebhookOptions extends SharedRequestOptions {
 	rejectUnauthorized?: boolean;
 	noDefaults?: boolean;
 	hook?: {
-		method?: string;
+		method?: 'GET' | 'POST' | 'PUT' | 'DELETE';
 		auth?: Record<string, string>;
 		headers?: Record<string, string>;
 		query?: Record<string, string>;
@@ -378,7 +378,7 @@ export interface ListOAuthClientsOptions extends SharedRequestOptions {
 
 export interface CreateOAuthClientOptions extends SharedRequestOptions {
 	name: string;
-	type: string;
+	type: 'installed' | 'web';
 	redirect_uri?: string;
 	scope?: Record<string, string>;
 	product?: string | number;

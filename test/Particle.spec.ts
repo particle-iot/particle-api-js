@@ -50,7 +50,7 @@ const props = {
 	rejectUnauthorized: true,
 	noDefaults: true,
 	hook: {
-		method: 'PUT',
+		method: 'PUT' as const,
 		auth: {
 			username: 'u',
 			password: 'p'
@@ -83,7 +83,7 @@ const props = {
 	page: 5,
 	perPage: 50,
 	sortAttr: 'deviceId',
-	sortDir: 'asc',
+	sortDir: 'asc' as const,
 	deny: false,
 	deviceIds: ['abc', 'xyz'],
 	development: false,
