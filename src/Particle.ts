@@ -38,7 +38,7 @@ import type { JSONResponse, RequestResponse, AgentRequestOptions, GetHeadOptions
 	ListEnvVarsOptions, UpdateEnvVarsOptions, SetEnvVarOptions, DeleteEnvVarOptions,
 	RenderEnvVarsOptions, ReviewEnvVarsRolloutOptions, StartEnvVarsRolloutOptions,
 	OKResponse, LoginResponse, EnableMfaResponse, ConfirmMfaResponse, CreateCustomerResponse,
-	TrackingIdentityResponse, UserInfo, DeviceInfo, ClaimResponse, ClaimCodeResponse,
+	TrackingIdentityResponse, UserInfo, DeviceInfo, DeviceListResponse, ClaimResponse, ClaimCodeResponse,
 	DeviceVariableResponse, FunctionCallResponse, CompileResponse, ProductFirmwareInfo,
 	WebhookInfo, CreateWebhookResponse, IntegrationInfo, SimInfo, SimDataUsage,
 	ProductInfo, TeamMember, SerialNumberResponse, BuildTargetsResponse,
@@ -429,9 +429,9 @@ class Particle {
      * @param {string}         [options.auth]        The access token. Can be ignored if provided in constructor
      * @param {Object}         [options.headers]     Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object}         [options.context]     Request context
-     * @returns {Promise<JSONResponse<DeviceInfo[]>>} A promise that resolves with the response data
+     * @returns {Promise<JSONResponse<DeviceInfo[] | DeviceListResponse>>} A promise that resolves with the response data
      */
-	listDevices({ deviceId, deviceName, groups, sortAttr, sortDir, page, perPage, product, auth, headers, context }: ListDevicesOptions): Promise<JSONResponse<DeviceInfo[]>> {
+	listDevices({ deviceId, deviceName, groups, sortAttr, sortDir, page, perPage, product, auth, headers, context }: ListDevicesOptions): Promise<JSONResponse<DeviceInfo[] | DeviceListResponse>> {
 		let uri: string;
 		let query: Record<string, string | number | string[] | undefined> | undefined;
 
@@ -446,11 +446,11 @@ class Particle {
 				page,
 				per_page: perPage
 			};
-		} else {
-			uri = '/v1/devices';
+			return this.get<DeviceListResponse>({ uri, auth, headers, query, context });
 		}
 
-		return this.get<DeviceInfo[]>({ uri, auth, headers, query, context });
+		uri = '/v1/devices';
+		return this.get<DeviceInfo[]>({ uri, auth, headers, context });
 	}
 
 	/**

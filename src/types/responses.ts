@@ -59,6 +59,11 @@ export interface DeviceInfo {
 	notes?: string | null;
 }
 
+export interface DeviceListResponse {
+	devices: DeviceInfo[];
+	meta?: PaginationMeta;
+}
+
 export interface DeviceVariableResponse {
 	name: string;
 	result: string | number | boolean;
