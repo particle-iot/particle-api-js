@@ -186,19 +186,6 @@ export interface ProductInfo {
 	device_protection?: string;
 }
 
-export interface OrganizationInfo {
-	id: string;
-	slug: string;
-	name: string;
-	description?: string;
-}
-
-export interface NetworkInfo {
-	id: string;
-	name: string;
-	[key: string]: string | number | boolean | object | null | undefined;
-}
-
 export interface SimInfo {
 	iccid: string;
 	status: 'active' | 'inactive' | 'deactivated';
@@ -345,20 +332,6 @@ export interface LedgerInstanceListResponse {
 export interface LedgerVersionListResponse {
 	versions: LedgerInstance[];
 	meta: { has_more: boolean };
-}
-
-export interface SecretUsage {
-	name: string;
-	id: string;
-}
-
-export interface SecretInfo {
-	name: string;
-	created_at: string;
-	updated_at: string;
-	last_accessed_at: string | null;
-	integrations: SecretUsage[];
-	logic_functions: SecretUsage[];
 }
 
 export interface LocationGeometry {

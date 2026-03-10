@@ -50,7 +50,7 @@ const props = {
 	rejectUnauthorized: true,
 	noDefaults: true,
 	hook: {
-		method: 'PUT',
+		method: 'PUT' as const,
 		auth: {
 			username: 'u',
 			password: 'p'
@@ -83,7 +83,7 @@ const props = {
 	page: 5,
 	perPage: 50,
 	sortAttr: 'deviceId',
-	sortDir: 'asc',
+	sortDir: 'asc' as const,
 	deny: false,
 	deviceIds: ['abc', 'xyz'],
 	development: false,
@@ -1571,140 +1571,6 @@ describe('ParticleAPI', () => {
 			});
 		});
 
-		describe('.activateSIM', () => {
-			describe('user scope', () => {
-				it('generates request', () => {
-					return api.activateSIM(props).then((results) => {
-						expect(results).to.containSubset({
-							uri: `/v1/sims/${props.iccid}`,
-							method: 'put',
-							auth: props.auth,
-							headers: props.headers,
-							data: {
-								country: props.country,
-								action: 'activate'
-							},
-							context: {}
-						});
-					});
-				});
-			});
-
-			describe('product scope', () => {
-				describe('single SIM', () => {
-					it('generates request', () => {
-						const propsSingleSIM: R = Object.assign({}, propsWithProduct);
-						delete propsSingleSIM.iccids;
-						return api.activateSIM(a<Parameters<typeof api.activateSIM>[0]>(propsSingleSIM)).then((results) => {
-							expect(results).to.containSubset({
-								uri: `/v1/products/${product}/sims`,
-								method: 'post',
-								auth: props.auth,
-								headers: props.headers,
-								data: {
-									sims: [props.iccid],
-									country: props.country,
-								},
-								context: {}
-							});
-						});
-					});
-				});
-
-				describe('multiple SIMs', () => {
-					it('generates request', () => {
-						return api.activateSIM(propsWithProduct).then((results) => {
-							expect(results).to.containSubset({
-								uri: `/v1/products/${product}/sims`,
-								method: 'post',
-								auth: props.auth,
-								headers: props.headers,
-								data: {
-									sims: props.iccids,
-									country: props.country,
-								},
-								context: {}
-							});
-						});
-					});
-				});
-			});
-		});
-
-		describe('.deactivateSIM', () => {
-			describe('user scope', () => {
-				it('generates request', () => {
-					return api.deactivateSIM(props).then((results) => {
-						expect(results).to.containSubset({
-							uri: `/v1/sims/${props.iccid}`,
-							method: 'put',
-							auth: props.auth,
-							headers: props.headers,
-							data: {
-								action: 'deactivate'
-							},
-							context: {}
-						});
-					});
-				});
-			});
-
-			describe('product scope', () => {
-				it('generates request', () => {
-					return api.deactivateSIM(propsWithProduct).then((results) => {
-						expect(results).to.containSubset({
-							uri: `/v1/products/${product}/sims/${props.iccid}`,
-							method: 'put',
-							auth: props.auth,
-							headers: props.headers,
-							data: {
-								action: 'deactivate'
-							},
-							context: {}
-						});
-					});
-				});
-			});
-		});
-
-		describe('.reactivateSIM', () => {
-			describe('user scope', () => {
-				it('generates request', () => {
-					return api.reactivateSIM(props).then((results) => {
-						expect(results).to.containSubset({
-							uri: `/v1/sims/${props.iccid}`,
-							method: 'put',
-							auth: props.auth,
-							headers: props.headers,
-							data: {
-								mb_limit: props.mbLimit,
-								action: 'reactivate'
-							},
-							context: {}
-						});
-					});
-				});
-			});
-
-			describe('product scope', () => {
-				it('generates request', () => {
-					return api.reactivateSIM(propsWithProduct).then((results) => {
-						expect(results).to.containSubset({
-							uri: `/v1/products/${product}/sims/${props.iccid}`,
-							method: 'put',
-							auth: props.auth,
-							headers: props.headers,
-							data: {
-								mb_limit: props.mbLimit,
-								action: 'reactivate'
-							},
-							context: {}
-						});
-					});
-				});
-			});
-		});
-
 		describe('.removeSIM', () => {
 			describe('user scope', () => {
 				it('generates request', () => {
@@ -1730,42 +1596,6 @@ describe('ParticleAPI', () => {
 							auth: props.auth,
 							headers: props.headers,
 							data: undefined,
-							context: {}
-						});
-					});
-				});
-			});
-		});
-
-		describe('.updateSIM', () => {
-			describe('user scope', () => {
-				it('generates request', () => {
-					return api.updateSIM(a<Parameters<typeof api.updateSIM>[0]>(props)).then((results) => {
-						expect(results).to.containSubset({
-							uri: `/v1/sims/${props.iccid}`,
-							method: 'put',
-							auth: props.auth,
-							headers: props.headers,
-							data: {
-								mb_limit: props.mbLimit
-							},
-							context: {}
-						});
-					});
-				});
-			});
-
-			describe('product scope', () => {
-				it('generates request', () => {
-					return api.updateSIM(a<Parameters<typeof api.updateSIM>[0]>(propsWithProduct)).then((results) => {
-						expect(results).to.containSubset({
-							uri: `/v1/products/${product}/sims/${props.iccid}`,
-							method: 'put',
-							auth: props.auth,
-							headers: props.headers,
-							data: {
-								mb_limit: props.mbLimit
-							},
 							context: {}
 						});
 					});
@@ -2327,153 +2157,6 @@ describe('ParticleAPI', () => {
 						headers: props.headers,
 						query: undefined,
 						context: {}
-					});
-				});
-			});
-		});
-
-		describe('.createMeshNetwork', () => {
-			it('generates request', () => {
-				return api.createMeshNetwork(props).then((results) => {
-					expect(results).to.containSubset({
-						uri: '/v1/networks',
-						method: 'post',
-						auth: props.auth,
-						headers: props.headers,
-						data: {
-							name: props.name,
-							device_id: props.deviceId,
-							iccid: props.iccid
-						},
-						context: {}
-					});
-				});
-			});
-		});
-
-		describe('.removeMeshNetwork', () => {
-			it('generates request', () => {
-				return api.removeMeshNetwork(props).then((results) => {
-					expect(results).to.containSubset({
-						uri: `/v1/networks/${props.networkId}`,
-						method: 'delete',
-						auth: props.auth,
-						headers: props.headers,
-						data: undefined,
-						context: {}
-					});
-				});
-			});
-		});
-
-		describe('.listMeshNetworks', () => {
-			it('generates request', () => {
-				return api.listMeshNetworks(props).then((results) => {
-					expect(results).to.containSubset({
-						method: 'get',
-						uri: '/v1/networks',
-						auth: props.auth,
-						headers: props.headers,
-						query: {
-							page: props.page,
-							per_page: props.perPage
-						},
-						context: {}
-					});
-				});
-			});
-		});
-
-		describe('.getMeshNetwork', () => {
-			it('generates request', () => {
-				return api.getMeshNetwork(props).then((results) => {
-					expect(results).to.containSubset({
-						uri: `/v1/networks/${props.networkId}`,
-						method: 'get',
-						auth: props.auth,
-						headers: props.headers,
-						query: undefined,
-						context: {}
-					});
-				});
-			});
-		});
-
-		describe('.updateMeshNetwork', () => {
-			it('generates request', () => {
-				const p = Object.assign(props, { action: 'test' });
-				return api.updateMeshNetwork(p).then((results) => {
-					expect(results).to.containSubset({
-						uri: `/v1/networks/${p.networkId}`,
-						method: 'put',
-						auth: p.auth,
-						headers: p.headers,
-						data: {
-							action: p.action,
-							device_id: p.deviceId
-						},
-						context: {}
-					});
-				});
-			});
-		});
-
-		describe('.addMeshNetworkDevice', () => {
-			it('generates request', () => {
-				return api.addMeshNetworkDevice(props).then((results) => {
-					expect(results).to.containSubset({
-						method: 'put',
-						uri: `/v1/networks/${props.networkId}`,
-						auth: props.auth,
-						data: {
-							action: 'add-device',
-							device_id: props.deviceId
-						}
-					});
-				});
-			});
-		});
-
-		describe('.removeMeshNetworkDevice', () => {
-			it('generates request', () => {
-				return api.removeMeshNetworkDevice(props).then((results) => {
-					expect(results).to.containSubset({
-						method: 'put',
-						uri: `/v1/networks/${props.networkId}`,
-						auth: props.auth,
-						data: {
-							action: 'remove-device',
-							device_id: props.deviceId
-						}
-					});
-				});
-			});
-			it('does not require the network ID argument', () => {
-				const p: R = Object.assign({}, props);
-				delete p.networkId;
-				return api.removeMeshNetworkDevice(a<Parameters<typeof api.removeMeshNetworkDevice>[0]>(p)).then((results) => {
-					expect(results).to.containSubset({
-						method: 'delete',
-						uri: `/v1/devices/${props.deviceId}/network`,
-						auth: props.auth
-					});
-				});
-			});
-		});
-
-		describe('.listMeshNetworkDevices', () => {
-			it('generates request', () => {
-				const p = Object.assign({ role: 'node' }, props);
-				return api.listMeshNetworkDevices(p).then((results) => {
-					expect(results).to.containSubset({
-						method: 'get',
-						uri: `/v1/networks/${props.networkId}/devices`,
-						auth: p.auth,
-						query: {
-							role: p.role,
-							page: p.page,
-							per_page: p.perPage
-						}
 					});
 				});
 			});

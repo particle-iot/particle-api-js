@@ -33,10 +33,6 @@ export interface CreateUserOptions extends SharedRequestOptions {
 	utm?: Record<string, string>;
 }
 
-export interface VerifyUserOptions extends SharedRequestOptions {
-	token: string;
-}
-
 export interface ResetPasswordOptions extends SharedRequestOptions {
 	username: string;
 }
@@ -63,12 +59,6 @@ export interface DeleteUserOptions extends SharedRequestOptions {
 
 export interface TrackingIdentityOptions extends SharedRequestOptions {
 	full?: boolean;
-}
-
-export interface ListAccessTokensOptions extends SharedRequestOptions {
-	username: string;
-	password: string;
-	otp?: string;
 }
 
 export interface DeleteAccessTokenOptions extends SharedRequestOptions {
@@ -138,10 +128,6 @@ export interface FlashDeviceOptions extends SharedRequestOptions {
 	files: Record<string, string | Buffer | NodeJS.ReadableStream | Blob>;
 	targetVersion?: string;
 	product?: string | number;
-}
-
-export interface FlashTinkerOptions extends SharedRequestOptions {
-	deviceId: string;
 }
 
 export interface CallFunctionOptions extends SharedRequestOptions {
@@ -237,11 +223,6 @@ export interface DeleteWebhookOptions extends SharedRequestOptions {
 	product?: string | number;
 }
 
-export interface GetWebhookOptions extends SharedRequestOptions {
-	hookId: string;
-	product?: string | number;
-}
-
 export interface ListIntegrationsOptions extends SharedRequestOptions {
 	product?: string | number;
 }
@@ -277,31 +258,6 @@ export interface ListSIMsOptions extends SharedRequestOptions {
 
 export interface CheckSIMOptions extends SharedRequestOptions {
 	iccid: string;
-}
-
-export interface ActivateSIMOptions extends SharedRequestOptions {
-	iccid?: string;
-	iccids?: string[];
-	country: string;
-	promoCode?: string;
-	product?: string | number;
-}
-
-export interface DeactivateSIMOptions extends SharedRequestOptions {
-	iccid: string;
-	product?: string | number;
-}
-
-export interface ReactivateSIMOptions extends SharedRequestOptions {
-	iccid: string;
-	mbLimit?: number;
-	product?: string | number;
-}
-
-export interface UpdateSIMOptions extends SharedRequestOptions {
-	iccid: string;
-	mbLimit: number;
-	product?: string | number;
 }
 
 export interface RemoveSIMOptions extends SharedRequestOptions {
@@ -361,11 +317,6 @@ export interface DownloadProductFirmwareOptions extends SharedRequestOptions {
 	version: number;
 }
 
-export interface DeleteProductFirmwareOptions extends SharedRequestOptions {
-	product: string | number;
-	version: number;
-}
-
 export interface AddDeviceToProductOptions extends SharedRequestOptions {
 	product: string | number;
 	deviceId?: string;
@@ -419,43 +370,6 @@ export interface GetProductDeviceLocationsOptions extends SharedRequestOptions {
 	dateRange?: string;
 	rectBl?: string;
 	rectTr?: string;
-}
-
-export interface ListMeshNetworksOptions extends SharedRequestOptions {
-	page?: number;
-	perPage?: number;
-}
-
-export interface CreateMeshNetworkOptions extends SharedRequestOptions {
-	name: string;
-	deviceId: string;
-	iccid?: string;
-}
-
-export interface GetMeshNetworkOptions extends SharedRequestOptions {
-	networkId: string;
-}
-
-export interface UpdateMeshNetworkOptions extends SharedRequestOptions {
-	networkId: string;
-	action: string;
-	deviceId: string;
-}
-
-export interface RemoveMeshNetworkOptions extends SharedRequestOptions {
-	networkId: string;
-}
-
-export interface ListMeshNetworkDevicesOptions extends SharedRequestOptions {
-	networkId: string;
-	role?: string;
-	page?: number;
-	perPage?: number;
-}
-
-export interface RemoveMeshNetworkDeviceOptions extends SharedRequestOptions {
-	networkId?: string;
-	deviceId: string;
 }
 
 export interface ListOAuthClientsOptions extends SharedRequestOptions {
@@ -540,10 +454,6 @@ export interface GetClaimCodeOptions extends SharedRequestOptions {
 
 export interface LookupSerialNumberOptions extends SharedRequestOptions {
 	serialNumber: string;
-}
-
-export interface ValidatePromoCodeOptions extends SharedRequestOptions {
-	promoCode: string;
 }
 
 export interface DownloadFileOptions extends SharedRequestOptions {
@@ -717,32 +627,6 @@ export interface GetLedgerInstanceVersionOptions extends SharedRequestOptions {
 	ledgerName: string;
 	scopeValue: string;
 	version: string;
-}
-
-export interface ListSecretsOptions extends SharedRequestOptions {
-	org?: string;
-	names?: string[];
-}
-
-export interface GetSecretOptions extends SharedRequestOptions {
-	org?: string;
-	secretName: string;
-}
-
-export interface CreateSecretOptions extends SharedRequestOptions {
-	org?: string;
-	secret: { name: string; value: string };
-}
-
-export interface PutSecretOptions extends SharedRequestOptions {
-	org?: string;
-	secretName: string;
-	secret: { value: string };
-}
-
-export interface DeleteSecretOptions extends SharedRequestOptions {
-	org?: string;
-	secretName: string;
 }
 
 export interface EnvVarScopeOptions extends SharedRequestOptions {
