@@ -15,8 +15,8 @@ import type { JSONResponse, RequestResponse, AgentRequestOptions, GetHeadOptions
 	DownloadProductFirmwareOptions, AddDeviceToProductOptions,
 	ListWebhooksOptions, DeleteWebhookOptions,
 	ListIntegrationsOptions, CreateIntegrationOptions, EditIntegrationOptions, DeleteIntegrationOptions,
-	ListSIMsOptions, CheckSIMOptions, ActivateSIMOptions, DeactivateSIMOptions, ReactivateSIMOptions,
-	UpdateSIMOptions, RemoveSIMOptions, GetSIMDataUsageOptions, GetFleetDataUsageOptions,
+	ListSIMsOptions, CheckSIMOptions,
+	RemoveSIMOptions, GetSIMDataUsageOptions, GetFleetDataUsageOptions,
 	ListProductsOptions, GetProductOptions,
 	GetProductConfigurationOptions, GetProductConfigurationSchemaOptions,
 	GetProductDeviceConfigurationOptions, GetProductDeviceConfigurationSchemaOptions,
@@ -1238,80 +1238,6 @@ class Particle {
      */
 	checkSIM({ iccid, auth, headers, context }: CheckSIMOptions): Promise<JSONResponse<SimInfo>> {
 		return this.head<SimInfo>({ uri: `/v1/sims/${iccid}`, auth, headers, context });
-	}
-
-	/**
-     * Activate and add SIM cards to an account or product
-     * @param {Object}        options              Options for this API call
-     * @param {String}        options.iccid        ICCID of the SIM card
-     * @param {Array<String>} options.iccids       (Product only) ICCID of multiple SIM cards to import
-     * @param {String}        options.country      The ISO country code for the SIM cards
-     * @param {String}        [options.product]    SIM cards for this product ID or slug
-     * @param {string}        [options.auth]       The access token. Can be ignored if provided in constructor
-     * @param {Object}        [options.headers]    Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-     * @param {Object}        [options.context]    Request context
-     * @param {any}           [options.promoCode]
-     * @returns {Promise<JSONResponse<OKResponse>>} A promise that resolves with the response data
-     */
-	activateSIM({ iccid, iccids, country, promoCode, product, auth, headers, context }: ActivateSIMOptions): Promise<JSONResponse<OKResponse>> {
-		const resolvedIccids = iccids || [iccid];
-		const uri = product ? `/v1/products/${product}/sims` : `/v1/sims/${iccid}`;
-		const data = product ?
-			{ sims: resolvedIccids, country } :
-			{ country, promoCode, action: 'activate' };
-		const method: AgentRequestOptions['method'] = product ? 'post' : 'put';
-
-		return this.request({ uri, method, headers, data, auth, context }) as Promise<JSONResponse<OKResponse>>;
-	}
-
-	/**
-     * Deactivate a SIM card so it doesn't incur data usage in future months.
-     * @param {Object} options            Options for this API call
-     * @param {String} options.iccid      ICCID of the SIM card
-     * @param {String} [options.product]  SIM cards for this product ID or slug
-     * @param {string} [options.auth]     The access token. Can be ignored if provided in constructor
-     * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-     * @param {Object} [options.context]  Request context
-     * @returns {Promise<JSONResponse<OKResponse>>} A promise that resolves with the response data
-     */
-	deactivateSIM({ iccid, product, auth, headers, context }: DeactivateSIMOptions): Promise<JSONResponse<OKResponse>> {
-		const uri = product ? `/v1/products/${product}/sims/${iccid}` : `/v1/sims/${iccid}`;
-		const data = { action: 'deactivate' };
-		return this.put<OKResponse>({ uri, auth, headers, data, context });
-	}
-
-	/**
-     * Reactivate a SIM card the was deactivated or unpause a SIM card that was automatically paused
-     * @param {Object} options            Options for this API call
-     * @param {String} options.iccid      ICCID of the SIM card
-     * @param {Number} [options.mbLimit]  New monthly data limit. Necessary if unpausing a SIM card
-     * @param {String} [options.product]  SIM cards for this product ID or slug
-     * @param {string} [options.auth]     The access token. Can be ignored if provided in constructor
-     * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-     * @param {Object} [options.context]  Request context
-     * @returns {Promise<JSONResponse<OKResponse>>} A promise that resolves with the response data
-     */
-	reactivateSIM({ iccid, mbLimit, product, auth, headers, context }: ReactivateSIMOptions): Promise<JSONResponse<OKResponse>> {
-		const uri = product ? `/v1/products/${product}/sims/${iccid}` : `/v1/sims/${iccid}`;
-		const data = { mb_limit: mbLimit, action: 'reactivate' };
-		return this.put<OKResponse>({ uri, auth, headers, data, context });
-	}
-
-	/**
-     * Update SIM card data limit
-     * @param {Object} options            Options for this API call
-     * @param {String} options.iccid      ICCID of the SIM card
-     * @param {Array}  options.mbLimit    Data limit in megabyte for the SIM card
-     * @param {String} [options.product]  SIM cards for this product ID or slug
-     * @param {string} [options.auth]     The access token. Can be ignored if provided in constructor
-     * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-     * @param {Object} [options.context]  Request context
-     * @returns {Promise<JSONResponse<SimInfo>>} A promise that resolves with the response data
-     */
-	updateSIM({ iccid, mbLimit, product, auth, headers, context }: UpdateSIMOptions): Promise<JSONResponse<SimInfo>> {
-		const uri = product ? `/v1/products/${product}/sims/${iccid}` : `/v1/sims/${iccid}`;
-		const data = { mb_limit: mbLimit };
-		return this.put<SimInfo>({ uri, auth, headers, data, context });
 	}
 
 	/**

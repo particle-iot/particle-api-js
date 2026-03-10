@@ -279,31 +279,6 @@ export interface CheckSIMOptions extends SharedRequestOptions {
 	iccid: string;
 }
 
-export interface ActivateSIMOptions extends SharedRequestOptions {
-	iccid?: string;
-	iccids?: string[];
-	country: string;
-	promoCode?: string;
-	product?: string | number;
-}
-
-export interface DeactivateSIMOptions extends SharedRequestOptions {
-	iccid: string;
-	product?: string | number;
-}
-
-export interface ReactivateSIMOptions extends SharedRequestOptions {
-	iccid: string;
-	mbLimit?: number;
-	product?: string | number;
-}
-
-export interface UpdateSIMOptions extends SharedRequestOptions {
-	iccid: string;
-	mbLimit: number;
-	product?: string | number;
-}
-
 export interface RemoveSIMOptions extends SharedRequestOptions {
 	iccid: string;
 	product?: string | number;
