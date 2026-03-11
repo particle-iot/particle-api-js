@@ -157,14 +157,69 @@ export interface CreateWebhookResponse {
 	hookUrl: string;
 }
 
-export interface IntegrationInfo {
+export interface BaseIntegrationInfo {
 	id: string;
-	event: string;
-	created_at: string;
 	integration_type: string;
+	event: string;
+	name?: string | null;
+	created_at: string;
+	updated_at?: string;
+	disabled?: boolean;
+	deviceID?: string;
+	product_id?: number;
+	template?: string;
+	responseTopic?: string;
+	errorResponseTopic?: string;
+	data_url_response_event?: boolean;
+	unchunked?: boolean;
+	use_env?: boolean;
+	ok?: boolean;
+	hookUrl?: string;
+	integrationUrl?: string;
+}
+
+export interface WebhookIntegrationInfo extends BaseIntegrationInfo {
+	integration_type: 'Webhook';
 	url: string;
 	requestType: string;
+	headers?: object;
+	json?: object;
+	query?: object;
+	auth?: object;
+	form?: object;
+	body?: string;
+	noDefaults?: boolean;
+	rejectUnauthorized?: boolean;
+	responseTemplate?: string;
+	azure_sas_token?: object;
+	google_token?: object;
+	amazon_token?: object;
+	parameters?: Array<{ template_name: string; value: string }>;
 }
+
+export interface AzureIotHubIntegrationInfo extends BaseIntegrationInfo {
+	integration_type: 'AzureIotHub';
+	hub_name: string;
+	policy_name: string;
+	policy_key: string;
+	json?: object;
+}
+
+export interface GoogleCloudPubSubIntegrationInfo extends BaseIntegrationInfo {
+	integration_type: 'GoogleCloudPubSub';
+	topic: string;
+}
+
+export interface GoogleMapsIntegrationInfo extends BaseIntegrationInfo {
+	integration_type: 'GoogleMaps';
+	api_key: string;
+}
+
+export type IntegrationInfo =
+	| WebhookIntegrationInfo
+	| AzureIotHubIntegrationInfo
+	| GoogleCloudPubSubIntegrationInfo
+	| GoogleMapsIntegrationInfo;
 
 export interface ProductSettings {
 	location?: object;
