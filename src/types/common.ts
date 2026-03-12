@@ -30,6 +30,7 @@ export interface ParticleOptions {
 	clientSecret?: string;
 	tokenDuration?: number;
 	auth?: string;
+	agent?: import('http').Agent;
 }
 
 export interface SharedRequestOptions {

@@ -16,11 +16,13 @@ class EventStream extends EventEmitter {
 	idleTimeout?: ReturnType<typeof setTimeout> | null;
 	event?: boolean;
 	eventName?: string;
+	agent?: http.Agent;
 
-	constructor(uri = '', token = '') {
+	constructor(uri = '', token = '', agent?: http.Agent) {
 		super();
 		this.uri = uri;
 		this.token = token;
+		this.agent = agent;
 		this.reconnectInterval = 2000;
 		this.timeout = 13000;
 		this.data = '';
@@ -40,7 +42,7 @@ class EventStream extends EventEmitter {
 			const isSecure = protocol === 'https:';
 			const requestor = isSecure ? https : http;
 			const nonce = typeof performance !== 'undefined' ? performance.now() : 0;
-			const req = requestor.request({
+			const requestOptions: http.RequestOptions = {
 				hostname,
 				protocol,
 				path: `${path}?nonce=${nonce}`,
@@ -50,7 +52,11 @@ class EventStream extends EventEmitter {
 				method: 'get',
 				port: parseInt(port ?? '', 10) || (isSecure ? 443 : 80),
 				mode: 'prefer-streaming'
-			} as http.RequestOptions);
+			} as http.RequestOptions;
+			if (this.agent) {
+				requestOptions.agent = this.agent;
+			}
+			const req = requestor.request(requestOptions);
 
 			this.req = req;
 
