@@ -6,6 +6,5 @@
 		"declaration": false,
 		"sourceMap": true
 	},
-	"include": ["src", "test"],
-	"exclude": ["node_modules", "test/proxy.integration.ts"]
+	"include": ["src", "test"]
 }

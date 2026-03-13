@@ -30,7 +30,7 @@ describe('Proxy support', () => {
 					'HTTP/1.1 200 Connection Established\r\n' +
 					'\r\n'
 				);
-				serverSocket.write(head);
+				serverSocket.write(head as Uint8Array);
 				serverSocket.pipe(clientSocket);
 				clientSocket.pipe(serverSocket);
 			});
@@ -70,7 +70,7 @@ describe('Proxy support', () => {
 
 		try {
 			await particle.listDevices({ auth: 'invalid-token' });
-		} catch (err) {
+		} catch (_err) {
 			// Expected to fail with 401 - we just need the request to go through the proxy
 		}
 
