@@ -1,5 +1,8 @@
 # changelog
 
+## 12.0.1 - 13 March 2026
+* Add support for HTTP proxy
+
 ## 12.0.0 - 06 March 2026
 * Migrate to typescript
 * Add Environment Variables endpoints
