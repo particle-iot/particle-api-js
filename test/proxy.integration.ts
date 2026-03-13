@@ -65,8 +65,8 @@ describe('Proxy support', () => {
 		this.retries(3);
 
 		const { HttpsProxyAgent } = await import('https-proxy-agent');
-		const agent = new HttpsProxyAgent(`http://localhost:${proxyPort}`);
-		const particle = new Particle({ agent });
+		const httpAgent = new HttpsProxyAgent(`http://localhost:${proxyPort}`);
+		const particle = new Particle({ httpAgent });
 
 		try {
 			await particle.listDevices({ auth: 'invalid-token' });

@@ -1,5 +1,5 @@
 import fetch, { type Response } from 'node-fetch';
-import type * as http from 'http';
+import { type Agent as HttpAgent } from 'http';
 import FormData = require('form-data');
 import qs = require('qs');
 import fs = require('../fs');
@@ -16,13 +16,15 @@ import type {
 	ProjectContext
 } from './types';
 
+type RequestInitWithAgent = RequestInit & { agent?: HttpAgent };
+
 class Agent {
 	baseUrl: string | undefined;
-	_agent: http.Agent | undefined;
+	httpAgent: HttpAgent | undefined;
 
-	constructor(baseUrl?: string, agent?: http.Agent) {
+	constructor(baseUrl?: string, httpAgent?: HttpAgent) {
 		this.setBaseUrl(baseUrl);
-		this._agent = agent;
+		this.httpAgent = httpAgent;
 	}
 
 	setBaseUrl(baseUrl?: string): void {
@@ -71,9 +73,9 @@ class Agent {
 	}
 
 	_promiseResponse(
-		requestParams: [string, RequestInit],
+		requestParams: [string, RequestInitWithAgent],
 		isBuffer: boolean,
-		makerequest: (url: string, init?: RequestInit) => Promise<Response> = fetch as (url: string, init?: RequestInit) => Promise<Response>
+		makerequest: (url: string, init?: RequestInitWithAgent) => Promise<Response> = fetch as (url: string, init?: RequestInitWithAgent) => Promise<Response>
 	): Promise<RequestResponse> {
 		let status: number;
 		return makerequest(requestParams[0], requestParams[1])
@@ -129,7 +131,7 @@ class Agent {
 			}) as Promise<RequestResponse>;
 	}
 
-	_buildRequest({ uri, method, headers, data, auth, query, form, files, context }: AgentBuildRequestOptions): [string, RequestInit] {
+	_buildRequest({ uri, method, headers, data, auth, query, form, files, context }: AgentBuildRequestOptions): [string, RequestInitWithAgent] {
 		let actualUri = uri;
 		if (this.baseUrl && uri[0] === '/') {
 			actualUri = `${this.baseUrl}${uri}`;
@@ -168,9 +170,9 @@ class Agent {
 			headers
 		);
 
-		const init: RequestInit & { agent?: http.Agent } = { method, body, headers: finalHeaders };
-		if (this._agent) {
-			init.agent = this._agent;
+		const init: RequestInitWithAgent = { method, body, headers: finalHeaders };
+		if (this.httpAgent) {
+			init.agent = this.httpAgent;
 		}
 		return [actualUri, init];
 	}

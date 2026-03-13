@@ -3,6 +3,7 @@ import EventStream = require('./EventStream');
 import Agent = require('./Agent');
 import Client = require('./Client');
 import type * as T from './types';
+import { type Agent as HttpAgent } from 'http';
 
 /**
  * Particle Cloud API wrapper.
@@ -22,7 +23,7 @@ class Particle {
 	auth: string | undefined;
 	context: { tool?: T.ToolContext; project?: T.ProjectContext };
 	agent: Agent;
-	_httpAgent: import('http').Agent | undefined;
+	httpAgent: HttpAgent | undefined;
 	_defaultAuth?: string;
 
 	/**
@@ -36,9 +37,9 @@ class Particle {
      * @param {string} [options.clientId]
      * @param {number} [options.tokenDuration]
      * @param {string} [options.auth]            The access token. If not specified here, will have to be added to every request
-     * @param {http.Agent} [options.agent]       The http.Agent to use for requests (e.g. an https-proxy-agent instance for corporate proxies)
+     * @param {HttpAgent} [options.httpAgent]       The http.Agent to use for requests (e.g. an https-proxy-agent instance for corporate proxies)
      */
-	constructor(options: { baseUrl?: string; clientId?: string; clientSecret?: string; tokenDuration?: number; auth?: string; agent?: import('http').Agent } = {}) {
+	constructor(options: { baseUrl?: string; clientId?: string; clientSecret?: string; tokenDuration?: number; auth?: string; httpAgent?: HttpAgent } = {}) {
 		if (options.auth) {
 			this.setDefaultAuth(options.auth);
 		}
@@ -46,8 +47,8 @@ class Particle {
 		Object.assign(this, Defaults, options);
 		this.context = {};
 
-		this.agent = new Agent(this.baseUrl, options.agent);
-		this._httpAgent = options.agent;
+		this.agent = new Agent(this.baseUrl, options.httpAgent);
+		this.httpAgent = options.httpAgent;
 	}
 
 	private _isValidContext(name: string, context: T.ToolContext | T.ProjectContext | undefined): boolean {
@@ -883,7 +884,7 @@ class Particle {
 		}
 
 		const activeAuth = this._getActiveAuthToken(auth) || '';
-		return new EventStream(`${this.baseUrl}${uri}`, activeAuth, this._httpAgent).connect();
+		return new EventStream(`${this.baseUrl}${uri}`, activeAuth, this.httpAgent).connect();
 	}
 
 	/**
