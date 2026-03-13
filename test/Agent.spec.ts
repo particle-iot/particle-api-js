@@ -1,3 +1,4 @@
+import { type RequestInit } from 'node-fetch';
 import FormData from 'form-data';
 import { sinon, expect } from './test-setup';
 import Agent from '../src/Agent';

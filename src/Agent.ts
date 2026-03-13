@@ -1,4 +1,5 @@
-import fetch, { type Response } from 'node-fetch';
+import fetch, { type Response, type RequestInit, type BodyInit } from 'node-fetch';
+import { type Agent as HttpAgent } from 'http';
 import FormData = require('form-data');
 import qs = require('qs');
 import fs = require('../fs');
@@ -17,9 +18,11 @@ import type {
 
 class Agent {
 	baseUrl: string | undefined;
+	httpAgent: HttpAgent | undefined;
 
-	constructor(baseUrl?: string) {
+	constructor(baseUrl?: string, httpAgent?: HttpAgent) {
 		this.setBaseUrl(baseUrl);
+		this.httpAgent = httpAgent;
 	}
 
 	setBaseUrl(baseUrl?: string): void {
@@ -165,7 +168,11 @@ class Agent {
 			headers
 		);
 
-		return [actualUri, { method, body, headers: finalHeaders }];
+		const init: RequestInit = { method, body, headers: finalHeaders };
+		if (this.httpAgent) {
+			init.agent = this.httpAgent;
+		}
+		return [actualUri, init];
 	}
 
 	isForBrowser(): boolean {

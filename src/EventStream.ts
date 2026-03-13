@@ -4,6 +4,8 @@ import * as url from 'url';
 import { EventEmitter } from 'events';
 import type { EventData } from './types';
 
+type HttpAgent = http.Agent;
+
 class EventStream extends EventEmitter {
 	uri: string;
 	token: string;
@@ -16,11 +18,13 @@ class EventStream extends EventEmitter {
 	idleTimeout?: ReturnType<typeof setTimeout> | null;
 	event?: boolean;
 	eventName?: string;
+	httpAgent?: HttpAgent;
 
-	constructor(uri = '', token = '') {
+	constructor(uri = '', token = '', httpAgent?: HttpAgent) {
 		super();
 		this.uri = uri;
 		this.token = token;
+		this.httpAgent = httpAgent;
 		this.reconnectInterval = 2000;
 		this.timeout = 13000;
 		this.data = '';
@@ -40,7 +44,7 @@ class EventStream extends EventEmitter {
 			const isSecure = protocol === 'https:';
 			const requestor = isSecure ? https : http;
 			const nonce = typeof performance !== 'undefined' ? performance.now() : 0;
-			const req = requestor.request({
+			const requestOptions: http.RequestOptions = {
 				hostname,
 				protocol,
 				path: `${path}?nonce=${nonce}`,
@@ -50,7 +54,11 @@ class EventStream extends EventEmitter {
 				method: 'get',
 				port: parseInt(port ?? '', 10) || (isSecure ? 443 : 80),
 				mode: 'prefer-streaming'
-			} as http.RequestOptions);
+			} as http.RequestOptions;
+			if (this.httpAgent) {
+				requestOptions.agent = this.httpAgent;
+			}
+			const req = requestor.request(requestOptions);
 
 			this.req = req;
 

@@ -1,3 +1,5 @@
+import { type Agent } from 'http';
+
 export interface JSONResponse<T = object> {
 	statusCode: number;
 	body: T;
@@ -30,6 +32,7 @@ export interface ParticleOptions {
 	clientSecret?: string;
 	tokenDuration?: number;
 	auth?: string;
+	httpAgent?: Agent;
 }
 
 export interface SharedRequestOptions {

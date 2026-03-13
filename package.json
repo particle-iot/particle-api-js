@@ -76,6 +76,7 @@
     "eslint": "^9.36.0",
     "eslint-config-particle": "^3.0.0",
     "events": "^3.3.0",
+    "https-proxy-agent": "^8.0.0",
     "karma": "^6.4.4",
     "karma-chai": "^0.1.0",
     "karma-cli": "^2.0.0",

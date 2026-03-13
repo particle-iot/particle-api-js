@@ -22,6 +22,7 @@ module.exports = function karmaCfg(config){
 
 		// list of files to exclude
 		exclude: [
+			'lib/test/proxy.integration.js'
 		],
 
 		// preprocess matching files before serving them to the browser
