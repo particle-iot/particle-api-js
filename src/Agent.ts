@@ -1,4 +1,4 @@
-import fetch, { type Response } from 'node-fetch';
+import fetch, { type Response, type RequestInit, type BodyInit } from 'node-fetch';
 import { type Agent as HttpAgent } from 'http';
 import FormData = require('form-data');
 import qs = require('qs');
@@ -15,8 +15,6 @@ import type {
 	ToolContext,
 	ProjectContext
 } from './types';
-
-type RequestInitWithAgent = RequestInit & { agent?: HttpAgent };
 
 class Agent {
 	baseUrl: string | undefined;
@@ -73,9 +71,9 @@ class Agent {
 	}
 
 	_promiseResponse(
-		requestParams: [string, RequestInitWithAgent],
+		requestParams: [string, RequestInit],
 		isBuffer: boolean,
-		makerequest: (url: string, init?: RequestInitWithAgent) => Promise<Response> = fetch as (url: string, init?: RequestInitWithAgent) => Promise<Response>
+		makerequest: (url: string, init?: RequestInit) => Promise<Response> = fetch as (url: string, init?: RequestInit) => Promise<Response>
 	): Promise<RequestResponse> {
 		let status: number;
 		return makerequest(requestParams[0], requestParams[1])
@@ -131,7 +129,7 @@ class Agent {
 			}) as Promise<RequestResponse>;
 	}
 
-	_buildRequest({ uri, method, headers, data, auth, query, form, files, context }: AgentBuildRequestOptions): [string, RequestInitWithAgent] {
+	_buildRequest({ uri, method, headers, data, auth, query, form, files, context }: AgentBuildRequestOptions): [string, RequestInit] {
 		let actualUri = uri;
 		if (this.baseUrl && uri[0] === '/') {
 			actualUri = `${this.baseUrl}${uri}`;
@@ -170,7 +168,7 @@ class Agent {
 			headers
 		);
 
-		const init: RequestInitWithAgent = { method, body, headers: finalHeaders };
+		const init: RequestInit = { method, body, headers: finalHeaders };
 		if (this.httpAgent) {
 			init.agent = this.httpAgent;
 		}

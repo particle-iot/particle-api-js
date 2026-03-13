@@ -3,7 +3,8 @@ import * as https from 'https';
 import * as url from 'url';
 import { EventEmitter } from 'events';
 import type { EventData } from './types';
-import { type Agent as HttpAgent } from 'http';
+
+type HttpAgent = http.Agent;
 
 class EventStream extends EventEmitter {
 	uri: string;

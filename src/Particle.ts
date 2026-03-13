@@ -39,7 +39,7 @@ class Particle {
      * @param {string} [options.auth]            The access token. If not specified here, will have to be added to every request
      * @param {HttpAgent} [options.httpAgent]       The http.Agent to use for requests (e.g. an https-proxy-agent instance for corporate proxies)
      */
-	constructor(options: { baseUrl?: string; clientId?: string; clientSecret?: string; tokenDuration?: number; auth?: string; httpAgent?: HttpAgent } = {}) {
+	constructor(options: T.ParticleOptions = {}) {
 		if (options.auth) {
 			this.setDefaultAuth(options.auth);
 		}
