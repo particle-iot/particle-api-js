@@ -63,11 +63,8 @@ class EventStream extends EventEmitter {
 			// Override Node.js globalAgent socket timeout (5s since Node 19) with a longer
 			// timeout suitable for SSE connections. This prevents the agent's idle timeout
 			// from interfering with long-lived streams.
-			req.on('socket', (socket) => {
-				socket.setTimeout(30000);
-				socket.on('timeout', () => {
-					socket.destroy(new Error('SSE socket timeout (30s idle)'));
-				});
+			req.setTimeout(30000, () => {
+				req.destroy(new Error('SSE socket timeout (30s idle)'));
 			});
 
 			this.req = req;
