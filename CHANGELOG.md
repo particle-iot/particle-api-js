@@ -1,5 +1,8 @@
 # changelog
 
+## 12.0.2 - 19 March 2026
+* Fix timeout logic in event streams causing silent stalls in Node 19 and above
+
 ## 12.0.1 - 13 March 2026
 * Add support for HTTP proxy
 
