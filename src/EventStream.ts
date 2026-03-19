@@ -26,7 +26,7 @@ class EventStream extends EventEmitter {
 		this.token = token;
 		this.httpAgent = httpAgent;
 		this.reconnectInterval = 2000;
-		this.timeout = 13000;
+		this.timeout = 15000;
 		this.data = '';
 		this.buf = '';
 
@@ -59,6 +59,13 @@ class EventStream extends EventEmitter {
 				requestOptions.agent = this.httpAgent;
 			}
 			const req = requestor.request(requestOptions);
+
+			// Override Node.js globalAgent socket timeout (5s since Node 19) with a longer
+			// timeout suitable for SSE connections. This prevents the agent's idle timeout
+			// from interfering with long-lived streams.
+			req.setTimeout(30000, () => {
+				req.destroy(new Error('SSE socket timeout (30s idle)'));
+			});
 
 			this.req = req;
 
@@ -165,10 +172,10 @@ class EventStream extends EventEmitter {
 	}
 
 	private isOffline(): boolean {
-		if (typeof navigator === 'undefined' || Object.hasOwnProperty.call(navigator, 'onLine')) {
-			return false;
+		if (typeof navigator !== 'undefined' && typeof navigator.onLine === 'boolean') {
+			return !navigator.onLine;
 		}
-		return !navigator.onLine;
+		return false; // Not in a browser — assume online
 	}
 
 	private startIdleTimeout(): void {
