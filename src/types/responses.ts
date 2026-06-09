@@ -154,7 +154,7 @@ export interface CreateWebhookResponse {
 	event: string;
 	name: string | null;
 	created_at: string;
-	hookUrl: string;
+	integrationUrl: string;
 }
 
 export interface IntegrationInfo {

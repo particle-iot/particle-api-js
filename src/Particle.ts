@@ -920,7 +920,7 @@ class Particle {
      */
 
 	/**
-     * Create a webhook
+     * Create a webhook as a `Webhook` integration
      * @param {Object}  options                       Options for this API call
      * @param {String}  options.event                 The name of the Particle event that should trigger the Webhook
      * @param {String}  options.url                   The web address that will be targeted when the Webhook is triggered
@@ -929,33 +929,34 @@ class Particle {
      * @param {Boolean} [options.noDefaults]          Don't include default event data in the webhook request
      * @param {Hook}    [options.hook]                Webhook configuration settings
      * @param {String}  [options.product]             Webhook for this product ID or slug
+     * @param {String}  [options.org]                 Webhook for this organization ID or slug
      * @param {string}  [options.auth]                The access token. Can be ignored if provided in constructor
      * @param {Object}  [options.headers]             Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object}  [options.context]             Request context
      * @returns {Promise<T.JSONResponse<T.CreateWebhookResponse>>} A promise that resolves with the response data
      */
-	createWebhook({ event, url, device, rejectUnauthorized, noDefaults, hook, product, auth, headers, context }: T.CreateWebhookOptions): Promise<T.JSONResponse<T.CreateWebhookResponse>> {
-		const uri = product ? `/v1/products/${product}/webhooks` : '/v1/webhooks';
-		const data: Record<string, string | boolean | object | undefined> = { event, url, deviceId: device, rejectUnauthorized, noDefaults };
+	createWebhook({ event, url, device, rejectUnauthorized, noDefaults, hook, product, org, auth, headers, context }: T.CreateWebhookOptions): Promise<T.JSONResponse<T.CreateWebhookResponse>> {
+		// `auth`, `headers`, `query`, `json`, `form`, `body` and `responseTemplate`
+		// map straight through; only `method` and the two response events are renamed
+		// to the field names the integrations endpoint expects.
+		const { method, responseEvent, errorResponseEvent, ...passthrough } = hook || {};
+		const settings: Record<string, string | number | boolean | object> = {
+			integration_type: 'Webhook',
+			url,
+			requestType: method || 'POST',
+			...passthrough,
+			...(responseEvent !== undefined ? { responseTopic: responseEvent } : {}),
+			...(errorResponseEvent !== undefined ? { errorResponseTopic: errorResponseEvent } : {})
+		};
 
-		if (hook) {
-			data.requestType = hook.method;
-			data.auth = hook.auth;
-			data.headers = hook.headers;
-			data.query = hook.query;
-			data.json = hook.json;
-			data.form = hook.form;
-			data.body = hook.body;
-			data.responseTemplate = hook.responseTemplate;
-			data.responseTopic = hook.responseEvent;
-			data.errorResponseTopic = hook.errorResponseEvent;
+		if (rejectUnauthorized !== undefined) {
+			settings.rejectUnauthorized = rejectUnauthorized;
+		}
+		if (noDefaults !== undefined) {
+			settings.noDefaults = noDefaults;
 		}
 
-		if (!data.requestType) {
-			data.requestType = 'POST';
-		}
-
-		return this.post<T.CreateWebhookResponse>({ uri, auth, headers, data, context });
+		return this.createIntegration({ event, settings, deviceId: device, product, org, auth, headers, context }) as object as Promise<T.JSONResponse<T.CreateWebhookResponse>>;
 	}
 
 	/**
@@ -997,13 +998,14 @@ class Particle {
      * @param {Object} options.settings    Settings specific to that integration type
      * @param {String} [options.deviceId]  Trigger integration only for this device ID or Name
      * @param {String} [options.product]   Integration for this product ID or slug
+     * @param {String} [options.org]       Integration for this organization ID or slug
      * @param {string} [options.auth]      The access token. Can be ignored if provided in constructor
      * @param {Object} [options.headers]   Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]   Request context
      * @returns {Promise<T.JSONResponse<T.IntegrationInfo>>} A promise that resolves with the response data
      */
-	createIntegration({ event, settings, deviceId, product, auth, headers, context }: T.CreateIntegrationOptions): Promise<T.JSONResponse<T.IntegrationInfo>> {
-		const uri = product ? `/v1/products/${product}/integrations` : '/v1/integrations';
+	createIntegration({ event, settings, deviceId, product, org, auth, headers, context }: T.CreateIntegrationOptions): Promise<T.JSONResponse<T.IntegrationInfo>> {
+		const uri = this._integrationUri({ product, org });
 		const data = Object.assign({ event, deviceid: deviceId }, settings);
 		return this.post<T.IntegrationInfo>({ uri, data, auth, headers, context });
 	}
@@ -1019,13 +1021,14 @@ class Particle {
      * @param {Object} [options.settings]     Change the settings specific to that integration type
      * @param {String} [options.deviceId]     Trigger integration only for this device ID or Name
      * @param {String} [options.product]      Integration for this product ID or slug
+     * @param {String} [options.org]          Integration for this organization ID or slug
      * @param {string} [options.auth]         The access token. Can be ignored if provided in constructor
      * @param {Object} [options.headers]      Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]      Request context
      * @returns {Promise<T.JSONResponse<T.IntegrationInfo>>} A promise that resolves with the response data
      */
-	editIntegration({ integrationId, event, settings, deviceId, product, auth, headers, context }: T.EditIntegrationOptions): Promise<T.JSONResponse<T.IntegrationInfo>> {
-		const uri = product ? `/v1/products/${product}/integrations/${integrationId}` : `/v1/integrations/${integrationId}`;
+	editIntegration({ integrationId, event, settings, deviceId, product, org, auth, headers, context }: T.EditIntegrationOptions): Promise<T.JSONResponse<T.IntegrationInfo>> {
+		const uri = this._integrationUri({ product, org, integrationId });
 		const data = Object.assign({ event, deviceid: deviceId }, settings);
 		return this.put<T.IntegrationInfo>({ uri, auth, headers, data, context });
 	}
@@ -1036,28 +1039,50 @@ class Particle {
      * @param {Object} options                Options for this API call
      * @param {String} options.integrationId  The integration to remove
      * @param {String} [options.product]      Integration for this product ID or slug
+     * @param {String} [options.org]          Integration for this organization ID or slug
      * @param {string} [options.auth]         The access token. Can be ignored if provided in constructor
      * @param {Object} [options.headers]      Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]      Request context
      * @returns {Promise<T.JSONResponse<T.OKResponse>>} A promise that resolves with the response data
      */
-	deleteIntegration({ integrationId, product, auth, headers, context }: T.DeleteIntegrationOptions): Promise<T.JSONResponse<T.OKResponse>> {
-		const uri = product ? `/v1/products/${product}/integrations/${integrationId}` : `/v1/integrations/${integrationId}`;
+	deleteIntegration({ integrationId, product, org, auth, headers, context }: T.DeleteIntegrationOptions): Promise<T.JSONResponse<T.OKResponse>> {
+		const uri = this._integrationUri({ product, org, integrationId });
 		return this.delete<T.OKResponse>({ uri, auth, headers, context });
 	}
 
 	/**
-     * List all integrations owned by the account or product
+     * List all integrations owned by the account, product, or organization
      * @param {Object} options            Options for this API call
      * @param {String} [options.product]  Integrations for this product ID or slug
+     * @param {String} [options.org]      Integrations for this organization ID or slug
      * @param {string} [options.auth]     The access token. Can be ignored if provided in constructor
      * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]  Request context
      * @returns {Promise<T.JSONResponse<T.IntegrationInfo[]>>} A promise that resolves with the response data
      */
-	listIntegrations({ product, auth, headers, context }: T.ListIntegrationsOptions): Promise<T.JSONResponse<T.IntegrationInfo[]>> {
-		const uri = product ? `/v1/products/${product}/integrations` : '/v1/integrations';
+	listIntegrations({ product, org, auth, headers, context }: T.ListIntegrationsOptions): Promise<T.JSONResponse<T.IntegrationInfo[]>> {
+		const uri = this._integrationUri({ product, org });
 		return this.get<T.IntegrationInfo[]>({ uri, auth, headers, context });
+	}
+
+	/**
+     * Build the integrations URI for the given scope. Integrations default to the
+     * user sandbox (`/v1/integrations`) when neither product nor org is given.
+     * @private
+     */
+	private _integrationUri({ product, org, integrationId }: { product?: string | number; org?: string; integrationId?: string }): string {
+		if (product && org) {
+			throw new Error('Specify only one of: product or org');
+		}
+		let base: string;
+		if (org) {
+			base = `/v1/orgs/${org}/integrations`;
+		} else if (product) {
+			base = `/v1/products/${product}/integrations`;
+		} else {
+			base = '/v1/integrations';
+		}
+		return integrationId ? `${base}/${integrationId}` : base;
 	}
 
 	/**

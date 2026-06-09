@@ -1125,14 +1125,15 @@ describe('ParticleAPI', () => {
 				it('creates for a single device', () => {
 					return api.createWebhook(props).then((results) => {
 						expect(results).to.containSubset({
-							uri: '/v1/webhooks',
+							uri: '/v1/integrations',
 							method: 'post',
 							auth: props.auth,
 							headers: props.headers,
 							data: {
+								integration_type: 'Webhook',
 								event: props.event,
 								url: props.url,
-								deviceId: props.device,
+								deviceid: props.device,
 								rejectUnauthorized: props.rejectUnauthorized,
 								noDefaults: props.noDefaults,
 								requestType: (props.hook as object as Record<string, object>).method,
@@ -1156,14 +1157,15 @@ describe('ParticleAPI', () => {
 					delete params.device;
 					return api.createWebhook(a<Parameters<typeof api.createWebhook>[0]>(params)).then((results) => {
 						expect(results).to.containSubset({
-							uri: '/v1/webhooks',
+							uri: '/v1/integrations',
 							method: 'post',
 							auth: props.auth,
 							headers: props.headers,
 							data: {
+								integration_type: 'Webhook',
 								event: props.event,
 								url: props.url,
-								deviceId: undefined,
+								deviceid: undefined,
 								rejectUnauthorized: props.rejectUnauthorized,
 								noDefaults: props.noDefaults,
 								requestType: (props.hook as object as Record<string, object>).method,
@@ -1192,16 +1194,15 @@ describe('ParticleAPI', () => {
 					delete params.context;
 					return api.createWebhook(a<Parameters<typeof api.createWebhook>[0]>(params)).then((results) => {
 						expect(results).to.containSubset({
-							uri: '/v1/webhooks',
+							uri: '/v1/integrations',
 							method: 'post',
 							auth: props.auth,
 							headers: undefined,
 							data: {
+								integration_type: 'Webhook',
 								event: props.event,
 								url: props.url,
-								deviceId: undefined,
-								rejectUnauthorized: undefined,
-								noDefaults: undefined,
+								deviceid: undefined,
 								requestType: 'POST'
 							},
 							context: {}
@@ -1214,14 +1215,47 @@ describe('ParticleAPI', () => {
 				it('generates request', () => {
 					return api.createWebhook(propsWithProduct).then((results) => {
 						expect(results).to.containSubset({
-							uri: `/v1/products/${product}/webhooks`,
+							uri: `/v1/products/${product}/integrations`,
 							method: 'post',
 							auth: props.auth,
 							headers: props.headers,
 							data: {
+								integration_type: 'Webhook',
 								event: props.event,
 								url: props.url,
-								deviceId: props.device,
+								deviceid: props.device,
+								rejectUnauthorized: props.rejectUnauthorized,
+								noDefaults: props.noDefaults,
+								requestType: (props.hook as object as Record<string, object>).method,
+								auth: (props.hook as object as Record<string, object>).auth,
+								headers: (props.hook as object as Record<string, object>).headers,
+								query: (props.hook as object as Record<string, object>).query,
+								json: (props.hook as object as Record<string, object>).json,
+								form: (props.hook as object as Record<string, object>).form,
+								body: (props.hook as object as Record<string, object>).body,
+								responseTemplate: (props.hook as object as Record<string, object>).responseTemplate,
+								responseTopic: (props.hook as object as Record<string, object>).responseEvent,
+								errorResponseTopic: (props.hook as object as Record<string, object>).errorResponseEvent,
+							},
+							context: {}
+						});
+					});
+				});
+			});
+
+			describe('org scope', () => {
+				it('generates request', () => {
+					return api.createWebhook(propsWithOrg).then((results) => {
+						expect(results).to.containSubset({
+							uri: `/v1/orgs/${org}/integrations`,
+							method: 'post',
+							auth: props.auth,
+							headers: props.headers,
+							data: {
+								integration_type: 'Webhook',
+								event: props.event,
+								url: props.url,
+								deviceid: props.device,
 								rejectUnauthorized: props.rejectUnauthorized,
 								noDefaults: props.noDefaults,
 								requestType: (props.hook as object as Record<string, object>).method,
@@ -1328,6 +1362,23 @@ describe('ParticleAPI', () => {
 					});
 				});
 			});
+
+			describe('org scope', () => {
+				it('generates request', () => {
+					return api.createIntegration(propsWithOrg).then((results) => {
+						expect(results).to.containSubset({
+							method: 'post',
+							uri: `/v1/orgs/${org}/integrations`,
+							auth: props.auth,
+							data: {
+								event: props.event,
+								deviceid: props.deviceId,
+								url: (props.settings as Record<string, string>).url,
+							}
+						});
+					});
+				});
+			});
 		});
 
 		describe('.editIntegration', () => {
@@ -1364,6 +1415,23 @@ describe('ParticleAPI', () => {
 					});
 				});
 			});
+
+			describe('org scope', () => {
+				it('generates request', () => {
+					return api.editIntegration(propsWithOrg).then((results) => {
+						expect(results).to.containSubset({
+							method: 'put',
+							uri: `/v1/orgs/${org}/integrations/${props.integrationId}`,
+							auth: props.auth,
+							data: {
+								event: props.event,
+								deviceid: props.deviceId,
+								url: (props.settings as Record<string, string>).url,
+							}
+						});
+					});
+				});
+			});
 		});
 
 		describe('.deleteIntegration', () => {
@@ -1390,6 +1458,18 @@ describe('ParticleAPI', () => {
 					});
 				});
 			});
+
+			describe('org scope', () => {
+				it('generates request', () => {
+					return api.deleteIntegration(propsWithOrg).then((results) => {
+						expect(results).to.containSubset({
+							method: 'delete',
+							uri: `/v1/orgs/${org}/integrations/${props.integrationId}`,
+							auth: props.auth,
+						});
+					});
+				});
+			});
 		});
 
 		describe('.listIntegrations', () => {
@@ -1411,6 +1491,18 @@ describe('ParticleAPI', () => {
 						expect(results).to.containSubset({
 							method: 'get',
 							uri: `/v1/products/${product}/integrations`,
+							auth: props.auth,
+						});
+					});
+				});
+			});
+
+			describe('org scope', () => {
+				it('generates request', () => {
+					return api.listIntegrations(propsWithOrg).then((results) => {
+						expect(results).to.containSubset({
+							method: 'get',
+							uri: `/v1/orgs/${org}/integrations`,
 							auth: props.auth,
 						});
 					});
