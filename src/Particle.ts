@@ -992,13 +992,13 @@ class Particle {
 	async listWebhooks({ product, org, auth, headers, context }: T.ListWebhooksOptions): Promise<T.JSONResponse<T.WebhookInfo[]>> {
 		const response = await this.listIntegrations({ product, org, auth, headers, context });
 		const body: T.WebhookInfo[] = response.body
-			.filter((integration) => integration.integration_type === 'Webhook')
+			.filter((integration): integration is T.WebhookIntegration => integration.integration_type === 'Webhook')
 			.map((integration) => ({
 				id: integration.id,
 				event: integration.event,
 				created_at: integration.created_at,
 				url: integration.url,
-				requestType: integration.requestType as T.WebhookInfo['requestType'],
+				requestType: integration.requestType,
 				name: integration.name,
 				deviceID: integration.deviceID,
 				disabled: integration.disabled

@@ -169,6 +169,11 @@ export interface IntegrationInfo {
 	disabled?: boolean;
 }
 
+export interface WebhookIntegration extends IntegrationInfo {
+	integration_type: 'Webhook';
+	requestType: 'GET' | 'POST' | 'PUT' | 'DELETE';
+}
+
 export interface ProductSettings {
 	location?: object;
 	known_application?: { opt_in: boolean };
