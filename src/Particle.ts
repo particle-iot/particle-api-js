@@ -935,9 +935,10 @@ class Particle {
      * @param {Object}  [options.context]             Request context
      * @returns {Promise<T.JSONResponse<T.CreateWebhookResponse>>} A promise that resolves with the response data
      */
-	createWebhook({ event, url, device, rejectUnauthorized, noDefaults, hook, product, org, auth, headers, context }: T.CreateWebhookOptions): Promise<T.JSONResponse<T.CreateWebhookResponse>> {
+	async createWebhook({ event, url, device, rejectUnauthorized, noDefaults, hook, product, org, auth, headers, context }: T.CreateWebhookOptions): Promise<T.JSONResponse<T.CreateWebhookResponse>> {
 		const settings = this._webhookSettings({ url, rejectUnauthorized, noDefaults, hook });
-		return this.createIntegration({ event, settings, deviceId: device, product, org, auth, headers, context }) as object as Promise<T.JSONResponse<T.CreateWebhookResponse>>;
+		const response = await this.createIntegration({ event, settings, deviceId: device, product, org, auth, headers, context });
+		return { ...response, body: this._webhookResponse(response.body) };
 	}
 
 	/**
@@ -957,9 +958,10 @@ class Particle {
      * @param {Object}  [options.context]             Request context
      * @returns {Promise<T.JSONResponse<T.CreateWebhookResponse>>} A promise that resolves with the response data
      */
-	editWebhook({ hookId, event, url, device, rejectUnauthorized, noDefaults, hook, product, org, auth, headers, context }: T.EditWebhookOptions): Promise<T.JSONResponse<T.CreateWebhookResponse>> {
+	async editWebhook({ hookId, event, url, device, rejectUnauthorized, noDefaults, hook, product, org, auth, headers, context }: T.EditWebhookOptions): Promise<T.JSONResponse<T.CreateWebhookResponse>> {
 		const settings = this._webhookSettings({ url, rejectUnauthorized, noDefaults, hook });
-		return this.editIntegration({ integrationId: hookId, event, settings, deviceId: device, product, org, auth, headers, context }) as object as Promise<T.JSONResponse<T.CreateWebhookResponse>>;
+		const response = await this.editIntegration({ integrationId: hookId, event, settings, deviceId: device, product, org, auth, headers, context });
+		return { ...response, body: this._webhookResponse(response.body) };
 	}
 
 	/**
@@ -987,11 +989,21 @@ class Particle {
      * @param {Object} [options.context]  Request context
      * @returns {Promise<T.JSONResponse<T.WebhookInfo[]>>} A promise that resolves with the response data
      */
-	listWebhooks({ product, org, auth, headers, context }: T.ListWebhooksOptions): Promise<T.JSONResponse<T.WebhookInfo[]>> {
-		return this.listIntegrations({ product, org, auth, headers, context }).then((response) => {
-			const body = response.body.filter((integration) => integration.integration_type === 'Webhook');
-			return { ...response, body } as object as T.JSONResponse<T.WebhookInfo[]>;
-		});
+	async listWebhooks({ product, org, auth, headers, context }: T.ListWebhooksOptions): Promise<T.JSONResponse<T.WebhookInfo[]>> {
+		const response = await this.listIntegrations({ product, org, auth, headers, context });
+		const body: T.WebhookInfo[] = response.body
+			.filter((integration) => integration.integration_type === 'Webhook')
+			.map((integration) => ({
+				id: integration.id,
+				event: integration.event,
+				created_at: integration.created_at,
+				url: integration.url,
+				requestType: integration.requestType as T.WebhookInfo['requestType'],
+				name: integration.name,
+				deviceID: integration.deviceID,
+				disabled: integration.disabled
+			}));
+		return { ...response, body };
 	}
 
 	/**
@@ -1023,6 +1035,24 @@ class Particle {
 	}
 
 	/**
+     * Map an integration response back to the legacy `Webhook` response shape so
+     * existing consumers keep reading the same fields. `ok` is synthesized: a
+     * resolved integration request means the call succeeded.
+     * @private
+     */
+	private _webhookResponse(integration: T.IntegrationInfo): T.CreateWebhookResponse {
+		return {
+			ok: true,
+			id: integration.id,
+			url: integration.url,
+			event: integration.event,
+			name: integration.name ?? null,
+			created_at: integration.created_at,
+			hookUrl: integration.url
+		};
+	}
+
+	/**
      * Create an integration to send events to an external service
      *
      * See the API docs for details https://docs.particle.io/reference/api/#integrations-webhooks-
@@ -1038,7 +1068,7 @@ class Particle {
      * @param {Object} [options.context]   Request context
      * @returns {Promise<T.JSONResponse<T.IntegrationInfo>>} A promise that resolves with the response data
      */
-	createIntegration({ event, settings, deviceId, product, org, auth, headers, context }: T.CreateIntegrationOptions): Promise<T.JSONResponse<T.IntegrationInfo>> {
+	async createIntegration({ event, settings, deviceId, product, org, auth, headers, context }: T.CreateIntegrationOptions): Promise<T.JSONResponse<T.IntegrationInfo>> {
 		const uri = this._integrationUri({ product, org });
 		const data = Object.assign({ event, deviceid: deviceId }, settings);
 		return this.post<T.IntegrationInfo>({ uri, data, auth, headers, context });
@@ -1061,7 +1091,7 @@ class Particle {
      * @param {Object} [options.context]      Request context
      * @returns {Promise<T.JSONResponse<T.IntegrationInfo>>} A promise that resolves with the response data
      */
-	editIntegration({ integrationId, event, settings, deviceId, product, org, auth, headers, context }: T.EditIntegrationOptions): Promise<T.JSONResponse<T.IntegrationInfo>> {
+	async editIntegration({ integrationId, event, settings, deviceId, product, org, auth, headers, context }: T.EditIntegrationOptions): Promise<T.JSONResponse<T.IntegrationInfo>> {
 		const uri = this._integrationUri({ product, org, integrationId });
 		const data = Object.assign({ event, deviceid: deviceId }, settings);
 		return this.put<T.IntegrationInfo>({ uri, auth, headers, data, context });
@@ -1079,7 +1109,7 @@ class Particle {
      * @param {Object} [options.context]      Request context
      * @returns {Promise<T.JSONResponse<T.OKResponse>>} A promise that resolves with the response data
      */
-	deleteIntegration({ integrationId, product, org, auth, headers, context }: T.DeleteIntegrationOptions): Promise<T.JSONResponse<T.OKResponse>> {
+	async deleteIntegration({ integrationId, product, org, auth, headers, context }: T.DeleteIntegrationOptions): Promise<T.JSONResponse<T.OKResponse>> {
 		const uri = this._integrationUri({ product, org, integrationId });
 		return this.delete<T.OKResponse>({ uri, auth, headers, context });
 	}
@@ -1094,7 +1124,7 @@ class Particle {
      * @param {Object} [options.context]  Request context
      * @returns {Promise<T.JSONResponse<T.IntegrationInfo[]>>} A promise that resolves with the response data
      */
-	listIntegrations({ product, org, auth, headers, context }: T.ListIntegrationsOptions): Promise<T.JSONResponse<T.IntegrationInfo[]>> {
+	async listIntegrations({ product, org, auth, headers, context }: T.ListIntegrationsOptions): Promise<T.JSONResponse<T.IntegrationInfo[]>> {
 		const uri = this._integrationUri({ product, org });
 		return this.get<T.IntegrationInfo[]>({ uri, auth, headers, context });
 	}

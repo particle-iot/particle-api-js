@@ -154,7 +154,7 @@ export interface CreateWebhookResponse {
 	event: string;
 	name: string | null;
 	created_at: string;
-	integrationUrl: string;
+	hookUrl: string;
 }
 
 export interface IntegrationInfo {
@@ -164,6 +164,9 @@ export interface IntegrationInfo {
 	integration_type: string;
 	url: string;
 	requestType: string;
+	name?: string | null;
+	deviceID?: string;
+	disabled?: boolean;
 }
 
 export interface ProductSettings {

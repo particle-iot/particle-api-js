@@ -1120,67 +1120,70 @@ describe('ParticleAPI', () => {
 			});
 		});
 
+		const expectedWebhookSettings = {
+			integration_type: 'Webhook',
+			requestType: props.hook.method,
+			url: props.url,
+			auth: props.hook.auth,
+			headers: props.hook.headers,
+			query: props.hook.query,
+			json: props.hook.json,
+			form: props.hook.form,
+			body: props.hook.body,
+			responseTemplate: props.hook.responseTemplate,
+			responseTopic: props.hook.responseEvent,
+			errorResponseTopic: props.hook.errorResponseEvent,
+			rejectUnauthorized: props.rejectUnauthorized,
+			noDefaults: props.noDefaults
+		};
+		const webhookIntegration = {
+			id: 'int-123',
+			event: props.event,
+			url: props.url,
+			requestType: 'PUT',
+			created_at: '2026-01-01',
+			integration_type: 'Webhook',
+			name: 'my-hook'
+		};
+		const expectedWebhookResponse = {
+			ok: true,
+			id: 'int-123',
+			url: props.url,
+			event: props.event,
+			name: 'my-hook',
+			created_at: '2026-01-01',
+			hookUrl: props.url
+		};
+		const webhookIntegrationResponse = { statusCode: 200, body: webhookIntegration } as object as import('../src/types').JSONResponse<import('../src/types').IntegrationInfo>;
+
 		describe('.createWebhook', () => {
+			let createIntegration: sinon.SinonStub;
+
+			beforeEach(() => {
+				createIntegration = sinon.stub(api, 'createIntegration').resolves(webhookIntegrationResponse);
+			});
+
+			afterEach(() => {
+				createIntegration.restore();
+			});
+
 			describe('user scope', () => {
 				it('creates for a single device', () => {
 					return api.createWebhook(props).then((results) => {
-						expect(results).to.containSubset({
-							uri: '/v1/integrations',
-							method: 'post',
-							auth: props.auth,
-							headers: props.headers,
-							data: {
-								integration_type: 'Webhook',
-								event: props.event,
-								url: props.url,
-								deviceid: props.device,
-								rejectUnauthorized: props.rejectUnauthorized,
-								noDefaults: props.noDefaults,
-								requestType: (props.hook as object as Record<string, object>).method,
-								auth: (props.hook as object as Record<string, object>).auth,
-								headers: (props.hook as object as Record<string, object>).headers,
-								query: (props.hook as object as Record<string, object>).query,
-								json: (props.hook as object as Record<string, object>).json,
-								form: (props.hook as object as Record<string, object>).form,
-								body: (props.hook as object as Record<string, object>).body,
-								responseTemplate: (props.hook as object as Record<string, object>).responseTemplate,
-								responseTopic: (props.hook as object as Record<string, object>).responseEvent,
-								errorResponseTopic: (props.hook as object as Record<string, object>).errorResponseEvent,
-							},
-							context: {}
-						});
+						const arg = createIntegration.firstCall.args[0];
+						expect(arg).to.containSubset({ event: props.event, deviceId: props.device, auth: props.auth, headers: props.headers });
+						expect(arg.settings).to.deep.equal(expectedWebhookSettings);
+						expect(results.body).to.deep.equal(expectedWebhookResponse);
 					});
 				});
 
 				it('creates for user\'s devices', () => {
 					const params: R = Object.assign({}, props);
 					delete params.device;
-					return api.createWebhook(a<Parameters<typeof api.createWebhook>[0]>(params)).then((results) => {
-						expect(results).to.containSubset({
-							uri: '/v1/integrations',
-							method: 'post',
-							auth: props.auth,
-							headers: props.headers,
-							data: {
-								integration_type: 'Webhook',
-								event: props.event,
-								url: props.url,
-								deviceid: undefined,
-								rejectUnauthorized: props.rejectUnauthorized,
-								noDefaults: props.noDefaults,
-								requestType: (props.hook as object as Record<string, object>).method,
-								auth: (props.hook as object as Record<string, object>).auth,
-								headers: (props.hook as object as Record<string, object>).headers,
-								query: (props.hook as object as Record<string, object>).query,
-								json: (props.hook as object as Record<string, object>).json,
-								form: (props.hook as object as Record<string, object>).form,
-								body: (props.hook as object as Record<string, object>).body,
-								responseTemplate: (props.hook as object as Record<string, object>).responseTemplate,
-								responseTopic: (props.hook as object as Record<string, object>).responseEvent,
-								errorResponseTopic: (props.hook as object as Record<string, object>).errorResponseEvent,
-							},
-							context: {}
-						});
+					return api.createWebhook(a<Parameters<typeof api.createWebhook>[0]>(params)).then(() => {
+						const arg = createIntegration.firstCall.args[0];
+						expect(arg.deviceId).to.equal(undefined);
+						expect(arg.settings).to.deep.equal(expectedWebhookSettings);
 					});
 				});
 
@@ -1192,143 +1195,65 @@ describe('ParticleAPI', () => {
 					delete params.hook;
 					delete params.headers;
 					delete params.context;
-					return api.createWebhook(a<Parameters<typeof api.createWebhook>[0]>(params)).then((results) => {
-						expect(results).to.containSubset({
-							uri: '/v1/integrations',
-							method: 'post',
-							auth: props.auth,
-							headers: undefined,
-							data: {
-								integration_type: 'Webhook',
-								event: props.event,
-								url: props.url,
-								deviceid: undefined,
-								requestType: 'POST'
-							},
-							context: {}
-						});
+					return api.createWebhook(a<Parameters<typeof api.createWebhook>[0]>(params)).then(() => {
+						const arg = createIntegration.firstCall.args[0];
+						expect(arg.deviceId).to.equal(undefined);
+						expect(arg.settings).to.deep.equal({ integration_type: 'Webhook', requestType: 'POST', url: props.url });
 					});
 				});
 			});
 
 			describe('product scope', () => {
-				it('generates request', () => {
-					return api.createWebhook(propsWithProduct).then((results) => {
-						expect(results).to.containSubset({
-							uri: `/v1/products/${product}/integrations`,
-							method: 'post',
-							auth: props.auth,
-							headers: props.headers,
-							data: {
-								integration_type: 'Webhook',
-								event: props.event,
-								url: props.url,
-								deviceid: props.device,
-								rejectUnauthorized: props.rejectUnauthorized,
-								noDefaults: props.noDefaults,
-								requestType: (props.hook as object as Record<string, object>).method,
-								auth: (props.hook as object as Record<string, object>).auth,
-								headers: (props.hook as object as Record<string, object>).headers,
-								query: (props.hook as object as Record<string, object>).query,
-								json: (props.hook as object as Record<string, object>).json,
-								form: (props.hook as object as Record<string, object>).form,
-								body: (props.hook as object as Record<string, object>).body,
-								responseTemplate: (props.hook as object as Record<string, object>).responseTemplate,
-								responseTopic: (props.hook as object as Record<string, object>).responseEvent,
-								errorResponseTopic: (props.hook as object as Record<string, object>).errorResponseEvent,
-							},
-							context: {}
-						});
+				it('passes the product through to createIntegration', () => {
+					return api.createWebhook(propsWithProduct).then(() => {
+						expect(createIntegration).to.have.been.calledWithMatch({ product, settings: expectedWebhookSettings });
 					});
 				});
 			});
 
 			describe('org scope', () => {
-				it('generates request', () => {
-					return api.createWebhook(propsWithOrg).then((results) => {
-						expect(results).to.containSubset({
-							uri: `/v1/orgs/${org}/integrations`,
-							method: 'post',
-							auth: props.auth,
-							headers: props.headers,
-							data: {
-								integration_type: 'Webhook',
-								event: props.event,
-								url: props.url,
-								deviceid: props.device,
-								rejectUnauthorized: props.rejectUnauthorized,
-								noDefaults: props.noDefaults,
-								requestType: (props.hook as object as Record<string, object>).method,
-								auth: (props.hook as object as Record<string, object>).auth,
-								headers: (props.hook as object as Record<string, object>).headers,
-								query: (props.hook as object as Record<string, object>).query,
-								json: (props.hook as object as Record<string, object>).json,
-								form: (props.hook as object as Record<string, object>).form,
-								body: (props.hook as object as Record<string, object>).body,
-								responseTemplate: (props.hook as object as Record<string, object>).responseTemplate,
-								responseTopic: (props.hook as object as Record<string, object>).responseEvent,
-								errorResponseTopic: (props.hook as object as Record<string, object>).errorResponseEvent,
-							},
-							context: {}
-						});
+				it('passes the org through to createIntegration', () => {
+					return api.createWebhook(propsWithOrg).then(() => {
+						expect(createIntegration).to.have.been.calledWithMatch({ org, settings: expectedWebhookSettings });
 					});
 				});
 			});
 		});
 
 		describe('.editWebhook', () => {
+			let editIntegration: sinon.SinonStub;
+
+			beforeEach(() => {
+				editIntegration = sinon.stub(api, 'editIntegration').resolves(webhookIntegrationResponse);
+			});
+
+			afterEach(() => {
+				editIntegration.restore();
+			});
+
 			describe('user scope', () => {
-				it('generates request', () => {
+				it('delegates to editIntegration with webhook settings', () => {
 					return api.editWebhook(props).then((results) => {
-						expect(results).to.containSubset({
-							uri: `/v1/integrations/${props.hookId}`,
-							method: 'put',
-							auth: props.auth,
-							headers: props.headers,
-							data: {
-								integration_type: 'Webhook',
-								event: props.event,
-								url: props.url,
-								deviceid: props.device,
-								rejectUnauthorized: props.rejectUnauthorized,
-								noDefaults: props.noDefaults,
-								requestType: (props.hook as object as Record<string, object>).method,
-								auth: (props.hook as object as Record<string, object>).auth,
-								headers: (props.hook as object as Record<string, object>).headers,
-								query: (props.hook as object as Record<string, object>).query,
-								json: (props.hook as object as Record<string, object>).json,
-								form: (props.hook as object as Record<string, object>).form,
-								body: (props.hook as object as Record<string, object>).body,
-								responseTemplate: (props.hook as object as Record<string, object>).responseTemplate,
-								responseTopic: (props.hook as object as Record<string, object>).responseEvent,
-								errorResponseTopic: (props.hook as object as Record<string, object>).errorResponseEvent,
-							},
-							context: {}
-						});
+						const arg = editIntegration.firstCall.args[0];
+						expect(arg).to.containSubset({ integrationId: props.hookId, event: props.event, deviceId: props.device, auth: props.auth, headers: props.headers });
+						expect(arg.settings).to.deep.equal(expectedWebhookSettings);
+						expect(results.body).to.deep.equal(expectedWebhookResponse);
 					});
 				});
 			});
 
 			describe('product scope', () => {
-				it('generates request', () => {
-					return api.editWebhook(propsWithProduct).then((results) => {
-						expect(results).to.containSubset({
-							uri: `/v1/products/${product}/integrations/${props.hookId}`,
-							method: 'put',
-							auth: props.auth,
-						});
+				it('passes the product through to editIntegration', () => {
+					return api.editWebhook(propsWithProduct).then(() => {
+						expect(editIntegration).to.have.been.calledWithMatch({ integrationId: props.hookId, product });
 					});
 				});
 			});
 
 			describe('org scope', () => {
-				it('generates request', () => {
-					return api.editWebhook(propsWithOrg).then((results) => {
-						expect(results).to.containSubset({
-							uri: `/v1/orgs/${org}/integrations/${props.hookId}`,
-							method: 'put',
-							auth: props.auth,
-						});
+				it('passes the org through to editIntegration', () => {
+					return api.editWebhook(propsWithOrg).then(() => {
+						expect(editIntegration).to.have.been.calledWithMatch({ integrationId: props.hookId, org });
 					});
 				});
 			});
@@ -1374,9 +1299,9 @@ describe('ParticleAPI', () => {
 
 		describe('.listWebhooks', () => {
 			const integrations = [
-				{ id: '1', integration_type: 'Webhook', event: 'a', url: 'http://a', requestType: 'POST', created_at: 'x' },
+				{ id: '1', integration_type: 'Webhook', event: 'a', url: 'http://a', requestType: 'POST', created_at: 'x', name: 'hook-a', deviceID: 'dev-1', disabled: false },
 				{ id: '2', integration_type: 'GoogleCloudPubSub', event: 'b', url: 'http://b', requestType: 'POST', created_at: 'y' },
-				{ id: '3', integration_type: 'Webhook', event: 'c', url: 'http://c', requestType: 'GET', created_at: 'z' },
+				{ id: '3', integration_type: 'Webhook', event: 'c', url: 'http://c', requestType: 'GET', created_at: 'z', name: 'hook-c', deviceID: 'dev-3', disabled: true },
 			];
 			let listIntegrations: sinon.SinonStub;
 
@@ -1393,7 +1318,10 @@ describe('ParticleAPI', () => {
 				it('delegates to listIntegrations and returns only webhook integrations', () => {
 					return api.listWebhooks(props).then((results) => {
 						expect(listIntegrations).to.have.been.calledWithMatch({ auth: props.auth, headers: props.headers });
-						expect(results.body).to.deep.equal([integrations[0], integrations[2]]);
+						expect(results.body).to.deep.equal([
+							{ id: '1', event: 'a', created_at: 'x', url: 'http://a', requestType: 'POST', name: 'hook-a', deviceID: 'dev-1', disabled: false },
+							{ id: '3', event: 'c', created_at: 'z', url: 'http://c', requestType: 'GET', name: 'hook-c', deviceID: 'dev-3', disabled: true }
+						]);
 					});
 				});
 			});
