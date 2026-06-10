@@ -195,6 +195,20 @@ export interface PublishEventOptions extends SharedRequestOptions {
 
 export interface ListWebhooksOptions extends SharedRequestOptions {
 	product?: string | number;
+	org?: string;
+}
+
+export interface WebhookConfig {
+	method?: 'GET' | 'POST' | 'PUT' | 'DELETE';
+	auth?: Record<string, string>;
+	headers?: Record<string, string>;
+	query?: Record<string, string>;
+	json?: object;
+	form?: object;
+	body?: string;
+	responseTemplate?: string;
+	responseEvent?: string;
+	errorResponseEvent?: string;
 }
 
 export interface CreateWebhookOptions extends SharedRequestOptions {
@@ -203,18 +217,19 @@ export interface CreateWebhookOptions extends SharedRequestOptions {
 	device?: string;
 	rejectUnauthorized?: boolean;
 	noDefaults?: boolean;
-	hook?: {
-		method?: 'GET' | 'POST' | 'PUT' | 'DELETE';
-		auth?: Record<string, string>;
-		headers?: Record<string, string>;
-		query?: Record<string, string>;
-		json?: object;
-		form?: object;
-		body?: string;
-		responseTemplate?: string;
-		responseEvent?: string;
-		errorResponseEvent?: string;
-	};
+	hook?: WebhookConfig;
+	product?: string | number;
+	org?: string;
+}
+
+export interface EditWebhookOptions extends SharedRequestOptions {
+	hookId: string;
+	event?: string;
+	url?: string;
+	device?: string;
+	rejectUnauthorized?: boolean;
+	noDefaults?: boolean;
+	hook?: WebhookConfig;
 	product?: string | number;
 	org?: string;
 }
@@ -222,6 +237,7 @@ export interface CreateWebhookOptions extends SharedRequestOptions {
 export interface DeleteWebhookOptions extends SharedRequestOptions {
 	hookId: string;
 	product?: string | number;
+	org?: string;
 }
 
 export interface ListIntegrationsOptions extends SharedRequestOptions {

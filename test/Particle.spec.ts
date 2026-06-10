@@ -1276,13 +1276,71 @@ describe('ParticleAPI', () => {
 			});
 		});
 
+		describe('.editWebhook', () => {
+			describe('user scope', () => {
+				it('generates request', () => {
+					return api.editWebhook(props).then((results) => {
+						expect(results).to.containSubset({
+							uri: `/v1/integrations/${props.hookId}`,
+							method: 'put',
+							auth: props.auth,
+							headers: props.headers,
+							data: {
+								integration_type: 'Webhook',
+								event: props.event,
+								url: props.url,
+								deviceid: props.device,
+								rejectUnauthorized: props.rejectUnauthorized,
+								noDefaults: props.noDefaults,
+								requestType: (props.hook as object as Record<string, object>).method,
+								auth: (props.hook as object as Record<string, object>).auth,
+								headers: (props.hook as object as Record<string, object>).headers,
+								query: (props.hook as object as Record<string, object>).query,
+								json: (props.hook as object as Record<string, object>).json,
+								form: (props.hook as object as Record<string, object>).form,
+								body: (props.hook as object as Record<string, object>).body,
+								responseTemplate: (props.hook as object as Record<string, object>).responseTemplate,
+								responseTopic: (props.hook as object as Record<string, object>).responseEvent,
+								errorResponseTopic: (props.hook as object as Record<string, object>).errorResponseEvent,
+							},
+							context: {}
+						});
+					});
+				});
+			});
+
+			describe('product scope', () => {
+				it('generates request', () => {
+					return api.editWebhook(propsWithProduct).then((results) => {
+						expect(results).to.containSubset({
+							uri: `/v1/products/${product}/integrations/${props.hookId}`,
+							method: 'put',
+							auth: props.auth,
+						});
+					});
+				});
+			});
+
+			describe('org scope', () => {
+				it('generates request', () => {
+					return api.editWebhook(propsWithOrg).then((results) => {
+						expect(results).to.containSubset({
+							uri: `/v1/orgs/${org}/integrations/${props.hookId}`,
+							method: 'put',
+							auth: props.auth,
+						});
+					});
+				});
+			});
+		});
+
 		describe('.deleteWebhook', () => {
 			describe('user scope', () => {
 				it('generates request', () => {
 					return api.deleteWebhook(props).then((results) => {
 						expect(results).to.containSubset({
 							method: 'delete',
-							uri: `/v1/webhooks/${props.hookId}`,
+							uri: `/v1/integrations/${props.hookId}`,
 							auth: props.auth,
 						});
 					});
@@ -1294,7 +1352,19 @@ describe('ParticleAPI', () => {
 					return api.deleteWebhook(propsWithProduct).then((results) => {
 						expect(results).to.containSubset({
 							method: 'delete',
-							uri: `/v1/products/${product}/webhooks/${props.hookId}`,
+							uri: `/v1/products/${product}/integrations/${props.hookId}`,
+							auth: props.auth,
+						});
+					});
+				});
+			});
+
+			describe('org scope', () => {
+				it('generates request', () => {
+					return api.deleteWebhook(propsWithOrg).then((results) => {
+						expect(results).to.containSubset({
+							method: 'delete',
+							uri: `/v1/orgs/${org}/integrations/${props.hookId}`,
 							auth: props.auth,
 						});
 					});
@@ -1303,26 +1373,43 @@ describe('ParticleAPI', () => {
 		});
 
 		describe('.listWebhooks', () => {
+			const integrations = [
+				{ id: '1', integration_type: 'Webhook', event: 'a', url: 'http://a', requestType: 'POST', created_at: 'x' },
+				{ id: '2', integration_type: 'GoogleCloudPubSub', event: 'b', url: 'http://b', requestType: 'POST', created_at: 'y' },
+				{ id: '3', integration_type: 'Webhook', event: 'c', url: 'http://c', requestType: 'GET', created_at: 'z' },
+			];
+			let listIntegrations: sinon.SinonStub;
+
+			beforeEach(() => {
+				listIntegrations = sinon.stub(api, 'listIntegrations')
+					.resolves({ statusCode: 200, body: integrations } as object as import('../src/types').JSONResponse<import('../src/types').IntegrationInfo[]>);
+			});
+
+			afterEach(() => {
+				listIntegrations.restore();
+			});
+
 			describe('user scope', () => {
-				it('generates request', () => {
+				it('delegates to listIntegrations and returns only webhook integrations', () => {
 					return api.listWebhooks(props).then((results) => {
-						expect(results).to.containSubset({
-							method: 'get',
-							uri: '/v1/webhooks',
-							auth: props.auth,
-						});
+						expect(listIntegrations).to.have.been.calledWithMatch({ auth: props.auth, headers: props.headers });
+						expect(results.body).to.deep.equal([integrations[0], integrations[2]]);
 					});
 				});
 			});
 
 			describe('product scope', () => {
-				it('generates request', () => {
-					return api.listWebhooks(propsWithProduct).then((results) => {
-						expect(results).to.containSubset({
-							method: 'get',
-							uri: `/v1/products/${product}/webhooks`,
-							auth: props.auth,
-						});
+				it('passes the product through to listIntegrations', () => {
+					return api.listWebhooks(propsWithProduct).then(() => {
+						expect(listIntegrations).to.have.been.calledWithMatch({ product });
+					});
+				});
+			});
+
+			describe('org scope', () => {
+				it('passes the org through to listIntegrations', () => {
+					return api.listWebhooks(propsWithOrg).then(() => {
+						expect(listIntegrations).to.have.been.calledWithMatch({ org });
 					});
 				});
 			});

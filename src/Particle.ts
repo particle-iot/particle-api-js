@@ -936,15 +936,78 @@ class Particle {
      * @returns {Promise<T.JSONResponse<T.CreateWebhookResponse>>} A promise that resolves with the response data
      */
 	createWebhook({ event, url, device, rejectUnauthorized, noDefaults, hook, product, org, auth, headers, context }: T.CreateWebhookOptions): Promise<T.JSONResponse<T.CreateWebhookResponse>> {
-		// `auth`, `headers`, `query`, `json`, `form`, `body` and `responseTemplate`
-		// map straight through; only `method` and the two response events are renamed
-		// to the field names the integrations endpoint expects.
+		const settings = this._webhookSettings({ url, rejectUnauthorized, noDefaults, hook });
+		return this.createIntegration({ event, settings, deviceId: device, product, org, auth, headers, context }) as object as Promise<T.JSONResponse<T.CreateWebhookResponse>>;
+	}
+
+	/**
+     * Edit a webhook as a `Webhook` integration
+     * @param {Object}  options                       Options for this API call
+     * @param {String}  options.hookId                The webhook to edit
+     * @param {String}  [options.event]               Change the name of the Particle event that should trigger the Webhook
+     * @param {String}  [options.url]                 Change the web address that will be targeted when the Webhook is triggered
+     * @param {String}  [options.device]              Trigger Webhook only for this device ID or Name
+     * @param {Boolean} [options.rejectUnauthorized]  Set to `false` to skip SSL certificate validation of the target URL
+     * @param {Boolean} [options.noDefaults]          Don't include default event data in the webhook request
+     * @param {Hook}    [options.hook]                Webhook configuration settings
+     * @param {String}  [options.product]             Webhook for this product ID or slug
+     * @param {String}  [options.org]                 Webhook for this organization ID or slug
+     * @param {string}  [options.auth]                The access token. Can be ignored if provided in constructor
+     * @param {Object}  [options.headers]             Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+     * @param {Object}  [options.context]             Request context
+     * @returns {Promise<T.JSONResponse<T.CreateWebhookResponse>>} A promise that resolves with the response data
+     */
+	editWebhook({ hookId, event, url, device, rejectUnauthorized, noDefaults, hook, product, org, auth, headers, context }: T.EditWebhookOptions): Promise<T.JSONResponse<T.CreateWebhookResponse>> {
+		const settings = this._webhookSettings({ url, rejectUnauthorized, noDefaults, hook });
+		return this.editIntegration({ integrationId: hookId, event, settings, deviceId: device, product, org, auth, headers, context }) as object as Promise<T.JSONResponse<T.CreateWebhookResponse>>;
+	}
+
+	/**
+     * Delete a webhook
+     * @param {Object} options            Options for this API call
+     * @param {String} options.hookId     Webhook ID
+     * @param {String} [options.product]  Webhook for this product ID or slug
+     * @param {String} [options.org]      Webhook for this organization ID or slug
+     * @param {string} [options.auth] The access token. Can be ignored if provided in constructor
+     * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+     * @param {Object} [options.context]  Request context
+     * @returns {Promise<T.JSONResponse<T.OKResponse>>} A promise that resolves with the response data
+     */
+	deleteWebhook({ hookId, product, org, auth, headers, context }: T.DeleteWebhookOptions): Promise<T.JSONResponse<T.OKResponse>> {
+		return this.deleteIntegration({ integrationId: hookId, product, org, auth, headers, context });
+	}
+
+	/**
+     * List all webhooks owned by the account, product, or organization
+     * @param {Object} options            Options for this API call
+     * @param {String} [options.product]  Webhooks for this product ID or slug
+     * @param {String} [options.org]      Webhooks for this organization ID or slug
+     * @param {string} [options.auth] The access token. Can be ignored if provided in constructor
+     * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
+     * @param {Object} [options.context]  Request context
+     * @returns {Promise<T.JSONResponse<T.WebhookInfo[]>>} A promise that resolves with the response data
+     */
+	listWebhooks({ product, org, auth, headers, context }: T.ListWebhooksOptions): Promise<T.JSONResponse<T.WebhookInfo[]>> {
+		return this.listIntegrations({ product, org, auth, headers, context }).then((response) => {
+			const body = response.body.filter((integration) => integration.integration_type === 'Webhook');
+			return { ...response, body } as object as T.JSONResponse<T.WebhookInfo[]>;
+		});
+	}
+
+	/**
+     * Build the integration settings for a `Webhook` integration. `auth`, `headers`,
+     * `query`, `json`, `form`, `body` and `responseTemplate` map straight through;
+     * only `method` and the two response events are renamed to the field names the
+     * integrations endpoint expects.
+     * @private
+     */
+	private _webhookSettings({ url, rejectUnauthorized, noDefaults, hook }: { url?: string; rejectUnauthorized?: boolean; noDefaults?: boolean; hook?: T.WebhookConfig }): Record<string, string | number | boolean | object> {
 		const { method, responseEvent, errorResponseEvent, ...passthrough } = hook || {};
 		const settings: Record<string, string | number | boolean | object> = {
 			integration_type: 'Webhook',
-			url,
 			requestType: method || 'POST',
 			...passthrough,
+			...(url !== undefined ? { url } : {}),
 			...(responseEvent !== undefined ? { responseTopic: responseEvent } : {}),
 			...(errorResponseEvent !== undefined ? { errorResponseTopic: errorResponseEvent } : {})
 		};
@@ -956,36 +1019,7 @@ class Particle {
 			settings.noDefaults = noDefaults;
 		}
 
-		return this.createIntegration({ event, settings, deviceId: device, product, org, auth, headers, context }) as object as Promise<T.JSONResponse<T.CreateWebhookResponse>>;
-	}
-
-	/**
-     * Delete a webhook
-     * @param {Object} options            Options for this API call
-     * @param {String} options.hookId     Webhook ID
-     * @param {String} [options.product]  Webhook for this product ID or slug
-     * @param {string} [options.auth] The access token. Can be ignored if provided in constructor
-     * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-     * @param {Object} [options.context]  Request context
-     * @returns {Promise<T.JSONResponse<T.OKResponse>>} A promise that resolves with the response data
-     */
-	deleteWebhook({ hookId, product, auth, headers, context }: T.DeleteWebhookOptions): Promise<T.JSONResponse<T.OKResponse>> {
-		const uri = product ? `/v1/products/${product}/webhooks/${hookId}` : `/v1/webhooks/${hookId}`;
-		return this.delete<T.OKResponse>({ uri, auth, headers, context });
-	}
-
-	/**
-     * List all webhooks owned by the account or product
-     * @param {Object} options            Options for this API call
-     * @param {String} [options.product]  Webhooks for this product ID or slug
-     * @param {string} [options.auth] The access token. Can be ignored if provided in constructor
-     * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
-     * @param {Object} [options.context]  Request context
-     * @returns {Promise<T.JSONResponse<T.WebhookInfo[]>>} A promise that resolves with the response data
-     */
-	listWebhooks({ product, auth, headers, context }: T.ListWebhooksOptions): Promise<T.JSONResponse<T.WebhookInfo[]>> {
-		const uri = product ? `/v1/products/${product}/webhooks` : '/v1/webhooks';
-		return this.get<T.WebhookInfo[]>({ uri, auth, headers, context });
+		return settings;
 	}
 
 	/**
