@@ -164,14 +164,6 @@ export interface IntegrationInfo {
 	integration_type: string;
 	url: string;
 	requestType: string;
-	name?: string | null;
-	deviceID?: string;
-	disabled?: boolean;
-}
-
-export interface WebhookIntegration extends IntegrationInfo {
-	integration_type: 'Webhook';
-	requestType: 'GET' | 'POST' | 'PUT' | 'DELETE';
 }
 
 export interface ProductSettings {
