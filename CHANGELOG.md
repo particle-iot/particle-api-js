@@ -1,5 +1,8 @@
 # changelog
 
+## 12.0.3 - 15 Jun 2026
+* Add org param to integration methods.
+
 ## 12.0.2 - 19 March 2026
 * Fix timeout logic in event streams causing silent stalls in Node 19 and above
 
