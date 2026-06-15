@@ -225,6 +225,7 @@ export interface DeleteWebhookOptions extends SharedRequestOptions {
 
 export interface ListIntegrationsOptions extends SharedRequestOptions {
 	product?: string | number;
+	org?: string;
 }
 
 export interface CreateIntegrationOptions extends SharedRequestOptions {
@@ -232,6 +233,7 @@ export interface CreateIntegrationOptions extends SharedRequestOptions {
 	settings: Record<string, string | number | boolean | object>;
 	deviceId?: string;
 	product?: string | number;
+	org?: string;
 }
 
 export interface EditIntegrationOptions extends SharedRequestOptions {
@@ -240,11 +242,13 @@ export interface EditIntegrationOptions extends SharedRequestOptions {
 	settings?: Record<string, string | number | boolean | object>;
 	deviceId?: string;
 	product?: string | number;
+	org?: string;
 }
 
 export interface DeleteIntegrationOptions extends SharedRequestOptions {
 	integrationId: string;
 	product?: string | number;
+	org?: string;
 }
 
 export interface ListSIMsOptions extends SharedRequestOptions {

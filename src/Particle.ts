@@ -997,13 +997,14 @@ class Particle {
      * @param {Object} options.settings    Settings specific to that integration type
      * @param {String} [options.deviceId]  Trigger integration only for this device ID or Name
      * @param {String} [options.product]   Integration for this product ID or slug
+     * @param {String} [options.org]       Integration for this organization ID or slug
      * @param {string} [options.auth]      The access token. Can be ignored if provided in constructor
      * @param {Object} [options.headers]   Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]   Request context
      * @returns {Promise<T.JSONResponse<T.IntegrationInfo>>} A promise that resolves with the response data
      */
-	createIntegration({ event, settings, deviceId, product, auth, headers, context }: T.CreateIntegrationOptions): Promise<T.JSONResponse<T.IntegrationInfo>> {
-		const uri = product ? `/v1/products/${product}/integrations` : '/v1/integrations';
+	async createIntegration({ event, settings, deviceId, product, org, auth, headers, context }: T.CreateIntegrationOptions): Promise<T.JSONResponse<T.IntegrationInfo>> {
+		const uri = this._integrationUri({ product, org });
 		const data = Object.assign({ event, deviceid: deviceId }, settings);
 		return this.post<T.IntegrationInfo>({ uri, data, auth, headers, context });
 	}
@@ -1019,13 +1020,14 @@ class Particle {
      * @param {Object} [options.settings]     Change the settings specific to that integration type
      * @param {String} [options.deviceId]     Trigger integration only for this device ID or Name
      * @param {String} [options.product]      Integration for this product ID or slug
+     * @param {String} [options.org]          Integration for this organization ID or slug
      * @param {string} [options.auth]         The access token. Can be ignored if provided in constructor
      * @param {Object} [options.headers]      Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]      Request context
      * @returns {Promise<T.JSONResponse<T.IntegrationInfo>>} A promise that resolves with the response data
      */
-	editIntegration({ integrationId, event, settings, deviceId, product, auth, headers, context }: T.EditIntegrationOptions): Promise<T.JSONResponse<T.IntegrationInfo>> {
-		const uri = product ? `/v1/products/${product}/integrations/${integrationId}` : `/v1/integrations/${integrationId}`;
+	async editIntegration({ integrationId, event, settings, deviceId, product, org, auth, headers, context }: T.EditIntegrationOptions): Promise<T.JSONResponse<T.IntegrationInfo>> {
+		const uri = this._integrationUri({ product, org, integrationId });
 		const data = Object.assign({ event, deviceid: deviceId }, settings);
 		return this.put<T.IntegrationInfo>({ uri, auth, headers, data, context });
 	}
@@ -1036,28 +1038,50 @@ class Particle {
      * @param {Object} options                Options for this API call
      * @param {String} options.integrationId  The integration to remove
      * @param {String} [options.product]      Integration for this product ID or slug
+     * @param {String} [options.org]          Integration for this organization ID or slug
      * @param {string} [options.auth]         The access token. Can be ignored if provided in constructor
      * @param {Object} [options.headers]      Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]      Request context
      * @returns {Promise<T.JSONResponse<T.OKResponse>>} A promise that resolves with the response data
      */
-	deleteIntegration({ integrationId, product, auth, headers, context }: T.DeleteIntegrationOptions): Promise<T.JSONResponse<T.OKResponse>> {
-		const uri = product ? `/v1/products/${product}/integrations/${integrationId}` : `/v1/integrations/${integrationId}`;
+	async deleteIntegration({ integrationId, product, org, auth, headers, context }: T.DeleteIntegrationOptions): Promise<T.JSONResponse<T.OKResponse>> {
+		const uri = this._integrationUri({ product, org, integrationId });
 		return this.delete<T.OKResponse>({ uri, auth, headers, context });
 	}
 
 	/**
-     * List all integrations owned by the account or product
+     * List all integrations owned by the account, product, or organization
      * @param {Object} options            Options for this API call
      * @param {String} [options.product]  Integrations for this product ID or slug
+     * @param {String} [options.org]      Integrations for this organization ID or slug
      * @param {string} [options.auth]     The access token. Can be ignored if provided in constructor
      * @param {Object} [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
      * @param {Object} [options.context]  Request context
      * @returns {Promise<T.JSONResponse<T.IntegrationInfo[]>>} A promise that resolves with the response data
      */
-	listIntegrations({ product, auth, headers, context }: T.ListIntegrationsOptions): Promise<T.JSONResponse<T.IntegrationInfo[]>> {
-		const uri = product ? `/v1/products/${product}/integrations` : '/v1/integrations';
+	async listIntegrations({ product, org, auth, headers, context }: T.ListIntegrationsOptions): Promise<T.JSONResponse<T.IntegrationInfo[]>> {
+		const uri = this._integrationUri({ product, org });
 		return this.get<T.IntegrationInfo[]>({ uri, auth, headers, context });
+	}
+
+	/**
+     * Build the integrations URI for the given scope. Integrations default to the
+     * user sandbox (`/v1/integrations`) when neither product nor org is given.
+     * @private
+     */
+	private _integrationUri({ product, org, integrationId }: { product?: string | number; org?: string; integrationId?: string }): string {
+		if (product && org) {
+			throw new Error('Specify only one of: product or org');
+		}
+		let base: string;
+		if (org) {
+			base = `/v1/orgs/${org}/integrations`;
+		} else if (product) {
+			base = `/v1/products/${product}/integrations`;
+		} else {
+			base = '/v1/integrations';
+		}
+		return integrationId ? `${base}/${integrationId}` : base;
 	}
 
 	/**

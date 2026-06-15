@@ -1328,6 +1328,23 @@ describe('ParticleAPI', () => {
 					});
 				});
 			});
+
+			describe('org scope', () => {
+				it('generates request', () => {
+					return api.createIntegration(propsWithOrg).then((results) => {
+						expect(results).to.containSubset({
+							method: 'post',
+							uri: `/v1/orgs/${org}/integrations`,
+							auth: props.auth,
+							data: {
+								event: props.event,
+								deviceid: props.deviceId,
+								url: (props.settings as Record<string, string>).url,
+							}
+						});
+					});
+				});
+			});
 		});
 
 		describe('.editIntegration', () => {
@@ -1364,6 +1381,23 @@ describe('ParticleAPI', () => {
 					});
 				});
 			});
+
+			describe('org scope', () => {
+				it('generates request', () => {
+					return api.editIntegration(propsWithOrg).then((results) => {
+						expect(results).to.containSubset({
+							method: 'put',
+							uri: `/v1/orgs/${org}/integrations/${props.integrationId}`,
+							auth: props.auth,
+							data: {
+								event: props.event,
+								deviceid: props.deviceId,
+								url: (props.settings as Record<string, string>).url,
+							}
+						});
+					});
+				});
+			});
 		});
 
 		describe('.deleteIntegration', () => {
@@ -1390,6 +1424,18 @@ describe('ParticleAPI', () => {
 					});
 				});
 			});
+
+			describe('org scope', () => {
+				it('generates request', () => {
+					return api.deleteIntegration(propsWithOrg).then((results) => {
+						expect(results).to.containSubset({
+							method: 'delete',
+							uri: `/v1/orgs/${org}/integrations/${props.integrationId}`,
+							auth: props.auth,
+						});
+					});
+				});
+			});
 		});
 
 		describe('.listIntegrations', () => {
@@ -1411,6 +1457,18 @@ describe('ParticleAPI', () => {
 						expect(results).to.containSubset({
 							method: 'get',
 							uri: `/v1/products/${product}/integrations`,
+							auth: props.auth,
+						});
+					});
+				});
+			});
+
+			describe('org scope', () => {
+				it('generates request', () => {
+					return api.listIntegrations(propsWithOrg).then((results) => {
+						expect(results).to.containSubset({
+							method: 'get',
+							uri: `/v1/orgs/${org}/integrations`,
 							auth: props.auth,
 						});
 					});
