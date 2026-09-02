@@ -893,7 +893,7 @@ class Particle {
      * @param {String}  options.name       Event name
      * @param {String}  options.data       Event data
      * @param {Boolean} options.isPrivate  Should the event be publicly available?
-     * @param {String}  [options.org]      Event for every product in this organization ID or slug
+     * @param {String}  [options.org]      Organization ID or slug. Publishes the event to the stream of every product in the organization
      * @param {String}  [options.product]  Event for this product ID or slug
      * @param {string}  [options.auth]     The access token. Can be ignored if provided in constructor
      * @param {Object}  [options.headers]  Key/Value pairs like `{ 'X-FOO': 'foo', X-BAR: 'bar' }` to send as headers.
