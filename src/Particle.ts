@@ -901,7 +901,7 @@ class Particle {
      * @returns {Promise<T.JSONResponse<T.OKResponse>>} A promise that resolves with the response data
      */
 	publishEvent({ name, data, isPrivate, org, product, auth, headers, context }: T.PublishEventOptions): Promise<T.JSONResponse<T.OKResponse>> {
-		let uri;
+		let uri: string;
 		if (org) {
 			uri = `/v1/orgs/${org}/events`;
 		} else if (product) {
