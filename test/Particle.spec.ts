@@ -1026,6 +1026,12 @@ describe('ParticleAPI', () => {
 				});
 			});
 
+			it('requests org\'s named events', () => {
+				return api.getEventStream({ org: 'test-org', name: 'test' }).then(({ uri }) => {
+					expect(uri).to.satisfy((s: string) => s.endsWith('v1/orgs/test-org/events/test'));
+				});
+			});
+
 			it('requests org\'s device events', () => {
 				return api.getEventStream({ org: 'test-org', deviceId: props.deviceId as string }).then(({ uri }) => {
 					expect(uri).to.satisfy((s: string) => s.endsWith(`v1/orgs/test-org/devices/${props.deviceId}/events`));
@@ -1114,6 +1120,33 @@ describe('ParticleAPI', () => {
 								data: props.data,
 								private: props.isPrivate
 							}
+						});
+					});
+				});
+			});
+
+			describe('org scope', () => {
+				it('generates request', () => {
+					return api.publishEvent(a<Parameters<typeof api.publishEvent>[0]>(propsWithOrg)).then((results) => {
+						expect(results).to.containSubset({
+							method: 'post',
+							uri: `/v1/orgs/${org}/events`,
+							auth: props.auth,
+							data: {
+								name: props.name,
+								data: props.data,
+								private: props.isPrivate
+							}
+						});
+					});
+				});
+
+				it('takes precedence over the product', () => {
+					const orgAndProduct = Object.assign({}, propsWithOrg, { product });
+					return api.publishEvent(a<Parameters<typeof api.publishEvent>[0]>(orgAndProduct)).then((results) => {
+						expect(results).to.containSubset({
+							method: 'post',
+							uri: `/v1/orgs/${org}/events`
 						});
 					});
 				});

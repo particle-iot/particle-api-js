@@ -190,6 +190,7 @@ export interface PublishEventOptions extends SharedRequestOptions {
 	data?: string;
 	isPrivate?: boolean;
 	ttl?: number;
+	org?: string;
 	product?: string | number;
 }
 
