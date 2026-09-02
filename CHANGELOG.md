@@ -1,5 +1,8 @@
 # changelog
 
+## 12.0.4 - 02 September 2026
+* Add org event stream.
+
 ## 12.0.3 - 15 Jun 2026
 * Add org param to integration methods.
 
